@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   description: "Certificados WCA - Cubing México",
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- Return type is inferred
 export default function RootLayout({
   children,
 }: Readonly<{

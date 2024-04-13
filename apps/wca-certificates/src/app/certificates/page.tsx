@@ -1,6 +1,4 @@
-import { getServerSession, User } from 'next-auth'
-import { authOptions } from "@/lib/auth"
-
+import { getServerSession } from 'next-auth'
 import {
   Card,
   CardContent,
@@ -11,20 +9,24 @@ import {
 } from "@repo/ui/card"
 import { buttonVariants } from '@repo/ui/button'
 import Link from "next/link"
+import { authOptions } from "@/lib/auth"
 import "@cubing/icons"
 
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- Return type is inferred
 export default async function Page() {
 
   const session = await getServerSession(authOptions)
 
   const response = await fetch('https://www.worldcubeassociation.org/api/v0/competitions?managed_by_me=true', {
     headers: {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- This is the expected template
       'Authorization': `Bearer ${session?.token}`,
     },
     cache: 'no-store'
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- This is the expected assignment
   const data = await response.json();
 
   return (
@@ -34,20 +36,24 @@ export default async function Page() {
       <div className='flex flex-wrap justify-center'>
         {
           data ?
-            data.map((competition: any, index: number) => (
-              <Card key={index} className="w-[350px] m-4">
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access -- This is the expected call
+            data.map((competition: { name: string; city: string; event_ids: string[]; id: string }, index: number) => (
+              // eslint-disable-next-line react/no-array-index-key -- This array will not change
+              <Card className="w-[350px] m-4" key={index}>
                 <CardHeader>
                   <CardTitle>{competition.name}</CardTitle>
                   <CardDescription>{competition.city}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {competition.event_ids.map((event: any, index: number) => (
-                    <span key={index} className={`cubing-icon event-${event} m-1`}></span>
+                  {/* eslint-disable-next-line @typescript-eslint/no-shadow -- . */}
+                  {competition.event_ids.map((event, index: number) => (
+                    // eslint-disable-next-line react/no-array-index-key -- This array will not change
+                    <span className={`cubing-icon event-${event} m-1`} key={index} />
                   ))}
                 </CardContent>
                 <CardFooter className="flex flex-col">
-                  <Link href={`/certificates/podium/${competition.id}`} className={`${buttonVariants({ variant: 'default' })} mb-2`}>Certificados de podio</Link>
-                  <Link href={`/certificates/participation/${competition.id}`} className={buttonVariants({ variant: 'secondary' })}>Certificados de participación</Link>
+                  <Link className={`${buttonVariants({ variant: 'default' })} mb-2`} href={`/certificates/podium/${competition.id}`}>Certificados de podio</Link>
+                  <Link className={buttonVariants({ variant: 'secondary' })} href={`/certificates/participation/${competition.id}`}>Certificados de participación</Link>
                 </CardFooter>
               </Card>
             ))

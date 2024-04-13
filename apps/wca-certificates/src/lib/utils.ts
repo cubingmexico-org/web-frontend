@@ -1,27 +1,25 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
+import type { Event, Person, Result } from '@/types/types';
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
-
-export function processPersons(persons: any) {
-  const getRole = (role: string) => (person: any) => person.roles.includes(role);
-  const getName = (person: any) => person.name;
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
+export function processPersons(persons: Person[]) {
+  const getRole = (role: string) => (person: Person) => person.roles.includes(role);
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function will be used in a filter
+  const getName = (person: Person) => person.name;
 
   const delegates = persons.filter(getRole('delegate')).map(getName);
   const organizers = persons.filter(getRole('organizer')).map(getName);
 
-  const personIdToName: { [key: string]: string } = {};
-  persons.forEach((person: any) => {
+  const personIdToName: Record<string, string> = {};
+  persons.forEach((person: Person) => {
     personIdToName[person.registrantId] = person.name;
   });
 
-  function getEventData(event: any) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
+  function getEventData(event: Event) {
     const rounds = event.rounds;
     const results = rounds[rounds.length - 1].results
-      .filter((result: any) => result.ranking >= 1 && result.ranking <= 3)
-      .map((person: any) => ({
+      .filter((result: Result) => result.ranking >= 1 && result.ranking <= 3)
+      .map((person) => ({
         personName: personIdToName[person.personId],
         result: event.id === '333bf' ? person.best : person.average,
       }));
@@ -36,6 +34,7 @@ export function processPersons(persons: any) {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
 export function formatResults(value: number | string) {
 
   if (value === -1) {
@@ -46,8 +45,8 @@ export function formatResults(value: number | string) {
   let time: string;
 
   if (number >= 60) {
-    let minutes = Math.floor(number / 60);
-    let seconds = number % 60;
+    const minutes = Math.floor(number / 60);
+    const seconds = number % 60;
     time = `${minutes}:${seconds < 10 ? '0' : ''}${seconds.toFixed(2)}`;
   } else {
     time = number.toFixed(2);
@@ -56,6 +55,7 @@ export function formatResults(value: number | string) {
   return time;
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
 export function formatEvents(eventId: string) {
   switch (eventId) {
     case '333':
@@ -97,6 +97,7 @@ export function formatEvents(eventId: string) {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
 export function formatPlace(place: string) {
   switch (place) {
     case '1':
@@ -110,6 +111,7 @@ export function formatPlace(place: string) {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
 export function formatMedal(place: string) {
   switch (place) {
     case '1':
@@ -123,6 +125,7 @@ export function formatMedal(place: string) {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
 export function formatResultType(eventId: string) {
   switch (eventId) {
     case '333bf':
@@ -142,11 +145,11 @@ export function formatDates(date: string, days: string): string {
   const daysNumber = Number(days);
   const [year, month, day] = date.split('-');
   const startDate = new Date(Number(year), Number(month) - 1, Number(day));
-  const options = { day: 'numeric', month: 'long', year: 'numeric' } as any;
+  const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' };
 
-  let dates = [];
+  const dates = [];
   for (let i = 0; i < daysNumber; i++) {
-    let currentDate = new Date(startDate);
+    const currentDate = new Date(startDate);
     currentDate.setDate(startDate.getDate() + i);
     dates.push(new Intl.DateTimeFormat('es-ES', options).format(currentDate).split(' ')[0]);
   }
@@ -155,9 +158,8 @@ export function formatDates(date: string, days: string): string {
   const monthYear = new Intl.DateTimeFormat('es-ES', options).format(startDate).split(' ').slice(1).join(' ');
 
   if (daysNumber === 1) {
+    // eslint-disable-next-line @typescript-eslint/no-shadow -- This is a different variable
     const day = new Intl.DateTimeFormat('es-ES', { day: 'numeric' }).format(startDate);
     return `${day} ${monthYear}`;
-  } else {
-    return `${dates.join(', ')} y ${lastDate} ${monthYear}`;
-  }
+  } return `${dates.join(', ')} y ${lastDate} ${monthYear}`;
 }

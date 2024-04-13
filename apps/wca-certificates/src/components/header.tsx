@@ -1,7 +1,7 @@
 'use client'
 
 import { signOut } from 'next-auth/react'
-import { User } from 'next-auth'
+import type { User } from 'next-auth'
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar"
 import {
   DropdownMenu,
@@ -22,25 +22,29 @@ interface HeaderProps {
   user: User;
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- We don't need to specify the return type
 export default function Header({
   user
 }: HeaderProps) {
   return (
     <header className="flex items-center justify-between p-4">
-      <Link href='/certificates' className='flex items-center'>
+      <Link className='flex items-center' href='/certificates'>
         <Image
-          src="https://storage.googleapis.com/cubingmexico_dev_bucket/img/cubingmexico_logo.svg"
           alt="Logo de Cubing México"
-          width={50}
           height={50}
           priority
+          src="https://storage.googleapis.com/cubingmexico_dev_bucket/img/cubingmexico_logo.svg"
+          width={50}
         />
         <h1 className="text-2xl ml-2">Certificados de la WCA</h1>
       </Link>
       <DropdownMenu>
         <DropdownMenuTrigger>
           <Avatar>
-            <AvatarImage src={user.image as string} className="object-cover" />
+            <AvatarImage className="object-cover" src={
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We know the user has an image
+              user.image!
+            } />
             <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
@@ -49,7 +53,8 @@ export default function Header({
           <DropdownMenuSeparator />
           <DropdownMenuItem>
             <LogOut className="mr-2 h-4 w-4" />
-          <span onClick={() => signOut()} className='cursor-pointer'>Cerrar sesión</span>
+            {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, @typescript-eslint/no-misused-promises -- . */}
+            <span className='cursor-pointer' onClick={() => signOut()}>Cerrar sesión</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

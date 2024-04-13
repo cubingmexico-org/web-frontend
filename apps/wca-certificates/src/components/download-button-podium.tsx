@@ -5,8 +5,16 @@ import { Button } from '@repo/ui/button'
 import { Input } from "@repo/ui/input"
 import { Label } from "@repo/ui/label"
 import { FileDown } from "lucide-react"
-import { processPersons, formatResults, formatEvents, formatPlace, formatMedal, formatResultType, formatDates } from "@/lib/utils"
-import { Document, Page, View, Text, PDFViewer, StyleSheet, Image, Font } from '@react-pdf/renderer'
+import {
+  Document,
+  Page,
+  View,
+  Text,
+  PDFViewer,
+  StyleSheet,
+  Image,
+  Font
+} from '@react-pdf/renderer'
 import {
   Select,
   SelectContent,
@@ -14,6 +22,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/select"
+import {
+  processPersons,
+  formatResults,
+  formatEvents,
+  formatPlace,
+  formatMedal,
+  formatResultType,
+  formatDates
+} from "@/lib/utils"
+import type { Event, Data } from '@/types/types';
 
 Font.register({
   family: 'MavenPro',
@@ -56,14 +74,15 @@ const styles = StyleSheet.create({
 
 
 interface DownloadButtonProps {
-  data: any;
+  data: Data;
   city: string;
   state: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
 export default function DownloadButton({ data, city, state }: DownloadButtonProps) {
   const { delegates, organizers, getEventData } = processPersons(data.persons);
-  const [pdfData, setPdfData] = useState<Array<string[]>>([]);
+  const [pdfData, setPdfData] = useState<string[][]>([]);
   const [inputValue, setInputValue] = useState('');
   const [size, setSize] = useState<"LETTER" | "A4">();
   const [orientation, setOrientation] = useState<"portrait" | "landscape">();
@@ -71,13 +90,16 @@ export default function DownloadButton({ data, city, state }: DownloadButtonProp
   const date = data.schedule.startDate;
   const days = data.schedule.numberOfDays;
 
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
   function handleClick() {
-    const tempPdfData: Array<string[]> = [];
+    const tempPdfData: string[][] = [];
 
-    data.events.map((event: any) => {
+    // eslint-disable-next-line array-callback-return -- This function will be used in a map
+    data.events.map((event: Event) => {
       const results = getEventData(event);
 
-      results.map((result: any, index: number) => {
+      // eslint-disable-next-line array-callback-return -- This function will be used in a map
+      results.map((result, index: number) => {
         tempPdfData.push(Object.values({
           personName: result.personName,
           place: index + 1,
@@ -91,10 +113,11 @@ export default function DownloadButton({ data, city, state }: DownloadButtonProp
   }
 
   const MyDoc = (
-    <Document title={`Certificados de podio para el ${data.name}`} author={organizers}>
+    <Document author={organizers.join(', ')} title={`Certificados de podio para el ${data.name}`}>
       {pdfData.map((text, index) => (
+        // eslint-disable-next-line react/no-array-index-key -- This array will not change
         <Page key={index} orientation={orientation} size={size}>
-          {inputValue && <Image src={inputValue} style={styles.background} />}
+          {inputValue ? <Image src={inputValue} style={styles.background} /> : null}
           <View style={[styles.center, styles.body]}>
             <Text style={{ fontSize: 16, paddingHorizontal: 40, lineHeight: 1.25 }}>
               <Text style={styles.bold}>{delegates}</Text>, en nombre de la World Cube Association, y <Text style={styles.bold}>{organizers}</Text>, en nombre del equipo organizador, otorgan el presente
@@ -106,7 +129,7 @@ export default function DownloadButton({ data, city, state }: DownloadButtonProp
             <Text style={{ fontSize: 16 }}>a</Text>
             <Text style={[styles.bold, { fontSize: 35, paddingTop: 10, paddingBottom: 20 }]}>{text[0]}</Text>
             <Text style={{ fontSize: 16, paddingHorizontal: 40, lineHeight: 1.25 }}>
-              por haber obtenido el <Text style={styles.bold}>{formatPlace(text[1])} lugar</Text> en <Text style={styles.bold}>{formatEvents(text[2])}</Text> con {formatResultType(text[2])} de <Text style={styles.bold}>{formatResults(text[3])}</Text> en el <Text style={styles.bold}>{data.name}</Text>, llevado acabo { days === 1 ? 'el día' : 'los días' } <Text style={styles.bold}>{ formatDates(date, days) }</Text> en <Text style={styles.bold}>{ city }, { state }</Text>.
+              por haber obtenido el <Text style={styles.bold}>{formatPlace(text[1])} lugar</Text> en <Text style={styles.bold}>{formatEvents(text[2])}</Text> con {formatResultType(text[2])} de <Text style={styles.bold}>{formatResults(text[3])}</Text> en el <Text style={styles.bold}>{data.name}</Text>, llevado acabo {days === 1 ? 'el día' : 'los días'} <Text style={styles.bold}>{formatDates(date, days.toString())}</Text> en <Text style={styles.bold}>{city}, {state}</Text>.
             </Text>
           </View>
         </Page>
@@ -119,7 +142,7 @@ export default function DownloadButton({ data, city, state }: DownloadButtonProp
       <div className='flex justify-center'>
         <div className='w-full pr-1'>
           <Label>Tamaño de hoja</Label>
-          <Select onValueChange={(value: "LETTER" | "A4") => setSize(value)}>
+          <Select onValueChange={(value: "LETTER" | "A4") => { setSize(value); }}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Tamaño *" />
             </SelectTrigger>
@@ -131,7 +154,7 @@ export default function DownloadButton({ data, city, state }: DownloadButtonProp
         </div>
         <div className='w-full pl-1'>
           <Label>Orientación de hoja</Label>
-          <Select onValueChange={(value: "portrait" | "landscape") => setOrientation(value)}>
+          <Select onValueChange={(value: "portrait" | "landscape") => { setOrientation(value); }}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Orientación *" />
             </SelectTrigger>
@@ -144,9 +167,9 @@ export default function DownloadButton({ data, city, state }: DownloadButtonProp
       </div>
       <div className='mt-4'>
         <Label>Fondo</Label>
-        <Input placeholder="Fondo" value={inputValue} onChange={(e) => setInputValue(e.target.value)} className='my-4' />
+        <Input className='my-4' onChange={(e) => { setInputValue(e.target.value); }} placeholder="Fondo" value={inputValue} />
       </div>
-      <Button onClick={() => handleClick()} disabled={size === undefined || orientation === undefined}>
+      <Button disabled={size === undefined || orientation === undefined} onClick={() => { handleClick(); }}>
         Generar certificados
         <FileDown className='ml-2' />
       </Button>

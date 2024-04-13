@@ -1,44 +1,17 @@
 "use client"
 
-import { ColumnDef } from "@tanstack/react-table"
-import { Button } from '@repo/ui/button'
+import type { ColumnDef } from "@tanstack/react-table"
 import { CheckCircle, AlertCircle } from 'lucide-react'
-import { Download } from "lucide-react"
-
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-type Result = {
-  personId: number
-  ranking: number
-  attempts: any[]
-  best: number
-  average: number
-}
-
-type Round = {
-  id: string
-  format: string
-  timeLimit: any
-  cutoff: string | null
-  advancementCondition: any
-  scrambleSetCount: number
-  results: Result[]
-  extensions: any[]
-}
-
-export type Event = {
-  id: string
-  rounds: Round[]
-  extensions: any
-  qualification: null | string
-}
+import type { Event } from '@/types/types';
 
 export const columns: ColumnDef<Event>[] = [
   {
     accessorKey: "id",
     header: "Evento",
     cell: ({ row }) => {
-      return <span className={`cubing-icon event-${row.original.id} text-2xl`}></span>
+      return <span className={`cubing-icon event-${row.original.id} text-2xl`} />
     },
   },
   {
@@ -51,8 +24,8 @@ export const columns: ColumnDef<Event>[] = [
           rounds.length > 0 && 
           <>
             {rounds[rounds.length - 1].results.length > 0 
-              ? <>Disponibles<CheckCircle color="green" className="ml-2" /></>
-              : <>No disponibles todavía<AlertCircle color="red" className="ml-2" /></>}
+              ? <>Disponibles<CheckCircle className="ml-2" color="green" /></>
+              : <>No disponibles todavía<AlertCircle className="ml-2" color="red" /></>}
           </>
         }
       </p>

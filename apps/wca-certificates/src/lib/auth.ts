@@ -1,4 +1,4 @@
-import { NextAuthOptions } from 'next-auth';
+import type { NextAuthOptions } from 'next-auth';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -12,7 +12,7 @@ export const authOptions: NextAuthOptions = {
       },
       token: "https://www.worldcubeassociation.org/oauth/token",
       userinfo: "https://www.worldcubeassociation.org/api/v0/me",
-      profile(profile, tokens) {
+      profile(profile: { me: { id: string, name: string, avatar: { url: string, thumb_url: string, pending_url: string } } }) {
         return {
           id: profile.me.id,
           name: profile.me.name,
@@ -28,15 +28,15 @@ export const authOptions: NextAuthOptions = {
     signIn: '/',
   },
   callbacks: {
-    async redirect({ url, baseUrl }) {
+    redirect() {
       return '/certificates'
     },
-    async session({ session, token, user }) {
+    session({ session, token }) {
       session.token = token.access_token
 
       return session;
     },
-    async jwt({ token, user, account, profile, isNewUser }) {
+    jwt({ token, account }) {
       if (account) {
         token.access_token = account.access_token;
       }

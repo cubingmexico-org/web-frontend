@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils"
+import { cn } from "@repo/ui-helpers"
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- Reason: Skeleton is a component
 function Skeleton({

@@ -1,9 +1,9 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Button } from '@repo/ui/button'
+import { Input } from "@repo/ui/input"
+import { Label } from "@repo/ui/label"
 import { FileDown } from "lucide-react"
 import { processPersons, formatResults, formatEvents, formatDates } from "@/lib/utils"
 import { Document, Page, View, Text, PDFViewer, StyleSheet, Image, Font } from '@react-pdf/renderer'
@@ -13,7 +13,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@repo/ui/select"
 
 Font.register({
   family: 'MavenPro',

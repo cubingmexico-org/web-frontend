@@ -1,7 +1,7 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { Button } from '@/components/ui/button'
+import { Button } from '@repo/ui/button'
 import { CheckCircle, AlertCircle } from 'lucide-react'
 import { Download } from "lucide-react"
 

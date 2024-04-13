@@ -8,8 +8,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { buttonVariants } from '@/components/ui/button'
+} from "@repo/ui/card"
+import { buttonVariants } from '@repo/ui/button'
 import Link from "next/link"
 import "@cubing/icons"
 

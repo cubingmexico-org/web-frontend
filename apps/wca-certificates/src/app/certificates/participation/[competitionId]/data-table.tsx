@@ -21,11 +21,10 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- Return type is inferred
 export function DataTable<TData, TValue>({
   columns,
   data,
-}: DataTableProps<TData, TValue>) {
+}: DataTableProps<TData, TValue>): JSX.Element {
   const table = useReactTable({
     data,
     columns,

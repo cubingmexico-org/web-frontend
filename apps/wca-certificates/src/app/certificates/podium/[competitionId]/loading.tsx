@@ -1,7 +1,6 @@
 import { Skeleton } from "@repo/ui/skeleton"
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- Return type is inferred
-export default function Loading() {
+export default function Loading(): JSX.Element {
   return (
     <div className="container mx-auto py-10">
       <Skeleton className="h-9 w-1/3 rounded-xl mb-4" />

@@ -79,8 +79,7 @@ interface DownloadButtonProps {
   state: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
-export default function DownloadButton({ data, city, state }: DownloadButtonProps) {
+export default function DownloadButton({ data, city, state }: DownloadButtonProps): JSX.Element {
   const { delegates, organizers, getEventData } = processPersons(data.persons);
   const [pdfData, setPdfData] = useState<string[][]>([]);
   const [inputValue, setInputValue] = useState('');

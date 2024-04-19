@@ -22,10 +22,9 @@ interface HeaderProps {
   user: User;
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- We don't need to specify the return type
 export default function Header({
   user
-}: HeaderProps) {
+}: HeaderProps): JSX.Element {
   return (
     <header className="flex items-center justify-between p-4">
       <Link className='flex items-center' href='/certificates'>

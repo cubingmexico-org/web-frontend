@@ -6,11 +6,11 @@
     },
     {
       "path": "/api/new-scores-cron",
-      "schedule": "0 20 * * 6,0"
+      "schedule": "0 2 * * *"
     },
     {
       "path": "/api/update-scores-cron",
-      "schedule": "0 20 * * 6,0"
+      "schedule": "0 21 * * 6,0"
     }
   ]
 }

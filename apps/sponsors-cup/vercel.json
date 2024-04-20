@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/competitions-cron",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/new-scores-cron",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/update-scores-cron",
+      "schedule": "0 21 * * 6,0"
+    }
+  ]
+}

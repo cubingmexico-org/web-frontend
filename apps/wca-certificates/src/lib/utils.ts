@@ -34,8 +34,7 @@ export function processPersons(persons: Person[]) {
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
-export function formatResults(value: number | string) {
+export function formatResults(value: number | string): string {
 
   if (value === -1) {
     return 'DNF';
@@ -55,8 +54,7 @@ export function formatResults(value: number | string) {
   return time;
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
-export function formatEvents(eventId: string) {
+export function formatEvents(eventId: string): string {
   switch (eventId) {
     case '333':
       return '3x3x3';
@@ -97,8 +95,7 @@ export function formatEvents(eventId: string) {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
-export function formatPlace(place: string) {
+export function formatPlace(place: string): string {
   switch (place) {
     case '1':
       return 'primer';
@@ -111,8 +108,7 @@ export function formatPlace(place: string) {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
-export function formatMedal(place: string) {
+export function formatMedal(place: string): string {
   switch (place) {
     case '1':
       return 'ORO';
@@ -125,8 +121,7 @@ export function formatMedal(place: string) {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
-export function formatResultType(eventId: string) {
+export function formatResultType(eventId: string): string {
   switch (eventId) {
     case '333bf':
     case '444bf':
@@ -162,4 +157,13 @@ export function formatDates(date: string, days: string): string {
     const day = new Intl.DateTimeFormat('es-ES', { day: 'numeric' }).format(startDate);
     return `${day} ${monthYear}`;
   } return `${dates.join(', ')} y ${lastDate} ${monthYear}`;
+}
+
+export function joinPersons(persons: string[]): string {
+  if (persons.length === 1) {
+    return persons[0];
+  }
+
+  const lastPerson = persons.pop();
+  return `${persons.join(', ')} y ${lastPerson}`;
 }

@@ -4,8 +4,7 @@ import { signIn } from 'next-auth/react'
 import { Button } from '@repo/ui/button'
 import Image from "next/image"
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- We don't need to specify the return type
-export default function LoginButton() {
+export default function LoginButton(): JSX.Element {
   return (
     // eslint-disable-next-line @typescript-eslint/no-misused-promises -- We want to call signIn when the button is clicked
     <Button onClick={() => signIn('wca')}>

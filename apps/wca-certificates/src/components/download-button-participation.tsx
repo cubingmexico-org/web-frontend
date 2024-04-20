@@ -26,7 +26,8 @@ import {
   processPersons,
   formatResults,
   formatEvents,
-  formatDates
+  formatDates,
+  joinPersons
 } from "@/lib/utils"
 import type { Data } from '@/types/types';
 
@@ -123,8 +124,7 @@ interface DownloadButtonProps {
   state: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
-export default function DownloadButton({ data, city, state }: DownloadButtonProps) {
+export default function DownloadButton({ data, city, state }: DownloadButtonProps): JSX.Element {
   const { delegates, organizers } = processPersons(data.persons);
   const [pdfData, setPdfData] = useState<PdfData[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -188,7 +188,7 @@ export default function DownloadButton({ data, city, state }: DownloadButtonProp
           {inputValue ? <Image src={inputValue} style={styles.background} /> : null}
           <View style={[styles.center, styles.body]}>
             <Text style={{ fontSize: 14, paddingHorizontal: 40, lineHeight: 1.25 }}>
-              <Text style={styles.bold}>{delegates}</Text>, en nombre de la World Cube Association, y <Text style={styles.bold}>{organizers}</Text>, en nombre del equipo organizador, otorgan el presente
+              <Text style={styles.bold}>{joinPersons(delegates)}</Text>, en nombre de la World Cube Association, y <Text style={styles.bold}>{joinPersons(organizers)}</Text>, en nombre del equipo organizador, otorgan el presente
             </Text>
             <View style={[styles.bold, { alignItems: 'center', paddingTop: 20, paddingBottom: 10 }]}>
               <Text style={{ fontSize: 40 }}>CERTIFICADO</Text>

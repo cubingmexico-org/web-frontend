@@ -100,7 +100,7 @@ export default async function Page() {
                       <TableCell className="font-medium" rowSpan={team.members.length}>
                         {team.teamName}
                       </TableCell>
-                      <TableCell>{member.name}</TableCell>
+                      <TableCell><Link href={`https://www.worldcubeassociation.org/persons/${member.id}`}>{member.name}</Link></TableCell>
                       {competitions.map((competition) => (
                         // <TableCell className="text-center hidden lg:table-cell">{member.scores[competition.id]}</TableCell>
                         <TableCell className="text-center">{member.scores[competition.id]}</TableCell>
@@ -110,7 +110,7 @@ export default async function Page() {
                   )}
                   {memberIndex !== 0 && (
                     <>
-                      <TableCell>{member.name}</TableCell>
+                      <TableCell><Link href={`https://www.worldcubeassociation.org/persons/${member.id}`}>{member.name}</Link></TableCell>
                       {competitions.map((competition) => (
                         // <TableCell className="text-center hidden lg:table-cell">{member.scores[competition.id]}</TableCell>
                         <TableCell className="text-center">{member.scores[competition.id]}</TableCell>

@@ -43,6 +43,17 @@ export interface Competition {
   externalWebsite: string | null;
   persons: Person[];
   events: Event[];
+  schedule: {
+    venues: {
+      rooms: {
+        activities: {
+          activityCode: string;
+          startTime: Date;
+          endTime: Date;
+        }[]
+      }
+    }[];
+  };
 }
 
 export interface Score {
@@ -60,6 +71,7 @@ export interface Sponsor {
 export interface TableData {
   teamName: string;
   members: {
+    id: string;
     name: string;
     scores: Record<string, number>;
   }[];

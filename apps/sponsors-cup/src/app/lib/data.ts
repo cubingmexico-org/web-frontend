@@ -14,6 +14,7 @@ export async function fetchTableData() {
       Teams.name AS "teamName",
       json_agg(
       json_build_object(
+        'id', Members.id,
         'name', Members.name, 
         'scores', (
             SELECT json_object_agg(Competitions.id, Scores.score)
@@ -94,7 +95,7 @@ export async function insertNewScores() {
       }
     }
   } catch (error) {
-    throw new Error('Failed to insert scores');
+    throw new Error('Failed to insert new scores');
   }
 }
 
@@ -102,12 +103,9 @@ export async function updateScores() {
   noStore();
 
   try {
-    // const today = new Date();
-    // today.setHours(0, 0, 0, 0);
-    const dataCompetitions = await sql<Competition>`SELECT * FROM Competitions WHERE CURRENT_DATE BETWEEN startDate AND endDate`;
+    const dataCompetitions = await sql<Competition>`SELECT * FROM Competitions WHERE endDate = CURRENT_DATE`;
     const comps = dataCompetitions.rows;
     for (const comp of comps) {
-      console.log('comp', comp);
       const compWcif = await fetch(
         `https://www.worldcubeassociation.org/api/v0/competitions/${comp.id}/wcif/public`
       ).then((res) => res.json()) as Competition;
@@ -134,39 +132,71 @@ export async function updateScores() {
       const personalBestsBroken = membersPersonalBests.map(({ id, personId, personalBests }) => {
         const bestsBroken = compWcif.events.flatMap(event =>
           event.rounds.flatMap(round =>
-            round.results.filter(result => {
-              if (result.personId !== personId || result.best === -1 || result.average === -1 || result.average === 0) {
-                return false;
-              }
+            round.results
+              .filter(result => result.personId === personId && result.best !== -1 && result.average !== -1 && result.average !== 0)
+              .map(result => {
+                const singlePB = personalBests.find(pb => pb.eventId === event.id && pb.type === 'single');
+                const averagePB = personalBests.find(pb => pb.eventId === event.id && pb.type === 'average');
 
-              const singlePB = personalBests.find(pb => pb.eventId === event.id && pb.type === 'single');
-              const averagePB = personalBests.find(pb => pb.eventId === event.id && pb.type === 'average');
-
-              if (singlePB && result.best < singlePB.best) {
-                console.log('singlePB', singlePB);
-              }
-
-              if (averagePB && result.average < averagePB.best) {
-                console.log('averagePB', averagePB);
-              }
-
-              return (
-                (singlePB && result.best < singlePB.best) || (averagePB && result.average < averagePB.best)
-              );
-            })
+                if ((singlePB && result.best < singlePB.best) && (averagePB && result.average < averagePB.best)) {
+                  console.log(`${id} broke both PRs for ${event.id} with single: ${result.best} and average: ${result.average}`)
+                  return { prs: 2 };
+                } else if (singlePB && result.best < singlePB.best) {
+                  console.log(`${id} broke single PR for ${event.id} with ${result.best}`);
+                  return { prs: 1 };
+                } else if (averagePB && result.average < averagePB.best) {
+                  console.log(` ${id} broke average PR for ${event.id} with ${result.average}`);
+                  return { prs: 1 };
+                } else {
+                  return { prs: 0 };
+                }
+              })
           )
         );
 
-        return { id, personId, timesBroken: bestsBroken.length };
+        const totalPrsBroken = bestsBroken.reduce((total, current) => total + current.prs, 0);
+        console.log('-------------------')
+
+        return { id, timesBroken: totalPrsBroken };
       });
 
-      console.log(personalBestsBroken);
+      for (const best of personalBestsBroken) {
+        await sql<Competition>`UPDATE Scores SET score = score + ${best.timesBroken} WHERE member_id = ${best.id} AND competition_id = ${comp.id}`;
+      }
 
+      const scoresAndTeams = await sql<Competition>`
+        SELECT Members.team_id, SUM(Scores.score) as total_score
+        FROM Scores 
+        INNER JOIN Members ON Scores.member_id = Members.id
+        WHERE Scores.competition_id = ${comp.id}
+        GROUP BY Members.team_id`;
+
+      for (let row of scoresAndTeams.rows as any) {
+        await sql<Competition>`UPDATE Teams SET total_points = total_points + ${row.total_score} WHERE id = ${row.team_id}`;
+      }
     }
-    // for (const comp of filteredComps) {
-    //   await sql`INSERT INTO Competitions (id, name, startDate) VALUES (${comp.id}, ${comp.name}, ${comp.date.from});`;
-    // }
   } catch (error) {
-    throw new Error('Failed to fetch and insert competitions');
+    throw new Error('Failed to update scores');
+  }
+}
+
+export async function resetScores(competitionId: string) {
+  noStore();
+
+  try {
+    await sql<Competition>`UPDATE Scores SET score = 0 WHERE competition_id = ${competitionId}`;
+
+    const scoresAndTeams = await sql<Competition>`
+      SELECT Members.team_id, SUM(Scores.score) as total_score
+      FROM Scores 
+      INNER JOIN Members ON Scores.member_id = Members.id
+      WHERE Scores.competition_id = ${competitionId}
+      GROUP BY Members.team_id`;
+
+    for (let row of scoresAndTeams.rows as any) {
+      await sql<Competition>`UPDATE Teams SET total_points = 0 WHERE id = ${row.team_id}`;
+    }
+  } catch (error) {
+    throw new Error('Failed to reset scores');
   }
 }

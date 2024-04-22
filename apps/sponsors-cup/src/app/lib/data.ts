@@ -106,7 +106,7 @@ export async function updateScores() {
     const currentDate = new Date();
     currentDate.setHours(currentDate.getHours() - 6);
     console.log(currentDate);
-    const dataCompetitions = await sql<Competition>`SELECT * FROM Competitions WHERE endDate = ${currentDate as any}`;
+    const dataCompetitions = await sql<Competition>`SELECT * FROM Competitions WHERE endDate = ${currentDate.toISOString()}`;
     const comps = dataCompetitions.rows;
     for (const comp of comps) {
       const compWcif = await fetch(
@@ -138,8 +138,8 @@ export async function updateScores() {
             round.results
               .filter(result => result.personId === personId && result.best !== -1 && result.best !== -2 && result.average !== 0)
               .map(result => {
-                let singlePB = personalBests.find(pb => pb.eventId === event.id && pb.type === 'single');
-                let averagePB = personalBests.find(pb => pb.eventId === event.id && pb.type === 'average');
+                const singlePB = personalBests.find(pb => pb.eventId === event.id && pb.type === 'single');
+                const averagePB = personalBests.find(pb => pb.eventId === event.id && pb.type === 'average');
 
                 let prsBroken = 0;
 
@@ -170,14 +170,14 @@ export async function updateScores() {
         await sql<Competition>`UPDATE Scores SET score = score + ${best.timesBroken} WHERE member_id = ${best.id} AND competition_id = ${comp.id}`;
       }
 
-      const scoresAndTeams = await sql<Competition>`
+      const scoresAndTeams = await sql`
         SELECT Members.team_id, SUM(Scores.score) as total_score
         FROM Scores 
         INNER JOIN Members ON Scores.member_id = Members.id
         WHERE Scores.competition_id = ${comp.id}
         GROUP BY Members.team_id`;
 
-      for (let row of scoresAndTeams.rows as any) {
+      for (const row of scoresAndTeams.rows) {
         console.log(row);
         await sql<Competition>`UPDATE Teams SET total_points = total_points + ${row.total_score} WHERE id = ${row.team_id}`;
       }
@@ -191,16 +191,16 @@ export async function resetScores(competitionId: string) {
   noStore();
 
   try {
-    await sql<Competition>`UPDATE Scores SET score = 0 WHERE competition_id = ${competitionId}`;
+    await sql`UPDATE Scores SET score = 0 WHERE competition_id = ${competitionId}`;
 
-    const scoresAndTeams = await sql<Competition>`
+    const scoresAndTeams = await sql`
       SELECT Members.team_id, SUM(Scores.score) as total_score
       FROM Scores 
       INNER JOIN Members ON Scores.member_id = Members.id
       WHERE Scores.competition_id = ${competitionId}
       GROUP BY Members.team_id`;
 
-    for (let row of scoresAndTeams.rows as any) {
+    for (const row of scoresAndTeams.rows) {
       await sql<Competition>`UPDATE Teams SET total_points = 0 WHERE id = ${row.team_id}`;
     }
   } catch (error) {

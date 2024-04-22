@@ -150,7 +150,7 @@ export async function updateScores() {
                 }
 
                 if (averagePB && result.average < averagePB.best) {
-                  console.log(` ${id} broke average PR for ${event.id} with ${result.average}`);
+                  console.log(`${id} broke average PR for ${event.id} with ${result.average}`);
                   averagePB.best = result.average;
                   prsBroken++;
                 }

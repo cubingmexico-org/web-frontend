@@ -178,7 +178,6 @@ export async function updateScores() {
         GROUP BY Members.team_id`;
 
       for (const row of scoresAndTeams.rows) {
-        console.log(row);
         await sql<Competition>`UPDATE Teams SET total_points = total_points + ${row.total_score} WHERE id = ${row.team_id}`;
       }
     }
@@ -205,5 +204,32 @@ export async function resetScores(competitionId: string) {
     }
   } catch (error) {
     throw new Error('Failed to reset scores');
+  }
+}
+
+export async function findCompetitors() {
+  noStore();
+
+  try {
+    const currentDate = new Date();
+    currentDate.setHours(currentDate.getHours() - 6);
+    const dataCompetitions = await sql<Competition>`SELECT * FROM Competitions WHERE endDate = ${currentDate.toISOString()}`;
+    const comps = dataCompetitions.rows;
+    for (const comp of comps) {
+      const compWcif = await fetch(
+        `https://www.worldcubeassociation.org/api/v0/competitions/${comp.id}/wcif/public`
+      ).then((res) => res.json()) as Competition;
+
+      const dataMembers = await sql<Member>`SELECT * FROM Members`
+
+      const participatingMembers = dataMembers.rows.filter(member => compWcif.persons.some(person => person.wcaId === member.id)).map(member => {
+        const person = compWcif.persons.find(pers => pers.wcaId === member.id);
+        return person && { ...member, personId: person.registrantId };
+      });
+
+      console.log(participatingMembers);
+    }
+  } catch (error) {
+    throw new Error('Failed to find competitors');
   }
 }

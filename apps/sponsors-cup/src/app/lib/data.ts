@@ -103,7 +103,10 @@ export async function updateScores() {
   noStore();
 
   try {
-    const dataCompetitions = await sql<Competition>`SELECT * FROM Competitions WHERE endDate = CURRENT_DATE`;
+    const currentDate = new Date();
+    currentDate.setHours(currentDate.getHours() - 6);
+    console.log(currentDate);
+    const dataCompetitions = await sql<Competition>`SELECT * FROM Competitions WHERE endDate = ${currentDate as any}`;
     const comps = dataCompetitions.rows;
     for (const comp of comps) {
       const compWcif = await fetch(
@@ -133,23 +136,26 @@ export async function updateScores() {
         const bestsBroken = compWcif.events.flatMap(event =>
           event.rounds.flatMap(round =>
             round.results
-              .filter(result => result.personId === personId && result.best !== -1 && result.average !== -1 && result.average !== 0)
+              .filter(result => result.personId === personId && result.best !== -1 && result.best !== -2 && result.average !== 0)
               .map(result => {
-                const singlePB = personalBests.find(pb => pb.eventId === event.id && pb.type === 'single');
-                const averagePB = personalBests.find(pb => pb.eventId === event.id && pb.type === 'average');
+                let singlePB = personalBests.find(pb => pb.eventId === event.id && pb.type === 'single');
+                let averagePB = personalBests.find(pb => pb.eventId === event.id && pb.type === 'average');
 
-                if ((singlePB && result.best < singlePB.best) && (averagePB && result.average < averagePB.best)) {
-                  console.log(`${id} broke both PRs for ${event.id} with single: ${result.best} and average: ${result.average}`)
-                  return { prs: 2 };
-                } else if (singlePB && result.best < singlePB.best) {
+                let prsBroken = 0;
+
+                if (singlePB && result.best < singlePB.best) {
                   console.log(`${id} broke single PR for ${event.id} with ${result.best}`);
-                  return { prs: 1 };
-                } else if (averagePB && result.average < averagePB.best) {
-                  console.log(` ${id} broke average PR for ${event.id} with ${result.average}`);
-                  return { prs: 1 };
-                } else {
-                  return { prs: 0 };
+                  singlePB.best = result.best;
+                  prsBroken++;
                 }
+
+                if (averagePB && result.average < averagePB.best) {
+                  console.log(` ${id} broke average PR for ${event.id} with ${result.average}`);
+                  averagePB.best = result.average;
+                  prsBroken++;
+                }
+
+                return { prs: prsBroken };
               })
           )
         );
@@ -172,6 +178,7 @@ export async function updateScores() {
         GROUP BY Members.team_id`;
 
       for (let row of scoresAndTeams.rows as any) {
+        console.log(row);
         await sql<Competition>`UPDATE Teams SET total_points = total_points + ${row.total_score} WHERE id = ${row.team_id}`;
       }
     }

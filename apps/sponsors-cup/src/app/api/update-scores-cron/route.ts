@@ -10,6 +10,10 @@ export async function GET(request: NextRequest) {
       status: 401,
     });
   }
+
+  // eslint-disable-next-line no-console -- Logging
+  console.log('Updating scores');
+
   await updateScores();
   return NextResponse.json({ success: true });
 }

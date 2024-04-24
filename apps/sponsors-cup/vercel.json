@@ -5,10 +5,6 @@
       "schedule": "0 8 * * *"
     },
     {
-      "path": "/api/new-scores-cron",
-      "schedule": "0 8 * * *"
-    },
-    {
       "path": "/api/update-scores-cron",
       "schedule": "0 3 * * 0,1"
     }

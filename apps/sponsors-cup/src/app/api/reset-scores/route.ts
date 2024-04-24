@@ -10,6 +10,10 @@ export async function GET(request: NextRequest) {
       status: 401,
     });
   }
+  
+  // eslint-disable-next-line no-console -- Logging
+  console.log('Resetting scores');
+
   await resetScores('ReturnOpenPuebla2024');
   return NextResponse.json({ success: true });
 }

@@ -40,6 +40,39 @@ export async function fetchTableData() {
   }
 }
 
+export async function fetchIndividualData(memberId: string) {
+  noStore();
+
+  try {
+    const data = await sql`
+    SELECT 
+        Members.name as member_name, 
+        Members.id as member_id, 
+        Scores.score, 
+        Competitions.name as competition_name, 
+        Competitions.id as competition_id 
+    FROM 
+        Members 
+    INNER JOIN 
+        Scores ON Members.id = Scores.member_id 
+    INNER JOIN 
+        Competitions ON Scores.competition_id = Competitions.id 
+    WHERE 
+        Members.id = ${memberId} 
+        AND (
+            (Competitions.startDate <= CURRENT_DATE AND Competitions.endDate >= CURRENT_DATE) 
+            OR Competitions.endDate < CURRENT_DATE
+        )
+    ORDER BY 
+        Scores.score DESC
+`;
+    return data.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch table data.');
+  }
+}
+
 export async function fetchCompetitions() {
   noStore();
 

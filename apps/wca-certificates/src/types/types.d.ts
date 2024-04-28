@@ -57,3 +57,13 @@ export interface Data {
   events: Event[];
   persons: Person[];
 }
+
+export interface ParticipantData {
+  name: string;
+  wcaId: string;
+  results: {
+    event: string;
+    average: number;
+    ranking: number;
+  }[];
+}

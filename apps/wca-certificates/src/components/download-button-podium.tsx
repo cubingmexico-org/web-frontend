@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return -- . */
 'use client'
 
 import React, { useState } from 'react'
@@ -22,6 +23,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/select"
+import { DataTable } from "@/components/podium-data-table"
+import { columns } from "@/components/podium-columns"
 import {
   processPersons,
   formatResults,
@@ -86,19 +89,20 @@ export default function DownloadButton({ data, city, state }: DownloadButtonProp
   const [inputValue, setInputValue] = useState('');
   const [size, setSize] = useState<"LETTER" | "A4">();
   const [orientation, setOrientation] = useState<"portrait" | "landscape">();
+  const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
 
   const date = data.schedule.startDate;
   const days = data.schedule.numberOfDays;
+
+  const selectedEvents = data.events.filter(event => rowSelection[event.id]);
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
   function handleClick() {
     const tempPdfData: string[][] = [];
 
-    // eslint-disable-next-line array-callback-return -- This function will be used in a map
-    data.events.map((event: Event) => {
+    selectedEvents.map((event: Event) => {
       const results = getEventData(event);
 
-      // eslint-disable-next-line array-callback-return -- This function will be used in a map
       results.map((result, index: number) => {
         tempPdfData.push(Object.values({
           personName: result.personName,
@@ -138,46 +142,49 @@ export default function DownloadButton({ data, city, state }: DownloadButtonProp
   );
 
   return (
-    <div className="text-center mt-4">
-      <div className='flex justify-center'>
-        <div className='w-full pr-1'>
-          <Label>Tamaño de hoja</Label>
-          <Select onValueChange={(value: "LETTER" | "A4") => { setSize(value); }}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Tamaño *" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="LETTER">Carta</SelectItem>
-              <SelectItem value="A4">A4</SelectItem>
-            </SelectContent>
-          </Select>
+    <>
+      <DataTable columns={columns} data={data.events} rowSelection={rowSelection} setRowSelection={setRowSelection} />
+      <div className="text-center mt-4">
+        <div className='flex justify-center'>
+          <div className='w-full pr-1'>
+            <Label>Tamaño de hoja</Label>
+            <Select onValueChange={(value: "LETTER" | "A4") => { setSize(value); }}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Tamaño *" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="LETTER">Carta</SelectItem>
+                <SelectItem value="A4">A4</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className='w-full pl-1'>
+            <Label>Orientación de hoja</Label>
+            <Select onValueChange={(value: "portrait" | "landscape") => { setOrientation(value); }}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Orientación *" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="landscape">Horizontal</SelectItem>
+                <SelectItem value="portrait">Vertical</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-        <div className='w-full pl-1'>
-          <Label>Orientación de hoja</Label>
-          <Select onValueChange={(value: "portrait" | "landscape") => { setOrientation(value); }}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Orientación *" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="landscape">Horizontal</SelectItem>
-              <SelectItem value="portrait">Vertical</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className='mt-4'>
+          <Label>Fondo</Label>
+          <Input className='my-4' onChange={(e) => { setInputValue(e.target.value); }} placeholder="Fondo" value={inputValue} />
         </div>
+        <Button disabled={size === undefined || orientation === undefined || Object.keys(rowSelection).length === 0} onClick={() => { handleClick(); }}>
+          Generar certificados
+          <FileDown className='ml-2' />
+        </Button>
+        {pdfData.length > 0 && (
+          <PDFViewer className='w-full h-[600px] mt-4'>
+            {MyDoc}
+          </PDFViewer>
+        )}
       </div>
-      <div className='mt-4'>
-        <Label>Fondo</Label>
-        <Input className='my-4' onChange={(e) => { setInputValue(e.target.value); }} placeholder="Fondo" value={inputValue} />
-      </div>
-      <Button disabled={size === undefined || orientation === undefined} onClick={() => { handleClick(); }}>
-        Generar certificados
-        <FileDown className='ml-2' />
-      </Button>
-      {pdfData.length > 0 && (
-        <PDFViewer className='w-full h-[600px] mt-4'>
-          {MyDoc}
-        </PDFViewer>
-      )}
-    </div>
+    </>
   );
 }

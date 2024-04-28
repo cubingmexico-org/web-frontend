@@ -160,10 +160,12 @@ export function formatDates(date: string, days: string): string {
 }
 
 export function joinPersons(persons: string[]): string {
-  if (persons.length === 1) {
-    return persons[0];
+  const personsCopy = [...persons];
+
+  if (personsCopy.length === 1) {
+    return personsCopy[0];
   }
 
-  const lastPerson = persons.pop();
-  return `${persons.join(', ')} y ${lastPerson}`;
+  const lastPerson = personsCopy.pop();
+  return `${personsCopy.join(', ')} y ${lastPerson}`;
 }

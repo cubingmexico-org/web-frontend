@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access -- . */
-/* eslint-disable @typescript-eslint/no-unsafe-call -- . */
 /* eslint-disable @typescript-eslint/no-unnecessary-condition -- . */
-/* eslint-disable @typescript-eslint/no-unsafe-return -- . */
 "use client"
 
 import * as React from "react"
@@ -28,6 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "@repo/ui/table"
+import type { ParticipantData } from '@/types/types';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -36,7 +34,7 @@ interface DataTableProps<TData, TValue> {
   setRowSelection: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends ParticipantData, TValue>({
   columns,
   data,
   rowSelection,
@@ -49,7 +47,11 @@ export function DataTable<TData, TValue>({
     data,
     columns,
     getRowId: row => row.wcaId,
-    enableRowSelection: row => row.original.results.every((result: { ranking: null; }) => result.ranking !== null),
+    enableRowSelection: row => row.original.results.every((result: {
+      event: string;
+      average: number;
+      ranking: number | null;
+    }) => result.ranking !== null),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,

@@ -31,19 +31,7 @@ import {
   formatDates,
   joinPersons
 } from "@/lib/utils"
-import type { Data } from '@/types/types';
-
-interface Result {
-  event: string;
-  average: number;
-  ranking: number;
-};
-
-interface ParticipantData {
-  wcaId: string;
-  name: string;
-  results: Result[];
-};
+import type { Data, ParticipantData } from '@/types/types';
 
 Font.register({
   family: 'MavenPro',

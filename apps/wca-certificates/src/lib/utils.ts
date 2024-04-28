@@ -18,7 +18,7 @@ export function processPersons(persons: Person[]) {
   function getEventData(event: Event) {
     const rounds = event.rounds;
     const results = rounds[rounds.length - 1].results
-      .filter((result: Result) => result.ranking >= 1 && result.ranking <= 3)
+      .filter((result: Result) => result.ranking !== null && result.ranking >= 1 && result.ranking <= 3)
       .map((person) => ({
         personName: personIdToName[person.personId],
         result: event.id === '333bf' ? person.best : person.average,

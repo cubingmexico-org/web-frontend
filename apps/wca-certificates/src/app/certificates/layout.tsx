@@ -4,16 +4,14 @@ import { authOptions } from "@/lib/auth"
 import Header from '@/components/header'
 import "@cubing/icons"
 
-
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- Return type is inferred
-export default async function Layout({ children }: { children: React.ReactNode }) {
+export default async function Layout({ children }: { children: React.ReactNode }): Promise<JSX.Element> {
 
   const session = await getServerSession(authOptions)
   
   const user = session?.user as User
 
   return (
-    <main className="flex flex-col h-screen">
+    <main className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
       <Header user={user} />
       {children}
     </main>

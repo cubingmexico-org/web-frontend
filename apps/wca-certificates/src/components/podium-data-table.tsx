@@ -15,20 +15,31 @@ import {
   TableHeader,
   TableRow,
 } from "@repo/ui/table"
+import type { Event, Result } from '@/types/types';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  rowSelection: Record<string, boolean>;
+  setRowSelection: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends Event, TValue>({
   columns,
   data,
+  rowSelection,
+  setRowSelection,
 }: DataTableProps<TData, TValue>): JSX.Element {
   const table = useReactTable({
     data,
     columns,
+    getRowId: row => row.id,
+    enableRowSelection: row => row.original.rounds[row.original.rounds.length - 1].results.length > 0 && row.original.rounds[row.original.rounds.length - 1].results.every((result: Result) => result.ranking !== null),
     getCoreRowModel: getCoreRowModel(),
+    onRowSelectionChange: setRowSelection,
+    state: {
+      rowSelection,
+    },
   })
 
   return (
@@ -69,7 +80,7 @@ export function DataTable<TData, TValue>({
           ) : (
             <TableRow>
               <TableCell className="h-24 text-center" colSpan={columns.length}>
-                No results.
+                Sin resultados.
               </TableCell>
             </TableRow>
           )}

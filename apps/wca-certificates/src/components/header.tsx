@@ -26,7 +26,7 @@ export default function Header({
   user
 }: HeaderProps): JSX.Element {
   return (
-    <header className="flex items-center justify-between p-4">
+    <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
       <Link className='flex items-center' href='/certificates'>
         <Image
           alt="Logo de Cubing México"
@@ -37,26 +37,28 @@ export default function Header({
         />
         <h1 className="text-2xl ml-2">Certificados de la WCA</h1>
       </Link>
-      <DropdownMenu>
-        <DropdownMenuTrigger>
-          <Avatar>
-            <AvatarImage className="object-cover" src={
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We know the user has an image
-              user.image!
-            } />
-            <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
-          </Avatar>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuLabel>Hola, {user.name?.split(' ')[0]}</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <LogOut className="mr-2 h-4 w-4" />
-            {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, @typescript-eslint/no-misused-promises -- . */}
-            <span className='cursor-pointer' onClick={() => signOut()}>Cerrar sesión</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="relative ml-auto flex-1 md:grow-0">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Avatar>
+              <AvatarImage className="object-cover" src={
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We know the user has an image
+                user.image!
+              } />
+              <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Hola, {user.name?.split(' ')[0]}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <LogOut className="mr-2 h-4 w-4" />
+              {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, @typescript-eslint/no-misused-promises -- . */}
+              <span className='cursor-pointer' onClick={() => signOut()}>Cerrar sesión</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </header>
   );
 }

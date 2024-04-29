@@ -20,7 +20,7 @@ export interface Person {
 
 export interface Result {
   personId: number;
-  ranking: number;
+  ranking: number | null;
   attempts: unknown[];
   best: number;
   average: number;
@@ -56,4 +56,23 @@ export interface Data {
   };
   events: Event[];
   persons: Person[];
+}
+
+export interface ParticipantData {
+  name: string;
+  wcaId: string;
+  results: {
+    event: string;
+    average: number;
+    ranking: number | null;
+  }[];
+}
+
+export interface Podium {
+  id: string;
+  rounds: {
+    results: {
+      ranking: null
+    }[]
+  }[];
 }

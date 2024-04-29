@@ -18,7 +18,7 @@ export function processPersons(persons: Person[]) {
   function getEventData(event: Event) {
     const rounds = event.rounds;
     const results = rounds[rounds.length - 1].results
-      .filter((result: Result) => result.ranking >= 1 && result.ranking <= 3)
+      .filter((result: Result) => result.ranking !== null && result.ranking >= 1 && result.ranking <= 3)
       .map((person) => ({
         personName: personIdToName[person.personId],
         result: event.id === '333bf' ? person.best : person.average,
@@ -160,10 +160,12 @@ export function formatDates(date: string, days: string): string {
 }
 
 export function joinPersons(persons: string[]): string {
-  if (persons.length === 1) {
-    return persons[0];
+  const personsCopy = [...persons];
+
+  if (personsCopy.length === 1) {
+    return personsCopy[0];
   }
 
-  const lastPerson = persons.pop();
-  return `${persons.join(', ')} y ${lastPerson}`;
+  const lastPerson = personsCopy.pop();
+  return `${personsCopy.join(', ')} y ${lastPerson}`;
 }

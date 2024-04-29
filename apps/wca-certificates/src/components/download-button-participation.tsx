@@ -22,6 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/select"
+import { DataTable } from "@/components/participation-data-table"
+import { columns } from "@/components/participation-columns"
 import {
   processPersons,
   formatResults,
@@ -29,18 +31,7 @@ import {
   formatDates,
   joinPersons
 } from "@/lib/utils"
-import type { Data } from '@/types/types';
-
-interface Result {
-  event: string;
-  average: number;
-  ranking: number;
-};
-
-interface PdfData {
-  name: string;
-  results: Result[];
-};
+import type { Data, ParticipantData } from '@/types/types';
 
 Font.register({
   family: 'MavenPro',
@@ -125,59 +116,61 @@ interface DownloadButtonProps {
 }
 
 export default function DownloadButton({ data, city, state }: DownloadButtonProps): JSX.Element {
-  const { delegates, organizers } = processPersons(data.persons);
-  const [pdfData, setPdfData] = useState<PdfData[]>([]);
-  const [inputValue, setInputValue] = useState('');
-  const [size, setSize] = useState<"LETTER" | "A4">();
-  const [orientation, setOrientation] = useState<"portrait" | "landscape">();
-
+  const people = data.persons;
+  const events = data.events;
   const date = data.schedule.startDate;
   const days = data.schedule.numberOfDays;
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
-  function handleClick() {
+  const { delegates, organizers } = processPersons(people);
+  const [pdfData, setPdfData] = useState<ParticipantData[]>([]);
+  const [inputValue, setInputValue] = useState('');
+  const [size, setSize] = useState<"LETTER" | "A4">();
+  const [orientation, setOrientation] = useState<"portrait" | "landscape">();
+  const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
 
-    const people = data.persons;
-    const events = data.events;
 
-    const allResults = [];
+  const allResults: ParticipantData[] = [];
 
-    for (const person of people) {
-      const results = [];
-      for (const event of events) {
-        if (person.registration.eventIds.includes(event.id)) {
-          for (const round of event.rounds) {
-            for (const result of round.results) {
-              if (result.personId === person.registrantId) {
-                const existingResultIndex: number = results.findIndex(r => r.event === event.id);
-                const newResult = {
-                  event: event.id,
-                  ranking: result.ranking,
-                  // eslint-disable-next-line no-nested-ternary -- This is a nested ternary
-                  average: event.id === '333bf' ? result.best : result.average === 0 ? result.best : result.average,
-                };
-                if (existingResultIndex !== -1) {
-                  results[existingResultIndex] = newResult;
-                } else {
-                  results.push(newResult);
-                }
+  for (const person of people) {
+    const results = [];
+    for (const event of events) {
+      if (person.registration.eventIds.includes(event.id)) {
+        for (const round of event.rounds) {
+          for (const result of round.results) {
+            if (result.personId === person.registrantId) {
+              const existingResultIndex: number = results.findIndex(r => r.event === event.id);
+              const newResult = {
+                event: event.id,
+                ranking: result.ranking,
+                // eslint-disable-next-line no-nested-ternary -- This is a nested ternary
+                average: event.id === '333bf' ? result.best : result.average === 0 ? result.best : result.average,
+              };
+              if (existingResultIndex !== -1) {
+                results[existingResultIndex] = newResult;
+              } else {
+                results.push(newResult);
               }
             }
           }
         }
       }
-
-      const personWithResults = {
-        name: person.name,
-        results
-      };
-
-      if (personWithResults.results.length > 0) {
-        allResults.push(personWithResults);
-      }
     }
 
-    setPdfData(allResults);
+    const personWithResults = {
+      wcaId: person.wcaId,
+      name: person.name,
+      results
+    };
+
+    if (personWithResults.results.length > 0) {
+      allResults.push(personWithResults);
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
+  function handleClick() {
+    const filteredResults = allResults.filter(result => rowSelection[result.wcaId]);
+    setPdfData(filteredResults);
   }
 
   const MyDoc = (
@@ -234,46 +227,49 @@ export default function DownloadButton({ data, city, state }: DownloadButtonProp
   );
 
   return (
-    <div className="text-center mt-4">
-      <div className='flex justify-center'>
-        <div className='w-full pr-1'>
-          <Label>Tamaño de hoja</Label>
-          <Select onValueChange={(value: "LETTER" | "A4") => { setSize(value); }}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Tamaño *" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="LETTER">Carta</SelectItem>
-              <SelectItem value="A4">A4</SelectItem>
-            </SelectContent>
-          </Select>
+    <>
+      <DataTable columns={columns} data={allResults} rowSelection={rowSelection} setRowSelection={setRowSelection} />
+      <div className="text-center mt-4">
+        <div className='flex justify-center'>
+          <div className='w-full pr-1'>
+            <Label>Tamaño de hoja</Label>
+            <Select onValueChange={(value: "LETTER" | "A4") => { setSize(value); }}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Tamaño *" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="LETTER">Carta</SelectItem>
+                <SelectItem value="A4">A4</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className='w-full pl-1'>
+            <Label>Orientación de hoja</Label>
+            <Select onValueChange={(value: "portrait" | "landscape") => { setOrientation(value); }}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Orientación *" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="landscape">Horizontal</SelectItem>
+                <SelectItem value="portrait">Vertical</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-        <div className='w-full pl-1'>
-          <Label>Orientación de hoja</Label>
-          <Select onValueChange={(value: "portrait" | "landscape") => { setOrientation(value); }}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Orientación *" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="landscape">Horizontal</SelectItem>
-              <SelectItem value="portrait">Vertical</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className='mt-4'>
+          <Label>Fondo</Label>
+          <Input className='my-4' onChange={(e) => { setInputValue(e.target.value); }} placeholder="Fondo" value={inputValue} />
         </div>
+        <Button disabled={size === undefined || orientation === undefined || Object.keys(rowSelection).length === 0} onClick={() => { handleClick(); }}>
+          Generar certificados
+          <FileDown className='ml-2' />
+        </Button>
+        {pdfData.length > 0 && (
+          <PDFViewer className='w-full h-[600px] mt-4'>
+            {MyDoc}
+          </PDFViewer>
+        )}
       </div>
-      <div className='mt-4'>
-        <Label>Fondo</Label>
-        <Input className='my-4' onChange={(e) => { setInputValue(e.target.value); }} placeholder="Fondo" value={inputValue} />
-      </div>
-      <Button disabled={size === undefined || orientation === undefined} onClick={() => { handleClick(); }}>
-        Generar certificados
-        <FileDown className='ml-2' />
-      </Button>
-      {pdfData.length > 0 && (
-        <PDFViewer className='w-full h-[600px] mt-4'>
-          {MyDoc}
-        </PDFViewer>
-      )}
-    </div>
+    </>
   );
 }

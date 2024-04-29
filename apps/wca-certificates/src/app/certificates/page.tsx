@@ -12,9 +12,7 @@ import Link from "next/link"
 import { authOptions } from "@/lib/auth"
 import "@cubing/icons"
 
-
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- Return type is inferred
-export default async function Page() {
+export default async function Page(): Promise<JSX.Element> {
 
   const session = await getServerSession(authOptions)
 
@@ -31,7 +29,7 @@ export default async function Page() {
 
   return (
     <div className="flex-grow">
-      <h1 className="text-3xl font-bold mb-4 text-center">Bienvenido</h1>
+      <h1 className="text-3xl font-bold my-4 text-center">Bienvenido</h1>
       <p className='text-center'>Se detectó que eres organizador en estas competencias:</p>
       <div className='flex flex-wrap justify-center'>
         {

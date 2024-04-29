@@ -1,11 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call -- . */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- . */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
 import DownloadButton from "@/components/download-button-participation"
 import type { Data } from "@/types/types"
-import { columns } from "./columns"
-import { DataTable } from "./data-table"
 import "@cubing/icons"
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- Return type is inferred
-export default async function Page({ params }: { params: { competitionId: string } }) {
+export default async function Page({ params }: { params: { competitionId: string } }): Promise<JSX.Element> {
 
   const response = await fetch(`https://worldcubeassociation.org/api/v0/competitions/${params.competitionId}/wcif/public`, {
     cache: 'no-store'
@@ -17,20 +17,14 @@ export default async function Page({ params }: { params: { competitionId: string
     cache: 'no-store'
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- This is the expected assignment
   const locationData = await locationResponse.json();
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access -- This is the expected assignment
   const addressComponents = locationData.results[0].address_components;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access -- This is the expected assignment
   const cityObj = addressComponents.find((component: { types: string | string[]; }) => component.types.includes('locality'));
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access -- This is the expected assignment
   const stateObj = addressComponents.find((component: { types: string | string[]; }) => component.types.includes('administrative_area_level_1'));
 
   return (
     <div className="container mx-auto py-10">
       <h1 className="text-3xl mb-4">Certificados de participación para el {data.name}</h1>
-      <DataTable columns={columns} data={data.events} />
-      {/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access -- . */}
       <DownloadButton city={cityObj.long_name} data={data} state={stateObj.long_name} />
     </div>
   );

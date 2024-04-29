@@ -19,7 +19,8 @@
     "./popover": "./src/components/popover.tsx",
     "./select": "./src/components/select.tsx",
     "./skeleton": "./src/components/skeleton.tsx",
-    "./table": "./src/components/table.tsx"
+    "./table": "./src/components/table.tsx",
+    "./use-media-query": "./src/hooks/use-media-query.tsx"
   },
   "license": "MIT",
   "scripts": {

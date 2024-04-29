@@ -1,8 +1,11 @@
+/* eslint-disable react/no-array-index-key -- . */
+/* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
+/* eslint-disable react-hooks/exhaustive-deps -- . */
 /* eslint-disable array-callback-return -- . */
 'use client'
 
-import React, { useState } from 'react'
-import { Button } from '@repo/ui/button'
+import React, { useState, useEffect } from 'react'
+import { buttonVariants } from '@repo/ui/button'
 import { Input } from "@repo/ui/input"
 import { Label } from "@repo/ui/label"
 import { FileDown } from "lucide-react"
@@ -14,7 +17,8 @@ import {
   PDFViewer,
   StyleSheet,
   Image,
-  Font
+  Font,
+  PDFDownloadLink
 } from '@react-pdf/renderer'
 import {
   Select,
@@ -23,8 +27,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/select"
-import { DataTable } from "@/components/podium-data-table"
-import { columns } from "@/components/podium-columns"
+import { useMediaQuery } from "@repo/ui/use-media-query"
+import { DataTable } from "@/components/podium/data-table"
+import { columns } from "@/components/podium/columns"
 import {
   processPersons,
   formatResults,
@@ -77,27 +82,27 @@ const styles = StyleSheet.create({
 });
 
 
-interface DownloadButtonProps {
+interface DocumentSettingsProps {
   data: Data;
   city: string;
   state: string;
 }
 
-export default function DownloadButton({ data, city, state }: DownloadButtonProps): JSX.Element {
+export default function DocumentSettings({ data, city, state }: DocumentSettingsProps): JSX.Element {
   const { delegates, organizers, getEventData } = processPersons(data.persons);
   const [pdfData, setPdfData] = useState<string[][]>([]);
   const [inputValue, setInputValue] = useState('');
   const [size, setSize] = useState<"LETTER" | "A4">();
   const [orientation, setOrientation] = useState<"portrait" | "landscape">();
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
+  const isDesktop = useMediaQuery("(min-width: 768px)")
 
   const date = data.schedule.startDate;
   const days = data.schedule.numberOfDays;
 
   const selectedEvents = data.events.filter(event => rowSelection[event.id]);
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
-  function handleClick() {
+  function generatePodiumCertificates() {
     const tempPdfData: string[][] = [];
 
     selectedEvents.map((event: Event) => {
@@ -116,10 +121,15 @@ export default function DownloadButton({ data, city, state }: DownloadButtonProp
     setPdfData(tempPdfData);
   }
 
-  const MyDoc = (
+  useEffect(() => {
+    if (size !== undefined && orientation !== undefined && Object.keys(rowSelection).length !== 0) {
+      generatePodiumCertificates();
+    }
+  }, [size, orientation, rowSelection]);
+
+  const podiumDocument = (
     <Document author={organizers.join(', ')} title={`Certificados de podio para el ${data.name}`}>
       {pdfData.map((text, index) => (
-        // eslint-disable-next-line react/no-array-index-key -- This array will not change
         <Page key={index} orientation={orientation} size={size}>
           {inputValue ? <Image src={inputValue} style={styles.background} /> : null}
           <View style={[styles.center, styles.body]}>
@@ -175,14 +185,26 @@ export default function DownloadButton({ data, city, state }: DownloadButtonProp
           <Label>Fondo</Label>
           <Input className='my-4' onChange={(e) => { setInputValue(e.target.value); }} placeholder="Fondo" value={inputValue} />
         </div>
-        <Button disabled={size === undefined || orientation === undefined || Object.keys(rowSelection).length === 0} onClick={() => { handleClick(); }}>
-          Generar certificados
-          <FileDown className='ml-2' />
-        </Button>
-        {pdfData.length > 0 && (
-          <PDFViewer className='w-full h-[600px] mt-4'>
-            {MyDoc}
-          </PDFViewer>
+        {Object.keys(rowSelection).length === 0 && <p className='font-semibold'>Debes seleccionar al menos un evento</p>}
+        {size === undefined && <p className='font-semibold'>Debes seleccionar el tamaño del documento</p>}
+        {orientation === undefined && <p className='font-semibold'>Debes seleccionar la orientación del documento</p>}
+        {(size !== undefined && orientation !== undefined && Object.keys(rowSelection).length !== 0) && (
+          <>
+            {isDesktop ? (
+              <PDFViewer className='w-full h-[600px] mt-4'>
+                {podiumDocument}
+              </PDFViewer>
+            ) : (
+              <PDFDownloadLink
+                className={buttonVariants()}
+                document={podiumDocument}
+                fileName={`Certificados de podio del ${data.name}`}
+              >
+                Descargar certificados
+                <FileDown className='ml-2' />
+              </PDFDownloadLink>
+            )}
+          </>
         )}
       </div>
     </>

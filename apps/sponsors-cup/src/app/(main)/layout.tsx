@@ -69,7 +69,7 @@ export default function Layout({
         <p>
           El contador aún se encuentra en fase de pruebas, por lo que podría haber ocasiones en las que los PRs no se contabilicen correctamente. Si observas alguna inconsistencia, te agradeceríamos que la reportaras. Agradecemos tu comprensión y colaboración en este asunto.
         </p>
-        <p className="mt-2">Esta página se actualiza sábados y domingos a las 21:00 UTC-6 (9 PM hora de la Ciudad de México).</p>
+        <p className="mt-2">Esta página se actualiza sábados y domingos a las 19:00 UTC-6 (7 PM hora de la Ciudad de México).</p>
         <p className="mt-2">
           Puedes contactarnos a través de:
           <ul className="list-disc list-inside mt-2">

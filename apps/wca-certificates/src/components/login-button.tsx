@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises -- . */
 'use client'
 
 import { signIn } from 'next-auth/react'
@@ -6,7 +7,6 @@ import Image from "next/image"
 
 export default function LoginButton(): JSX.Element {
   return (
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises -- We want to call signIn when the button is clicked
     <Button onClick={() => signIn('wca')}>
       Inicia sesión con la WCA
       <Image

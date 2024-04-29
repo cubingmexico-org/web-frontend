@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call -- . */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access -- . */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
-import DownloadButton from "@/components/download-button-participation"
+import DocumentSettings from "@/components/participation/document-settings"
 import type { Data } from "@/types/types"
 import "@cubing/icons"
 
@@ -25,7 +25,7 @@ export default async function Page({ params }: { params: { competitionId: string
   return (
     <div className="container mx-auto py-10">
       <h1 className="text-3xl mb-4">Certificados de participación para el {data.name}</h1>
-      <DownloadButton city={cityObj.long_name} data={data} state={stateObj.long_name} />
+      <DocumentSettings city={cityObj.long_name} data={data} state={stateObj.long_name} />
     </div>
   );
 }

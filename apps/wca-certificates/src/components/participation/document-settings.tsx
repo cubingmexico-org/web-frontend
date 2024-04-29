@@ -1,7 +1,12 @@
+/* eslint-disable no-nested-ternary -- . */
+/* eslint-disable @typescript-eslint/no-shadow -- . */
+/* eslint-disable react/no-array-index-key -- . */
+/* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
+/* eslint-disable react-hooks/exhaustive-deps -- . */
 'use client'
 
-import React, { useState } from 'react'
-import { Button } from '@repo/ui/button'
+import React, { useState, useEffect } from 'react'
+import { buttonVariants } from '@repo/ui/button'
 import { Input } from "@repo/ui/input"
 import { Label } from "@repo/ui/label"
 import { FileDown } from "lucide-react"
@@ -13,7 +18,8 @@ import {
   PDFViewer,
   StyleSheet,
   Image,
-  Font
+  Font,
+  PDFDownloadLink
 } from '@react-pdf/renderer'
 import {
   Select,
@@ -22,8 +28,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/select"
-import { DataTable } from "@/components/participation-data-table"
-import { columns } from "@/components/participation-columns"
+import { useMediaQuery } from "@repo/ui/use-media-query"
+import { DataTable } from "@/components/participation/data-table"
+import { columns } from "@/components/participation/columns"
 import {
   processPersons,
   formatResults,
@@ -109,13 +116,14 @@ const styles = StyleSheet.create({
     borderTopWidth: 0,
   }
 });
-interface DownloadButtonProps {
+
+interface DocumentSettingsProps {
   data: Data;
   city: string;
   state: string;
 }
 
-export default function DownloadButton({ data, city, state }: DownloadButtonProps): JSX.Element {
+export default function DocumentSettings({ data, city, state }: DocumentSettingsProps): JSX.Element {
   const people = data.persons;
   const events = data.events;
   const date = data.schedule.startDate;
@@ -127,7 +135,7 @@ export default function DownloadButton({ data, city, state }: DownloadButtonProp
   const [size, setSize] = useState<"LETTER" | "A4">();
   const [orientation, setOrientation] = useState<"portrait" | "landscape">();
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
-
+  const isDesktop = useMediaQuery("(min-width: 768px)")
 
   const allResults: ParticipantData[] = [];
 
@@ -142,7 +150,6 @@ export default function DownloadButton({ data, city, state }: DownloadButtonProp
               const newResult = {
                 event: event.id,
                 ranking: result.ranking,
-                // eslint-disable-next-line no-nested-ternary -- This is a nested ternary
                 average: event.id === '333bf' ? result.best : result.average === 0 ? result.best : result.average,
               };
               if (existingResultIndex !== -1) {
@@ -167,16 +174,21 @@ export default function DownloadButton({ data, city, state }: DownloadButtonProp
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
-  function handleClick() {
+  function generateParticipationCertificates() {
     const filteredResults = allResults.filter(result => rowSelection[result.wcaId]);
     setPdfData(filteredResults);
   }
 
-  const MyDoc = (
+  useEffect(() => {
+    if (size !== undefined && orientation !== undefined && Object.keys(rowSelection).length !== 0) {
+      generateParticipationCertificates();
+    }
+  }, [size, orientation, rowSelection]);
+
+
+  const participationDocument = (
     <Document author={organizers.join(', ')} title={`Certificados de participación para el ${data.name}`}>
       {pdfData.map((text, index) => (
-        // eslint-disable-next-line react/no-array-index-key -- This array will not change
         <Page key={index} orientation={orientation} size={size}>
           {inputValue ? <Image src={inputValue} style={styles.background} /> : null}
           <View style={[styles.center, styles.body]}>
@@ -204,9 +216,7 @@ export default function DownloadButton({ data, city, state }: DownloadButtonProp
                   <Text style={[styles.tableCell, styles.fontMd]}>Posición</Text>
                 </View>
               </View>
-              {/* eslint-disable-next-line @typescript-eslint/no-shadow -- . */}
               {text.results.map((result, index: number) => (
-                // eslint-disable-next-line react/no-array-index-key -- This array will not change
                 <View key={index} style={styles.tableRow}>
                   <View style={styles.tableCol}>
                     <Text style={[styles.tableCell, styles.fontXs]}>{formatEvents(result.event)}</Text>
@@ -260,14 +270,26 @@ export default function DownloadButton({ data, city, state }: DownloadButtonProp
           <Label>Fondo</Label>
           <Input className='my-4' onChange={(e) => { setInputValue(e.target.value); }} placeholder="Fondo" value={inputValue} />
         </div>
-        <Button disabled={size === undefined || orientation === undefined || Object.keys(rowSelection).length === 0} onClick={() => { handleClick(); }}>
-          Generar certificados
-          <FileDown className='ml-2' />
-        </Button>
-        {pdfData.length > 0 && (
-          <PDFViewer className='w-full h-[600px] mt-4'>
-            {MyDoc}
-          </PDFViewer>
+        {Object.keys(rowSelection).length === 0 && <p className='font-semibold'>Debes seleccionar al menos un participante</p>}
+        {size === undefined && <p className='font-semibold'>Debes seleccionar el tamaño del documento</p>}
+        {orientation === undefined && <p className='font-semibold'>Debes seleccionar la orientación del documento</p>}
+        {(size !== undefined && orientation !== undefined && Object.keys(rowSelection).length !== 0) && (
+          <>
+            {isDesktop ? (
+              <PDFViewer className='w-full h-[600px] mt-4'>
+                {participationDocument}
+              </PDFViewer>
+            ) : (
+              <PDFDownloadLink
+                className={buttonVariants()}
+                document={participationDocument}
+                fileName={`Certificados de participación del ${data.name}`}
+              >
+                Descargar certificados
+                <FileDown className='ml-2' />
+              </PDFDownloadLink>
+            )}
+          </>
         )}
       </div>
     </>

@@ -169,22 +169,32 @@ export async function updateScores() {
         const bestsBroken = compWcif.events.flatMap(event =>
           event.rounds.flatMap(round =>
             round.results
-              .filter(result => result.personId === personId && result.best !== -1 && result.best !== -2 && result.average !== 0)
+              .filter(result => result.personId === personId && result.best !== -1 && result.best !== -2)
               .map(result => {
-                const singlePB = personalBests.find(pb => pb.eventId === event.id && pb.type === 'single');
-                const averagePB = personalBests.find(pb => pb.eventId === event.id && pb.type === 'average');
+                let singlePB = personalBests.find(pb => pb.eventId === event.id && pb.type === 'single');
+                let averagePB = personalBests.find(pb => pb.eventId === event.id && pb.type === 'average');
 
                 let prsBroken = 0;
 
-                if (singlePB && result.best < singlePB.best) {
+                if (!singlePB || result.best <= singlePB.best) {
                   console.log(`${id} broke single PR for ${event.id} with ${result.best}`);
-                  singlePB.best = result.best;
+                  if (!singlePB) {
+                    singlePB = { eventId: event.id, type: 'single', best: result.best };
+                    personalBests.push(singlePB);
+                  } else {
+                    singlePB.best = result.best;
+                  }
                   prsBroken++;
                 }
 
-                if (averagePB && result.average < averagePB.best) {
+                if ((!averagePB || result.average <= averagePB.best) && result.average !== -1 && result.average !== 0) {
                   console.log(`${id} broke average PR for ${event.id} with ${result.average}`);
-                  averagePB.best = result.average;
+                  if (!averagePB) {
+                    averagePB = { eventId: event.id, type: 'average', best: result.average };
+                    personalBests.push(averagePB);
+                  } else {
+                    averagePB.best = result.average;
+                  }
                   prsBroken++;
                 }
 

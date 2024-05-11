@@ -1,6 +1,3 @@
- 
- 
- 
 /* eslint-disable no-nested-ternary -- . */
 /* eslint-disable @typescript-eslint/no-shadow -- . */
 /* eslint-disable react/no-array-index-key -- . */
@@ -9,9 +6,9 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { buttonVariants } from '@repo/ui/button'
+import { buttonVariants, Button } from '@repo/ui/button'
 import { Label } from "@repo/ui/label"
-import { FileDown } from "lucide-react"
+import { FileDown, Check, ChevronsUpDown } from "lucide-react"
 import {
   Document,
   Page,
@@ -31,6 +28,24 @@ import {
   SelectValue,
 } from "@repo/ui/select"
 import { useMediaQuery } from "@repo/ui/use-media-query"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs"
+import { Switch } from "@repo/ui/switch"
+import { Checkbox } from "@repo/ui/checkbox"
+import { Input } from '@repo/ui/input'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandList,
+  CommandItem,
+} from "@repo/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@repo/ui/popover"
+import { cn } from "@repo/ui/utils"
 import { DataTable } from "@/components/participation/data-table"
 import { columns } from "@/components/participation/columns"
 import {
@@ -53,73 +68,6 @@ Font.register({
   src: '/fonts/MavenPro/MavenPro-Bold.ttf'
 })
 
-const styles = StyleSheet.create({
-  body: {
-    paddingTop: 35,
-    paddingBottom: 65,
-    paddingHorizontal: 80,
-    fontFamily: 'MavenPro',
-  },
-  center: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    textAlign: 'center'
-  },
-  bold: {
-    fontFamily: 'MavenPro-Bold',
-  },
-  background: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: -1,
-  },
-  icon: {
-    width: 12,
-    height: 12,
-  },
-  fontXs: {
-    fontSize: 10,
-  },
-  fontSm: {
-    fontSize: 12,
-  },
-  fontMd: {
-    fontSize: 14,
-  },
-  table: {
-    marginTop: 20,
-    width: "auto",
-    borderStyle: "solid",
-    borderWidth: 0,
-  },
-  tableRow: {
-    margin: "auto",
-    flexDirection: "row",
-    borderBottomWidth: 1,
-  },
-  tableCol: {
-    width: "20%",
-    borderStyle: "solid",
-    borderWidth: 0,
-  },
-  tableCell: {
-    margin: "auto",
-    marginVertical: 5,
-    textAlign: "left",
-  },
-  tableHeader: {
-    margin: "auto",
-    flexDirection: "row",
-    textAlign: "left",
-    borderBottomWidth: 3,
-    borderTopWidth: 0,
-  }
-});
-
 interface DocumentSettingsProps {
   data: Data;
   city: string;
@@ -140,6 +88,103 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
   const [orientation, setOrientation] = useState<"portrait" | "landscape">();
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const isDesktop = useMediaQuery("(min-width: 768px)")
+
+  const [customizeText, setCustomizeText] = useState<boolean>(false);
+
+  const [open, setOpen] = useState(false);
+  const [fontValue, setFontValue] = useState<string>('Helvetica');
+
+  const [showUpperText, setShowUpperText] = useState<boolean>(true);
+  const [showDelegates, setShowDelegates] = useState<boolean>(true);
+  const [showOrganizers, setShowOrganizers] = useState<boolean>(true);
+  const [onBehalfWCAText, setOnBehalfWCAText] = useState<string>(', en nombre de la World Cube Association, y ');
+  const [onBehalfOrganizationTeamText, setOnBehalfOrganizationTeamText] = useState<string>(', en nombre del equipo organizador, otorgan el presente');
+
+  const styles = StyleSheet.create({
+    body: {
+      paddingTop: 35,
+      paddingBottom: 65,
+      paddingHorizontal: 80,
+      fontFamily: fontValue === 'Times' ? `${fontValue}-Roman` : `${fontValue}`,
+    },
+    center: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      textAlign: 'center'
+    },
+    bold: {
+      fontFamily: `${fontValue}-Bold`,
+    },
+    background: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: -1,
+    },
+    icon: {
+      width: 12,
+      height: 12,
+    },
+    fontXs: {
+      fontSize: 10,
+    },
+    fontSm: {
+      fontSize: 12,
+    },
+    fontMd: {
+      fontSize: 14,
+    },
+    table: {
+      marginTop: 20,
+      width: "auto",
+      borderStyle: "solid",
+      borderWidth: 0,
+    },
+    tableRow: {
+      margin: "auto",
+      flexDirection: "row",
+      borderBottomWidth: 1,
+    },
+    tableCol: {
+      width: "20%",
+      borderStyle: "solid",
+      borderWidth: 0,
+    },
+    tableCell: {
+      margin: "auto",
+      marginVertical: 5,
+      textAlign: "left",
+    },
+    tableHeader: {
+      margin: "auto",
+      flexDirection: "row",
+      textAlign: "left",
+      borderBottomWidth: 3,
+      borderTopWidth: 0,
+    }
+  });
+
+  const items = [
+    {
+      value: "Courier",
+      label: "Courier",
+    },
+    {
+      value: "Helvetica",
+      label: "Helvetica",
+    },
+    {
+      value: "Times",
+      label: "Times",
+    },
+    {
+      value: "MavenPro",
+      label: "Maven Pro",
+    }
+  ]
 
   useEffect(() => {
     if (files.length > 0) {
@@ -207,9 +252,14 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
         <Page key={index} orientation={orientation} size={size}>
           {background ? <Image src={background} style={styles.background} /> : null}
           <View style={[styles.center, styles.body]}>
-            <Text style={{ fontSize: 14, paddingHorizontal: 40, lineHeight: 1.25 }}>
-              <Text style={styles.bold}>{joinPersons(delegates)}</Text>, en nombre de la World Cube Association, y <Text style={styles.bold}>{joinPersons(organizers)}</Text>, en nombre del equipo organizador, otorgan el presente
-            </Text>
+            {showUpperText ? (
+              <Text style={{ fontSize: 14, paddingHorizontal: 40, lineHeight: 1.25 }}>
+                {showDelegates ? <Text style={styles.bold}>{joinPersons(delegates)}</Text> : null}
+                {onBehalfWCAText}
+                {showOrganizers ? <Text style={styles.bold}>{joinPersons(organizers)}</Text> : null}
+                {onBehalfOrganizationTeamText}
+              </Text>
+            ) : null}
             <View style={[styles.bold, { alignItems: 'center', paddingTop: 20, paddingBottom: 10 }]}>
               <Text style={{ fontSize: 40 }}>CERTIFICADO</Text>
               <Text style={{ fontSize: 25 }}>DE PARTICIPACIÓN</Text>
@@ -290,13 +340,94 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
             onValueChange={(e) => { setFiles(e); }}
           />
         </div>
+        <div className="flex items-center justify-center space-x-2 mb-4">
+          <Switch checked={customizeText} id="upper-text" onCheckedChange={() => { setCustomizeText(!customizeText) }} />
+          <Label htmlFor="upper-text">Personalizar texto</Label>
+        </div>
+        {customizeText ? (
+          <div>
+            <div className='mb-4'>
+              <Label className='pr-4'>Fuente</Label>
+              <Popover onOpenChange={setOpen} open={open}>
+                <PopoverTrigger asChild>
+                  <Button
+                    aria-expanded={open}
+                    className="w-[200px] justify-between"
+                    role="combobox"
+                    variant="outline"
+                  >
+                    {fontValue
+                      ? items.find((item) => item.value === fontValue)?.label
+                      : 'Buscar fuente...'}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-0">
+                  <Command>
+                    <CommandInput placeholder='Buscar fuente...' />
+                    <CommandEmpty>Sin resultados.</CommandEmpty>
+                    <CommandGroup>
+                      <CommandList>
+                        {items.map((item) => (
+                          <CommandItem
+                            key={item.value}
+                            onSelect={(currentValue) => {
+                              setFontValue(currentValue === fontValue ? "" : currentValue)
+                              setOpen(false)
+                            }}
+                            value={item.value}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                fontValue === item.value ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {item.label}
+                          </CommandItem>
+                        ))}
+                      </CommandList>
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
+            <Tabs defaultValue="upper-text">
+              <TabsList>
+                <TabsTrigger value="upper-text">Texto superior</TabsTrigger>
+                <TabsTrigger value="middle-text">Texto medio</TabsTrigger>
+                <TabsTrigger value="lower-text">Texto inferior</TabsTrigger>
+              </TabsList>
+              <TabsContent value="upper-text">
+                <div className="flex items-center justify-center space-x-2">
+                  <Switch checked={showUpperText} id="upper-text" onCheckedChange={() => { setShowUpperText(!showUpperText) }} />
+                  <Label htmlFor="upper-text">Mostrar texto superior</Label>
+                </div>
+                <div className="flex flex-col sm:flex-row items-center p-4">
+                  <div className='flex items-center py-2'>
+                    <Checkbox checked={showDelegates} disabled={!showUpperText} id="delegates" onCheckedChange={() => { setShowDelegates(!showDelegates); }} />
+                    <Label className='px-2' htmlFor='delegates'>[Delegados]</Label>
+                  </div>
+                  <Input disabled={!showUpperText} onChange={(e) => { setOnBehalfWCAText(e.target.value); }} value={onBehalfWCAText} />
+                  <div className='flex items-center py-2'>
+                    <Checkbox checked={showOrganizers} className='ml-2' disabled={!showUpperText} id="organizers" onCheckedChange={() => { setShowOrganizers(!showOrganizers); }} />
+                    <Label className='px-2' htmlFor='organizers'>[Organizadores]</Label>
+                  </div>
+                  <Input disabled={!showUpperText} onChange={(e) => { setOnBehalfOrganizationTeamText(e.target.value); }} value={onBehalfOrganizationTeamText} />
+                </div>
+              </TabsContent>
+              <TabsContent value="middle-text" />
+              <TabsContent value="lower-text" />
+            </Tabs>
+          </div>
+        ) : null}
         {Object.keys(rowSelection).length === 0 && <p className='font-semibold'>Debes seleccionar al menos un participante</p>}
         {size === undefined && <p className='font-semibold'>Debes seleccionar el tamaño del documento</p>}
         {orientation === undefined && <p className='font-semibold'>Debes seleccionar la orientación del documento</p>}
         {(size !== undefined && orientation !== undefined && Object.keys(rowSelection).length !== 0) && (
           <>
             {isDesktop ? (
-              <PDFViewer className='w-full h-[600px] mt-4'>
+              <PDFViewer className='w-full h-[600px]'>
                 {participationDocument}
               </PDFViewer>
             ) : (

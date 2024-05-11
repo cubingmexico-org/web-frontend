@@ -6,7 +6,6 @@
 
 import React, { useState, useEffect } from 'react'
 import { buttonVariants } from '@repo/ui/button'
-import { Input } from "@repo/ui/input"
 import { Label } from "@repo/ui/label"
 import { FileDown } from "lucide-react"
 import {
@@ -40,6 +39,7 @@ import {
   formatDates,
   joinPersons
 } from "@/lib/utils"
+import { FileUploader } from "@/components/file-uploader";
 import type { Event, Data } from '@/types/types';
 
 Font.register({
@@ -81,7 +81,6 @@ const styles = StyleSheet.create({
   // }
 });
 
-
 interface DocumentSettingsProps {
   data: Data;
   city: string;
@@ -91,11 +90,24 @@ interface DocumentSettingsProps {
 export default function DocumentSettings({ data, city, state }: DocumentSettingsProps): JSX.Element {
   const { delegates, organizers, getEventData } = processPersons(data.persons);
   const [pdfData, setPdfData] = useState<string[][]>([]);
-  const [inputValue, setInputValue] = useState('');
+  const [files, setFiles] = useState<File[]>([]);
+  const [background, setBackground] = useState<string>();
   const [size, setSize] = useState<"LETTER" | "A4">();
   const [orientation, setOrientation] = useState<"portrait" | "landscape">();
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
-  const isDesktop = useMediaQuery("(min-width: 768px)")
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+
+  useEffect(() => {
+    if (files.length > 0) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setBackground(e.target?.result as string);
+      };
+      reader.readAsDataURL(files[0]);
+    } else {
+      setBackground(undefined);
+    }
+  }, [files]);
 
   const date = data.schedule.startDate;
   const days = data.schedule.numberOfDays;
@@ -131,7 +143,7 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
     <Document author={organizers.join(', ')} title={`Certificados de podio para el ${data.name}`}>
       {pdfData.map((text, index) => (
         <Page key={index} orientation={orientation} size={size}>
-          {inputValue ? <Image src={inputValue} style={styles.background} /> : null}
+          { background ? <Image src={background} style={styles.background} /> : null }
           <View style={[styles.center, styles.body]}>
             <Text style={{ fontSize: 16, paddingHorizontal: 40, lineHeight: 1.25 }}>
               <Text style={styles.bold}>{joinPersons(delegates)}</Text>, en nombre de la World Cube Association, y <Text style={styles.bold}>{joinPersons(organizers)}</Text>, en nombre del equipo organizador, otorgan el presente
@@ -181,9 +193,14 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
             </Select>
           </div>
         </div>
-        <div className='mt-4'>
-          <Label>Fondo</Label>
-          <Input className='my-4' onChange={(e) => { setInputValue(e.target.value); }} placeholder="Fondo" value={inputValue} />
+        <div className='my-4'>
+          <Label htmlFor='background'>Fondo</Label>
+          <FileUploader
+            id='background'
+            maxFiles={1}
+            maxSize={1 * 1024 * 1024}
+            onValueChange={(e) => { setFiles(e); }}
+          />
         </div>
         {Object.keys(rowSelection).length === 0 && <p className='font-semibold'>Debes seleccionar al menos un evento</p>}
         {size === undefined && <p className='font-semibold'>Debes seleccionar el tamaño del documento</p>}

@@ -1,9 +1,8 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
 import type { Event, Person, Result } from '@/types/types';
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
 export function processPersons(persons: Person[]) {
   const getRole = (role: string) => (person: Person) => person.roles.includes(role);
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function will be used in a filter
   const getName = (person: Person) => person.name;
 
   const delegates = persons.filter(getRole('delegate')).map(getName);
@@ -14,7 +13,6 @@ export function processPersons(persons: Person[]) {
     personIdToName[person.registrantId] = person.name;
   });
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- This function has different return types
   function getEventData(event: Event) {
     const rounds = event.rounds;
     const results = rounds[rounds.length - 1].results
@@ -168,4 +166,22 @@ export function joinPersons(persons: string[]): string {
 
   const lastPerson = personsCopy.pop();
   return `${personsCopy.join(', ')} y ${lastPerson}`;
+}
+
+export function formatBytes(
+  bytes: number,
+  opts: {
+    decimals?: number
+    sizeType?: "accurate" | "normal"
+  } = {}
+) {
+  const { decimals = 0, sizeType = "normal" } = opts
+
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"]
+  const accurateSizes = ["Bytes", "KiB", "MiB", "GiB", "TiB"]
+  if (bytes === 0) return "0 Byte"
+  const i = Math.floor(Math.log(bytes) / Math.log(1024))
+  return `${(bytes / Math.pow(1024, i)).toFixed(decimals)} ${
+    sizeType === "accurate" ? accurateSizes[i] ?? "Bytest" : sizes[i] ?? "Bytes"
+  }`
 }

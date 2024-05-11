@@ -41,10 +41,7 @@ export default function Header({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar>
-              <AvatarImage className="object-cover" src={
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We know the user has an image
-                user.image!
-              } />
+              <AvatarImage className="object-cover" src={user.image ?? ''} />
               <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>

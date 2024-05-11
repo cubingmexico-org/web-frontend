@@ -23,6 +23,7 @@
     "./select": "./src/components/select.tsx",
     "./skeleton": "./src/components/skeleton.tsx",
     "./table": "./src/components/table.tsx",
+    "./tabs": "./src/components/tabs.tsx",
     "./toaster": "./src/components/toaster.tsx",
     "./use-media-query": "./src/hooks/use-media-query.tsx"
   },

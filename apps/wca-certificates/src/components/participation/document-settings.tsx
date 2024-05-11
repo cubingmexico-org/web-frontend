@@ -101,14 +101,19 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
   const [onBehalfOrganizationTeamText, setOnBehalfOrganizationTeamText] = useState<string>(', en nombre del equipo organizador, otorgan el presente');
 
   const [showMiddleText, setShowMiddleText] = useState<boolean>(true);
-  const [showCertificateText1, setShowCertificateText1] = useState<boolean>(true);
-  const [showCertificateText2, setShowCertificateText2] = useState<boolean>(true);
-  const [showToText, setShowToText] = useState<boolean>(true);
   const [showCompetitorText, setShowCompetitorText] = useState<boolean>(true);
   const [certificateText1, setCertificateText1] = useState<string>('CERTIFICADO');
   const [certificateText2, setCertificateText2] = useState<string>('DE PARTICIPACIÓN');
   const [toText, setToText] = useState<string>('a');
 
+  const [showLowerText, setShowLowerText] = useState<boolean>(true);
+  const [showCompetition, setShowCompetition] = useState<boolean>(true);
+  const [showDates, setShowDates] = useState<boolean>(true);
+  const [showLocation, setShowLocation] = useState<boolean>(true);
+  const [competitionText, setCompetitionText] = useState<string>('por haber haber participado en el ');
+  const [datesText, setDatesText] = useState<string>(', llevado acabo ');
+  const [locationText, setLocationText] = useState<string>(' en ');
+  const [resultsText, setResultsText] = useState<string>(', obteniendo los siguientes resultados:');
 
   const styles = StyleSheet.create({
     body: {
@@ -272,19 +277,32 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
             ) : null}
             {showMiddleText ? (
               <>
-                {showCertificateText1 || showCertificateText2 ? (
+                {certificateText1.length !== 0 || certificateText2.length !== 0 ? (
                   <View style={[styles.bold, { alignItems: 'center', paddingTop: 20, paddingBottom: 10 }]}>
-                    {showCertificateText1 ? <Text style={{ fontSize: 40 }}>{certificateText1}</Text> : null}
-                    {showCertificateText2 ? <Text style={{ fontSize: 25 }}>{certificateText2}</Text> : null}
+                    {certificateText1.length !== 0 ? <Text style={{ fontSize: 40 }}>{certificateText1}</Text> : null}
+                    {certificateText2.length !== 0 ? <Text style={{ fontSize: 25 }}>{certificateText2}</Text> : null}
                   </View>
                 ) : null}
-                {showToText ? <Text style={{ fontSize: 14 }}>{toText}</Text> : null}
+                {toText.length !== 0 ? <Text style={{ fontSize: 14 }}>{toText}</Text> : null}
                 {showCompetitorText ? <Text style={[styles.bold, { fontSize: 35, paddingTop: 10, paddingBottom: 20 }]}>{text.name}</Text> : null}
               </>
             ) : null}
-            <Text style={{ fontSize: 14, paddingHorizontal: 40, lineHeight: 1.25 }}>
-              por haber haber participado en el <Text style={styles.bold}>{data.name}</Text>, llevado acabo {days === 1 ? 'el día' : 'los días'} <Text style={styles.bold}>{formatDates(date, days.toString())}</Text> en <Text style={styles.bold}>{city}, {state}</Text>, obteniendo los siguientes resultados:
-            </Text>
+            {showLowerText ? (
+              <Text style={{ fontSize: 14, paddingHorizontal: 40, lineHeight: 1.25 }}>
+                {competitionText}
+                {showCompetition ? <Text style={styles.bold}>{data.name}</Text> : null}
+                {datesText}
+                {showDates ? (
+                  <>
+                    {days === 1 ? 'el día ' : 'los días '}
+                    <Text style={styles.bold}>{formatDates(date, days.toString())}</Text>
+                  </>
+                ) : null}
+                {locationText}
+                {showLocation ? <Text style={styles.bold}>{city}, {state}</Text> : null}
+                {resultsText}
+              </Text>
+            ) : null}
             <View style={styles.table}>
               <View style={[styles.tableHeader, styles.bold]}>
                 <View style={styles.tableCol}>
@@ -356,10 +374,12 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
             onValueChange={(e) => { setFiles(e); }}
           />
         </div>
-        <div className="flex items-center justify-center space-x-2 mb-4">
-          <Switch checked={customizeText} id="upper-text" onCheckedChange={() => { setCustomizeText(!customizeText) }} />
-          <Label htmlFor="upper-text">Personalizar texto</Label>
-        </div>
+        {(size !== undefined && orientation !== undefined && Object.keys(rowSelection).length !== 0) && (
+          <div className="flex items-center justify-center space-x-2 mb-4">
+            <Switch checked={customizeText} id="upper-text" onCheckedChange={() => { setCustomizeText(!customizeText) }} />
+            <Label htmlFor="upper-text">Personalizar documento</Label>
+          </div>
+        )}
         {customizeText ? (
           <div>
             <div className='mb-4'>
@@ -419,17 +439,17 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
                   <Switch checked={showUpperText} id="upper-text" onCheckedChange={() => { setShowUpperText(!showUpperText) }} />
                   <Label htmlFor="upper-text">Mostrar texto superior</Label>
                 </div>
-                <div className="flex flex-col sm:flex-row items-center p-4">
+                <div className="flex flex-col md:flex-row items-center p-4">
                   <div className='flex items-center py-2'>
                     <Checkbox checked={showDelegates} disabled={!showUpperText} id="delegates" onCheckedChange={() => { setShowDelegates(!showDelegates); }} />
                     <Label className='px-2' htmlFor='delegates'>[Delegados]</Label>
                   </div>
-                  <Input disabled={!showUpperText} onChange={(e) => { setOnBehalfWCAText(e.target.value); }} value={onBehalfWCAText} />
+                  <Input disabled={!showUpperText} onChange={(e) => { setOnBehalfWCAText(e.target.value); }} placeholder='Escribe algo después de los nombres de los delegados' value={onBehalfWCAText} />
                   <div className='flex items-center py-2'>
                     <Checkbox checked={showOrganizers} className='ml-2' disabled={!showUpperText} id="organizers" onCheckedChange={() => { setShowOrganizers(!showOrganizers); }} />
                     <Label className='px-2' htmlFor='organizers'>[Organizadores]</Label>
                   </div>
-                  <Input disabled={!showUpperText} onChange={(e) => { setOnBehalfOrganizationTeamText(e.target.value); }} value={onBehalfOrganizationTeamText} />
+                  <Input disabled={!showUpperText} onChange={(e) => { setOnBehalfOrganizationTeamText(e.target.value); }} placeholder='Escribe algo después de los nombres de los organizadores' value={onBehalfOrganizationTeamText} />
                 </div>
               </TabsContent>
               <TabsContent value="middle-text">
@@ -438,18 +458,9 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
                   <Label htmlFor="upper-text">Mostrar texto medio</Label>
                 </div>
                 <div className="flex flex-col items-center p-4">
-                  <div className='flex items-center py-2'>
-                    <Checkbox checked={showCertificateText1} className='mr-2' disabled={!showMiddleText} onCheckedChange={() => { setShowCertificateText1(!showCertificateText1); }} />
-                    <Input disabled={!showMiddleText} onChange={(e) => { setCertificateText1(e.target.value) }} value={certificateText1} />
-                  </div>
-                  <div className='flex items-center py-2'>
-                    <Checkbox checked={showCertificateText2} className='mr-2' disabled={!showMiddleText} onCheckedChange={() => { setShowCertificateText2(!showCertificateText2); }} />
-                    <Input disabled={!showMiddleText} onChange={(e) => { setCertificateText2(e.target.value) }} value={certificateText2} />
-                  </div>
-                  <div className='flex items-center py-2'>
-                    <Checkbox checked={showToText} className='mr-2' disabled={!showMiddleText} onCheckedChange={() => { setShowToText(!showToText); }} />
-                    <Input disabled={!showMiddleText} onChange={(e) => { setToText(e.target.value) }} value={toText} />
-                  </div>
+                  <Input className='my-2' disabled={!showMiddleText} onChange={(e) => { setCertificateText1(e.target.value) }} placeholder='Texto grande (Certificado/Constancia/Reconocimiento)' value={certificateText1} />
+                  <Input className='my-2' disabled={!showMiddleText} onChange={(e) => { setCertificateText2(e.target.value) }} placeholder='Texto mediano (De participación)' value={certificateText2} />
+                  <Input className='my-2' disabled={!showMiddleText} onChange={(e) => { setToText(e.target.value) }} placeholder='Conector (a/para)' value={toText} />
                   <div className='flex items-center py-2'>
                     <Checkbox checked={showCompetitorText} className='ml-2' disabled={!showMiddleText} id="competitor" onCheckedChange={() => { setShowCompetitorText(!showCompetitorText); }} />
                     <Label className='px-2' htmlFor='competitor'>[Competidor]</Label>
@@ -458,8 +469,26 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
               </TabsContent>
               <TabsContent value="lower-text">
                 <div className="flex items-center justify-center space-x-2">
-                  <Switch checked={showUpperText} id="upper-text" onCheckedChange={() => null} />
+                  <Switch checked={showLowerText} id="upper-text" onCheckedChange={() => { setShowLowerText(!showLowerText) }} />
                   <Label htmlFor="upper-text">Mostrar texto inferior</Label>
+                </div>
+                <div className="flex flex-col md:flex-row items-center p-4">
+                  <Input disabled={!showLowerText} onChange={(e) => { setCompetitionText(e.target.value); }} placeholder='Escribe algo antes del nombre de la competencia' value={competitionText} />
+                  <div className='flex items-center py-2'>
+                    <Checkbox checked={showCompetition} className='ml-2' disabled={!showLowerText} id="competition" onCheckedChange={() => { setShowCompetition(!showCompetition); }} />
+                    <Label className='px-2' htmlFor='competition'>[Competencia]</Label>
+                  </div>
+                  <Input disabled={!showLowerText} onChange={(e) => { setDatesText(e.target.value); }} placeholder='Escribe algo antes de la fecha' value={datesText} />
+                  <div className='flex items-center py-2'>
+                    <Checkbox checked={showDates} className='ml-2' disabled={!showLowerText} id="dates" onCheckedChange={() => { setShowDates(!showDates); }} />
+                    <Label className='px-2' htmlFor='dates'>[Fechas]</Label>
+                  </div>
+                  <Input disabled={!showLowerText} onChange={(e) => { setLocationText(e.target.value); }} placeholder='Escribe algo antes de la ubicación' value={locationText} />
+                  <div className='flex items-center py-2'>
+                    <Checkbox checked={showLocation} className='ml-2' disabled={!showLowerText} id="location" onCheckedChange={() => { setShowLocation(!showLocation); }} />
+                    <Label className='px-2' htmlFor='location'>[Ubicación]</Label>
+                  </div>
+                  <Input disabled={!showLowerText} onChange={(e) => { setResultsText(e.target.value); }} placeholder='Escribe algo antes de los resultados' value={resultsText} />
                 </div>
               </TabsContent>
             </Tabs>

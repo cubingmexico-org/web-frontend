@@ -6,6 +6,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { toast } from "sonner"
 import { buttonVariants } from '@repo/ui/button'
 import { Label } from "@repo/ui/label"
 import { FileDown } from "lucide-react"
@@ -103,11 +104,16 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
   const [customizeText, setCustomizeText] = useState<boolean>(false);
   const [debugDocument, setDebugDocument] = useState<boolean>(false);
 
+  if (debugDocument) {
+    toast.error("Desactiva esta opción antes de imprimir o descargar el documento.")
+  }
+
   const [fontFamily, setFontFamily] = useState<string>('Helvetica');
   const [color, setColor] = useState<string>('#000000');
   const [margins, setMargins] = useState<Margin>({ top: 0, right: 80, bottom: 0, left: 80 });
 
   const [showUpperText, setShowUpperText] = useState<boolean>(true);
+  const [upperMargins, setUpperMargins] = useState<Margin>({ top: 0, right: 0, bottom: 0, left: 0 });
   const [upperText1, setUpperText1] = useState<TextSettings>({
     text: true,
     fontSize: 12,
@@ -168,6 +174,7 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
   });
 
   const [showLowerText, setShowLowerText] = useState<boolean>(true);
+  const [lowerMargins, setLowerMargins] = useState<Margin>({ top: 0, right: 0, bottom: 0, left: 0 });
   const [lowerText1, setLowerText1] = useState<TextSettings>({
     text: 'por haber haber participado en el ',
     fontSize: 12,
@@ -219,6 +226,7 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
   });
 
   const [showTable, setShowTable] = useState<boolean>(true);
+  const [tableMargins, setTableMargins] = useState<Margin>({ top: 0, right: 0, bottom: 0, left: 0 });
   const [tableText1, setTableText1] = useState<TextSettings>({
     text: 'Evento',
     fontSize: 12,
@@ -381,7 +389,12 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
           {background ? <Image src={background} style={styles.background} /> : null}
           <View debug={debugDocument} style={[styles.center, styles.body]}>
             {showUpperText ? (
-              <Text debug={debugDocument}>
+              <Text debug={debugDocument} style={{
+                marginTop: upperMargins.top,
+                marginRight: upperMargins.right,
+                marginBottom: upperMargins.bottom,
+                marginLeft: upperMargins.left
+              }}>
                 {upperText1.text ? (
                   <Text style={{
                     fontSize: upperText1.fontSize,
@@ -501,7 +514,12 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
               </>
             ) : null}
             {showLowerText ? (
-              <Text debug={debugDocument}>
+              <Text debug={debugDocument} style={{
+                marginTop: lowerMargins.top,
+                marginRight: lowerMargins.right,
+                marginBottom: lowerMargins.bottom,
+                marginLeft: lowerMargins.left
+              }}>
                 {lowerText1.text ? (
                   <Text style={{
                     fontSize: lowerText1.fontSize,
@@ -596,7 +614,12 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
               </Text>
             ) : null}
             {showTable ? (
-              <View debug={debugDocument} style={styles.table}>
+              <View debug={debugDocument} style={[styles.table, {
+                marginTop: tableMargins.top,
+                marginRight: tableMargins.right,
+                marginBottom: tableMargins.bottom,
+                marginLeft: tableMargins.left
+              }]}>
                 <View style={[styles.tableHeader]}>
                   {typeof tableText1.text === 'string' && tableText1.text.length !== 0 ? (
                     <View style={styles.tableCol}>
@@ -697,7 +720,12 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
 
   return (
     <>
-      <DataTable columns={columns} data={allResults} rowSelection={rowSelection} setRowSelection={setRowSelection} />
+      <DataTable
+        columns={columns}
+        data={allResults}
+        rowSelection={rowSelection}
+        setRowSelection={setRowSelection}
+      />
       <div className="text-center mt-4">
         <div className='flex justify-center'>
           <div className='w-full pr-1'>
@@ -748,13 +776,35 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
                 <CardDescription>Personalización general</CardDescription>
               </CardHeader>
               <CardContent>
-                {/* TODO: fix this */}
                 <div className='grid grid-cols-2 gap-4'>
                   <div>
                     <Label>Fuente</Label>
                     <div className='my-2'>
                       <Combobox
-                        setValue={setFontFamily}
+                        setValue={(newFontFamily) => {
+                          setFontFamily(newFontFamily);
+                          setUpperText1(prevText => ({ ...prevText, fontFamily: newFontFamily }));
+                          setUpperText2(prevText => ({ ...prevText, fontFamily: newFontFamily }));
+                          setUpperText3(prevText => ({ ...prevText, fontFamily: newFontFamily }));
+                          setUpperText4(prevText => ({ ...prevText, fontFamily: newFontFamily }));
+                          setMiddleText1(prevText => ({ ...prevText, fontFamily: newFontFamily }));
+                          setMiddleText2(prevText => ({ ...prevText, fontFamily: newFontFamily }));
+                          setMiddleText3(prevText => ({ ...prevText, fontFamily: newFontFamily }));
+                          setMiddleText4(prevText => ({ ...prevText, fontFamily: newFontFamily }));
+                          setLowerText1(prevText => ({ ...prevText, fontFamily: newFontFamily }));
+                          setLowerText2(prevText => ({ ...prevText, fontFamily: newFontFamily }));
+                          setLowerText3(prevText => ({ ...prevText, fontFamily: newFontFamily }));
+                          setLowerText4(prevText => ({ ...prevText, fontFamily: newFontFamily }));
+                          setLowerText5(prevText => ({ ...prevText, fontFamily: newFontFamily }));
+                          setLowerText6(prevText => ({ ...prevText, fontFamily: newFontFamily }));
+                          setLowerText7(prevText => ({ ...prevText, fontFamily: newFontFamily }));
+                          setTableText1(prevText => ({ ...prevText, fontFamily: newFontFamily }));
+                          setTableText2(prevText => ({ ...prevText, fontFamily: newFontFamily }));
+                          setTableText3(prevText => ({ ...prevText, fontFamily: newFontFamily }));
+                          setTableText4(prevText => ({ ...prevText, fontFamily: newFontFamily }));
+                          setTableText5(prevText => ({ ...prevText, fontFamily: newFontFamily }));
+                          setTableText6(prevText => ({ ...prevText, fontFamily: newFontFamily }));
+                        }}
                         value={fontFamily}
                       />
                     </div>
@@ -766,6 +816,27 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
                       id='color'
                       onChange={(e) => {
                         setColor(e.target.value);
+                        setUpperText1(prevText => ({ ...prevText, color: e.target.value }));
+                        setUpperText2(prevText => ({ ...prevText, color: e.target.value }));
+                        setUpperText3(prevText => ({ ...prevText, color: e.target.value }));
+                        setUpperText4(prevText => ({ ...prevText, color: e.target.value }));
+                        setMiddleText1(prevText => ({ ...prevText, color: e.target.value }));
+                        setMiddleText2(prevText => ({ ...prevText, color: e.target.value }));
+                        setMiddleText3(prevText => ({ ...prevText, color: e.target.value }));
+                        setMiddleText4(prevText => ({ ...prevText, color: e.target.value }));
+                        setLowerText1(prevText => ({ ...prevText, color: e.target.value }));
+                        setLowerText2(prevText => ({ ...prevText, color: e.target.value }));
+                        setLowerText3(prevText => ({ ...prevText, color: e.target.value }));
+                        setLowerText4(prevText => ({ ...prevText, color: e.target.value }));
+                        setLowerText5(prevText => ({ ...prevText, color: e.target.value }));
+                        setLowerText6(prevText => ({ ...prevText, color: e.target.value }));
+                        setLowerText7(prevText => ({ ...prevText, color: e.target.value }));
+                        setTableText1(prevText => ({ ...prevText, color: e.target.value }));
+                        setTableText2(prevText => ({ ...prevText, color: e.target.value }));
+                        setTableText3(prevText => ({ ...prevText, color: e.target.value }));
+                        setTableText4(prevText => ({ ...prevText, color: e.target.value }));
+                        setTableText5(prevText => ({ ...prevText, color: e.target.value }));
+                        setTableText6(prevText => ({ ...prevText, color: e.target.value }));
                       }}
                       type='color'
                       value={color}
@@ -824,7 +895,7 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
                 </div>
                 <div className="flex items-center justify-center space-x-2">
                   <Switch checked={debugDocument} id="debug" onCheckedChange={() => { setDebugDocument(!debugDocument) }} />
-                  <Label htmlFor="debug">Ver espaciado (desactívalo antes de descargar o imprimir el documento)</Label>
+                  <Label htmlFor="debug">Ver espaciado</Label>
                 </div>
               </CardContent>
             </Card>
@@ -836,221 +907,415 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
                 <TabsTrigger value="table">Tabla</TabsTrigger>
               </TabsList>
               <TabsContent value="upper-text">
-                <div className="flex items-center justify-center space-x-2">
-                  <Switch checked={showUpperText} id="upper-text" onCheckedChange={() => { setShowUpperText(!showUpperText) }} />
-                  <Label htmlFor="upper-text">Mostrar texto</Label>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
-                  <CardFixedText
-                    allowMargin={false}
-                    certificateTextSettings={upperText1}
-                    description='Delegado 1, Delegado 2, Delegado 3, ...'
-                    id='upper-text-1'
-                    setCertificateTextSettings={setUpperText1}
-                    showText={showUpperText}
-                    title='Delegados'
-                  />
-                  <CardCustomText
-                    allowMargin={false}
-                    certificateTextSettings={upperText2}
-                    description='en nombre de la WCA...'
-                    id='upper-text-2'
-                    setCertificateTextSettings={setUpperText2}
-                    showText={showUpperText}
-                    title='Texto 1'
-                  />
-                  <CardFixedText
-                    allowMargin={false}
-                    certificateTextSettings={upperText3}
-                    description='Organizador 1, Organizador 2, Organizador 3, ...'
-                    id='upper-text-3'
-                    setCertificateTextSettings={setUpperText3}
-                    showText={showUpperText}
-                    title='Organizadores'
-                  />
-                  <CardCustomText
-                    allowMargin={false}
-                    certificateTextSettings={upperText4}
-                    description='en nombre de la organización...'
-                    id='upper-text-4'
-                    setCertificateTextSettings={setUpperText4}
-                    showText={showUpperText}
-                    title='Texto 2'
-                  />
-                </div>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Texto superior</CardTitle>
+                    <CardDescription>Información de quién entrega el certificado</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-center space-x-2">
+                      <Switch checked={showUpperText} id="upper-text" onCheckedChange={() => { setShowUpperText(!showUpperText) }} />
+                      <Label htmlFor="upper-text">Mostrar texto</Label>
+                    </div>
+                    <div className='grid grid-cols-4 gap-4 my-4'>
+                      <div>
+                        <Label htmlFor="upper-margin-top">Margen superior</Label>
+                        <Input
+                          disabled={!showUpperText}
+                          id='upper-margin-top'
+                          min={0}
+                          onChange={(e) => {
+                            setUpperMargins(prevMargins => ({ ...prevMargins, top: parseInt(e.target.value, 10) }));
+                          }}
+                          type='number'
+                          value={upperMargins.top}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="upper-margin-right">Margen derecho</Label>
+                        <Input
+                          disabled={!showUpperText}
+                          id='upper-margin-right'
+                          min={0}
+                          onChange={(e) => {
+                            setUpperMargins(prevMargins => ({ ...prevMargins, right: parseInt(e.target.value, 10) }));
+                          }}
+                          type='number'
+                          value={upperMargins.right}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="upper-margin-bottom">Margen inferior</Label>
+                        <Input
+                          disabled={!showUpperText}
+                          id='upper-margin-bottom'
+                          min={0}
+                          onChange={(e) => {
+                            setUpperMargins(prevMargins => ({ ...prevMargins, bottom: parseInt(e.target.value, 10) }));
+                          }}
+                          type='number'
+                          value={upperMargins.bottom}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="upper-margin-left">Margen izquierdo</Label>
+                        <Input
+                          disabled={!showUpperText}
+                          id='upper-margin-left'
+                          min={0}
+                          onChange={(e) => {
+                            setUpperMargins(prevMargins => ({ ...prevMargins, left: parseInt(e.target.value, 10) }));
+                          }}
+                          type='number'
+                          value={upperMargins.left}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <CardFixedText
+                        allowMargin={false}
+                        certificateTextSettings={upperText1}
+                        description='Delegado 1, Delegado 2, Delegado 3, ...'
+                        id='upper-text-1'
+                        setCertificateTextSettings={setUpperText1}
+                        showText={showUpperText}
+                        title='Delegados'
+                      />
+                      <CardCustomText
+                        allowMargin={false}
+                        certificateTextSettings={upperText2}
+                        description='en nombre de la WCA...'
+                        id='upper-text-2'
+                        setCertificateTextSettings={setUpperText2}
+                        showText={showUpperText}
+                        title='Texto 1'
+                      />
+                      <CardFixedText
+                        allowMargin={false}
+                        certificateTextSettings={upperText3}
+                        description='Organizador 1, Organizador 2, Organizador 3, ...'
+                        id='upper-text-3'
+                        setCertificateTextSettings={setUpperText3}
+                        showText={showUpperText}
+                        title='Organizadores'
+                      />
+                      <CardCustomText
+                        allowMargin={false}
+                        certificateTextSettings={upperText4}
+                        description='en nombre de la organización...'
+                        id='upper-text-4'
+                        setCertificateTextSettings={setUpperText4}
+                        showText={showUpperText}
+                        title='Texto 2'
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
               </TabsContent>
               <TabsContent value="middle-text">
-                <div className="flex items-center justify-center space-x-2">
-                  <Switch checked={showMiddleText} id="upper-text" onCheckedChange={() => { setShowMiddleText(!showMiddleText) }} />
-                  <Label htmlFor="upper-text">Mostrar texto</Label>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
-                  <CardCustomText
-                    certificateTextSettings={middleText1}
-                    description='Certificado/Constancia/Reconocimiento'
-                    id='middle-text-1'
-                    setCertificateTextSettings={setMiddleText1}
-                    showText={showMiddleText}
-                    title='Título'
-                  />
-                  <CardCustomText
-                    certificateTextSettings={middleText2}
-                    description='De participación'
-                    id='middle-text-2'
-                    setCertificateTextSettings={setMiddleText2}
-                    showText={showMiddleText}
-                    title='Subtítulo'
-                  />
-                  <CardCustomText
-                    certificateTextSettings={middleText3}
-                    description='a'
-                    id='middle-text-3'
-                    setCertificateTextSettings={setMiddleText3}
-                    showText={showMiddleText}
-                    title='Conector'
-                  />
-                  <CardFixedText
-                    certificateTextSettings={middleText4}
-                    description='Nombre completo'
-                    id='middle-text-4'
-                    setCertificateTextSettings={setMiddleText4}
-                    showText={showMiddleText}
-                    title='Competidor'
-                  />
-                </div>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Texto medio</CardTitle>
+                    <CardDescription>Información del competidor</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-center space-x-2">
+                      <Switch checked={showMiddleText} id="upper-text" onCheckedChange={() => { setShowMiddleText(!showMiddleText) }} />
+                      <Label htmlFor="upper-text">Mostrar texto</Label>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                      <CardCustomText
+                        certificateTextSettings={middleText1}
+                        description='Certificado/Constancia/Reconocimiento'
+                        id='middle-text-1'
+                        setCertificateTextSettings={setMiddleText1}
+                        showText={showMiddleText}
+                        title='Título'
+                      />
+                      <CardCustomText
+                        certificateTextSettings={middleText2}
+                        description='De participación'
+                        id='middle-text-2'
+                        setCertificateTextSettings={setMiddleText2}
+                        showText={showMiddleText}
+                        title='Subtítulo'
+                      />
+                      <CardCustomText
+                        certificateTextSettings={middleText3}
+                        description='a'
+                        id='middle-text-3'
+                        setCertificateTextSettings={setMiddleText3}
+                        showText={showMiddleText}
+                        title='Conector'
+                      />
+                      <CardFixedText
+                        certificateTextSettings={middleText4}
+                        description='Nombre completo'
+                        id='middle-text-4'
+                        setCertificateTextSettings={setMiddleText4}
+                        showText={showMiddleText}
+                        title='Competidor'
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
               </TabsContent>
               <TabsContent value="lower-text">
-                <div className="flex items-center justify-center space-x-2">
-                  <Switch checked={showLowerText} id="upper-text" onCheckedChange={() => { setShowLowerText(!showLowerText) }} />
-                  <Label htmlFor="upper-text">Mostrar texto</Label>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
-                  <CardCustomText
-                    allowMargin={false}
-                    certificateTextSettings={lowerText1}
-                    description='Por haber participado...'
-                    id='lower-text-1'
-                    setCertificateTextSettings={setLowerText1}
-                    showText={showLowerText}
-                    title='Texto 1'
-                  />
-                  <CardFixedText
-                    allowMargin={false}
-                    certificateTextSettings={lowerText2}
-                    description='Nombre de la competencia'
-                    id='lower-text-2'
-                    setCertificateTextSettings={setLowerText2}
-                    showText={showLowerText}
-                    title='Competencia'
-                  />
-                  <CardCustomText
-                    allowMargin={false}
-                    certificateTextSettings={lowerText3}
-                    description={`Llevado acabo ${days === 1 ? 'el día' : 'los días'}...`}
-                    id='lower-text-3'
-                    setCertificateTextSettings={setLowerText3}
-                    showText={showLowerText}
-                    title='Texto 2'
-                  />
-                  <CardFixedText
-                    allowMargin={false}
-                    certificateTextSettings={lowerText4}
-                    description={`${days === 1 ? 'Día' : 'Días'} de la competencia`}
-                    id='lower-text-4'
-                    setCertificateTextSettings={setLowerText4}
-                    showText={showLowerText}
-                    title='Fecha'
-                  />
-                  <CardCustomText
-                    allowMargin={false}
-                    certificateTextSettings={lowerText5}
-                    description='en...'
-                    id='lower-text-5'
-                    setCertificateTextSettings={setLowerText5}
-                    showText={showLowerText}
-                    title='Texto 3'
-                  />
-                  <CardFixedText
-                    allowMargin={false}
-                    certificateTextSettings={lowerText6}
-                    description='Ciudad, Estado'
-                    id='lower-text-6'
-                    setCertificateTextSettings={setLowerText6}
-                    showText={showLowerText}
-                    title='Ubicación'
-                  />
-                  <CardCustomText
-                    allowMargin={false}
-                    certificateTextSettings={lowerText7}
-                    description='Obteniendo los siguientes resultados...'
-                    id='lower-text-7'
-                    setCertificateTextSettings={setLowerText7}
-                    showText={showLowerText}
-                    title='Texto 4'
-                  />
-                </div>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Texto inferior</CardTitle>
+                    <CardDescription>Información de la competencia</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-center space-x-2">
+                      <Switch checked={showLowerText} id="upper-text" onCheckedChange={() => { setShowLowerText(!showLowerText) }} />
+                      <Label htmlFor="upper-text">Mostrar texto</Label>
+                    </div>
+                    <div className='grid grid-cols-4 gap-4 my-4'>
+                      <div>
+                        <Label htmlFor="lower-margin-top">Margen superior</Label>
+                        <Input
+                          disabled={!showLowerText}
+                          id='lower-margin-top'
+                          min={0}
+                          onChange={(e) => {
+                            setLowerMargins(prevMargins => ({ ...prevMargins, top: parseInt(e.target.value, 10) }));
+                          }}
+                          type='number'
+                          value={lowerMargins.top}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="lower-margin-right">Margen derecho</Label>
+                        <Input
+                          disabled={!showLowerText}
+                          id='lower-margin-right'
+                          min={0}
+                          onChange={(e) => {
+                            setLowerMargins(prevMargins => ({ ...prevMargins, right: parseInt(e.target.value, 10) }));
+                          }}
+                          type='number'
+                          value={lowerMargins.right}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="lower-margin-bottom">Margen inferior</Label>
+                        <Input
+                          disabled={!showLowerText}
+                          id='lower-margin-bottom'
+                          min={0}
+                          onChange={(e) => {
+                            setLowerMargins(prevMargins => ({ ...prevMargins, bottom: parseInt(e.target.value, 10) }));
+                          }}
+                          type='number'
+                          value={lowerMargins.bottom}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="lower-margin-left">Margen izquierdo</Label>
+                        <Input
+                          disabled={!showLowerText}
+                          id='lower-margin-left'
+                          min={0}
+                          onChange={(e) => {
+                            setLowerMargins(prevMargins => ({ ...prevMargins, left: parseInt(e.target.value, 10) }));
+                          }}
+                          type='number'
+                          value={lowerMargins.left}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <CardCustomText
+                        allowMargin={false}
+                        certificateTextSettings={lowerText1}
+                        description='Por haber participado...'
+                        id='lower-text-1'
+                        setCertificateTextSettings={setLowerText1}
+                        showText={showLowerText}
+                        title='Texto 1'
+                      />
+                      <CardFixedText
+                        allowMargin={false}
+                        certificateTextSettings={lowerText2}
+                        description='Nombre de la competencia'
+                        id='lower-text-2'
+                        setCertificateTextSettings={setLowerText2}
+                        showText={showLowerText}
+                        title='Competencia'
+                      />
+                      <CardCustomText
+                        allowMargin={false}
+                        certificateTextSettings={lowerText3}
+                        description={`Llevado acabo ${days === 1 ? 'el día' : 'los días'}...`}
+                        id='lower-text-3'
+                        setCertificateTextSettings={setLowerText3}
+                        showText={showLowerText}
+                        title='Texto 2'
+                      />
+                      <CardFixedText
+                        allowMargin={false}
+                        certificateTextSettings={lowerText4}
+                        description={`${days === 1 ? 'Día' : 'Días'} de la competencia`}
+                        id='lower-text-4'
+                        setCertificateTextSettings={setLowerText4}
+                        showText={showLowerText}
+                        title='Fecha'
+                      />
+                      <CardCustomText
+                        allowMargin={false}
+                        certificateTextSettings={lowerText5}
+                        description='en...'
+                        id='lower-text-5'
+                        setCertificateTextSettings={setLowerText5}
+                        showText={showLowerText}
+                        title='Texto 3'
+                      />
+                      <CardFixedText
+                        allowMargin={false}
+                        certificateTextSettings={lowerText6}
+                        description='Ciudad, Estado'
+                        id='lower-text-6'
+                        setCertificateTextSettings={setLowerText6}
+                        showText={showLowerText}
+                        title='Ubicación'
+                      />
+                      <CardCustomText
+                        allowMargin={false}
+                        certificateTextSettings={lowerText7}
+                        description='Obteniendo los siguientes resultados...'
+                        id='lower-text-7'
+                        setCertificateTextSettings={setLowerText7}
+                        showText={showLowerText}
+                        title='Texto 4'
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
               </TabsContent>
               <TabsContent value="table">
-                <div className="flex items-center justify-center space-x-2">
-                  <Switch checked={showTable} id="results-table" onCheckedChange={() => { setShowTable(!showTable) }} />
-                  <Label htmlFor="results-table">Mostrar tabla</Label>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 my-4">
-                  <CardCustomText
-                    allowMargin={false}
-                    certificateTextSettings={tableText1}
-                    description='Evento/Categoría'
-                    id='results-table-1'
-                    setCertificateTextSettings={setTableText1}
-                    showText={showTable}
-                    title='Encabezado 1'
-                  />
-                  <CardCustomText
-                    allowMargin={false}
-                    certificateTextSettings={tableText2}
-                    description='Resultado/Tiempo'
-                    id='results-table-2'
-                    setCertificateTextSettings={setTableText2}
-                    showText={showTable}
-                    title='Encabezado 2'
-                  />
-                  <CardCustomText
-                    allowMargin={false}
-                    certificateTextSettings={tableText3}
-                    description='Posición/Clasificación/Ranking'
-                    id='results-table-3'
-                    setCertificateTextSettings={setTableText3}
-                    showText={showTable}
-                    title='Encabezado 3'
-                  />
-                  <CardFixedText
-                    allowMargin={false}
-                    certificateTextSettings={tableText4}
-                    description='Evento/Categoría'
-                    id='results-table-4'
-                    setCertificateTextSettings={setTableText4}
-                    showText={showTable}
-                    title='Columna 1'
-                  />
-                  <CardFixedText
-                    allowMargin={false}
-                    certificateTextSettings={tableText5}
-                    description='Resultado/Tiempo'
-                    id='results-table-5'
-                    setCertificateTextSettings={setTableText5}
-                    showText={showTable}
-                    title='Columna 2'
-                  />
-                  <CardFixedText
-                    allowMargin={false}
-                    certificateTextSettings={tableText6}
-                    description='Posición/Clasificación/Ranking'
-                    id='results-table-6'
-                    setCertificateTextSettings={setTableText6}
-                    showText={showTable}
-                    title='Columna 3'
-                  />
-                </div>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Tabla de resultados</CardTitle>
+                    <CardDescription>Resultados del competidor por evento</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-center space-x-2">
+                      <Switch checked={showTable} id="results-table" onCheckedChange={() => { setShowTable(!showTable) }} />
+                      <Label htmlFor="results-table">Mostrar tabla</Label>
+                    </div>
+                    <div className='grid grid-cols-4 gap-4 my-4'>
+                      <div>
+                        <Label htmlFor="table-margin-top">Margen superior</Label>
+                        <Input
+                          disabled={!showTable}
+                          id='table-margin-top'
+                          min={0}
+                          onChange={(e) => {
+                            setTableMargins(prevMargins => ({ ...prevMargins, top: parseInt(e.target.value, 10) }));
+                          }}
+                          type='number'
+                          value={tableMargins.top}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="table-margin-right">Margen derecho</Label>
+                        <Input
+                          disabled={!showTable}
+                          id='table-margin-right'
+                          min={0}
+                          onChange={(e) => {
+                            setTableMargins(prevMargins => ({ ...prevMargins, right: parseInt(e.target.value, 10) }));
+                          }}
+                          type='number'
+                          value={tableMargins.right}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="table-margin-bottom">Margen inferior</Label>
+                        <Input
+                          disabled={!showTable}
+                          id='table-margin-bottom'
+                          min={0}
+                          onChange={(e) => {
+                            setTableMargins(prevMargins => ({ ...prevMargins, bottom: parseInt(e.target.value, 10) }));
+                          }}
+                          type='number'
+                          value={tableMargins.bottom}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="table-margin-left">Margen izquierdo</Label>
+                        <Input
+                          disabled={!showTable}
+                          id='table-margin-left'
+                          min={0}
+                          onChange={(e) => {
+                            setTableMargins(prevMargins => ({ ...prevMargins, left: parseInt(e.target.value, 10) }));
+                          }}
+                          type='number'
+                          value={tableMargins.left}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                      <CardCustomText
+                        allowMargin={false}
+                        certificateTextSettings={tableText1}
+                        description='Evento/Categoría'
+                        id='results-table-1'
+                        setCertificateTextSettings={setTableText1}
+                        showText={showTable}
+                        title='Encabezado 1'
+                      />
+                      <CardCustomText
+                        allowMargin={false}
+                        certificateTextSettings={tableText2}
+                        description='Resultado/Tiempo'
+                        id='results-table-2'
+                        setCertificateTextSettings={setTableText2}
+                        showText={showTable}
+                        title='Encabezado 2'
+                      />
+                      <CardCustomText
+                        allowMargin={false}
+                        certificateTextSettings={tableText3}
+                        description='Posición/Clasificación/Ranking'
+                        id='results-table-3'
+                        setCertificateTextSettings={setTableText3}
+                        showText={showTable}
+                        title='Encabezado 3'
+                      />
+                      <CardFixedText
+                        allowMargin={false}
+                        certificateTextSettings={tableText4}
+                        description='Evento/Categoría'
+                        id='results-table-4'
+                        setCertificateTextSettings={setTableText4}
+                        showText={showTable}
+                        title='Columna 1'
+                      />
+                      <CardFixedText
+                        allowMargin={false}
+                        certificateTextSettings={tableText5}
+                        description='Resultado/Tiempo'
+                        id='results-table-5'
+                        setCertificateTextSettings={setTableText5}
+                        showText={showTable}
+                        title='Columna 2'
+                      />
+                      <CardFixedText
+                        allowMargin={false}
+                        certificateTextSettings={tableText6}
+                        description='Posición/Clasificación/Ranking'
+                        id='results-table-6'
+                        setCertificateTextSettings={setTableText6}
+                        showText={showTable}
+                        title='Columna 3'
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
               </TabsContent>
             </Tabs>
           </div>
@@ -1059,7 +1324,7 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
         {size === undefined && <p className='font-semibold'>Debes seleccionar el tamaño del documento</p>}
         {orientation === undefined && <p className='font-semibold'>Debes seleccionar la orientación del documento</p>}
         {(size !== undefined && orientation !== undefined && Object.keys(rowSelection).length !== 0) && (
-          <div>
+          <div className='mt-4'>
             {isDesktop ? (
               <PDFViewer className='w-full h-[600px]'>
                 {participationDocument}

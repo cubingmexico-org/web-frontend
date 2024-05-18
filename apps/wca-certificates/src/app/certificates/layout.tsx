@@ -11,7 +11,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
   const user = session?.user as User
 
   return (
-    <main className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+    <main className="flex flex-col sm:gap-4 sm:py-4">
       <Header user={user} />
       {children}
     </main>

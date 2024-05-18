@@ -220,7 +220,7 @@ export function CardFixedText({
       <CardContent>
         <div className='grid grid-cols-2 gap-4'>
           <div className='flex flex-col items-center justify-center'>
-            <Label htmlFor={`certificate-text-${id}`}>Texto</Label>
+            <Label htmlFor={`certificate-text-${id}`}>Mostrar</Label>
             <Checkbox
               checked={typeof certificateTextSettings.text === 'boolean' && certificateTextSettings.text}
               className='my-2'

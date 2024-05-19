@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
-import type { Event, Person, Result } from '@/types/wca-live';
+import type { Event, Person, Result, EventId } from '@/types/wca-live';
 
 export function processPersons(persons: Person[]) {
   const getRole = (role: string) => (person: Person) => person.roles.includes(role);
@@ -32,13 +32,13 @@ export function processPersons(persons: Person[]) {
   };
 }
 
-export function formatResults(value: number | string): string {
+export function formatResults(result: number): string {
 
-  if (value === -1) {
+  if (result === -1) {
     return 'DNF';
   }
 
-  const number = Number(value) / 100;
+  const number = result / 100;
   let time: string;
 
   if (number >= 60) {
@@ -52,7 +52,7 @@ export function formatResults(value: number | string): string {
   return time;
 }
 
-export function formatEvents(eventId: string, mode?: 'og' | 'es') {
+export function formatEvents(eventId: EventId, mode?: 'og' | 'es') {
   switch (mode) {
     case 'es':
       switch (eventId) {
@@ -136,33 +136,53 @@ export function formatEvents(eventId: string, mode?: 'og' | 'es') {
   }
 }
 
-export function formatPlace(place: string): string {
-  switch (place) {
-    case '1':
-      return 'primer';
-    case '2':
-      return 'segundo';
-    case '3':
-      return 'tercer';
+export function formatPlace(place: number, formatType: 'place' | 'medal', mode?: 'lowercase' | 'capitalize' | 'uppercase'): string {
+  let formattedPlace: string;
+  switch (formatType) {
+    case 'place':
+      switch (place) {
+        case 1:
+          formattedPlace = 'primer';
+          break;
+        case 2:
+          formattedPlace = 'segundo';
+          break;
+        case 3:
+          formattedPlace = 'tercer';
+          break;
+        default:
+          formattedPlace = String(place);
+      }
+      break;
+    case 'medal':
+      switch (place) {
+        case 1:
+          formattedPlace = 'oro';
+          break;
+        case 2:
+          formattedPlace = 'plata';
+          break;
+        case 3:
+          formattedPlace = 'bronce';
+          break;
+        default:
+          formattedPlace = String(place);
+      }
+      break;
+  }
+
+  switch (mode) {
+    case 'uppercase':
+      return formattedPlace.toUpperCase();
+    case 'capitalize':
+      return formattedPlace.charAt(0).toUpperCase() + formattedPlace.slice(1);
+    case 'lowercase':
     default:
-      return place;
+      return formattedPlace.toLowerCase();
   }
 }
 
-export function formatMedal(place: string): string {
-  switch (place) {
-    case '1':
-      return 'ORO';
-    case '2':
-      return 'PLATA';
-    case '3':
-      return 'BRONCE';
-    default:
-      return place;
-  }
-}
-
-export function formatResultType(eventId: string): string {
+export function formatResultType(eventId: EventId): string {
   switch (eventId) {
     case '333bf':
     case '444bf':

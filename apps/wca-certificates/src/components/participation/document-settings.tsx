@@ -52,6 +52,7 @@ import type { Competition, ParticipantData } from '@/types/wca-live';
 import { FileUploader } from "@/components/file-uploader";
 import { Combobox } from "@/components/combobox-font";
 import { CardCustomText, CardFixedText } from "@/components/card-document-settings";
+import type { Margin, TextSettings } from '@/types/document'
 
 Font.register({
   family: 'MavenPro',
@@ -64,21 +65,6 @@ Font.register({
 })
 
 Font.registerHyphenationCallback(word => [word]);
-
-interface Margin {
-  top: number;
-  right: number;
-  bottom: number;
-  left: number;
-}
-
-interface TextSettings {
-  text: string | boolean;
-  fontSize: number;
-  fontFamily: string;
-  margin: Margin;
-  color: string;
-}
 
 interface DocumentSettingsProps {
   competition: Competition;
@@ -176,7 +162,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
   const [showLowerText, setShowLowerText] = useState<boolean>(true);
   const [lowerMargins, setLowerMargins] = useState<Margin>({ top: 0, right: 0, bottom: 0, left: 0 });
   const [lowerText1, setLowerText1] = useState<TextSettings>({
-    text: 'por haber haber participado en el ',
+    text: 'por haber participado en el ',
     fontSize: 12,
     fontFamily,
     margin: { top: 0, right: 0, bottom: 0, left: 0 },
@@ -385,7 +371,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
 
   const participationDocument = (
     <Document author={organizers.join(', ')} title={`Certificados de participación para el ${competition.name}`}>
-      {pdfData.map((text, index) => (
+      {pdfData.map((data, index) => (
         <Page key={index} orientation={orientation} size={size}>
           {background ? <Image src={background} style={styles.background} /> : null}
           <View debug={debugDocument} style={[styles.center, styles.body]}>
@@ -509,7 +495,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                       marginBottom: middleText4.margin.bottom,
                       marginLeft: middleText4.margin.left,
                     }}>
-                    {text.name}
+                    {data.name}
                   </Text>
                 ) : null}
               </>
@@ -665,7 +651,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                     </View>
                   ) : null}
                 </View>
-                {text.results.map((result, index: number) => (
+                {data.results.map((result, index: number) => (
                   <View key={index} style={styles.tableRow}>
                     {tableText4.text ? (
                       <View style={styles.tableCol}>

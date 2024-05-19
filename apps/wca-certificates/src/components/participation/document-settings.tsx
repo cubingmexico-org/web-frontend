@@ -48,7 +48,7 @@ import {
   formatDates,
   joinPersons
 } from "@/lib/utils"
-import type { Data, ParticipantData } from '@/types/types';
+import type { Competition, ParticipantData } from '@/types/wca-live';
 import { FileUploader } from "@/components/file-uploader";
 import { Combobox } from "@/components/combobox-font";
 import { CardCustomText, CardFixedText } from "@/components/card-document-settings";
@@ -81,16 +81,16 @@ interface TextSettings {
 }
 
 interface DocumentSettingsProps {
-  data: Data;
+  competition: Competition;
   city: string;
   state: string;
 }
 
-export default function DocumentSettings({ data, city, state }: DocumentSettingsProps): JSX.Element {
-  const people = data.persons;
-  const events = data.events;
-  const date = data.schedule.startDate;
-  const days = data.schedule.numberOfDays;
+export default function DocumentSettings({ competition, city, state }: DocumentSettingsProps): JSX.Element {
+  const people = competition.persons;
+  const events = competition.events;
+  const date = competition.schedule.startDate;
+  const days = competition.schedule.numberOfDays;
 
   const { delegates, organizers } = processPersons(people);
   const [pdfData, setPdfData] = useState<ParticipantData[]>([]);
@@ -384,7 +384,7 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
   }, [size, orientation, rowSelection]);
 
   const participationDocument = (
-    <Document author={organizers.join(', ')} title={`Certificados de participación para el ${data.name}`}>
+    <Document author={organizers.join(', ')} title={`Certificados de participación para el ${competition.name}`}>
       {pdfData.map((text, index) => (
         <Page key={index} orientation={orientation} size={size}>
           {background ? <Image src={background} style={styles.background} /> : null}
@@ -544,7 +544,7 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
                     marginBottom: lowerText2.margin.bottom,
                     marginLeft: lowerText2.margin.left
                   }}>
-                    {data.name}
+                    {competition.name}
                   </Text>
                 ) : null}
                 {lowerText3.text ? (
@@ -1349,7 +1349,7 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
               <PDFDownloadLink
                 className={buttonVariants()}
                 document={participationDocument}
-                fileName={`Certificados de participación del ${data.name}`}
+                fileName={`Certificados de participación del ${competition.name}`}
               >
                 Descargar certificados
                 <FileDown className='ml-2' />

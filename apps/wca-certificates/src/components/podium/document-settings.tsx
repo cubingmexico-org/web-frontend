@@ -40,7 +40,7 @@ import {
   joinPersons
 } from "@/lib/utils"
 import { FileUploader } from "@/components/file-uploader";
-import type { Event, Data } from '@/types/types';
+import type { Event, Competition } from '@/types/wca-live';
 
 Font.register({
   family: 'MavenPro',
@@ -82,13 +82,13 @@ const styles = StyleSheet.create({
 });
 
 interface DocumentSettingsProps {
-  data: Data;
+  competition: Competition;
   city: string;
   state: string;
 }
 
-export default function DocumentSettings({ data, city, state }: DocumentSettingsProps): JSX.Element {
-  const { delegates, organizers, getEventData } = processPersons(data.persons);
+export default function DocumentSettings({ competition, city, state }: DocumentSettingsProps): JSX.Element {
+  const { delegates, organizers, getEventData } = processPersons(competition.persons);
   const [pdfData, setPdfData] = useState<string[][]>([]);
   const [files, setFiles] = useState<File[]>([]);
   const [background, setBackground] = useState<string>();
@@ -109,10 +109,10 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
     }
   }, [files]);
 
-  const date = data.schedule.startDate;
-  const days = data.schedule.numberOfDays;
+  const date = competition.schedule.startDate;
+  const days = competition.schedule.numberOfDays;
 
-  const selectedEvents = data.events.filter(event => rowSelection[event.id]);
+  const selectedEvents = competition.events.filter(event => rowSelection[event.id]);
 
   function generatePodiumCertificates() {
     const tempPdfData: string[][] = [];
@@ -140,7 +140,7 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
   }, [size, orientation, rowSelection]);
 
   const podiumDocument = (
-    <Document author={organizers.join(', ')} title={`Certificados de podio para el ${data.name}`}>
+    <Document author={organizers.join(', ')} title={`Certificados de podio para el ${competition.name}`}>
       {pdfData.map((text, index) => (
         <Page key={index} orientation={orientation} size={size}>
           { background ? <Image src={background} style={styles.background} /> : null }
@@ -155,7 +155,7 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
             <Text style={{ fontSize: 16 }}>a</Text>
             <Text style={[styles.bold, { fontSize: 35, paddingTop: 10, paddingBottom: 20 }]}>{text[0]}</Text>
             <Text style={{ fontSize: 16, paddingHorizontal: 40, lineHeight: 1.25 }}>
-              por haber obtenido el <Text style={styles.bold}>{formatPlace(text[1])} lugar</Text> en <Text style={styles.bold}>{formatEvents(text[2])}</Text> con {formatResultType(text[2])} de <Text style={styles.bold}>{formatResults(text[3])}</Text> en el <Text style={styles.bold}>{data.name}</Text>, llevado acabo {days === 1 ? 'el día' : 'los días'} <Text style={styles.bold}>{formatDates(date, days.toString())}</Text> en <Text style={styles.bold}>{city}, {state}</Text>.
+              por haber obtenido el <Text style={styles.bold}>{formatPlace(text[1])} lugar</Text> en <Text style={styles.bold}>{formatEvents(text[2])}</Text> con {formatResultType(text[2])} de <Text style={styles.bold}>{formatResults(text[3])}</Text> en el <Text style={styles.bold}>{competition.name}</Text>, llevado acabo {days === 1 ? 'el día' : 'los días'} <Text style={styles.bold}>{formatDates(date, days.toString())}</Text> en <Text style={styles.bold}>{city}, {state}</Text>.
             </Text>
           </View>
         </Page>
@@ -165,7 +165,7 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
 
   return (
     <>
-      <DataTable columns={columns} data={data.events} rowSelection={rowSelection} setRowSelection={setRowSelection} />
+      <DataTable columns={columns} data={competition.events} rowSelection={rowSelection} setRowSelection={setRowSelection} />
       <div className="text-center mt-4">
         <div className='flex justify-center'>
           <div className='w-full pr-1'>
@@ -215,7 +215,7 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
               <PDFDownloadLink
                 className={buttonVariants()}
                 document={podiumDocument}
-                fileName={`Certificados de podio del ${data.name}`}
+                fileName={`Certificados de podio del ${competition.name}`}
               >
                 Descargar certificados
                 <FileDown className='ml-2' />

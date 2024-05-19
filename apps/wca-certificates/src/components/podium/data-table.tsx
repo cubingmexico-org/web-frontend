@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@repo/ui/table"
-import type { Event, Result } from '@/types/types';
+import type { Event, Result } from '@/types/wca-live';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]

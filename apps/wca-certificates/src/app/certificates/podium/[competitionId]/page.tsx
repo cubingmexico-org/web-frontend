@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access -- . */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
 import DocumentSettings from "@/components/podium/document-settings"
-import type { Data } from "@/types/types";
+import type { Competition } from "@/types/wca-live";
 import "@cubing/icons"
 
 export default async function Page({ params }: { params: { competitionId: string } }): Promise<JSX.Element> {
@@ -11,9 +11,9 @@ export default async function Page({ params }: { params: { competitionId: string
     cache: 'no-store'
   });
 
-  const data = await response.json() as Data;
+  const competition = await response.json() as Competition;
 
-  const locationResponse = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${data.schedule.venues[0].latitudeMicrodegrees / 1000000},${data.schedule.venues[0].longitudeMicrodegrees / 1000000}&key=${process.env.GOOGLE_MAPS_API_KEY}`, {
+  const locationResponse = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${competition.schedule.venues[0].latitudeMicrodegrees / 1000000},${competition.schedule.venues[0].longitudeMicrodegrees / 1000000}&key=${process.env.GOOGLE_MAPS_API_KEY}`, {
     cache: 'no-store'
   });
 
@@ -24,8 +24,8 @@ export default async function Page({ params }: { params: { competitionId: string
 
   return (
     <div className="container mx-auto py-10">
-      <h1 className="text-3xl mb-4">Certificados de podio para el {data.name}</h1>
-      <DocumentSettings city={cityObj.long_name} data={data} state={stateObj.long_name} />
+      <h1 className="text-3xl mb-4">Certificados de podio para el {competition.name}</h1>
+      <DocumentSettings city={cityObj.long_name} competition={competition} state={stateObj.long_name} />
     </div>
   );
 }

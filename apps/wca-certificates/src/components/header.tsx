@@ -35,9 +35,9 @@ export default function Header({
           src="https://storage.googleapis.com/cubingmexico_dev_bucket/img/cubingmexico_logo.svg"
           width={50}
         />
-        <h1 className="text-2xl ml-2">Certificados de la WCA</h1>
+        <h1 className="sm:text-2xl text-xl ml-2">Certificados de la WCA</h1>
       </Link>
-      <div className="relative ml-auto flex-1 md:grow-0">
+      <div className="relative ml-auto grow-0">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar>

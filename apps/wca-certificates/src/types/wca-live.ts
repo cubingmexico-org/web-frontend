@@ -44,7 +44,7 @@ export interface Event {
   qualification: unknown;
 }
 
-export interface Data {
+export interface Competition {
   name: string;
   schedule: {
     startDate: string,

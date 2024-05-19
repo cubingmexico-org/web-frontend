@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
-import type { Event, Person, Result } from '@/types/types';
+import type { Event, Person, Result } from '@/types/wca-live';
 
 export function processPersons(persons: Person[]) {
   const getRole = (role: string) => (person: Person) => person.roles.includes(role);

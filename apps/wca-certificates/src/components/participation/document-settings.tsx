@@ -269,6 +269,7 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
     margin: { top: 0, right: 0, bottom: 0, left: 0 },
     color
   });
+  const [eventsFormat, setEventsFormat] = useState<'og' | 'es'>();
 
   const styles = StyleSheet.create({
     body: {
@@ -676,7 +677,7 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
                               color: tableText4.color
                             }]
                           }>
-                          {formatEvents(result.event)}
+                          {formatEvents(result.event, eventsFormat)}
                         </Text>
                       </View>
                     ) : null}
@@ -1294,7 +1295,22 @@ export default function DocumentSettings({ data, city, state }: DocumentSettings
                         setCertificateTextSettings={setTableText4}
                         showText={showTable}
                         title='Columna 1'
-                      />
+                      >
+                        <div className='grid grid-cols-1 gap-4'>
+                          <Label htmlFor='events-format'>Formato</Label>
+                          <Select onValueChange={(value: 'og' | 'es') => {
+                            setEventsFormat(value);
+                          }}>
+                            <SelectTrigger id='events-format'>
+                              <SelectValue placeholder="Formato" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="og">Original</SelectItem>
+                              <SelectItem value="es">Español</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </CardFixedText>
                       <CardFixedText
                         allowMargin={false}
                         certificateTextSettings={tableText5}

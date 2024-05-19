@@ -44,7 +44,8 @@ export function CardCustomText({
   certificateTextSettings,
   allowMargin = true,
   setCertificateTextSettings,
-}: CardDocumentSettingsProps): JSX.Element {
+  children,
+}: CardDocumentSettingsProps & { children?: React.ReactNode }): JSX.Element {
   return (
     <Card>
       <CardHeader>
@@ -197,6 +198,7 @@ export function CardCustomText({
             </div>
           </div>
         ) : null}
+        {children}
       </CardContent>
     </Card>
   );
@@ -210,7 +212,8 @@ export function CardFixedText({
   certificateTextSettings,
   allowMargin = true,
   setCertificateTextSettings,
-}: CardDocumentSettingsProps): JSX.Element {
+  children,
+}: CardDocumentSettingsProps & { children?: React.ReactNode }): JSX.Element {
   return (
     <Card>
       <CardHeader>
@@ -362,6 +365,7 @@ export function CardFixedText({
             </div>
           </div>
         ) : null}
+        {children}
       </CardContent>
     </Card>
   );

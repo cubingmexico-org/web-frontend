@@ -52,44 +52,87 @@ export function formatResults(value: number | string): string {
   return time;
 }
 
-export function formatEvents(eventId: string): string {
-  switch (eventId) {
-    case '333':
-      return '3x3x3';
-    case '222':
-      return '2x2x2';
-    case '444':
-      return '4x4x4';
-    case '555':
-      return '5x5x5';
-    case '666':
-      return '6x6x6';
-    case '777':
-      return '7x7x7';
-    case '333bf':
-      return '3x3x3 A Ciegas';
-    case '333fm':
-      return '3x3x3 Menos Movimientos';
-    case '333oh':
-      return '3x3x3 A Una Mano';
-    case 'clock':
-      return 'Clock';
-    case 'minx':
-      return 'Megaminx';
-    case 'pyram':
-      return 'Pyraminx';
-    case 'skewb':
-      return 'Skewb';
-    case 'sq1':
-      return 'Square-1';
-    case '444bf':
-      return '4x4x4 A Ciegas';
-    case '555bf':
-      return '5x5x5 A Ciegas';
-    case '333mbf':
-      return '3x3x3 Múltiples A Ciegas';
+export function formatEvents(eventId: string, mode?: 'og' | 'es') {
+  switch (mode) {
+    case 'es':
+      switch (eventId) {
+        case '333':
+          return '3x3x3';
+        case '222':
+          return '2x2x2';
+        case '444':
+          return '4x4x4';
+        case '555':
+          return '5x5x5';
+        case '666':
+          return '6x6x6';
+        case '777':
+          return '7x7x7';
+        case '333bf':
+          return '3x3x3 A Ciegas';
+        case '333fm':
+          return '3x3x3 Menos Movimientos';
+        case '333oh':
+          return '3x3x3 A Una Mano';
+        case 'clock':
+          return 'Clock';
+        case 'minx':
+          return 'Megaminx';
+        case 'pyram':
+          return 'Pyraminx';
+        case 'skewb':
+          return 'Skewb';
+        case 'sq1':
+          return 'Square-1';
+        case '444bf':
+          return '4x4x4 A Ciegas';
+        case '555bf':
+          return '5x5x5 A Ciegas';
+        case '333mbf':
+          return '3x3x3 Múltiples A Ciegas';
+        default:
+          return eventId;
+      }
+    case 'og':
     default:
-      return eventId;
+      switch (eventId) {
+        case '333':
+          return '3x3x3';
+        case '222':
+          return '2x2x2';
+        case '444':
+          return '4x4x4';
+        case '555':
+          return '5x5x5';
+        case '666':
+          return '6x6x6';
+        case '777':
+          return '7x7x7';
+        case '333bf':
+          return '3x3x3 Blindfolded';
+        case '333fm':
+          return '3x3x3 Fewest Moves';
+        case '333oh':
+          return '3x3x3 One-Handed';
+        case 'clock':
+          return 'Clock';
+        case 'minx':
+          return 'Megaminx';
+        case 'pyram':
+          return 'Pyraminx';
+        case 'skewb':
+          return 'Skewb';
+        case 'sq1':
+          return 'Square-1';
+        case '444bf':
+          return '4x4x4 Blindfolded';
+        case '555bf':
+          return '5x5x5 Blindfolded';
+        case '333mbf':
+          return '3x3x3 Multi-Blind';
+        default:
+          return eventId;
+      }
   }
 }
 
@@ -181,7 +224,6 @@ export function formatBytes(
   const accurateSizes = ["Bytes", "KiB", "MiB", "GiB", "TiB"]
   if (bytes === 0) return "0 Byte"
   const i = Math.floor(Math.log(bytes) / Math.log(1024))
-  return `${(bytes / Math.pow(1024, i)).toFixed(decimals)} ${
-    sizeType === "accurate" ? accurateSizes[i] ?? "Bytest" : sizes[i] ?? "Bytes"
-  }`
+  return `${(bytes / Math.pow(1024, i)).toFixed(decimals)} ${sizeType === "accurate" ? accurateSizes[i] ?? "Bytest" : sizes[i] ?? "Bytes"
+    }`
 }

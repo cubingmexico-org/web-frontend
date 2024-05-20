@@ -8,6 +8,13 @@ import {
   CardHeader,
   CardTitle
 } from '@repo/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@repo/ui/select"
 import { Checkbox } from "@repo/ui/checkbox";
 import { Combobox } from "@/components/combobox-font";
 
@@ -32,6 +39,7 @@ interface CardDocumentSettingsProps {
   description: string;
   showText: boolean;
   certificateTextSettings: TextSettings;
+  allowCapitalization?: boolean;
   allowMargin?: boolean;
   setCertificateTextSettings: (func: (prevSettings: TextSettings) => TextSettings) => void;
 };
@@ -210,6 +218,7 @@ export function CardFixedText({
   description,
   showText,
   certificateTextSettings,
+  allowCapitalization = true,
   allowMargin = true,
   setCertificateTextSettings,
   children,
@@ -281,6 +290,28 @@ export function CardFixedText({
             />
           </div>
         </div>
+        {allowCapitalization ? (
+          <div className='grid grid-cols-1 gap-4'>
+            <div className='flex flex-col items-center justify-center'>
+              <Label htmlFor={`capitalize-${id}`}>Uso de mayúsculas</Label>
+              <Select onValueChange={(value: 'lowercase' | 'capitalize' | 'uppercase') => {
+                setCertificateTextSettings(prevSettings => ({
+                  ...prevSettings,
+                  capitalization: value
+                }));
+              }}>
+                <SelectTrigger className="my-2" disabled={!showText} id='events-format'>
+                  <SelectValue placeholder="Uso de mayúsculas" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="lowercase">Minúsculas</SelectItem>
+                  <SelectItem value="capitalize">Oración</SelectItem>
+                  <SelectItem value="uppercase">Mayúsculas</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        ) : null}
         {allowMargin ? (
           <div className='grid grid-cols-4 gap-4'>
             <div>

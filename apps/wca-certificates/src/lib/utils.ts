@@ -19,7 +19,7 @@ export function processPersons(persons: Person[]) {
       .filter((result: Result) => result.ranking !== null && result.ranking >= 1 && result.ranking <= 3)
       .map((person) => ({
         personName: personIdToName[person.personId],
-        result: event.id === '333bf' ? person.best : person.average,
+        result: event.id === '333bf' || event.id === '444bf' || event.id === '555bf' || event.id === '333mbf' ? person.best : person.average,
       }));
 
     return results;
@@ -32,10 +32,47 @@ export function processPersons(persons: Person[]) {
   };
 }
 
-export function formatResults(result: number): string {
+export function transformString(s: string, caseType?: 'lowercase' | 'capitalize' | 'uppercase'): string {
+  if (typeof s !== 'string') return ''
+  switch (caseType) {
+    case 'lowercase':
+      return s.toLowerCase();
+    case 'capitalize':
+      return s.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    case 'uppercase':
+      return s.toUpperCase();
+    default:
+      return s;
+  }
+}
+
+export function formatResults(result: number, eventId: EventId): string {
+
+  if (eventId === '333mbf') {
+    const valueStr = result.toString();
+    const DD = valueStr.slice(0, 2);
+    const TTTTT = valueStr.slice(2, 7);
+    const MM = valueStr.slice(7);
+
+    const difference = 99 - parseInt(DD);
+    const missed = parseInt(MM);
+    const solved = difference + missed;
+    const attempted = solved + missed;
+
+    const TTTTTInt = parseInt(TTTTT);
+    const minutes = Math.floor(TTTTTInt / 60);
+    const seconds = TTTTTInt % 60;
+    const time = `${solved}/${attempted} en ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+    return time;
+  }
 
   if (result === -1) {
     return 'DNF';
+  }
+
+  if (result === -2) {
+    return 'DNS';
   }
 
   const number = result / 100;
@@ -52,7 +89,7 @@ export function formatResults(result: number): string {
   return time;
 }
 
-export function formatEvents(eventId: EventId, mode?: 'og' | 'es') {
+export function formatEvents(eventId: EventId, mode?: 'en' | 'es') {
   switch (mode) {
     case 'es':
       switch (eventId) {
@@ -93,7 +130,7 @@ export function formatEvents(eventId: EventId, mode?: 'og' | 'es') {
         default:
           return eventId;
       }
-    case 'og':
+    case 'en':
     default:
       switch (eventId) {
         case '333':
@@ -136,49 +173,32 @@ export function formatEvents(eventId: EventId, mode?: 'og' | 'es') {
   }
 }
 
-export function formatPlace(place: number, formatType: 'place' | 'medal', mode?: 'lowercase' | 'capitalize' | 'uppercase'): string {
-  let formattedPlace: string;
+export function formatPlace(place: number, formatType: 'place' | 'medal' | 'other'): string {
   switch (formatType) {
     case 'place':
       switch (place) {
         case 1:
-          formattedPlace = 'primer';
-          break;
+          return 'primer';
         case 2:
-          formattedPlace = 'segundo';
-          break;
+          return 'segundo';
         case 3:
-          formattedPlace = 'tercer';
-          break;
+          return 'tercer';
         default:
-          formattedPlace = String(place);
+          return String(place);
       }
-      break;
     case 'medal':
       switch (place) {
         case 1:
-          formattedPlace = 'oro';
-          break;
+          return 'oro';
         case 2:
-          formattedPlace = 'plata';
-          break;
+          return 'plata';
         case 3:
-          formattedPlace = 'bronce';
-          break;
+          return 'bronce';
         default:
-          formattedPlace = String(place);
+          return String(place);
       }
-      break;
-  }
-
-  switch (mode) {
-    case 'uppercase':
-      return formattedPlace.toUpperCase();
-    case 'capitalize':
-      return formattedPlace.charAt(0).toUpperCase() + formattedPlace.slice(1);
-    case 'lowercase':
-    default:
-      return formattedPlace.toLowerCase();
+    case 'other':
+      return String(place);
   }
 }
 
@@ -187,8 +207,10 @@ export function formatResultType(eventId: EventId): string {
     case '333bf':
     case '444bf':
     case '555bf':
-    case '333mbf':
       return 'un mejor tiempo';
+    case '333mbf':
+    case '333fm':
+      return 'un mejor resultado';
     case '666':
     case '777':
       return 'una media';

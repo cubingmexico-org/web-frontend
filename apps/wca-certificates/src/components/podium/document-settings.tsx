@@ -47,7 +47,8 @@ import {
   formatPlace,
   formatResultType,
   formatDates,
-  joinPersons
+  joinPersons,
+  transformString
 } from "@/lib/utils"
 import type { Event, Competition, PodiumData } from '@/types/wca-live';
 import { FileUploader } from "@/components/file-uploader";
@@ -142,7 +143,8 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
     fontSize: 25,
     fontFamily,
     margin: { top: 0, right: 0, bottom: 0, left: 0 },
-    color
+    color,
+    capitalization: 'uppercase'
   });
   const [middleText3, setMiddleText3] = useState<TextSettings>({
     text: 'a',
@@ -158,7 +160,6 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
     margin: { top: 0, right: 0, bottom: 0, left: 0 },
     color
   });
-  const [capitalization, setCapitalization] = useState<'lowercase' | 'capitalize' | 'uppercase'>('uppercase');
 
   const [showLowerText, setShowLowerText] = useState<boolean>(true);
   const [lowerMargins, setLowerMargins] = useState<Margin>({ top: 0, right: 0, bottom: 0, left: 0 });
@@ -260,7 +261,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
     margin: { top: 0, right: 0, bottom: 0, left: 0 },
     color
   });
-  const [eventsFormat, setEventsFormat] = useState<'og' | 'es'>();
+  const [eventsFormat, setEventsFormat] = useState<'en' | 'es'>();
 
   const styles = StyleSheet.create({
     body: {
@@ -349,7 +350,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                     marginBottom: upperText1.margin.bottom,
                     marginLeft: upperText1.margin.left
                   }}>
-                    {joinPersons(delegates)}
+                    {transformString(joinPersons(delegates), upperText1.capitalization)}
                   </Text>
                 ) : null}
                 {upperText2.text ? (
@@ -375,7 +376,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                     marginBottom: upperText3.margin.bottom,
                     marginLeft: upperText3.margin.left
                   }}>
-                    {joinPersons(organizers)}
+                    {transformString(joinPersons(organizers), upperText3.capitalization)}
                   </Text>
                 ) : null}
                 {upperText4.text ? (
@@ -422,7 +423,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                       marginBottom: middleText2.margin.bottom,
                       marginLeft: middleText2.margin.left,
                     }}>
-                    {middleText2.text}{formatPlace(data.place, 'medal', capitalization)}
+                    {middleText2.text}{transformString(formatPlace(data.place, 'medal'), middleText2.capitalization)}
                   </Text>
                 ) : null}
                 {typeof middleText3.text === 'string' && middleText3.text.length !== 0 ? (
@@ -452,7 +453,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                       marginBottom: middleText4.margin.bottom,
                       marginLeft: middleText4.margin.left,
                     }}>
-                    {data.name}
+                    {transformString(data.name, middleText4.capitalization)}
                   </Text>
                 ) : null}
               </>
@@ -487,7 +488,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                     marginBottom: lowerText2.margin.bottom,
                     marginLeft: lowerText2.margin.left
                   }}>
-                    {formatPlace(data.place, 'place')}
+                    {transformString(formatPlace(data.place, 'place'), lowerText2.capitalization)}
                   </Text>
                 ) : null}
                 {lowerText3.text ? (
@@ -513,7 +514,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                     marginBottom: lowerText4.margin.bottom,
                     marginLeft: lowerText4.margin.left
                   }}>
-                    {formatEvents(data.event, eventsFormat)}
+                    {transformString(formatEvents(data.event, eventsFormat), lowerText4.capitalization)}
                   </Text>
                 ) : null}
                 {lowerText5.text ? (
@@ -539,7 +540,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                     marginBottom: lowerText6.margin.bottom,
                     marginLeft: lowerText6.margin.left
                   }}>
-                    {formatResultType(data.event)}
+                    {transformString(formatResultType(data.event), lowerText6.capitalization)}
                   </Text>
                 ) : null}
                 {lowerText7.text ? (
@@ -565,7 +566,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                     marginBottom: lowerText8.margin.bottom,
                     marginLeft: lowerText8.margin.left
                   }}>
-                    {formatResults(data.result)}
+                    {transformString(formatResults(data.result, data.event), lowerText8.capitalization)}
                   </Text>
                 ) : null}
                 {lowerText9.text ? (
@@ -617,7 +618,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                     marginBottom: lowerText12.margin.bottom,
                     marginLeft: lowerText12.margin.left
                   }}>
-                    {formatDates(date, days.toString())}
+                    {transformString(formatDates(date, days.toString()), lowerText12.capitalization)}
                   </Text>
                 ) : null}
                 {lowerText13.text ? (
@@ -643,7 +644,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                     marginBottom: lowerText14.margin.bottom,
                     marginLeft: lowerText14.margin.left
                   }}>
-                    {city}, {state}
+                    {transformString(`${city}, ${state}`, lowerText14.capitalization)}
                   </Text>
                 ) : null}
               </Text>
@@ -973,19 +974,19 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                         title='Subtítulo'
                       >
                         <div className='grid grid-cols-1 gap-4'>
-                          <Label htmlFor='events-format'>Uso de mayúsculas</Label>
-                          <Select onValueChange={(value: 'lowercase' | 'capitalize' | 'uppercase') => {
-                            setCapitalization(value);
-                          }}>
-                            <SelectTrigger id='events-format'>
-                              <SelectValue placeholder="Uso de mayúsculas" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="lowercase">Minúsculas</SelectItem>
-                              <SelectItem value="capitalize">Oración</SelectItem>
-                              <SelectItem value="uppercase">Mayúsculas</SelectItem>
-                            </SelectContent>
-                          </Select>
+                            <Label htmlFor='events-format'>Uso de mayúsculas (oro/plata/bronce)</Label>
+                            <Select onValueChange={(value: 'lowercase' | 'capitalize' | 'uppercase') => {
+                              setMiddleText2(prevText => ({ ...prevText, capitalization: value }));
+                            }}>
+                              <SelectTrigger disabled={!showMiddleText || typeof middleText2.text === 'string' && middleText2.text.length === 0} id='events-format'>
+                                <SelectValue placeholder="Uso de mayúsculas" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="lowercase">Minúsculas</SelectItem>
+                                <SelectItem value="capitalize">Oración</SelectItem>
+                                <SelectItem value="uppercase">Mayúsculas</SelectItem>
+                              </SelectContent>
+                            </Select>
                         </div>
                       </CardCustomText>
                       <CardCustomText
@@ -1112,14 +1113,14 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                       >
                         <div className='grid grid-cols-1 gap-4'>
                           <Label htmlFor='events-format'>Formato</Label>
-                          <Select onValueChange={(value: 'og' | 'es') => {
+                          <Select onValueChange={(value: 'en' | 'es') => {
                             setEventsFormat(value);
                           }}>
                             <SelectTrigger id='events-format'>
                               <SelectValue placeholder="Formato" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="og">Original</SelectItem>
+                              <SelectItem value="og">Inglés</SelectItem>
                               <SelectItem value="es">Español</SelectItem>
                             </SelectContent>
                           </Select>
@@ -1226,7 +1227,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
         {size === undefined && <p className='font-semibold'>Debes seleccionar el tamaño del documento</p>}
         {orientation === undefined && <p className='font-semibold'>Debes seleccionar la orientación del documento</p>}
         {(size !== undefined && orientation !== undefined && Object.keys(rowSelection).length !== 0) && (
-          <>
+          <div className='mt-4'>
             {isDesktop ? (
               <PDFViewer className='w-full h-[600px] mt-4'>
                 {podiumDocument}
@@ -1241,7 +1242,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                 <FileDown className='ml-2' />
               </PDFDownloadLink>
             )}
-          </>
+          </div>
         )}
       </div>
     </>

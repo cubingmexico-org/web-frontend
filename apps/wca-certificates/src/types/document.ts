@@ -11,5 +11,5 @@ export interface TextSettings {
   fontFamily: string;
   margin: Margin;
   color: string;
-  capitalizaion?: 'uppercase' | 'lowercase' | 'capitalize';
+  capitalization?: 'uppercase' | 'lowercase' | 'capitalize';
 }

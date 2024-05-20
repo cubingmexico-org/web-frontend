@@ -255,7 +255,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
     margin: { top: 0, right: 0, bottom: 0, left: 0 },
     color
   });
-  const [eventsFormat, setEventsFormat] = useState<'og' | 'es'>();
+  const [eventsFormat, setEventsFormat] = useState<'en' | 'es'>();
 
   const styles = StyleSheet.create({
     body: {
@@ -677,7 +677,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                               color: tableText5.color
                             }]
                           }>
-                          {formatResults(result.average)}
+                          {formatResults(result.average, result.event)}
                         </Text>
                       </View>
                     ) : null}
@@ -1284,14 +1284,14 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                       >
                         <div className='grid grid-cols-1 gap-4'>
                           <Label htmlFor='events-format'>Formato</Label>
-                          <Select onValueChange={(value: 'og' | 'es') => {
+                          <Select onValueChange={(value: 'en' | 'es') => {
                             setEventsFormat(value);
                           }}>
                             <SelectTrigger id='events-format'>
                               <SelectValue placeholder="Formato" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="og">Original</SelectItem>
+                              <SelectItem value="og">Inglés</SelectItem>
                               <SelectItem value="es">Español</SelectItem>
                             </SelectContent>
                           </Select>

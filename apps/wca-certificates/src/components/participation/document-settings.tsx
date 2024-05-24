@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- . */
 /* eslint-disable no-nested-ternary -- . */
 /* eslint-disable @typescript-eslint/no-shadow -- . */
 /* eslint-disable react/no-array-index-key -- . */
@@ -7,9 +8,9 @@
 
 import React, { useState, useEffect } from 'react'
 import { toast } from "sonner"
-import { buttonVariants } from '@repo/ui/button'
+import { Button, buttonVariants } from '@repo/ui/button'
 import { Label } from "@repo/ui/label"
-import { FileDown } from "lucide-react"
+import { FileDown, Save, Loader } from "lucide-react"
 import {
   Document,
   Page,
@@ -28,6 +29,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/select"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@repo/ui/alert-dialog"
 import { useMediaQuery } from "@repo/ui/use-media-query"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs"
 import { Switch } from "@repo/ui/switch"
@@ -46,13 +58,14 @@ import {
   formatResults,
   formatEvents,
   formatDates,
-  joinPersons
+  joinPersons,
+  transformString,
 } from "@/lib/utils"
 import type { Competition, ParticipantData } from '@/types/wca-live';
 import { FileUploader } from "@/components/file-uploader";
 import { Combobox } from "@/components/combobox-font";
 import { CardCustomText, CardFixedText } from "@/components/card-document-settings";
-import type { Margin, TextSettings } from '@/types/document'
+import type { DocumentState, Margin, TextSettings } from '@/types/document'
 
 Font.register({
   family: 'MavenPro',
@@ -90,9 +103,94 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
   const [customizeText, setCustomizeText] = useState<boolean>(false);
   const [debugDocument, setDebugDocument] = useState<boolean>(false);
 
+  const [lastSaved, setLastSaved] = useState<Date>(new Date());
+  const localSaved = localStorage.getItem(`${competition.id}-participation-documentSettings`);
+
   if (debugDocument) {
     toast.error("Desactiva esta opción antes de imprimir o descargar el documento.")
   }
+
+  const saveState = () => {
+    setLastSaved(new Date());
+    const state = {
+      lastSaved,
+      size,
+      orientation,
+      fontFamily,
+      color,
+      margins,
+      showUpperText,
+      upperMargins,
+      upperText1,
+      upperText2,
+      upperText3,
+      upperText4,
+      showMiddleText,
+      middleText1,
+      middleText2,
+      middleText3,
+      middleText4,
+      showLowerText,
+      lowerMargins,
+      lowerText1,
+      lowerText2,
+      lowerText3,
+      lowerText4,
+      lowerText5,
+      lowerText6,
+      lowerText7,
+      showTable,
+      tableMargins,
+      tableText1,
+      tableText2,
+      tableText3,
+      tableText4,
+      tableText5,
+      tableText6,
+      eventsFormat,
+    };
+
+    localStorage.setItem(`${competition.id}-participation-documentSettings`, JSON.stringify(state));
+  };
+
+  const loadState = () => {
+    const state = JSON.parse(localSaved || '{}') as DocumentState;
+
+    setSize(state.size);
+    setOrientation(state.orientation);
+    setFontFamily(state.fontFamily);
+    setColor(state.color);
+    setMargins(state.margins);
+    setShowUpperText(state.showUpperText);
+    setUpperMargins(state.upperMargins);
+    setUpperText1(state.upperText1);
+    setUpperText2(state.upperText2);
+    setUpperText3(state.upperText3);
+    setUpperText4(state.upperText4);
+    setShowMiddleText(state.showMiddleText);
+    setMiddleText1(state.middleText1);
+    setMiddleText2(state.middleText2);
+    setMiddleText3(state.middleText3);
+    setMiddleText4(state.middleText4);
+    setShowLowerText(state.showLowerText);
+    setLowerMargins(state.lowerMargins);
+    setLowerText1(state.lowerText1);
+    setLowerText2(state.lowerText2);
+    setLowerText3(state.lowerText3);
+    setLowerText4(state.lowerText4);
+    setLowerText5(state.lowerText5);
+    setLowerText6(state.lowerText6);
+    setLowerText7(state.lowerText7);
+    setShowTable(state.showTable);
+    setTableMargins(state.tableMargins);
+    setTableText1(state.tableText1);
+    setTableText2(state.tableText2);
+    setTableText3(state.tableText3);
+    setTableText4(state.tableText4);
+    setTableText5(state.tableText5);
+    setTableText6(state.tableText6);
+    setEventsFormat(state.eventsFormat);
+  };
 
   const [fontFamily, setFontFamily] = useState<string>('Helvetica');
   const [color, setColor] = useState<string>('#000000');
@@ -392,7 +490,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                     marginBottom: upperText1.margin.bottom,
                     marginLeft: upperText1.margin.left
                   }}>
-                    {joinPersons(delegates)}
+                    {transformString(joinPersons(delegates), upperText1.capitalization)}
                   </Text>
                 ) : null}
                 {upperText2.text ? (
@@ -418,7 +516,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                     marginBottom: upperText3.margin.bottom,
                     marginLeft: upperText3.margin.left
                   }}>
-                    {joinPersons(organizers)}
+                    {transformString(joinPersons(organizers), upperText3.capitalization)}
                   </Text>
                 ) : null}
                 {upperText4.text ? (
@@ -495,7 +593,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                       marginBottom: middleText4.margin.bottom,
                       marginLeft: middleText4.margin.left,
                     }}>
-                    {data.name}
+                    {transformString(data.name, middleText4.capitalization)}
                   </Text>
                 ) : null}
               </>
@@ -530,7 +628,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                     marginBottom: lowerText2.margin.bottom,
                     marginLeft: lowerText2.margin.left
                   }}>
-                    {competition.name}
+                    {transformString(competition.name, lowerText2.capitalization)}
                   </Text>
                 ) : null}
                 {lowerText3.text ? (
@@ -556,7 +654,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                     marginBottom: lowerText4.margin.bottom,
                     marginLeft: lowerText4.margin.left
                   }}>
-                    {formatDates(date, days.toString())}
+                    {transformString(formatDates(date, days.toString()), lowerText4.capitalization)}
                   </Text>
                 ) : null}
                 {lowerText5.text ? (
@@ -582,7 +680,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                     marginBottom: lowerText6.margin.bottom,
                     marginLeft: lowerText6.margin.left
                   }}>
-                    {city}, {state}
+                    {transformString(`${city}, ${state}`, lowerText6.capitalization)}
                   </Text>
                 ) : null}
                 {lowerText7.text ? (
@@ -717,7 +815,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
         <div className='flex justify-center'>
           <div className='w-full pr-1'>
             <Label>Tamaño de hoja</Label>
-            <Select onValueChange={(value: "LETTER" | "A4") => { setSize(value); }}>
+            <Select onValueChange={(value: "LETTER" | "A4") => { setSize(value); }} value={size}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Tamaño *" />
               </SelectTrigger>
@@ -729,7 +827,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
           </div>
           <div className='w-full pl-1'>
             <Label>Orientación de hoja</Label>
-            <Select onValueChange={(value: "portrait" | "landscape") => { setOrientation(value); }}>
+            <Select onValueChange={(value: "portrait" | "landscape") => { setOrientation(value); }} value={orientation}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Orientación *" />
               </SelectTrigger>
@@ -747,7 +845,35 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
             maxFiles={1}
             maxSize={1 * 1024 * 1024}
             onValueChange={(e) => { setFiles(e); }}
+            value={files}
           />
+        </div>
+        <div className="flex items-center justify-center space-x-2 mb-4">
+          <Button disabled={localSaved === null} onClick={loadState}><Loader className='size-4 mr-2' />Cargar</Button>
+          {localSaved === null ? (
+            <Button onClick={saveState}><Save className='size-4 mr-2' />Guardar</Button>
+          ) : (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button><Save className='size-4 mr-2' />Guardar</Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>¿Estás seguro que deseas guardar el documento?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    <p>Esta acción no se puede deshacer. Esto guardará el documento actual y reemplazará el que estaba guardado anteriormente.</p>
+                    <p className='mt-1'>
+                      <span className='font-bold'>Documento anterior:</span> {new Date(JSON.parse(localSaved).lastSaved as string).toLocaleString()}
+                    </p>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction onClick={saveState}>Continuar</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </div>
         {(size !== undefined && orientation !== undefined && Object.keys(rowSelection).length !== 0) && (
           <div className="flex items-center justify-center space-x-2 mb-4">

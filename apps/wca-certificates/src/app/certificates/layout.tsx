@@ -2,6 +2,7 @@ import type { User } from 'next-auth';
 import { getServerSession } from 'next-auth'
 import { authOptions } from "@/lib/auth"
 import Header from '@/components/header'
+import Footer from '@/components/footer';
 import "@cubing/icons"
 
 export default async function Layout({ children }: { children: React.ReactNode }): Promise<JSX.Element> {
@@ -14,6 +15,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
     <main className="flex flex-col sm:gap-4 sm:py-4">
       <Header user={user} />
       {children}
+      <Footer />
     </main>
   );
 }

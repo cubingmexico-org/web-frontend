@@ -173,16 +173,18 @@ export function formatEvents(eventId: EventId, mode?: 'en' | 'es') {
   }
 }
 
+// TODO: Add "lugar"
+
 export function formatPlace(place: number, formatType: 'place' | 'medal' | 'other'): string {
   switch (formatType) {
     case 'place':
       switch (place) {
         case 1:
-          return 'primer';
+          return 'primer lugar';
         case 2:
-          return 'segundo';
+          return 'segundo lugar';
         case 3:
-          return 'tercer';
+          return 'tercer lugar';
         default:
           return String(place);
       }

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- . */
+/* eslint-disable @typescript-eslint/no-shadow -- . */
 /* eslint-disable react/no-array-index-key -- . */
 /* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
 /* eslint-disable react-hooks/exhaustive-deps -- . */
@@ -6,9 +8,9 @@
 
 import React, { useState, useEffect } from 'react'
 import { toast } from "sonner"
-import { buttonVariants } from '@repo/ui/button'
+import { Button, buttonVariants } from '@repo/ui/button'
 import { Label } from "@repo/ui/label"
-import { FileDown } from "lucide-react"
+import { FileDown, Save, Loader } from "lucide-react"
 import {
   Document,
   Page,
@@ -27,6 +29,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/select"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@repo/ui/alert-dialog"
 import { useMediaQuery } from "@repo/ui/use-media-query"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs"
 import { Switch } from "@repo/ui/switch"
@@ -54,7 +67,7 @@ import type { Event, Competition, PodiumData } from '@/types/wca-live';
 import { FileUploader } from "@/components/file-uploader";
 import { Combobox } from "@/components/combobox-font";
 import { CardCustomText, CardFixedText } from "@/components/card-document-settings";
-import type { Margin, TextSettings } from '@/types/document'
+import type { DocumentState, Margin, TextSettings } from '@/types/document'
 
 Font.register({
   family: 'MavenPro',
@@ -91,9 +104,94 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
   const [customizeText, setCustomizeText] = useState<boolean>(false);
   const [debugDocument, setDebugDocument] = useState<boolean>(false);
 
+  const [lastSaved, setLastSaved] = useState<Date>(new Date());
+  const localSaved = localStorage.getItem(`${competition.id}-podium-documentSettings`);
+
   if (debugDocument) {
     toast.error("Desactiva esta opción antes de imprimir o descargar el documento.")
   }
+
+  const saveState = () => {
+    setLastSaved(new Date());
+    const state = {
+      lastSaved,
+      size,
+      orientation,
+      fontFamily,
+      color,
+      margins,
+      showUpperText,
+      upperMargins,
+      upperText1,
+      upperText2,
+      upperText3,
+      upperText4,
+      showMiddleText,
+      middleText1,
+      middleText2,
+      middleText3,
+      middleText4,
+      placeFormat,
+      showLowerText,
+      lowerMargins,
+      lowerText1,
+      lowerText2,
+      lowerText3,
+      lowerText4,
+      lowerText5,
+      lowerText6,
+      lowerText7,
+      lowerText8,
+      lowerText9,
+      lowerText10,
+      lowerText11,
+      lowerText12,
+      lowerText13,
+      lowerText14,
+      eventsFormat,
+    };
+
+    localStorage.setItem(`${competition.id}-podium-documentSettings`, JSON.stringify(state));
+  };
+
+  const loadState = () => {
+    const state = JSON.parse(localSaved || '{}') as DocumentState;
+
+    setSize(state.size);
+    setOrientation(state.orientation);
+    setFontFamily(state.fontFamily);
+    setColor(state.color);
+    setMargins(state.margins);
+    setShowUpperText(state.showUpperText);
+    setUpperMargins(state.upperMargins);
+    setUpperText1(state.upperText1);
+    setUpperText2(state.upperText2);
+    setUpperText3(state.upperText3);
+    setUpperText4(state.upperText4);
+    setShowMiddleText(state.showMiddleText);
+    setMiddleText1(state.middleText1);
+    setMiddleText2(state.middleText2);
+    setMiddleText3(state.middleText3);
+    setMiddleText4(state.middleText4);
+    setPlaceFormat(state.placesFormat);
+    setShowLowerText(state.showLowerText);
+    setLowerMargins(state.lowerMargins);
+    setLowerText1(state.lowerText1);
+    setLowerText2(state.lowerText2);
+    setLowerText3(state.lowerText3);
+    setLowerText4(state.lowerText4);
+    setLowerText5(state.lowerText5);
+    setLowerText6(state.lowerText6);
+    setLowerText7(state.lowerText7);
+    setLowerText8(state.lowerText8);
+    setLowerText9(state.lowerText9);
+    setLowerText10(state.lowerText10);
+    setLowerText11(state.lowerText11);
+    setLowerText12(state.lowerText12);
+    setLowerText13(state.lowerText13);
+    setLowerText14(state.lowerText14);
+    setEventsFormat(state.eventsFormat);
+  };
 
   const [fontFamily, setFontFamily] = useState<string>('Helvetica');
   const [color, setColor] = useState<string>('#000000');
@@ -160,6 +258,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
     margin: { top: 0, right: 0, bottom: 0, left: 0 },
     color
   });
+  const [placeFormat, setPlaceFormat] = useState<'place' | 'medal' | 'other'>('medal');
 
   const [showLowerText, setShowLowerText] = useState<boolean>(true);
   const [lowerMargins, setLowerMargins] = useState<Margin>({ top: 0, right: 0, bottom: 0, left: 0 });
@@ -178,7 +277,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
     color
   });
   const [lowerText3, setLowerText3] = useState<TextSettings>({
-    text: ' lugar en ',
+    text: ' en ',
     fontSize: 12,
     fontFamily,
     margin: { top: 0, right: 0, bottom: 0, left: 0 },
@@ -423,7 +522,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                       marginBottom: middleText2.margin.bottom,
                       marginLeft: middleText2.margin.left,
                     }}>
-                    {middleText2.text}{transformString(formatPlace(data.place, 'medal'), middleText2.capitalization)}
+                    {middleText2.text}{transformString(formatPlace(data.place, placeFormat), middleText2.capitalization)}
                   </Text>
                 ) : null}
                 {typeof middleText3.text === 'string' && middleText3.text.length !== 0 ? (
@@ -693,6 +792,33 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
             maxSize={1 * 1024 * 1024}
             onValueChange={(e) => { setFiles(e); }}
           />
+        </div>
+        <div className="flex items-center justify-center space-x-2 mb-4">
+          <Button disabled={localSaved === null} onClick={loadState}><Loader className='size-4 mr-2' />Cargar</Button>
+          {localSaved === null ? (
+            <Button onClick={saveState}><Save className='size-4 mr-2' />Guardar</Button>
+          ) : (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button><Save className='size-4 mr-2' />Guardar</Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>¿Estás seguro que deseas guardar el documento?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    <p>Esta acción no se puede deshacer. Esto guardará el documento actual y reemplazará el que estaba guardado anteriormente.</p>
+                    <p className='mt-1'>
+                      <span className='font-bold'>Documento anterior:</span> {new Date(JSON.parse(localSaved).lastSaved as string).toLocaleString()}
+                    </p>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction onClick={saveState}>Continuar</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </div>
         {(size !== undefined && orientation !== undefined && Object.keys(rowSelection).length !== 0) && (
           <div className="flex items-center justify-center space-x-2 mb-4">
@@ -973,8 +1099,23 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                         showText={showMiddleText}
                         title='Subtítulo'
                       >
-                        <div className='grid grid-cols-1 gap-4'>
-                            <Label htmlFor='events-format'>Uso de mayúsculas (oro/plata/bronce)</Label>
+                        <div className='grid grid-cols-2 gap-4'>
+                          <div>
+                            <Label htmlFor='places-format'>Formato (oro/plata/bronce)</Label>
+                            <Select onValueChange={(value: 'place' | 'medal' | 'other') => {
+                              setPlaceFormat(value);
+                            }}>
+                              <SelectTrigger id='places-format'>
+                                <SelectValue placeholder="Formato" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="medal">Oro/Plata/Bronce</SelectItem>
+                                <SelectItem value="place">Primer/Segundo/Tercer lugar</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label htmlFor='places-format'>Uso de mayúsculas (oro/plata/bronce)</Label>
                             <Select onValueChange={(value: 'lowercase' | 'capitalize' | 'uppercase') => {
                               setMiddleText2(prevText => ({ ...prevText, capitalization: value }));
                             }}>
@@ -987,6 +1128,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                                 <SelectItem value="uppercase">Mayúsculas</SelectItem>
                               </SelectContent>
                             </Select>
+                          </div>
                         </div>
                       </CardCustomText>
                       <CardCustomText
@@ -1087,7 +1229,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                       <CardFixedText
                         allowMargin={false}
                         certificateTextSettings={lowerText2}
-                        description='primer/segundo/tercer'
+                        description='primer/segundo/tercer lugar'
                         id='lower-text-2'
                         setCertificateTextSettings={setLowerText2}
                         showText={showLowerText}
@@ -1096,7 +1238,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                       <CardCustomText
                         allowMargin={false}
                         certificateTextSettings={lowerText3}
-                        description='lugar en...'
+                        description=' en...'
                         id='lower-text-3'
                         setCertificateTextSettings={setLowerText3}
                         showText={showLowerText}
@@ -1120,7 +1262,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                               <SelectValue placeholder="Formato" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="og">Inglés</SelectItem>
+                              <SelectItem value="en">Inglés</SelectItem>
                               <SelectItem value="es">Español</SelectItem>
                             </SelectContent>
                           </Select>

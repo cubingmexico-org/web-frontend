@@ -47,6 +47,7 @@ export interface Event {
 }
 
 export interface Competition {
+  id: string;
   name: string;
   schedule: {
     startDate: string,

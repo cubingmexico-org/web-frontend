@@ -19,7 +19,6 @@ import {
   PDFViewer,
   StyleSheet,
   Image,
-  Font,
   PDFDownloadLink
 } from '@react-pdf/renderer'
 import {
@@ -66,18 +65,9 @@ import { FileUploader } from "@/components/file-uploader";
 import { Combobox } from "@/components/combobox-font";
 import { CardCustomText, CardFixedText } from "@/components/card-document-settings";
 import type { DocumentState, Margin, TextSettings } from '@/types/document'
+import { setupFonts } from '@/lib/fonts'
 
-Font.register({
-  family: 'MavenPro',
-  src: '/fonts/MavenPro/MavenPro-Regular.ttf'
-})
-
-Font.register({
-  family: 'MavenPro-Bold',
-  src: '/fonts/MavenPro/MavenPro-Bold.ttf'
-})
-
-Font.registerHyphenationCallback(word => [word]);
+setupFonts();
 
 interface DocumentSettingsProps {
   competition: Competition;

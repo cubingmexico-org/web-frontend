@@ -19,7 +19,6 @@ import {
   PDFViewer,
   StyleSheet,
   Image,
-  Font,
   PDFDownloadLink
 } from '@react-pdf/renderer'
 import {
@@ -68,18 +67,9 @@ import { FileUploader } from "@/components/file-uploader";
 import { Combobox } from "@/components/combobox-font";
 import { CardCustomText, CardFixedText } from "@/components/card-document-settings";
 import type { DocumentState, Margin, TextSettings } from '@/types/document'
+import { setupFonts } from '@/lib/fonts'
 
-Font.register({
-  family: 'MavenPro',
-  src: '/fonts/MavenPro/MavenPro-Regular.ttf'
-})
-
-Font.register({
-  family: 'MavenPro-Bold',
-  src: '/fonts/MavenPro/MavenPro-Bold.ttf'
-})
-
-Font.registerHyphenationCallback(word => [word]);
+setupFonts();
 
 interface DocumentSettingsProps {
   competition: Competition;
@@ -761,7 +751,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
         <div className='flex justify-center'>
           <div className='w-full pr-1'>
             <Label>Tamaño de hoja</Label>
-            <Select onValueChange={(value: "LETTER" | "A4") => { setSize(value); }}>
+            <Select onValueChange={(value: "LETTER" | "A4") => { setSize(value); }} value={size}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Tamaño *" />
               </SelectTrigger>
@@ -773,7 +763,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
           </div>
           <div className='w-full pl-1'>
             <Label>Orientación de hoja</Label>
-            <Select onValueChange={(value: "portrait" | "landscape") => { setOrientation(value); }}>
+            <Select onValueChange={(value: "portrait" | "landscape") => { setOrientation(value); }} value={orientation}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Orientación *" />
               </SelectTrigger>
@@ -1104,7 +1094,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                             <Label htmlFor='places-format'>Formato (oro/plata/bronce)</Label>
                             <Select onValueChange={(value: 'place' | 'medal' | 'other') => {
                               setPlaceFormat(value);
-                            }}>
+                            }} value={placeFormat}>
                               <SelectTrigger id='places-format'>
                                 <SelectValue placeholder="Formato" />
                               </SelectTrigger>
@@ -1118,7 +1108,8 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                             <Label htmlFor='places-format'>Uso de mayúsculas (oro/plata/bronce)</Label>
                             <Select onValueChange={(value: 'lowercase' | 'capitalize' | 'uppercase') => {
                               setMiddleText2(prevText => ({ ...prevText, capitalization: value }));
-                            }}>
+                            }}
+                              value={middleText2.capitalization}>
                               <SelectTrigger disabled={!showMiddleText || typeof middleText2.text === 'string' && middleText2.text.length === 0} id='events-format'>
                                 <SelectValue placeholder="Uso de mayúsculas" />
                               </SelectTrigger>
@@ -1257,7 +1248,8 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                           <Label htmlFor='events-format'>Formato</Label>
                           <Select onValueChange={(value: 'en' | 'es') => {
                             setEventsFormat(value);
-                          }}>
+                          }}
+                            value={eventsFormat}>
                             <SelectTrigger id='events-format'>
                               <SelectValue placeholder="Formato" />
                             </SelectTrigger>

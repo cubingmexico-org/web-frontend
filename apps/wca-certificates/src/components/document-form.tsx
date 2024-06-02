@@ -51,7 +51,7 @@ const fonts = {
 
 export default function DocumentForm(): JSX.Element {
 
-  const [pageMargins, setPageMargins] = useState<Margins>([60, 40, 60, 40]);
+  const [pageMargins, setPageMargins] = useState<Margins>([40, 60, 40, 60]);
   const [pageOrientation, setPageOrientation] = useState<"portrait" | "landscape">("portrait");
   const [pageSize, setPageSize] = useState<"LETTER" | "A4">("LETTER");
 
@@ -237,10 +237,17 @@ export default function DocumentForm(): JSX.Element {
                         id='top'
                         min={0}
                         onChange={(e) => {
-                          setPageMargins([parseInt(e.target.value), pageMargins[1], pageMargins[2], pageMargins[3]]);
+                          if (Array.isArray(pageMargins) && pageMargins.length === 4) {
+                            setPageMargins([
+                              pageMargins[0],
+                              parseInt(e.target.value),
+                              pageMargins[2],
+                              pageMargins[3]
+                            ]);
+                          }
                         }}
                         type='number'
-                        value={pageMargins[0]}
+                        value={Array.isArray(pageMargins) && pageMargins.length === 4 ? pageMargins[1] : 0}
                       />
                     </div>
                     <div className='flex items-center gap-2'>
@@ -250,10 +257,17 @@ export default function DocumentForm(): JSX.Element {
                         id='bottom'
                         min={0}
                         onChange={(e) => {
-                          setPageMargins([pageMargins[0], pageMargins[1], parseInt(e.target.value), pageMargins[3]]);
+                          if (Array.isArray(pageMargins) && pageMargins.length === 4) {
+                            setPageMargins([
+                              pageMargins[0],
+                              pageMargins[1],
+                              pageMargins[2],
+                              parseInt(e.target.value)
+                            ]);
+                          }
                         }}
                         type='number'
-                        value={pageMargins[2]}
+                        value={Array.isArray(pageMargins) && pageMargins.length === 4 ? pageMargins[3] : 0}
                       />
                     </div>
                     <div className='flex items-center gap-2'>
@@ -263,10 +277,17 @@ export default function DocumentForm(): JSX.Element {
                         id='right'
                         min={0}
                         onChange={(e) => {
-                          setPageMargins([pageMargins[0], parseInt(e.target.value), pageMargins[2], pageMargins[3]]);
+                          if (Array.isArray(pageMargins) && pageMargins.length === 4) {
+                            setPageMargins([
+                              pageMargins[0],
+                              pageMargins[1],
+                              parseInt(e.target.value),
+                              pageMargins[3]
+                            ]);
+                          }
                         }}
                         type='number'
-                        value={pageMargins[1]}
+                        value={Array.isArray(pageMargins) && pageMargins.length === 4 ? pageMargins[2] : 0}
                       />
                     </div>
                     <div className='flex items-center gap-2'>
@@ -276,10 +297,17 @@ export default function DocumentForm(): JSX.Element {
                         id='left'
                         min={0}
                         onChange={(e) => {
-                          setPageMargins([pageMargins[0], pageMargins[1], pageMargins[2], parseInt(e.target.value)]);
+                          if (Array.isArray(pageMargins) && pageMargins.length === 4) {
+                            setPageMargins([
+                              parseInt(e.target.value),
+                              pageMargins[1],
+                              pageMargins[2],
+                              pageMargins[3]
+                            ]);
+                          }
                         }}
                         type='number'
-                        value={pageMargins[3]}
+                        value={Array.isArray(pageMargins) && pageMargins.length === 4 ? pageMargins[0] : 0}
                       />
                     </div>
                   </div>

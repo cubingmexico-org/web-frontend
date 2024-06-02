@@ -5,9 +5,14 @@
 
 import type { JSONContent } from '@tiptap/react';
 import { useEditor, EditorContent } from '@tiptap/react'
+import Mention from '@tiptap/extension-mention'
+import TextAlign from '@tiptap/extension-text-align'
 import StarterKit from '@tiptap/starter-kit'
+import FontFamily from '@tiptap/extension-font-family'
+import TextStyle from '@tiptap/extension-text-style'
 import { podium } from '@/lib/placeholders';
 import Toolbar from './toolbar';
+import suggestion from './mentions/suggestion'
 
 interface TiptapProps {
   onChange: (newContent: JSONContent) => void;
@@ -20,11 +25,22 @@ export default function Tiptap({ onChange }: TiptapProps): JSX.Element {
   const editor = useEditor({
     extensions: [
       StarterKit,
+      Mention.configure({
+        HTMLAttributes: {
+          class: 'mention',
+        },
+        suggestion,
+      }),
+      TextAlign.configure({
+        types: ['heading', 'paragraph'],
+      }),
+      TextStyle,
+      FontFamily
     ],
     editorProps: {
       attributes: {
         class:
-          "flex flex-col min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+          "flex flex-col w-[612px] h-[792px] rounded-md border border-input bg-background px-[40px] py-[60px] text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
       },
     },
     content: podium,

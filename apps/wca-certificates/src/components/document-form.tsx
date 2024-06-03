@@ -26,7 +26,7 @@ import { RadioGroup, RadioGroupItem } from "@repo/ui/radio-group"
 import { Input } from '@repo/ui/input';
 import * as pdfMake from "pdfmake/build/pdfmake";
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
-import type { Margins, TDocumentDefinitions } from 'pdfmake/interfaces';
+import type { Margins, PageOrientation, PageSize, TDocumentDefinitions } from 'pdfmake/interfaces';
 import { FileText } from 'lucide-react';
 import { FileUploader } from "@/components/file-uploader";
 import { podium } from '@/lib/placeholders';
@@ -52,8 +52,8 @@ const fonts = {
 export default function DocumentForm(): JSX.Element {
 
   const [pageMargins, setPageMargins] = useState<Margins>([40, 60, 40, 60]);
-  const [pageOrientation, setPageOrientation] = useState<"portrait" | "landscape">("portrait");
-  const [pageSize, setPageSize] = useState<"LETTER" | "A4">("LETTER");
+  const [pageOrientation, setPageOrientation] = useState<PageOrientation>("portrait");
+  const [pageSize, setPageSize] = useState<PageSize>("LETTER");
 
   const [files, setFiles] = useState<File[]>([]);
   const [background, setBackground] = useState<string>();
@@ -194,16 +194,16 @@ export default function DocumentForm(): JSX.Element {
       <div className='flex justify-center'>
         <Dialog>
           <DialogTrigger asChild>
-            <Button><FileText className='h-5 w-5 mr-2' /> Configuración de página</Button>
+            <Button variant='outline'><FileText className='h-5 w-5 mr-2' /> Configuración de página</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Configuración de página</DialogTitle>
-              <div className='grid grid-cols-2 gap-2'>
-                <div>
-                  <div>
+              <div className='grid grid-cols-2 gap-4'>
+                <div className='flex flex-col gap-4'>
+                  <div className='grid gap-2'>
                     <Label htmlFor='pageOrientation'>Orientación</Label>
-                    <RadioGroup className='flex' defaultValue="portrait" id='pageOrientation' onValueChange={(value: "portrait" | "landscape") => { setPageOrientation(value); }} value={pageOrientation}>
+                    <RadioGroup className='flex' defaultValue="portrait" id='pageOrientation' onValueChange={(value: PageOrientation) => { setPageOrientation(value); }} value={pageOrientation}>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem id="portrait" value="portrait" />
                         <Label htmlFor="portrait">Vertical</Label>
@@ -214,102 +214,94 @@ export default function DocumentForm(): JSX.Element {
                       </div>
                     </RadioGroup>
                   </div>
-                  <div>
+                  <div className='grid gap-2'>
                     <Label htmlFor='pageSize'>Tamaño de papel</Label>
-                    <Select onValueChange={(value: "LETTER" | "A4") => { setPageSize(value); }} value={pageSize}>
+                    <Select onValueChange={(value: PageSize) => { setPageSize(value); }} value={pageSize}>
                       <SelectTrigger className="w-full" id='pageSize'>
                         <SelectValue placeholder="Tamaño *" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="LETTER">Carta</SelectItem>
-                        <SelectItem value="A4">A4</SelectItem>
+                        <SelectItem value="LETTER">Carta (21.6 cm x 27.9 cm)</SelectItem>
+                        <SelectItem value="A4">A4 (21 cm x 29.7 cm)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
-                <div>
+                <div className='grid gap-2'>
                   <Label htmlFor='pageMargins'>Márgenes</Label>
-                  <div>
-                    <div className='flex items-center gap-2'>
-                      <Label htmlFor='top'>Superior</Label>
-                      <Input
-                        className='w-full'
-                        id='top'
-                        min={0}
-                        onChange={(e) => {
-                          if (Array.isArray(pageMargins) && pageMargins.length === 4) {
-                            setPageMargins([
-                              pageMargins[0],
-                              parseInt(e.target.value),
-                              pageMargins[2],
-                              pageMargins[3]
-                            ]);
-                          }
-                        }}
-                        type='number'
-                        value={Array.isArray(pageMargins) && pageMargins.length === 4 ? pageMargins[1] : 0}
+                  <div className='grid items-center grid-cols-2 gap-2'>
+                    <Label htmlFor='top'>Superior</Label>
+                    <Input
+                      className='w-full'
+                      id='top'
+                      min={0}
+                      onChange={(e) => {
+                        if (Array.isArray(pageMargins) && pageMargins.length === 4) {
+                          setPageMargins([
+                            pageMargins[0],
+                            parseInt(e.target.value),
+                            pageMargins[2],
+                            pageMargins[3]
+                          ]);
+                        }
+                      }}
+                      type='number'
+                      value={Array.isArray(pageMargins) && pageMargins.length === 4 ? pageMargins[1] : 0}
+                    />
+                    <Label htmlFor='bottom'>Inferior</Label>
+                    <Input
+                      className='w-full'
+                      id='bottom'
+                      min={0}
+                      onChange={(e) => {
+                        if (Array.isArray(pageMargins) && pageMargins.length === 4) {
+                          setPageMargins([
+                            pageMargins[0],
+                            pageMargins[1],
+                            pageMargins[2],
+                            parseInt(e.target.value)
+                          ]);
+                        }
+                      }}
+                      type='number'
+                      value={Array.isArray(pageMargins) && pageMargins.length === 4 ? pageMargins[3] : 0}
+                    />
+                    <Label htmlFor='right'>Derecho</Label>
+                    <Input
+                      className='w-full'
+                      id='right'
+                      min={0}
+                      onChange={(e) => {
+                        if (Array.isArray(pageMargins) && pageMargins.length === 4) {
+                          setPageMargins([
+                            pageMargins[0],
+                            pageMargins[1],
+                            parseInt(e.target.value),
+                            pageMargins[3]
+                          ]);
+                        }
+                      }}
+                      type='number'
+                      value={Array.isArray(pageMargins) && pageMargins.length === 4 ? pageMargins[2] : 0}
+                    />
+                    <Label htmlFor='left'>Izquierdo</Label>
+                    <Input
+                      className='w-full'
+                      id='left'
+                      min={0}
+                      onChange={(e) => {
+                        if (Array.isArray(pageMargins) && pageMargins.length === 4) {
+                          setPageMargins([
+                            parseInt(e.target.value),
+                            pageMargins[1],
+                            pageMargins[2],
+                            pageMargins[3]
+                          ]);
+                        }
+                      }}
+                      type='number'
+                      value={Array.isArray(pageMargins) && pageMargins.length === 4 ? pageMargins[0] : 0}
                       />
-                    </div>
-                    <div className='flex items-center gap-2'>
-                      <Label htmlFor='bottom'>Inferior</Label>
-                      <Input
-                        className='w-full'
-                        id='bottom'
-                        min={0}
-                        onChange={(e) => {
-                          if (Array.isArray(pageMargins) && pageMargins.length === 4) {
-                            setPageMargins([
-                              pageMargins[0],
-                              pageMargins[1],
-                              pageMargins[2],
-                              parseInt(e.target.value)
-                            ]);
-                          }
-                        }}
-                        type='number'
-                        value={Array.isArray(pageMargins) && pageMargins.length === 4 ? pageMargins[3] : 0}
-                      />
-                    </div>
-                    <div className='flex items-center gap-2'>
-                      <Label htmlFor='right'>Derecho</Label>
-                      <Input
-                        className='w-full'
-                        id='right'
-                        min={0}
-                        onChange={(e) => {
-                          if (Array.isArray(pageMargins) && pageMargins.length === 4) {
-                            setPageMargins([
-                              pageMargins[0],
-                              pageMargins[1],
-                              parseInt(e.target.value),
-                              pageMargins[3]
-                            ]);
-                          }
-                        }}
-                        type='number'
-                        value={Array.isArray(pageMargins) && pageMargins.length === 4 ? pageMargins[2] : 0}
-                      />
-                    </div>
-                    <div className='flex items-center gap-2'>
-                      <Label htmlFor='left'>Izquierdo</Label>
-                      <Input
-                        className='w-full'
-                        id='left'
-                        min={0}
-                        onChange={(e) => {
-                          if (Array.isArray(pageMargins) && pageMargins.length === 4) {
-                            setPageMargins([
-                              parseInt(e.target.value),
-                              pageMargins[1],
-                              pageMargins[2],
-                              pageMargins[3]
-                            ]);
-                          }
-                        }}
-                        type='number'
-                        value={Array.isArray(pageMargins) && pageMargins.length === 4 ? pageMargins[0] : 0}
-                      />
-                    </div>
                   </div>
                 </div>
               </div>
@@ -331,7 +323,11 @@ export default function DocumentForm(): JSX.Element {
         className="grid place-items-center mx-auto pt-10 mb-10"
         onSubmit={handleSubmit}
       >
-        <Tiptap onChange={(newContent: JSONContent) => { handleContentChange(newContent); }} />
+        <Tiptap
+          pageSize={pageSize}
+          pageOrientation={pageOrientation}
+          onChange={(newContent: JSONContent) => { handleContentChange(newContent); }}
+          />
 
         <Button onClick={generatePDF} type="submit">Generar PDF</Button>
       </form>

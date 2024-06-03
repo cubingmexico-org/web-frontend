@@ -13,34 +13,34 @@ export default function Layout({
         <Image
           alt="Logo de la Copa Inter-patrocinadores"
           className="hidden 2xl:block"
-          height={300}
+          height={30}
           src="/border.svg"
           width={300}
         />
         <Image
           alt="Logo de la Copa Inter-patrocinadores"
           className="hidden xl:block"
-          height={300}
+          height={30}
           src="/border.svg"
           width={300}
         />
         <Image
           alt="Logo de la Copa Inter-patrocinadores"
           className="hidden lg:block"
-          height={300}
+          height={30}
           src="/border.svg"
           width={300}
         />
         <Image
           alt="Logo de la Copa Inter-patrocinadores"
           className="hidden md:block"
-          height={300}
+          height={30}
           src="/border.svg"
           width={300}
         />
         <Image
           alt="Logo de la Copa Inter-patrocinadores"
-          height={300}
+          height={30}
           src="/border.svg"
           width={300}
         />
@@ -51,7 +51,7 @@ export default function Layout({
             <Image
               alt="Logo de la Copa Inter-Patrocinadores"
               className="mx-auto"
-              height={300}
+              height={30}
               src="/logo.svg"
               width={300}
             />
@@ -70,14 +70,14 @@ export default function Layout({
           El contador aún se encuentra en fase de pruebas, por lo que podría haber ocasiones en las que los PRs no se contabilicen correctamente. Si observas alguna inconsistencia, te agradeceríamos que la reportaras. Agradecemos tu comprensión y colaboración en este asunto.
         </p>
         <p className="mt-2">Esta página se actualiza los domingos a las 19:00 UTC-6 (7:00 PM hora de la Ciudad de México).</p>
-        <p className="mt-2">
+        <div className="mt-2">
           Puedes contactarnos a través de:
           <ul className="list-disc list-inside mt-2">
             <li><Link className="text-red-700 hover:underline" href="https://www.facebook.com/cubingmexico">Cubing México</Link></li>
             {/* eslint-disable-next-line react/no-unescaped-entities -- . */}
             <li className="mt-2"><Link className="text-red-700 hover:underline" href="https://www.facebook.com/profile.php?id=100063651453072">SanLuis Rubik's Team</Link></li>
           </ul>
-        </p>
+        </div>
         <div className="flex justify-center items-center pt-4">
           <Image
             alt="Logo de Cubing México"
@@ -97,34 +97,34 @@ export default function Layout({
         <Image
           alt="Logo de la Copa Inter-patrocinadores"
           className="hidden 2xl:block"
-          height={300}
+          height={30}
           src="/border.svg"
           width={300}
         />
         <Image
           alt="Logo de la Copa Inter-patrocinadores"
           className="hidden xl:block"
-          height={300}
+          height={30}
           src="/border.svg"
           width={300}
         />
         <Image
           alt="Logo de la Copa Inter-patrocinadores"
           className="hidden lg:block"
-          height={300}
+          height={30}
           src="/border.svg"
           width={300}
         />
         <Image
           alt="Logo de la Copa Inter-patrocinadores"
           className="hidden md:block"
-          height={300}
+          height={30}
           src="/border.svg"
           width={300}
         />
         <Image
           alt="Logo de la Copa Inter-patrocinadores"
-          height={300}
+          height={30}
           src="/border.svg"
           width={300}
         />

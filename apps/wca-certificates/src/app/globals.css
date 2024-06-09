@@ -81,29 +81,37 @@
   }
 }
 
-/* .ProseMirror {
-  padding: 10px;
-  background: transparent;
-  border-radius: 0 0 5px 5px;
-  min-height: 100px;
-}
-
-.ProseMirror>*+* {
-  margin-top: 0.75em;
-} */
-
-.ProseMirror p {
-  font-size: 12px;
-}
-
 .ProseMirror h1 {
-  font-size: 24px;
+  font-size: 32pt;
+  line-height: 1.217;
 }
 
 .ProseMirror h2 {
-  font-size: 20px;
+  font-size: 24pt;
+  line-height: 1.217;
 }
 
 .ProseMirror h3 {
-  font-size: 18px;
+  font-size: 20pt;
+  line-height: 1.217;
+}
+
+.ProseMirror h4 {
+  font-size: 16pt;
+  line-height: 1.217;
+}
+
+.ProseMirror h5 {
+  font-size: 14pt;
+  line-height: 1.217;
+}
+
+.ProseMirror h6 {
+  font-size: 12pt;
+  line-height: 1.217;
+}
+
+.ProseMirror p {
+  font-size: 12pt;
+  line-height: 1.217;
 }

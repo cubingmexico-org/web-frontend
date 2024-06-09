@@ -50,11 +50,11 @@ export default function Tiptap({
     editorProps: {
       attributes: {
         class: cn(
-          'flex flex-col shadow bg-background px-[40px] py-[60px] focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50', {
-          'w-[612px] h-[792px]': pageSize === 'LETTER' && pageOrientation === 'portrait',
-          'w-[792px] h-[612px]': pageSize === 'LETTER' && pageOrientation === 'landscape',
-          'w-[595px] h-[842px]': pageSize === 'A4' && pageOrientation === 'portrait',
-          'w-[842px] h-[595px]': pageSize === 'A4' && pageOrientation === 'landscape',
+          'flex flex-col shadow bg-background px-[40pt] py-[60pt] focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50', {
+          'w-[612pt] h-[792pt]': pageSize === 'LETTER' && pageOrientation === 'portrait',
+          'w-[792pt] h-[612pt]': pageSize === 'LETTER' && pageOrientation === 'landscape',
+          'w-[595pt] h-[842pt]': pageSize === 'A4' && pageOrientation === 'portrait',
+          'w-[842pt] h-[595pt]': pageSize === 'A4' && pageOrientation === 'landscape',
         }
         )
       },

@@ -54,7 +54,7 @@ const fonts = {
 export default function DocumentForm(): JSX.Element {
 
   const [pageMargins, setPageMargins] = useState<Margins>([40, 60, 40, 60]);
-  const [pageOrientation, setPageOrientation] = useState<PageOrientation>("portrait");
+  const [pageOrientation, setPageOrientation] = useState<PageOrientation>("landscape");
   const [pageSize, setPageSize] = useState<PageSize>("LETTER");
 
   const [files, setFiles] = useState<File[]>([]);
@@ -73,7 +73,7 @@ export default function DocumentForm(): JSX.Element {
   }, [files]);
 
   const [content, setContent] = useState<JSONContent>(podium)
-
+  
   const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault()
   }
@@ -85,10 +85,11 @@ export default function DocumentForm(): JSX.Element {
   const renderContent = (content: JSONContent) => {
     return content.content?.map((item) => {
       const alignment = item.attrs?.textAlign || 'left';
+      const textContent = item.content && item.content.length > 0 ? renderTextContent(item.content) : '\u00A0';
       switch (item.type) {
         case 'paragraph':
           return {
-            text: renderTextContent(item.content),
+            text: textContent,
             style: 'paragraph',
             alignment
           };
@@ -173,16 +174,32 @@ export default function DocumentForm(): JSX.Element {
       pageSize,
       styles: {
         header1: {
-          fontSize: 24
+          fontSize: 33.231,
+          lineHeight: 1
         },
         header2: {
-          fontSize: 20
+          fontSize: 24.923,
+          lineHeight: 1
         },
         header3: {
-          fontSize: 18
+          fontSize: 20.769,
+          lineHeight: 1
+        },
+        header4: {
+          fontSize: 16.615,
+          lineHeight: 1
+        },
+        header5: {
+          fontSize: 14.538,
+          lineHeight: 1
+        },
+        header6: {
+          fontSize: 12.462,
+          lineHeight: 1
         },
         paragraph: {
-          fontSize: 12
+          fontSize: 12.462,
+          lineHeight: 1
         }
       },
       language: 'es'
@@ -235,6 +252,7 @@ export default function DocumentForm(): JSX.Element {
                     <Label htmlFor='top'>Superior</Label>
                     <Input
                       className='w-full'
+                      disabled
                       id='top'
                       min={0}
                       onChange={(e) => {
@@ -253,6 +271,7 @@ export default function DocumentForm(): JSX.Element {
                     <Label htmlFor='bottom'>Inferior</Label>
                     <Input
                       className='w-full'
+                      disabled
                       id='bottom'
                       min={0}
                       onChange={(e) => {
@@ -271,6 +290,7 @@ export default function DocumentForm(): JSX.Element {
                     <Label htmlFor='right'>Derecho</Label>
                     <Input
                       className='w-full'
+                      disabled
                       id='right'
                       min={0}
                       onChange={(e) => {
@@ -289,6 +309,7 @@ export default function DocumentForm(): JSX.Element {
                     <Label htmlFor='left'>Izquierdo</Label>
                     <Input
                       className='w-full'
+                      disabled
                       id='left'
                       min={0}
                       onChange={(e) => {

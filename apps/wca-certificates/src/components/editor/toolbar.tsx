@@ -49,8 +49,20 @@ export default function Toolbar({ editor }: ToolbarProps) {
   void loadFonts();
 
   return (
-    <div className="flex justify-between items-start">
+    <div className="flex justify-between items-start mx-6">
       <div className="flex items-center justify-center gap-1">
+        <Combobox
+          setValue={async (value) => {
+            const WebFont = (await import('webfontloader')).default
+            WebFont.load({
+              google: {
+                families: [`${value}:400,700`]
+              }
+            });
+            editor.chain().focus().setFontFamily(value).run();
+          }}
+          value={editor.isActive('textStyle', { fontFamily: 'Maven Pro' }) ? 'Maven Pro' : 'Roboto'}
+        />
         <Toggle
           disabled={!editor.can().chain().focus().toggleBold().run()}
           onPressedChange={() => editor.chain().focus().toggleBold().run()}
@@ -145,18 +157,6 @@ export default function Toolbar({ editor }: ToolbarProps) {
         >
           <AlignJustify className="h-4 w-4" />
         </Toggle>
-        <Combobox
-          setValue={async (value) => {
-            const WebFont = (await import('webfontloader')).default
-            WebFont.load({
-              google: {
-                families: [`${value}:400,700`]
-              }
-            });
-            editor.chain().focus().setFontFamily(value).run();
-          }}
-          value={editor.isActive('textStyle', { fontFamily: 'Maven Pro' }) ? 'Maven Pro' : 'Roboto'}
-        />
       </div>
       <div className="flex items-center justify-center gap-1">
         <Button

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions -- . */
+/* eslint-disable @typescript-eslint/no-base-to-string -- . */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
 /* eslint-disable @typescript-eslint/no-shadow -- . */
 /* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
@@ -325,10 +327,10 @@ export default function DocumentForm(): JSX.Element {
       >
         <Tiptap
           key={`${pageSize}-${pageOrientation}-${pageMargins}`}
-          pageSize={pageSize}
-          pageOrientation={pageOrientation}
-          pageMargins={pageMargins}
           onChange={(newContent: JSONContent) => { handleContentChange(newContent); }}
+          pageMargins={pageMargins}
+          pageOrientation={pageOrientation}
+          pageSize={pageSize}
         />
 
         <Button onClick={generatePDF} type="submit">Generar PDF</Button>

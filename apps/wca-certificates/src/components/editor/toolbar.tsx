@@ -1,10 +1,10 @@
-/* eslint-disable import/no-named-as-default-member -- . */
+/* eslint-disable @typescript-eslint/no-misused-promises -- . */
+// /* eslint-disable import/no-named-as-default-member -- . */
 /* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
 "use client";
 
 import React from "react";
 import type { Editor } from "@tiptap/react";
-import WebFont from 'webfontloader';
 import {
   Bold,
   // Italic,
@@ -33,15 +33,20 @@ interface ToolbarProps {
 
 export default function Toolbar({ editor }: ToolbarProps) {
 
-  if (!editor) {
-    return null;
+  const loadFonts = async () => {
+    const WebFont = await import('webfontloader');
+    WebFont.load({
+      google: {
+        families: ['Roboto:400,700', 'Maven Pro:400,700']
+      }
+    });
   }
 
-  WebFont.load({
-    google: {
-      families: ['Roboto:400,700']
-    }
-  });
+  if (!editor) {
+    return <p>Cargando...</p>;
+  }
+
+  void loadFonts();
 
   return (
     <div className="flex justify-between items-start">
@@ -141,7 +146,8 @@ export default function Toolbar({ editor }: ToolbarProps) {
           <AlignJustify className="h-4 w-4" />
         </Toggle>
         <Combobox
-          setValue={(value) => {
+          setValue={async (value) => {
+            const WebFont = (await import('webfontloader')).default
             WebFont.load({
               google: {
                 families: [`${value}:400,700`]

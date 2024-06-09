@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
 /* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
 /* eslint-disable @typescript-eslint/no-shadow -- . */
 /* eslint-disable import/no-named-as-default -- . */
@@ -10,11 +11,11 @@ import TextAlign from '@tiptap/extension-text-align'
 import StarterKit from '@tiptap/starter-kit'
 import FontFamily from '@tiptap/extension-font-family'
 import TextStyle from '@tiptap/extension-text-style'
+import type { PageSize, PageOrientation, Margins } from 'pdfmake/interfaces';
+import { cn } from '@repo/ui/utils';
 import { podium } from '@/lib/placeholders';
 import Toolbar from './toolbar';
 import suggestion from './mentions/suggestion'
-import type { PageSize, PageOrientation, Margins } from 'pdfmake/interfaces';
-import { cn } from '@repo/ui/utils';
 
 interface TiptapProps {
   pageSize: PageSize;
@@ -26,7 +27,6 @@ interface TiptapProps {
 export default function Tiptap({
   pageSize,
   pageOrientation,
-  pageMargins,
   onChange
 }: TiptapProps): JSX.Element {
   const handleChange = (newContent: JSONContent) => {

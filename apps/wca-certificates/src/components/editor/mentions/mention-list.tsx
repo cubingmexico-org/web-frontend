@@ -1,3 +1,5 @@
+/* eslint-disable react/no-array-index-key -- . */
+/* eslint-disable @typescript-eslint/no-explicit-any -- . */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access -- . */
 /* eslint-disable react/display-name -- . */
@@ -60,11 +62,11 @@ export const MentionList = forwardRef((props: any, ref) => {
   return (
     <div className="bg-background rounded border flex flex-col">
       {props.items.length
-        ? props.items.map((item: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | React.PromiseLikeOfReactNode | null | undefined, index: React.Key | null | undefined) => (
+        ? props.items.map((item: any, index: number) => (
           <button
             className={`hover:bg-muted ${index === selectedIndex ? 'bg-muted' : ''}`}
             key={index}
-            onClick={() => { selectItem(index as number); }}
+            onClick={() => { selectItem(index); }}
           >
             {item}
           </button>

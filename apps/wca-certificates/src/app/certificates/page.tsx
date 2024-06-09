@@ -35,75 +35,71 @@ export default async function Page(): Promise<JSX.Element> {
     <div>
       <h1 className="text-3xl font-bold mt-4 text-center">Bienvenido</h1>
       <p className='text-center m-4'>A continuación se muestran tus competencias como organizador:</p>
-      {competitions.length > 0 ? (
-        <div className='flex justify-center text-center mx-4'>
-          <Tabs className="w-full" defaultValue="current">
-            <TabsList>
-              <TabsTrigger value="upcoming">Próximas</TabsTrigger>
-              <TabsTrigger value="current">Actuales</TabsTrigger>
-              <TabsTrigger value="past">Pasadas</TabsTrigger>
-            </TabsList>
-            <TabsContent value="upcoming">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Competencias próximas</CardTitle>
-                  <CardDescription>
-                    {upcomingCompetitions.length === 0 ? 'Parece que no tienes ninguna competencia próxima' : 'Estas competencias están próximas a celebrarse'}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className={`grid grid-cols-1 gap-4 ${upcomingCompetitions.length > 1 ? 'sm:grid-cols-2 ' : ''} ${upcomingCompetitions.length > 2 ? 'md:grid-cols-3' : ''}`}>
-                    {upcomingCompetitions.map((competition, index: number) => (
-                      <CardCompetition
+      <div className='flex justify-center text-center mx-4'>
+        <Tabs className="w-full" defaultValue="current">
+          <TabsList>
+            <TabsTrigger value="upcoming">Próximas</TabsTrigger>
+            <TabsTrigger value="current">Actuales</TabsTrigger>
+            <TabsTrigger value="past">Pasadas</TabsTrigger>
+          </TabsList>
+          <TabsContent value="upcoming">
+            <Card>
+              <CardHeader>
+                <CardTitle>Competencias próximas</CardTitle>
+                <CardDescription>
+                  {upcomingCompetitions.length === 0 ? 'Parece que no tienes ninguna competencia próxima' : 'Estas competencias están próximas a celebrarse'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className={`grid grid-cols-1 gap-4 ${upcomingCompetitions.length > 1 ? 'sm:grid-cols-2 ' : ''} ${upcomingCompetitions.length > 2 ? 'md:grid-cols-3' : ''}`}>
+                  {upcomingCompetitions.map((competition, index: number) => (
+                    <CardCompetition
                       allowParticipationCertificates={false}
                       allowPodiumCertificates={false}
                       competition={competition}
                       key={index}
-                      />
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            <TabsContent value="current">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Competencias actuales</CardTitle>
-                  <CardDescription>
-                    {currentCompetitions.length === 0 ? 'Parece que no tienes ninguna competencia siendo celebrada justo ahora' : 'Estas competencias se estan celebrando actualmente'}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className={`grid grid-cols-1 gap-4 ${currentCompetitions.length > 1 ? 'sm:grid-cols-2 ' : ''} ${currentCompetitions.length > 2 ? 'md:grid-cols-3' : ''}`}>
-                    {currentCompetitions.map((competition, index: number) => (
-                      <CardCompetition competition={competition} key={index} />
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            <TabsContent value="past">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Competencias pasadas</CardTitle>
-                  <CardDescription>
-                    {pastCompetitions.length === 0 ? 'Parece que no tienes ninguna competencia pasada' : 'Estas competencias ya fueron celebradas'}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className={`grid grid-cols-1 gap-4 ${pastCompetitions.length > 1 ? 'sm:grid-cols-2 ' : ''} ${pastCompetitions.length > 2 ? 'md:grid-cols-3' : ''}`}>
-                    {pastCompetitions.map((competition, index: number) => (
-                      <CardCompetition competition={competition} key={index} />
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </div>
-      ) : (
-        <p className="text-lg text-center">Parece que no estás organizando ninguna competencia en este momento.</p>
-      )}
+                    />
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="current">
+            <Card>
+              <CardHeader>
+                <CardTitle>Competencias actuales</CardTitle>
+                <CardDescription>
+                  {currentCompetitions.length === 0 ? 'Parece que no tienes ninguna competencia siendo celebrada justo ahora' : 'Estas competencias se estan celebrando actualmente'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className={`grid grid-cols-1 gap-4 ${currentCompetitions.length > 1 ? 'sm:grid-cols-2 ' : ''} ${currentCompetitions.length > 2 ? 'md:grid-cols-3' : ''}`}>
+                  {currentCompetitions.map((competition, index: number) => (
+                    <CardCompetition competition={competition} key={index} />
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="past">
+            <Card>
+              <CardHeader>
+                <CardTitle>Competencias pasadas</CardTitle>
+                <CardDescription>
+                  {pastCompetitions.length === 0 ? 'Parece que no tienes ninguna competencia pasada' : 'Estas competencias ya fueron celebradas'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className={`grid grid-cols-1 gap-4 ${pastCompetitions.length > 1 ? 'sm:grid-cols-2 ' : ''} ${pastCompetitions.length > 2 ? 'md:grid-cols-3' : ''}`}>
+                  {pastCompetitions.map((competition, index: number) => (
+                    <CardCompetition competition={competition} key={index} />
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }

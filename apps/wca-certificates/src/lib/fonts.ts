@@ -1,34 +1,24 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
+import { Font } from '@react-pdf/renderer';
+
+export const setupFonts = () => {
+  Font.register({
+    family: 'MavenPro', fontStyle: 'normal', fonts: [
+      { src: '/fonts/MavenPro/MavenPro-Regular.ttf', fontWeight: 'normal'},
+      { src: '/fonts/MavenPro/MavenPro-Bold.ttf', fontWeight: 'bold'},
+    ]
+  });
+
+  Font.registerHyphenationCallback(word => [word]);
+};
+
 export const fonts = [
   {
-    value: "Courier",
-    label: "Courier",
+    value: "Roboto",
+    label: "Roboto",
   },
   {
-    value: "Courier-Bold",
-    label: "Courier (Bold)",
-  },
-  {
-    value: "Helvetica",
-    label: "Helvetica",
-  },
-  {
-    value: "Helvetica-Bold",
-    label: "Helvetica (Bold)",
-  },
-  {
-    value: "Times-Roman",
-    label: "Times New Roman",
-  },
-  {
-    value: "Times-Bold",
-    label: "Times New Roman (Bold)",
-  },
-  {
-    value: "MavenPro",
+    value: "Maven Pro",
     label: "Maven Pro",
   },
-  {
-    value: "MavenPro-Bold",
-    label: "Maven Pro (Bold)",
-  }
 ]

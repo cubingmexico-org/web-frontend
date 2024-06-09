@@ -32,7 +32,7 @@ export default function Header({
           alt="Logo de Cubing México"
           height={50}
           priority
-          src="https://storage.googleapis.com/cubingmexico_dev_bucket/img/cubingmexico_logo.svg"
+          src="/cubingmexico_logo.svg"
           width={50}
         />
         <h1 className="sm:text-2xl text-xl ml-2">Certificados de la WCA</h1>

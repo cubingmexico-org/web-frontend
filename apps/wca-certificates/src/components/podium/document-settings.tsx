@@ -134,10 +134,10 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
     setContent(content)
   }
 
-  const renderContent = (content: JSONContent) => {
+  const renderContent = (content: JSONContent, data: PodiumData) => {
     return content.content?.map((item) => {
       const alignment = item.attrs?.textAlign || 'left';
-      const textContent = item.content && item.content.length > 0 ? renderTextContent(item.content) : '\u00A0';
+      const textContent = item.content && item.content.length > 0 ? renderTextContent(item.content, data) : '\u00A0';
       switch (item.type) {
         case 'paragraph':
           return {
@@ -147,7 +147,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
           };
         case 'heading':
           return {
-            text: renderTextContent(item.content),
+            text: renderTextContent(item.content, data),
             style: `header${item.attrs?.level}`,
             alignment
           };
@@ -157,7 +157,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
     }).filter(Boolean);
   };
 
-  const renderTextContent = (content: JSONContent['content']) => {
+  const renderTextContent = (content: JSONContent['content'], data: PodiumData) => {
     return content?.map((contentItem) => {
       const bold = contentItem.marks?.some(mark => mark.type === 'bold');
       const font = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.fontFamily;
@@ -178,13 +178,13 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
             case 'Organizadores':
               return bold || font ? textObject(joinPersons(organizers)) : joinPersons(organizers);
             case 'Lugar':
-              return bold || font ? textObject(formatPlace(pdfData[0].place, 'medal')) : formatPlace(pdfData[0].place, 'medal');
+              return bold || font ? textObject(formatPlace(data.place, 'medal')) : formatPlace(data.place, 'medal');
             case 'Competidor':
-              return bold || font ? textObject(pdfData[0].name) : pdfData[0].name;
+              return bold || font ? textObject(data.name) : data.name;
             case 'Evento':
-              return bold || font ? textObject(formatEvents(pdfData[0].event)) : formatEvents(pdfData[0].event);
+              return bold || font ? textObject(formatEvents(data.event)) : formatEvents(data.event);
             case 'Resultado':
-              return bold || font ? textObject(formatResults(pdfData[0].result, pdfData[0].event)) : formatResults(pdfData[0].result, pdfData[0].event);
+              return bold || font ? textObject(formatResults(data.result, data.event)) : formatResults(data.result, data.event);
             case 'Competencia':
               return bold || font ? textObject(competition.name) : competition.name;
             case 'Fecha':
@@ -202,7 +202,10 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
 
   const generatePDF = () => {
     const docDefinition = {
-      content: renderContent(content),
+      content: pdfData.map((data, index) => ({
+        stack: renderContent(content, data),
+        pageBreak: index < pdfData.length - 1 ? 'after' : ''
+      })),
       background(currentPage, pageSize) {
         if (background) {
           return {
@@ -390,7 +393,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
             pageSize={pageSize}
           />
 
-          <Button onClick={generatePDF} type="submit">Generar PDF</Button>
+          <Button disabled={Object.keys(rowSelection).length === 0} onClick={generatePDF} type="submit">Generar PDF</Button>
         </form>
         <div>
           <Label htmlFor='background'>Fondo</Label>

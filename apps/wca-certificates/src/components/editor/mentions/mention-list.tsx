@@ -11,7 +11,7 @@ import React, {
   useState,
 } from 'react'
 
-export const MentionList = forwardRef((props, ref) => {
+export const MentionList = forwardRef((props: any, ref) => {
   const [selectedIndex, setSelectedIndex] = useState(0)
 
   const selectItem = (index: number) => {
@@ -37,7 +37,7 @@ export const MentionList = forwardRef((props, ref) => {
   useEffect(() => { setSelectedIndex(0); }, [props.items])
 
   useImperativeHandle(ref, () => ({
-    onKeyDown: ({ event }) => {
+    onKeyDown: ({ event }: any) => {
       if (event.key === 'ArrowUp') {
         upHandler()
         return true
@@ -64,7 +64,7 @@ export const MentionList = forwardRef((props, ref) => {
           <button
             className={`hover:bg-muted ${index === selectedIndex ? 'bg-muted' : ''}`}
             key={index}
-            onClick={() => { selectItem(index); }}
+            onClick={() => { selectItem(index as number); }}
           >
             {item}
           </button>

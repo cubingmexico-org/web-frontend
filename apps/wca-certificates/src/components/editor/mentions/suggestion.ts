@@ -6,11 +6,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument -- . */
 import { ReactRenderer } from '@tiptap/react'
 import tippy from 'tippy.js'
-import type { RefAttributes } from 'react'
 import { MentionList } from './mention-list'
 
 export default {
-  items: ({ query }) => {
+  items: ({ query }: any) => {
     return [
       'Delegados',
       'Organizadores',
@@ -25,8 +24,8 @@ export default {
   },
 
   render: () => {
-    let reactRenderer: ReactRenderer<unknown, RefAttributes<unknown>>
-    let popup: { destroy: () => void }[]
+    let reactRenderer: any
+    let popup: any
 
     return {
       onStart: (props: { clientRect: any; editor: any }) => {
@@ -79,4 +78,4 @@ export default {
       },
     }
   },
-}
+} as any

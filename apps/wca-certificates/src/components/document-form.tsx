@@ -216,7 +216,7 @@ export default function DocumentForm(): JSX.Element {
                   </div>
                   <div className='grid gap-2'>
                     <Label htmlFor='pageSize'>Tamaño de papel</Label>
-                    <Select onValueChange={(value: PageSize) => { setPageSize(value); }} value={pageSize}>
+                    <Select onValueChange={(value: string) => { setPageSize(value as PageSize); }} value={pageSize as string}>
                       <SelectTrigger className="w-full" id='pageSize'>
                         <SelectValue placeholder="Tamaño *" />
                       </SelectTrigger>
@@ -301,7 +301,7 @@ export default function DocumentForm(): JSX.Element {
                       }}
                       type='number'
                       value={Array.isArray(pageMargins) && pageMargins.length === 4 ? pageMargins[0] : 0}
-                      />
+                    />
                   </div>
                 </div>
               </div>
@@ -320,14 +320,16 @@ export default function DocumentForm(): JSX.Element {
         />
       </div>
       <form
-        className="grid place-items-center mx-auto pt-10 mb-10"
+        className="grid place-items-center"
         onSubmit={handleSubmit}
       >
         <Tiptap
+          key={`${pageSize}-${pageOrientation}-${pageMargins}`}
           pageSize={pageSize}
           pageOrientation={pageOrientation}
+          pageMargins={pageMargins}
           onChange={(newContent: JSONContent) => { handleContentChange(newContent); }}
-          />
+        />
 
         <Button onClick={generatePDF} type="submit">Generar PDF</Button>
       </form>

@@ -13,22 +13,22 @@ import TextStyle from '@tiptap/extension-text-style'
 import { podium } from '@/lib/placeholders';
 import Toolbar from './toolbar';
 import suggestion from './mentions/suggestion'
-import type { PageSize, PageOrientation } from 'pdfmake/interfaces';
+import type { PageSize, PageOrientation, Margins } from 'pdfmake/interfaces';
 import { cn } from '@repo/ui/utils';
 
 interface TiptapProps {
   pageSize: PageSize;
   pageOrientation: PageOrientation;
+  pageMargins: Margins;
   onChange: (newContent: JSONContent) => void;
 };
 
 export default function Tiptap({
   pageSize,
   pageOrientation,
+  pageMargins,
   onChange
 }: TiptapProps): JSX.Element {
-  console.log(pageOrientation)
-  console.log(pageSize)
   const handleChange = (newContent: JSONContent) => {
     onChange(newContent);
   };
@@ -50,12 +50,12 @@ export default function Tiptap({
     editorProps: {
       attributes: {
         class: cn(
-          'flex flex-col rounded-md border border-input bg-background px-[40px] py-[60px] text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50', {
+          'flex flex-col shadow bg-background px-[40px] py-[60px] focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50', {
           'w-[612px] h-[792px]': pageSize === 'LETTER' && pageOrientation === 'portrait',
           'w-[792px] h-[612px]': pageSize === 'LETTER' && pageOrientation === 'landscape',
           'w-[595px] h-[842px]': pageSize === 'A4' && pageOrientation === 'portrait',
           'w-[842px] h-[595px]': pageSize === 'A4' && pageOrientation === 'landscape',
-          }
+        }
         )
       },
     },
@@ -68,7 +68,9 @@ export default function Tiptap({
   return (
     <div className="w-full">
       <Toolbar editor={editor} />
-      <EditorContent editor={editor} />
+      <div className='flex justify-center bg-secondary py-8 my-4'>
+        <EditorContent editor={editor} />
+      </div>
     </div>
   )
 }

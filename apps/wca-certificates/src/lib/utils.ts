@@ -180,22 +180,22 @@ export function formatPlace(place: number, formatType: 'place' | 'medal' | 'othe
     case 'place':
       switch (place) {
         case 1:
-          return 'primer lugar';
+          return 'Primer Lugar';
         case 2:
-          return 'segundo lugar';
+          return 'Segundo Lugar';
         case 3:
-          return 'tercer lugar';
+          return 'Tercer Lugar';
         default:
           return String(place);
       }
     case 'medal':
       switch (place) {
         case 1:
-          return 'oro';
+          return 'Oro';
         case 2:
-          return 'plata';
+          return 'Plata';
         case 3:
-          return 'bronce';
+          return 'Bronce';
         default:
           return String(place);
       }

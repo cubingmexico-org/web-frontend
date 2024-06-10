@@ -144,11 +144,13 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
     return content?.map((contentItem) => {
       const bold = contentItem.marks?.some(mark => mark.type === 'bold');
       const font = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.fontFamily;
+      const color = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.color;
 
       const textObject = (text: string | undefined) => ({
         text,
         bold,
         font,
+        color
       });
 
       switch (contentItem.type) {
@@ -161,6 +163,8 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
             case 'Organizadores':
               return bold || font ? textObject(joinPersons(organizers)) : joinPersons(organizers);
             case 'Lugar':
+              return bold || font ? textObject(formatPlace(data.place, 'place')) : formatPlace(data.place, 'place');
+            case 'Medalla':
               return bold || font ? textObject(formatPlace(data.place, 'medal')) : formatPlace(data.place, 'medal');
             case 'Competidor':
               return bold || font ? textObject(data.name) : data.name;

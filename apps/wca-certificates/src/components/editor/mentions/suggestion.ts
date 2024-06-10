@@ -14,6 +14,7 @@ export default {
       'Delegados',
       'Organizadores',
       'Lugar',
+      'Medalla',
       'Competidor',
       'Evento',
       'Resultado',

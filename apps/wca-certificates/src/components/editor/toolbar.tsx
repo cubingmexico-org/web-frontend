@@ -21,6 +21,9 @@ import {
   AlignRight,
   AlignJustify,
   // Type,
+  CaseSensitive,
+  CaseUpper,
+  CaseLower,
   Undo,
   Redo,
 } from "lucide-react";
@@ -165,6 +168,27 @@ export default function Toolbar({ editor }: ToolbarProps) {
           size="sm"
         >
           <AlignJustify className="h-4 w-4" />
+        </Toggle>
+        <Toggle
+          // onPressedChange={}
+          // pressed={}
+          size="sm"
+        >
+          <CaseUpper className="h-4 w-4" />
+        </Toggle>
+        <Toggle
+          // onPressedChange={}
+          // pressed={}
+          size="sm"
+        >
+          <CaseLower className="h-4 w-4" />
+        </Toggle>
+        <Toggle
+          // onPressedChange={}
+          // pressed={}
+          size="sm"
+        >
+          <CaseSensitive className="h-4 w-4" />
         </Toggle>
       </div>
       <div className="flex items-center justify-center gap-1">

@@ -28,7 +28,6 @@ import {
 import { RadioGroup, RadioGroupItem } from "@repo/ui/radio-group"
 import { Input } from '@repo/ui/input';
 import * as pdfMake from "pdfmake/build/pdfmake";
-import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import type { Margins, PageOrientation, PageSize, TDocumentDefinitions } from 'pdfmake/interfaces';
 import { FileText } from 'lucide-react';
 import type { Event, Competition, PodiumData } from '@/types/wca-live';
@@ -46,20 +45,18 @@ import { FileUploader } from "@/components/file-uploader";
 import { podium } from '@/lib/placeholders';
 import Tiptap from '../editor/tiptap'
 
-const vfs = pdfFonts.pdfMake.vfs
-
 const fonts = {
   'Roboto': {
-    normal: 'Roboto-Regular.ttf',
-    bold: 'Roboto-Bold.ttf',
-    italics: 'Roboto-Italic.ttf',
-    bolditalics: 'Roboto-BoldItalic.ttf'
+    normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Roboto/Roboto-Regular.ttf`,
+    bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Roboto/Roboto-Bold.ttf`,
+    italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Roboto/Roboto-Regular.ttf`,
+    bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Roboto/Roboto-Regular.ttf`
   },
   'Maven Pro': {
-    normal: 'MavenPro-Regular.ttf',
-    bold: 'MavenPro-Bold.ttf',
-    italics: 'MavenPro-Regular.ttf',
-    bolditalics: 'MavenPro-Regular.ttf'
+    normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/MavenPro/MavenPro-Regular.ttf`,
+    bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/MavenPro/MavenPro-Bold.ttf`,
+    italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/MavenPro/MavenPro-Regular.ttf`,
+    bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/MavenPro/MavenPro-Regular.ttf`
   },
 }
 
@@ -252,7 +249,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
       language: 'es'
     } as TDocumentDefinitions;
 
-    pdfMake.createPdf(docDefinition, undefined, fonts, vfs).open();
+    pdfMake.createPdf(docDefinition, undefined, fonts).open();
   }
 
   return (

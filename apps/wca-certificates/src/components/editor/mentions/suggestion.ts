@@ -13,7 +13,9 @@ export default {
     return [
       'Delegados',
       'Organizadores',
-      'Lugar',
+      'Posición (cardinal)',
+      'Posición (ordinal)',
+      'Posición (ordinal con texto)',
       'Medalla',
       'Competidor',
       'Evento',

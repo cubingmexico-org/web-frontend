@@ -86,7 +86,9 @@ export const podium = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto"
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
               }
             }
           ]
@@ -97,7 +99,9 @@ export const podium = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto"
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
               }
             }
           ],
@@ -116,7 +120,9 @@ export const podium = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto"
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
               }
             }
           ]
@@ -127,7 +133,9 @@ export const podium = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto"
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
               }
             }
           ],
@@ -151,7 +159,9 @@ export const podium = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto"
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
               }
             }
           ],
@@ -175,16 +185,18 @@ export const podium = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto"
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
               }
             }
           ],
-          "text": "DE "
+          "text": "DE MEDALLA DE "
         },
         {
           "type": "mention",
           "attrs": {
-            "id": "Lugar",
+            "id": "Medalla",
             "label": null
           },
           "marks": [
@@ -194,7 +206,9 @@ export const podium = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto"
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "uppercase"
               }
             }
           ]
@@ -213,7 +227,9 @@ export const podium = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto"
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
               }
             }
           ],
@@ -241,7 +257,9 @@ export const podium = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto"
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
               }
             }
           ]
@@ -260,7 +278,9 @@ export const podium = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto"
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
               }
             }
           ],
@@ -269,9 +289,21 @@ export const podium = {
         {
           "type": "mention",
           "attrs": {
-            "id": "Lugar",
+            "id": "Posición (ordinal con texto)",
             "label": null
           },
+          "marks": [
+            {
+              "type": "bold"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": " "
+        },
+        {
+          "type": "text",
           "marks": [
             {
               "type": "bold"
@@ -279,10 +311,13 @@ export const podium = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto"
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
               }
             }
-          ]
+          ],
+          "text": "Lugar"
         },
         {
           "type": "text",
@@ -290,7 +325,9 @@ export const podium = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto"
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
               }
             }
           ],
@@ -309,7 +346,9 @@ export const podium = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto"
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
               }
             }
           ]
@@ -320,7 +359,9 @@ export const podium = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto"
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
               }
             }
           ],
@@ -339,7 +380,9 @@ export const podium = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto"
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
               }
             }
           ]
@@ -350,11 +393,44 @@ export const podium = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto"
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
               }
             }
           ],
-          "text": " en el "
+          "text": " "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "bold"
+            },
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
+              }
+            }
+          ],
+          "text": "segundos "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
+              }
+            }
+          ],
+          "text": "en el "
         },
         {
           "type": "mention",
@@ -369,7 +445,9 @@ export const podium = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto"
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
               }
             }
           ]
@@ -380,7 +458,9 @@ export const podium = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto"
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
               }
             }
           ],
@@ -399,7 +479,9 @@ export const podium = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto"
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
               }
             }
           ]
@@ -410,7 +492,9 @@ export const podium = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto"
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
               }
             }
           ],
@@ -429,7 +513,9 @@ export const podium = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto"
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
               }
             }
           ]
@@ -440,7 +526,9 @@ export const podium = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto"
+                "fontFamily": "Roboto",
+                "color": null,
+                "transform": "none"
               }
             }
           ],

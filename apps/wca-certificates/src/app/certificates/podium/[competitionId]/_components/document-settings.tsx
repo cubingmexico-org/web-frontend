@@ -69,6 +69,8 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
   const [files, setFiles] = useState<File[]>([]);
   const [background, setBackground] = useState<string>();
 
+  const [content, setContent] = useState<JSONContent>(podium);
+
   const selectedEvents = competition.events.filter(event => rowSelection[event.id]);
 
   function generatePodiumCertificates() {
@@ -107,8 +109,6 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
       setBackground(undefined);
     }
   }, [files]);
-
-  const [content, setContent] = useState<JSONContent>(podium)
 
   const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault()
@@ -164,8 +164,12 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
               return bold || font ? textObject(transformString(joinPersons(delegates), transform)) : transformString(joinPersons(delegates), transform);
             case 'Organizadores':
               return bold || font ? textObject(transformString(joinPersons(organizers), transform)) : transformString(joinPersons(organizers), transform);
-            case 'Lugar':
-              return bold || font ? textObject(transformString(formatPlace(data.place, 'place'), transform)) : transformString(formatPlace(data.place, 'place'), transform);
+            case 'Posición (cardinal)':
+              return bold || font ? textObject(transformString(formatPlace(data.place, 'cardinal'), transform)) : transformString(formatPlace(data.place, 'cardinal'), transform);
+            case 'Posición (ordinal)':
+              return bold || font ? textObject(transformString(formatPlace(data.place, 'ordinal'), transform)) : transformString(formatPlace(data.place, 'ordinal'), transform);
+            case 'Posición (ordinal con texto)':
+              return bold || font ? textObject(transformString(formatPlace(data.place, 'ordinal_text'), transform)) : transformString(formatPlace(data.place, 'ordinal_text'), transform);
             case 'Medalla':
               return bold || font ? textObject(transformString(formatPlace(data.place, 'medal'), transform)) : transformString(formatPlace(data.place, 'medal'), transform);
             case 'Competidor':

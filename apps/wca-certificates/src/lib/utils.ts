@@ -173,16 +173,38 @@ export function formatEvents(eventId: EventId, mode?: 'en' | 'es') {
   }
 }
 
-export function formatPlace(place: number, formatType: 'place' | 'medal' | 'other'): string {
+export function formatPlace(place: number, formatType: 'cardinal' | 'ordinal' | 'ordinal_text' | 'medal' | 'other'): string {
   switch (formatType) {
-    case 'place':
+    case 'cardinal':
       switch (place) {
         case 1:
-          return 'Primer Lugar';
+          return '1';
         case 2:
-          return 'Segundo Lugar';
+          return '2';
         case 3:
-          return 'Tercer Lugar';
+          return '3';
+        default:
+          return String(place);
+      }
+    case 'ordinal':
+      switch (place) {
+        case 1:
+          return '1er';
+        case 2:
+          return '2do';
+        case 3:
+          return '3er';
+        default:
+          return String(place);
+      }
+    case 'ordinal_text':
+      switch (place) {
+        case 1:
+          return 'Primer';
+        case 2:
+          return 'Segundo';
+        case 3:
+          return 'Tercer';
         default:
           return String(place);
       }

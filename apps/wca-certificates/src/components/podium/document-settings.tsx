@@ -30,6 +30,7 @@ import { Input } from '@repo/ui/input';
 import * as pdfMake from "pdfmake/build/pdfmake";
 import type { Margins, PageOrientation, PageSize, TDocumentDefinitions } from 'pdfmake/interfaces';
 import { FileText } from 'lucide-react';
+import { useMediaQuery } from '@repo/ui/use-media-query';
 import type { Event, Competition, PodiumData } from '@/types/wca-live';
 import {
   processPersons,
@@ -78,6 +79,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
   const [pageMargins, setPageMargins] = useState<Margins>([40, 60, 40, 60]);
   const [pageOrientation, setPageOrientation] = useState<PageOrientation>("landscape");
   const [pageSize, setPageSize] = useState<PageSize>("LETTER");
+  const isDesktop = useMediaQuery("(min-width: 768px)")
 
   const [files, setFiles] = useState<File[]>([]);
   const [background, setBackground] = useState<string>();
@@ -250,6 +252,14 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
     } as TDocumentDefinitions;
 
     pdfMake.createPdf(docDefinition, undefined, fonts).open();
+  }
+
+  if (!isDesktop) {
+    return (
+    <p>
+      De momento no está disponible en dispositivos móviles. Por favor, utiliza un dispositivo de escritorio.
+    </p>
+    )
   }
 
   return (

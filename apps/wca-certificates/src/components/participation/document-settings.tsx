@@ -65,9 +65,9 @@ import { FileUploader } from "@/components/file-uploader";
 import { Combobox } from "@/components/combobox-font";
 import { CardCustomText, CardFixedText } from "@/components/card-document-settings";
 import type { DocumentState, Margin, TextSettings } from '@/types/document'
-import { setupFonts } from '@/lib/fonts'
+// import { setupFonts } from '@/lib/fonts'
 
-setupFonts();
+// setupFonts();
 
 interface DocumentSettingsProps {
   competition: Competition;

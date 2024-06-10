@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call -- . */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access -- . */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
-import DocumentSettings from "@/components/podium/document-settings"
+import DocumentSettings from "@/app/certificates/podium/[competitionId]/_components/document-settings"
 import type { Competition } from "@/types/wca-live";
 import "@cubing/icons"
 

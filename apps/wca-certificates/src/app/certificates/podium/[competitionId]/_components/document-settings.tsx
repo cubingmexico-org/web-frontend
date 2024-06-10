@@ -23,12 +23,12 @@ import {
   formatDates,
   joinPersons,
 } from "@/lib/utils"
-import { columns } from "@/components/podium/columns"
-import { DataTable } from "@/components/podium/data-table"
+import { columns } from "@/app/certificates/podium/[competitionId]/_components/columns"
+import { DataTable } from "@/app/certificates/podium/[competitionId]/_components/data-table"
 import { FileUploader } from "@/components/file-uploader";
 import { podium } from '@/lib/placeholders';
-import Tiptap from '../editor/tiptap'
-import { DialogDocumentSettings } from '../dialog-document-settings';
+import Tiptap from '../../../../../components/editor/tiptap'
+import { DialogDocumentSettings } from '../../../../../components/dialog-document-settings';
 
 const fonts = {
   'Roboto': {

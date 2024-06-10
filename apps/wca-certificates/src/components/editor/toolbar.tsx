@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
 /* eslint-disable @typescript-eslint/no-misused-promises -- . */
 // /* eslint-disable import/no-named-as-default-member -- . */
 /* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
@@ -25,6 +26,7 @@ import {
 } from "lucide-react";
 import { Button } from "@repo/ui/button";
 import { Toggle } from "@repo/ui/toggle";
+import { Input } from "@repo/ui/input";
 import { Combobox } from "../combobox-font";
 
 interface ToolbarProps {
@@ -62,6 +64,13 @@ export default function Toolbar({ editor }: ToolbarProps) {
             editor.chain().focus().setFontFamily(value).run();
           }}
           value={editor.isActive('textStyle', { fontFamily: 'Maven Pro' }) ? 'Maven Pro' : 'Roboto'}
+        />
+        <Input
+          className="h-9 w-32 p-0 border-0"
+          data-testid="setColor"
+          onChange={event => editor.chain().focus().setColor(event.target.value).run()}
+          type="color"
+          value={editor.getAttributes('textStyle').color || '#000000'}
         />
         <Toggle
           disabled={!editor.can().chain().focus().toggleBold().run()}

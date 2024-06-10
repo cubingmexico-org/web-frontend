@@ -13,6 +13,7 @@ import FontFamily from '@tiptap/extension-font-family'
 import TextStyle from '@tiptap/extension-text-style'
 import type { PageSize, PageOrientation, Margins } from 'pdfmake/interfaces';
 import { cn } from '@repo/ui/utils';
+import Color from '@tiptap/extension-color';
 import { podium } from '@/lib/placeholders';
 import Toolbar from './toolbar';
 import suggestion from './mentions/suggestion'
@@ -45,7 +46,10 @@ export default function Tiptap({
         types: ['heading', 'paragraph'],
       }),
       TextStyle,
-      FontFamily
+      FontFamily,
+      Color.configure({
+        types: ['textStyle'],
+      })
     ],
     editorProps: {
       attributes: {

@@ -32,7 +32,7 @@ export function processPersons(persons: Person[]) {
   };
 }
 
-export function transformString(s: string, caseType?: 'lowercase' | 'capitalize' | 'uppercase'): string {
+export function transformString(s: string, caseType?: 'lowercase' | 'capitalize' | 'uppercase' | 'none'): string {
   if (typeof s !== 'string') return ''
   switch (caseType) {
     case 'lowercase':
@@ -172,8 +172,6 @@ export function formatEvents(eventId: EventId, mode?: 'en' | 'es') {
       }
   }
 }
-
-// TODO: Add "lugar"
 
 export function formatPlace(place: number, formatType: 'place' | 'medal' | 'other'): string {
   switch (formatType) {

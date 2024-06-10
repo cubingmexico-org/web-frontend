@@ -22,6 +22,7 @@ import {
   formatPlace,
   formatDates,
   joinPersons,
+  transformString
 } from "@/lib/utils"
 import { columns } from "@/app/certificates/podium/[competitionId]/_components/columns"
 import { DataTable } from "@/app/certificates/podium/[competitionId]/_components/data-table"
@@ -145,6 +146,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
       const bold = contentItem.marks?.some(mark => mark.type === 'bold');
       const font = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.fontFamily;
       const color = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.color;
+      const transform = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.transform as 'lowercase' | 'capitalize' | 'uppercase' | 'none';
 
       const textObject = (text: string | undefined) => ({
         text,
@@ -155,29 +157,29 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
 
       switch (contentItem.type) {
         case 'text':
-          return bold || font ? textObject(contentItem.text) : contentItem.text;
+          return bold || font ? textObject(transformString(contentItem.text || '', transform)) : transformString(contentItem.text || '', transform);
         case 'mention':
           switch (contentItem.attrs?.id) {
             case 'Delegados':
-              return bold || font ? textObject(joinPersons(delegates)) : joinPersons(delegates);
+              return bold || font ? textObject(transformString(joinPersons(delegates), transform)) : transformString(joinPersons(delegates), transform);
             case 'Organizadores':
-              return bold || font ? textObject(joinPersons(organizers)) : joinPersons(organizers);
+              return bold || font ? textObject(transformString(joinPersons(organizers), transform)) : transformString(joinPersons(organizers), transform);
             case 'Lugar':
-              return bold || font ? textObject(formatPlace(data.place, 'place')) : formatPlace(data.place, 'place');
+              return bold || font ? textObject(transformString(formatPlace(data.place, 'place'), transform)) : transformString(formatPlace(data.place, 'place'), transform);
             case 'Medalla':
-              return bold || font ? textObject(formatPlace(data.place, 'medal')) : formatPlace(data.place, 'medal');
+              return bold || font ? textObject(transformString(formatPlace(data.place, 'medal'), transform)) : transformString(formatPlace(data.place, 'medal'), transform);
             case 'Competidor':
-              return bold || font ? textObject(data.name) : data.name;
+              return bold || font ? textObject(transformString(data.name, transform)) : transformString(data.name, transform);
             case 'Evento':
-              return bold || font ? textObject(formatEvents(data.event)) : formatEvents(data.event);
+              return bold || font ? textObject(transformString(formatEvents(data.event), transform)) : transformString(formatEvents(data.event), transform);
             case 'Resultado':
-              return bold || font ? textObject(formatResults(data.result, data.event)) : formatResults(data.result, data.event);
+              return bold || font ? textObject(transformString(formatResults(data.result, data.event), transform)) : transformString(formatResults(data.result, data.event), transform);
             case 'Competencia':
-              return bold || font ? textObject(competition.name) : competition.name;
+              return bold || font ? textObject(transformString(competition.name, transform)) : transformString(competition.name, transform);
             case 'Fecha':
-              return bold || font ? textObject(formatDates(date, days.toString())) : formatDates(date, days.toString());
+              return bold || font ? textObject(transformString(formatDates(date, days.toString()), transform)) : transformString(formatDates(date, days.toString()), transform);
             case 'Ciudad':
-              return bold || font ? textObject(`${city}, ${state}`) : `${city}, ${state}`;
+              return bold || font ? textObject(transformString(`${city}, ${state}`, transform)) : transformString(`${city}, ${state}`, transform);
             default:
               return null;
           }

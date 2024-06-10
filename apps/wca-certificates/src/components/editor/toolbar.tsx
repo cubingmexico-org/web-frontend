@@ -24,6 +24,7 @@ import {
   CaseSensitive,
   CaseUpper,
   CaseLower,
+  ALargeSmall,
   Undo,
   Redo,
 } from "lucide-react";
@@ -170,25 +171,32 @@ export default function Toolbar({ editor }: ToolbarProps) {
           <AlignJustify className="h-4 w-4" />
         </Toggle>
         <Toggle
-          // onPressedChange={}
-          // pressed={}
+          onPressedChange={() => editor.chain().focus().setTransform('uppercase').run()}
+          pressed={editor.isActive('textStyle', { transform: 'uppercase' })}
           size="sm"
         >
           <CaseUpper className="h-4 w-4" />
         </Toggle>
         <Toggle
-          // onPressedChange={}
-          // pressed={}
+          onPressedChange={() => editor.chain().focus().setTransform('lowercase').run()}
+          pressed={editor.isActive('textStyle', { transform: 'lowercase' })}
           size="sm"
         >
           <CaseLower className="h-4 w-4" />
         </Toggle>
         <Toggle
-          // onPressedChange={}
-          // pressed={}
+          onPressedChange={() => editor.chain().focus().setTransform('capitalize').run()}
+          pressed={editor.isActive('textStyle', { transform: 'capitalize' })}
           size="sm"
         >
           <CaseSensitive className="h-4 w-4" />
+        </Toggle>
+        <Toggle
+          onPressedChange={() => editor.chain().focus().unsetTransform().run()}
+          pressed={editor.isActive('textStyle', { transform: 'none' })}
+          size="sm"
+        >
+          <ALargeSmall className="h-4 w-4" />
         </Toggle>
       </div>
       <div className="flex items-center justify-center gap-1">

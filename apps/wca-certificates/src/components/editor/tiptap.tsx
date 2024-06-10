@@ -15,6 +15,7 @@ import type { PageSize, PageOrientation, Margins } from 'pdfmake/interfaces';
 import { cn } from '@repo/ui/utils';
 import Color from '@tiptap/extension-color';
 import { podium } from '@/lib/placeholders';
+import { TextTransform } from '@/lib/text-transform';
 import Toolbar from './toolbar';
 import suggestion from './mentions/suggestion'
 
@@ -49,7 +50,10 @@ export default function Tiptap({
       FontFamily,
       Color.configure({
         types: ['textStyle'],
-      })
+      }),
+      TextTransform.configure({
+        types: ['textStyle'],
+      }),
     ],
     editorProps: {
       attributes: {

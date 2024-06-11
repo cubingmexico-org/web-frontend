@@ -11,11 +11,13 @@ import TextAlign from '@tiptap/extension-text-align'
 import StarterKit from '@tiptap/starter-kit'
 import FontFamily from '@tiptap/extension-font-family'
 import TextStyle from '@tiptap/extension-text-style'
+import CharacterCount from '@tiptap/extension-character-count'
 import type { PageSize, PageOrientation, Margins } from 'pdfmake/interfaces';
 import { cn } from '@repo/ui/utils';
 import Color from '@tiptap/extension-color';
-import { podium } from '@/lib/placeholders';
 import { TextTransform } from '@/lib/text-transform';
+import { FontSize } from '@/lib/font-size';
+import { podium } from '@/lib/placeholders';
 import Toolbar from './toolbar';
 import suggestion from './mentions/suggestion'
 
@@ -48,23 +50,26 @@ export default function Tiptap({
       }),
       TextStyle,
       FontFamily,
+      FontSize,
       Color.configure({
         types: ['textStyle'],
       }),
       TextTransform.configure({
         types: ['textStyle'],
       }),
+      CharacterCount.configure({
+        limit: 400,
+      })
     ],
     editorProps: {
       attributes: {
         class: cn(
-          'flex flex-col shadow bg-background px-[40pt] py-[60pt] focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50', {
+          'flex flex-col shadow bg-background px-[40pt] py-[60pt] focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 overflow-y-clip', {
           'w-[612pt] h-[792pt]': pageSize === 'LETTER' && pageOrientation === 'portrait',
           'w-[792pt] h-[612pt]': pageSize === 'LETTER' && pageOrientation === 'landscape',
           'w-[595pt] h-[842pt]': pageSize === 'A4' && pageOrientation === 'portrait',
           'w-[842pt] h-[595pt]': pageSize === 'A4' && pageOrientation === 'landscape',
-        }
-        )
+        })
       },
     },
     content: podium,

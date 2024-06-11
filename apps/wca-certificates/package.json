@@ -15,6 +15,7 @@
     "@repo/ui": "workspace:*",
     "@tanstack/react-table": "^8.15.3",
     "@tiptap/core": "^2.4.0",
+    "@tiptap/extension-character-count": "^2.4.0",
     "@tiptap/extension-color": "^2.4.0",
     "@tiptap/extension-font-family": "^2.4.0",
     "@tiptap/extension-list-item": "^2.4.0",

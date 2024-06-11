@@ -28,6 +28,13 @@ import {
   Undo,
   Redo,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@repo/ui/select"
 import { Button } from "@repo/ui/button";
 import { Toggle } from "@repo/ui/toggle";
 import { Input } from "@repo/ui/input";
@@ -69,6 +76,31 @@ export default function Toolbar({ editor }: ToolbarProps) {
           }}
           value={editor.isActive('textStyle', { fontFamily: 'Maven Pro' }) ? 'Maven Pro' : 'Roboto'}
         />
+        <Select
+          defaultValue="12"
+          onValueChange={(value) => editor.chain().focus().setFontSize(`${value}pt`).run()}
+          value={editor.isActive('textStyle', { fontSize: '12pt' }) ? '12' : ''}
+        >
+          <SelectTrigger className="!w-20">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="8">8</SelectItem>
+            <SelectItem value="9">9</SelectItem>
+            <SelectItem value="10">10</SelectItem>
+            <SelectItem value="11">11</SelectItem>
+            <SelectItem value="12">12</SelectItem>
+            <SelectItem value="14">14</SelectItem>
+            <SelectItem value="18">18</SelectItem>
+            <SelectItem value="24">24</SelectItem>
+            <SelectItem value="30">30</SelectItem>
+            <SelectItem value="36">36</SelectItem>
+            <SelectItem value="48">48</SelectItem>
+            <SelectItem value="60">60</SelectItem>
+            <SelectItem value="72">72</SelectItem>
+            <SelectItem value="96">96</SelectItem>
+          </SelectContent>
+        </Select>
         <Input
           className="h-9 w-32 p-0 border-0"
           data-testid="setColor"

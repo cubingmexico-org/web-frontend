@@ -145,6 +145,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
     return content?.map((contentItem) => {
       const bold = contentItem.marks?.some(mark => mark.type === 'bold');
       const font = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.fontFamily;
+      const fontSize = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.fontSize as string;
       const color = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.color;
       const transform = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.transform as 'lowercase' | 'capitalize' | 'uppercase' | 'none';
 
@@ -152,38 +153,39 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
         text,
         bold,
         font,
+        fontSize: parseInt(fontSize) * 1.039,
         color
       });
 
       switch (contentItem.type) {
         case 'text':
-          return bold || font ? textObject(transformString(contentItem.text || '', transform)) : transformString(contentItem.text || '', transform);
+          return bold || font || fontSize || color ? textObject(transformString(contentItem.text || '', transform)) : transformString(contentItem.text || '', transform);
         case 'mention':
           switch (contentItem.attrs?.id) {
             case 'Delegados':
-              return bold || font ? textObject(transformString(joinPersons(delegates), transform)) : transformString(joinPersons(delegates), transform);
+              return bold || font || fontSize || color ? textObject(transformString(joinPersons(delegates), transform)) : transformString(joinPersons(delegates), transform);
             case 'Organizadores':
-              return bold || font ? textObject(transformString(joinPersons(organizers), transform)) : transformString(joinPersons(organizers), transform);
+              return bold || font || fontSize || color ? textObject(transformString(joinPersons(organizers), transform)) : transformString(joinPersons(organizers), transform);
             case 'Posición (cardinal)':
-              return bold || font ? textObject(transformString(formatPlace(data.place, 'cardinal'), transform)) : transformString(formatPlace(data.place, 'cardinal'), transform);
+              return bold || font || fontSize || color ? textObject(transformString(formatPlace(data.place, 'cardinal'), transform)) : transformString(formatPlace(data.place, 'cardinal'), transform);
             case 'Posición (ordinal)':
-              return bold || font ? textObject(transformString(formatPlace(data.place, 'ordinal'), transform)) : transformString(formatPlace(data.place, 'ordinal'), transform);
+              return bold || font || fontSize || color ? textObject(transformString(formatPlace(data.place, 'ordinal'), transform)) : transformString(formatPlace(data.place, 'ordinal'), transform);
             case 'Posición (ordinal con texto)':
-              return bold || font ? textObject(transformString(formatPlace(data.place, 'ordinal_text'), transform)) : transformString(formatPlace(data.place, 'ordinal_text'), transform);
+              return bold || font || fontSize || color ? textObject(transformString(formatPlace(data.place, 'ordinal_text'), transform)) : transformString(formatPlace(data.place, 'ordinal_text'), transform);
             case 'Medalla':
-              return bold || font ? textObject(transformString(formatPlace(data.place, 'medal'), transform)) : transformString(formatPlace(data.place, 'medal'), transform);
+              return bold || font || fontSize || color ? textObject(transformString(formatPlace(data.place, 'medal'), transform)) : transformString(formatPlace(data.place, 'medal'), transform);
             case 'Competidor':
-              return bold || font ? textObject(transformString(data.name, transform)) : transformString(data.name, transform);
+              return bold || font || fontSize || color ? textObject(transformString(data.name, transform)) : transformString(data.name, transform);
             case 'Evento':
-              return bold || font ? textObject(transformString(formatEvents(data.event), transform)) : transformString(formatEvents(data.event), transform);
+              return bold || font || fontSize || color ? textObject(transformString(formatEvents(data.event), transform)) : transformString(formatEvents(data.event), transform);
             case 'Resultado':
-              return bold || font ? textObject(transformString(formatResults(data.result, data.event), transform)) : transformString(formatResults(data.result, data.event), transform);
+              return bold || font || fontSize || color ? textObject(transformString(formatResults(data.result, data.event), transform)) : transformString(formatResults(data.result, data.event), transform);
             case 'Competencia':
-              return bold || font ? textObject(transformString(competition.name, transform)) : transformString(competition.name, transform);
+              return bold || font || fontSize || color ? textObject(transformString(competition.name, transform)) : transformString(competition.name, transform);
             case 'Fecha':
-              return bold || font ? textObject(transformString(formatDates(date, days.toString()), transform)) : transformString(formatDates(date, days.toString()), transform);
+              return bold || font || fontSize || color ? textObject(transformString(formatDates(date, days.toString()), transform)) : transformString(formatDates(date, days.toString()), transform);
             case 'Ciudad':
-              return bold || font ? textObject(transformString(`${city}, ${state}`, transform)) : transformString(`${city}, ${state}`, transform);
+              return bold || font || fontSize || color ? textObject(transformString(`${city}, ${state}`, transform)) : transformString(`${city}, ${state}`, transform);
             default:
               return null;
           }

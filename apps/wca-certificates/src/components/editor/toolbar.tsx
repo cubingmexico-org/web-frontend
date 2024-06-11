@@ -8,7 +8,6 @@ import React from "react";
 import type { Editor } from "@tiptap/react";
 import {
   Bold,
-  // Italic,
   Pilcrow,
   Heading1,
   Heading2,
@@ -20,11 +19,6 @@ import {
   AlignCenter,
   AlignRight,
   AlignJustify,
-  // Type,
-  CaseSensitive,
-  CaseUpper,
-  CaseLower,
-  ALargeSmall,
   Undo,
   Redo,
 } from "lucide-react";
@@ -56,7 +50,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
   }
 
   if (!editor) {
-    return <p>Cargando...</p>;
+    return <></>;
   }
 
   void loadFonts();
@@ -116,14 +110,6 @@ export default function Toolbar({ editor }: ToolbarProps) {
         >
           <Bold className="h-4 w-4" />
         </Toggle>
-        {/* <Toggle
-          disabled={!editor.can().chain().focus().toggleItalic().run()}
-          onPressedChange={() => editor.chain().focus().toggleItalic().run()}
-          pressed={editor.isActive("italic")}
-          size="sm"
-        >
-          <Italic className="h-4 w-4" />
-        </Toggle> */}
         <Toggle
           disabled={!editor.can().chain().focus().setParagraph().run()}
           onPressedChange={() => editor.chain().focus().setParagraph().run()}
@@ -201,34 +187,6 @@ export default function Toolbar({ editor }: ToolbarProps) {
           size="sm"
         >
           <AlignJustify className="h-4 w-4" />
-        </Toggle>
-        <Toggle
-          onPressedChange={() => editor.chain().focus().setTransform('uppercase').run()}
-          pressed={editor.isActive('textStyle', { transform: 'uppercase' })}
-          size="sm"
-        >
-          <CaseUpper className="h-4 w-4" />
-        </Toggle>
-        <Toggle
-          onPressedChange={() => editor.chain().focus().setTransform('lowercase').run()}
-          pressed={editor.isActive('textStyle', { transform: 'lowercase' })}
-          size="sm"
-        >
-          <CaseLower className="h-4 w-4" />
-        </Toggle>
-        <Toggle
-          onPressedChange={() => editor.chain().focus().setTransform('capitalize').run()}
-          pressed={editor.isActive('textStyle', { transform: 'capitalize' })}
-          size="sm"
-        >
-          <CaseSensitive className="h-4 w-4" />
-        </Toggle>
-        <Toggle
-          onPressedChange={() => editor.chain().focus().unsetTransform().run()}
-          pressed={editor.isActive('textStyle', { transform: 'none' })}
-          size="sm"
-        >
-          <ALargeSmall className="h-4 w-4" />
         </Toggle>
       </div>
       <div className="flex items-center justify-center gap-1">

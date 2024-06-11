@@ -39,8 +39,8 @@ export function DialogDocumentSettings({
 }: DialogDocumentSettingsProps): JSX.Element {
 	return (
 		<Dialog>
-			<DialogTrigger asChild>
-				<Button variant='outline'><FileText className='h-5 w-5 mr-2' /> Configuración de página</Button>
+			<DialogTrigger className='flex text-sm hover:bg-accent px-2 py-1.5 cursor-default rounded-sm'>
+				<FileText className='h-5 w-5 mr-2' />Configuración de página
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>

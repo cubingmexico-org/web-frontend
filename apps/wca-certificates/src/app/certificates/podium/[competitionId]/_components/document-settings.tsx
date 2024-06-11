@@ -11,6 +11,7 @@ import React, { useState, useEffect } from 'react'
 import type { JSONContent } from '@tiptap/react'
 import { Button } from "@repo/ui/button"
 import { Label } from "@repo/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs"
 import * as pdfMake from "pdfmake/build/pdfmake";
 import type { Margins, PageOrientation, PageSize, TDocumentDefinitions } from 'pdfmake/interfaces';
 import { useMediaQuery } from '@repo/ui/use-media-query';
@@ -28,8 +29,7 @@ import { columns } from "@/app/certificates/podium/[competitionId]/_components/c
 import { DataTable } from "@/app/certificates/podium/[competitionId]/_components/data-table"
 import { FileUploader } from "@/components/file-uploader";
 import { podium } from '@/lib/placeholders';
-import Tiptap from '../../../../../components/editor/tiptap'
-import { DialogDocumentSettings } from '../../../../../components/dialog-document-settings';
+import Tiptap from '@/components/editor/tiptap'
 
 const fonts = {
   'Roboto': {
@@ -250,53 +250,58 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
     pdfMake.createPdf(docDefinition, undefined, fonts).open();
   }
 
-  if (!isDesktop) {
-    return (
-      <p>
-        De momento no está disponible en dispositivos móviles. Por favor, utiliza un dispositivo de escritorio.
-      </p>
-    )
-  }
-
   return (
-    <>
-      <DataTable columns={columns} data={competition.events} rowSelection={rowSelection} setRowSelection={setRowSelection} />
-      <div className='mt-4'>
-        <div className='flex justify-center'>
-          <DialogDocumentSettings
-            pageMargins={pageMargins}
-            pageOrientation={pageOrientation}
-            pageSize={pageSize}
-            setPageMargins={setPageMargins}
-            setPageOrientation={setPageOrientation}
-            setPageSize={setPageSize}
-          />
-        </div>
-        <form
-          className="grid place-items-center my-4"
-          onSubmit={handleSubmit}
-        >
-          <Tiptap
-            key={`${pageSize}-${pageOrientation}-${pageMargins}`}
-            onChange={(newContent: JSONContent) => { handleContentChange(newContent); }}
-            pageMargins={pageMargins}
-            pageOrientation={pageOrientation}
-            pageSize={pageSize}
-          />
+    <Tabs defaultValue="results">
+      <TabsList className="grid w-full grid-cols-2">
+        <TabsTrigger value="results">Resultados</TabsTrigger>
+        <TabsTrigger value="document">Documento</TabsTrigger>
+      </TabsList>
+      <TabsContent value="results">
+        <DataTable
+          columns={columns}
+          data={competition.events}
+          rowSelection={rowSelection}
+          setRowSelection={setRowSelection}
+        />
+      </TabsContent>
+      <TabsContent value="document">
+        {isDesktop ? (
+          <div className='mt-4'>
+            <form
+              className="grid place-items-center my-4"
+              onSubmit={handleSubmit}
+            >
+              <Tiptap
+                key={`${pageSize}-${pageOrientation}-${pageMargins}`}
+                content={content}
+                onChange={(newContent: JSONContent) => { handleContentChange(newContent); }}
+                pageMargins={pageMargins}
+                pageOrientation={pageOrientation}
+                pageSize={pageSize}
+                setPageMargins={(value: Margins) => { setPageMargins(value); }}
+                setPageOrientation={(value: PageOrientation) => { setPageOrientation(value); }}
+                setPageSize={(value: PageSize) => { setPageSize(value); }}
+              />
 
-          <Button disabled={Object.keys(rowSelection).length === 0} onClick={generatePDF} type="submit">Generar PDF</Button>
-        </form>
-        <div>
-          <Label htmlFor='background'>Fondo</Label>
-          <FileUploader
-            id='background'
-            maxFiles={1}
-            maxSize={1 * 1024 * 1024}
-            onValueChange={(e) => { setFiles(e); }}
-            value={files}
-          />
-        </div>
-      </div>
-    </>
+              <Button disabled={Object.keys(rowSelection).length === 0} onClick={generatePDF} type="submit">Generar PDF</Button>
+            </form>
+            <div>
+              <Label htmlFor='background'>Fondo</Label>
+              <FileUploader
+                id='background'
+                maxFiles={1}
+                maxSize={1 * 1024 * 1024}
+                onValueChange={(e) => { setFiles(e); }}
+                value={files}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className='text-center'>
+            De momento el editor de texto no está disponible en dispositivos móviles. Por favor, utiliza un dispositivo de escritorio.
+          </div>
+        )}
+      </TabsContent>
+    </Tabs>
   );
 }

@@ -272,8 +272,8 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
               onSubmit={handleSubmit}
             >
               <Tiptap
-                key={`${pageSize}-${pageOrientation}-${pageMargins}`}
                 content={content}
+                key={`${pageSize}-${pageOrientation}-${pageMargins}`}
                 onChange={(newContent: JSONContent) => { handleContentChange(newContent); }}
                 pageMargins={pageMargins}
                 pageOrientation={pageOrientation}

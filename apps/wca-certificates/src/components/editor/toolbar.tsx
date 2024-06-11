@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
 /* eslint-disable @typescript-eslint/no-misused-promises -- . */
-// /* eslint-disable import/no-named-as-default-member -- . */
 /* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
 "use client";
 
@@ -50,7 +49,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
   }
 
   if (!editor) {
-    return <></>;
+    return null;
   }
 
   void loadFonts();

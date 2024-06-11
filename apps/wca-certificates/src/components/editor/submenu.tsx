@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
-/* eslint-disable @typescript-eslint/no-misused-promises -- . */
-// /* eslint-disable import/no-named-as-default-member -- . */
 /* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
 "use client";
 
@@ -20,7 +17,7 @@ interface SubmenuProps {
 export default function Submenu({ editor }: SubmenuProps) {
 
   if (!editor) {
-    return <></>;
+    return null;
   }
 
   return (

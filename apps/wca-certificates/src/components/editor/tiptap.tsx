@@ -12,6 +12,10 @@ import StarterKit from '@tiptap/starter-kit'
 import FontFamily from '@tiptap/extension-font-family'
 import TextStyle from '@tiptap/extension-text-style'
 import CharacterCount from '@tiptap/extension-character-count'
+import Table from '@tiptap/extension-table'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
+import TableRow from '@tiptap/extension-table-row'
 import type { PageSize, PageOrientation, Margins } from 'pdfmake/interfaces';
 import { cn } from '@repo/ui/utils';
 import Color from '@tiptap/extension-color';
@@ -26,7 +30,7 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from "@repo/ui/menubar"
-import { Save, Loader, RotateCcw } from 'lucide-react';
+import { Save, Loader, RotateCcw, Sheet } from 'lucide-react';
 import { DialogDocumentSettings } from '@/components/dialog-document-settings';
 import { TextTransform } from '@/lib/text-transform';
 import { FontSize } from '@/lib/font-size';
@@ -54,7 +58,7 @@ export default function Tiptap({
   setPageOrientation,
   setPageMargins,
   onChange
-}: TiptapProps): JSX.Element {
+}: TiptapProps) {
   const handleChange = (newContent: JSONContent) => {
     onChange(newContent);
   };
@@ -81,7 +85,11 @@ export default function Tiptap({
       }),
       CharacterCount.configure({
         limit: 400,
-      })
+      }),
+      Table,
+      TableCell,
+      TableHeader,
+      TableRow,
     ],
     editorProps: {
       attributes: {
@@ -99,6 +107,10 @@ export default function Tiptap({
       handleChange(editor.getJSON());
     },
   })
+
+  if (!editor) {
+    return null
+  }
 
   return (
     <div className="w-full">
@@ -119,6 +131,14 @@ export default function Tiptap({
                 setPageOrientation={setPageOrientation}
                 setPageSize={setPageSize}
               />
+            </MenubarItem>
+          </MenubarContent>
+        </MenubarMenu>
+        <MenubarMenu>
+          <MenubarTrigger>Insertar</MenubarTrigger>
+          <MenubarContent>
+            <MenubarItem onClick={() => editor.chain().focus().insertTable({ rows: 2, cols: 3, withHeaderRow: true }).run()}>
+              <Sheet className='h-5 w-5 mr-2' />Tabla
             </MenubarItem>
           </MenubarContent>
         </MenubarMenu>

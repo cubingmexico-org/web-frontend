@@ -123,12 +123,12 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
     if (personWithResults.results.length > 0) {
       allResults.push(personWithResults);
     }
-  }
+  };
 
   function generateParticipationCertificates() {
     const filteredResults = allResults.filter(result => rowSelection[result.wcaId]);
     setPdfData(filteredResults);
-  }
+  };
 
   const renderContent = (content: JSONContent, data: ParticipantData) => {
     return content.content?.map((item) => {
@@ -248,7 +248,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
     } as TDocumentDefinitions;
 
     pdfMake.createPdf(docDefinition, undefined, fonts).open();
-  }
+  };
 
   return (
     <Tabs defaultValue="results">

@@ -11,18 +11,22 @@ import { MentionList } from './mention-list'
 export default {
   items: ({ query }: any) => {
     return [
+      'Ciudad',
+      'Competencia',
+      'Competidor',
       'Delegados',
+      'Evento',
+      'Evento (tabla)',
+      'Fecha',
+      'Medalla',
       'Organizadores',
       'Posición (cardinal)',
       'Posición (ordinal)',
       'Posición (ordinal con texto)',
-      'Medalla',
-      'Competidor',
-      'Evento',
+      'Posición (tabla)',
       'Resultado',
-      'Competencia',
-      'Fecha',
-      'Ciudad'
+      'Resultado (tabla)',
+
     ].filter(item => item.toLowerCase().startsWith(query.toLowerCase()))
   },
 

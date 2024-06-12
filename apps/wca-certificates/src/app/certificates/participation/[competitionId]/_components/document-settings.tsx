@@ -147,6 +147,50 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
             style: `header${item.attrs?.level}`,
             alignment
           };
+        case 'table':
+          return item.content?.map(row => {
+            switch (row.type) {
+              case 'tableRow':
+                return row.content?.map(cell => {
+                  switch (cell.type) {
+                    case 'tableHeader':
+                      return cell.content?.map((contentCell) => {
+                        const tableAlignment = contentCell.attrs?.textAlign || 'left';
+                        const tableTextContent = contentCell.content && contentCell.content.length > 0 ? renderTextContent(contentCell.content, data) : '\u00A0';
+                        switch (contentCell.type) {
+                          case 'paragraph':
+                            return {
+                              text: tableTextContent,
+                              style: 'paragraph',
+                              alignment: tableAlignment
+                            }
+                          default:
+                            return null;
+                        }
+                      });
+                    case 'tableCell':
+                      return cell.content?.map((contentCell) => {
+                        const tableAlignment = contentCell.attrs?.textAlign || 'left';
+                        const tableTextContent = contentCell.content && contentCell.content.length > 0 ? renderTextContent(contentCell.content, data) : '\u00A0';
+                        switch (contentCell.type) {
+                          case 'paragraph':
+                            return {
+                              text: tableTextContent,
+                              style: 'paragraph',
+                              alignment: tableAlignment
+                            }
+                          default:
+                            return null;
+                        }
+                      });
+                    default:
+                      return null;
+                  }
+                });
+              default:
+                return null;
+            }
+          });
         default:
           return null;
       }

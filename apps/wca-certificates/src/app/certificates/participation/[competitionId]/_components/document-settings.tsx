@@ -20,7 +20,9 @@ import {
   processPersons,
   formatDates,
   joinPersons,
-  transformString
+  transformString,
+  formatEvents,
+  formatResults
 } from "@/lib/utils"
 import { columns } from "@/app/certificates/participation/[competitionId]/_components/columns"
 import { DataTable } from "@/app/certificates/participation/[competitionId]/_components/data-table"
@@ -132,12 +134,12 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
 
   const renderContent = (content: JSONContent, data: ParticipantData) => {
     return content.content?.map((item) => {
+      const text = item.content && item.content.length > 0 ? renderTextContent(item.content, data) : '\u00A0';
       const alignment = item.attrs?.textAlign || 'left';
-      const textContent = item.content && item.content.length > 0 ? renderTextContent(item.content, data) : '\u00A0';
       switch (item.type) {
         case 'paragraph':
           return {
-            text: textContent,
+            text,
             style: 'paragraph',
             alignment
           };
@@ -148,49 +150,44 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
             alignment
           };
         case 'table':
-          return item.content?.map(row => {
-            switch (row.type) {
-              case 'tableRow':
-                return row.content?.map(cell => {
-                  switch (cell.type) {
-                    case 'tableHeader':
-                      return cell.content?.map((contentCell) => {
-                        const tableAlignment = contentCell.attrs?.textAlign || 'left';
-                        const tableTextContent = contentCell.content && contentCell.content.length > 0 ? renderTextContent(contentCell.content, data) : '\u00A0';
-                        switch (contentCell.type) {
-                          case 'paragraph':
+          return {
+            table: {
+              headerRows: 1,
+              widths: item.attrs?.widths,
+              body: [
+                ...(item.content || []).map(row => {
+                  const headerCells = row.content?.filter(cell => cell.type === 'tableHeader') || [];
+                  switch (row.type) {
+                    case 'tableRow':
+                      if (headerCells.length === 0) {
+                        return null;
+                      }
+                      return headerCells.map(cell => {
+                        return cell.content?.map((contentCell) => {
+                          const text = contentCell.content && contentCell.content.length > 0 ? renderTextContent(contentCell.content, data) : '\u00A0';
+                          const alignment = contentCell.attrs?.textAlign || 'left';
+                          if (contentCell.type === 'paragraph') {
                             return {
-                              text: tableTextContent,
+                              text,
                               style: 'paragraph',
-                              alignment: tableAlignment
+                              alignment
                             }
-                          default:
-                            return null;
-                        }
-                      });
-                    case 'tableCell':
-                      return cell.content?.map((contentCell) => {
-                        const tableAlignment = contentCell.attrs?.textAlign || 'left';
-                        const tableTextContent = contentCell.content && contentCell.content.length > 0 ? renderTextContent(contentCell.content, data) : '\u00A0';
-                        switch (contentCell.type) {
-                          case 'paragraph':
-                            return {
-                              text: tableTextContent,
-                              style: 'paragraph',
-                              alignment: tableAlignment
-                            }
-                          default:
-                            return null;
-                        }
+                          }
+                          return null;
+                        });
                       });
                     default:
                       return null;
                   }
-                });
-              default:
-                return null;
+                }).filter(Boolean),
+                ...data.results.map(result => [
+                  { text: formatEvents(result.event), style: 'paragraph' },
+                  { text: formatResults(result.average, result.event), style: 'paragraph' },
+                  { text: result.ranking, style: 'paragraph' }
+                ])
+              ]
             }
-          });
+          };
         default:
           return null;
       }
@@ -230,6 +227,18 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
               return bold || font || fontSize || color ? textObject(transformString(formatDates(date, days.toString()), transform)) : transformString(formatDates(date, days.toString()), transform);
             case 'Ciudad':
               return bold || font || fontSize || color ? textObject(transformString(`${city}, ${state}`, transform)) : transformString(`${city}, ${state}`, transform);
+            case 'Evento (tabla)':
+              return data.results.map(result => {
+                return result.event;
+              });
+            case 'Posición (tabla)':
+              return data.results.map(result => {
+                return result.average;
+              });
+            case 'Resultado (tabla)':
+              return data.results.map(result => {
+                return result.ranking;
+              });
             default:
               return null;
           }

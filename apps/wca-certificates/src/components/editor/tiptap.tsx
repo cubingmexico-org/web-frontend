@@ -26,8 +26,8 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from "@repo/ui/menubar"
+import { Save, Loader, RotateCcw } from 'lucide-react';
 import { DialogDocumentSettings } from '@/components/dialog-document-settings';
-import { Save, Loader } from 'lucide-react';
 import { TextTransform } from '@/lib/text-transform';
 import { FontSize } from '@/lib/font-size';
 import Toolbar from './toolbar';
@@ -106,6 +106,7 @@ export default function Tiptap({
         <MenubarMenu>
           <MenubarTrigger>Archivo</MenubarTrigger>
           <MenubarContent>
+            <MenubarItem disabled><RotateCcw className='h-5 w-5 mr-2' />Reiniciar</MenubarItem>
             <MenubarItem disabled><Save className='h-5 w-5 mr-2' />Guardar</MenubarItem>
             <MenubarItem disabled><Loader className='h-5 w-5 mr-2' />Cargar</MenubarItem>
             <MenubarSeparator />

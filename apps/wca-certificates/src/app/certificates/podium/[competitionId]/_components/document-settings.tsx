@@ -150,33 +150,33 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
 
       switch (contentItem.type) {
         case 'text':
-          return bold || font || fontSize || color ? textObject(transformString(contentItem.text || '', transform)) : transformString(contentItem.text || '', transform);
+          return textObject(transformString(contentItem.text || '', transform));
         case 'mention':
           switch (contentItem.attrs?.id) {
             case 'Delegados':
-              return bold || font || fontSize || color ? textObject(transformString(joinPersons(delegates), transform)) : transformString(joinPersons(delegates), transform);
+              return textObject(transformString(joinPersons(delegates), transform));
             case 'Organizadores':
-              return bold || font || fontSize || color ? textObject(transformString(joinPersons(organizers), transform)) : transformString(joinPersons(organizers), transform);
+              return textObject(transformString(joinPersons(organizers), transform));
             case 'Posición (cardinal)':
-              return bold || font || fontSize || color ? textObject(transformString(formatPlace(data.place, 'cardinal'), transform)) : transformString(formatPlace(data.place, 'cardinal'), transform);
+              return textObject(transformString(formatPlace(data.place, 'cardinal'), transform));
             case 'Posición (ordinal)':
-              return bold || font || fontSize || color ? textObject(transformString(formatPlace(data.place, 'ordinal'), transform)) : transformString(formatPlace(data.place, 'ordinal'), transform);
+              return textObject(transformString(formatPlace(data.place, 'ordinal'), transform));
             case 'Posición (ordinal con texto)':
-              return bold || font || fontSize || color ? textObject(transformString(formatPlace(data.place, 'ordinal_text'), transform)) : transformString(formatPlace(data.place, 'ordinal_text'), transform);
+              return textObject(transformString(formatPlace(data.place, 'ordinal_text'), transform));
             case 'Medalla':
-              return bold || font || fontSize || color ? textObject(transformString(formatPlace(data.place, 'medal'), transform)) : transformString(formatPlace(data.place, 'medal'), transform);
+              return textObject(transformString(formatPlace(data.place, 'medal'), transform));
             case 'Competidor':
-              return bold || font || fontSize || color ? textObject(transformString(data.name, transform)) : transformString(data.name, transform);
+              return textObject(transformString(data.name, transform));
             case 'Evento':
-              return bold || font || fontSize || color ? textObject(transformString(formatEvents(data.event), transform)) : transformString(formatEvents(data.event), transform);
+              return textObject(transformString(formatEvents(data.event), transform));
             case 'Resultado':
-              return bold || font || fontSize || color ? textObject(transformString(formatResults(data.result, data.event), transform)) : transformString(formatResults(data.result, data.event), transform);
+              return textObject(transformString(formatResults(data.result, data.event), transform));
             case 'Competencia':
-              return bold || font || fontSize || color ? textObject(transformString(competition.name, transform)) : transformString(competition.name, transform);
+              return textObject(transformString(competition.name, transform));
             case 'Fecha':
-              return bold || font || fontSize || color ? textObject(transformString(formatDates(date, days.toString()), transform)) : transformString(formatDates(date, days.toString()), transform);
+              return textObject(transformString(formatDates(date, days.toString()), transform));
             case 'Ciudad':
-              return bold || font || fontSize || color ? textObject(transformString(`${city}, ${state}`, transform)) : transformString(`${city}, ${state}`, transform);
+              return textObject(transformString(`${city}, ${state}`, transform));
             default:
               return null;
           }

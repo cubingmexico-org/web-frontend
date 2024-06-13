@@ -166,11 +166,14 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                   }
                   return null;
                 }).filter(Boolean),
-                ...data.results.map(result => [
-                  { text: formatEvents(result.event), style: 'paragraph' },
-                  { text: formatResults(result.average, result.event), style: 'paragraph' },
-                  { text: result.ranking, style: 'paragraph' }
-                ])
+                ...(item.content?.some(row => row.content?.some(cell => cell.type === 'tableCell')) ? data.results.map(result => {
+
+                  return [
+                    { text: formatEvents(result.event), style: 'paragraph' },
+                    { text: formatResults(result.average, result.event), style: 'paragraph' },
+                    { text: result.ranking, style: 'paragraph' }
+                  ]
+                }) : [])
               ]
             }
           };
@@ -198,21 +201,21 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
 
       switch (contentItem.type) {
         case 'text':
-          return bold || font || fontSize || color ? textObject(transformString(contentItem.text || '', transform)) : transformString(contentItem.text || '', transform);
+          return textObject(transformString(contentItem.text || '', transform));
         case 'mention':
           switch (contentItem.attrs?.id) {
             case 'Delegados':
-              return bold || font || fontSize || color ? textObject(transformString(joinPersons(delegates), transform)) : transformString(joinPersons(delegates), transform);
+              return textObject(transformString(joinPersons(delegates), transform));
             case 'Organizadores':
-              return bold || font || fontSize || color ? textObject(transformString(joinPersons(organizers), transform)) : transformString(joinPersons(organizers), transform);
+              return textObject(transformString(joinPersons(organizers), transform));
             case 'Competidor':
-              return bold || font || fontSize || color ? textObject(transformString(data.name, transform)) : transformString(data.name, transform);
+              return textObject(transformString(data.name, transform));
             case 'Competencia':
-              return bold || font || fontSize || color ? textObject(transformString(competition.name, transform)) : transformString(competition.name, transform);
+              return textObject(transformString(competition.name, transform));
             case 'Fecha':
-              return bold || font || fontSize || color ? textObject(transformString(formatDates(date, days.toString()), transform)) : transformString(formatDates(date, days.toString()), transform);
+              return textObject(transformString(formatDates(date, days.toString()), transform));
             case 'Ciudad':
-              return bold || font || fontSize || color ? textObject(transformString(`${city}, ${state}`, transform)) : transformString(`${city}, ${state}`, transform);
+              return textObject(transformString(`${city}, ${state}`, transform));
             case 'Evento (tabla)':
               // here's where the row data is rendered
               return 'Evento (tabla)';

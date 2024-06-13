@@ -152,30 +152,101 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
           };
         case 'table':
           return {
-            table: {
-              headerRows: 1,
-              widths: item.attrs?.widths,
-              body: [
-                ...(item.content || []).map(row => {
-                  const headerCells = row.content?.filter(cell => cell.type === 'tableHeader') || [];
-                  if (row.type === 'tableRow') {
-                    if (headerCells.length === 0) {
+            columns: [
+              { width: '*', text: '' },
+              {
+                table: {
+                  headerRows: 1,
+                  // widths: item.attrs?.widths,
+                  body: [
+                    ...(item.content || []).map(row => {
+                      const headerCells = row.content?.filter(cell => cell.type === 'tableHeader') || [];
+                      if (row.type === 'tableRow') {
+                        if (headerCells.length === 0) {
+                          return null;
+                        }
+                        return headerCells.map(cell => cell.content?.map((contentCell) => renderDocumentContent({ content: [contentCell] }, data)));
+                      }
                       return null;
-                    }
-                    return headerCells.map(cell => cell.content?.map((contentCell) => renderDocumentContent({ content: [contentCell] }, data)));
-                  }
-                  return null;
-                }).filter(Boolean),
-                ...(item.content?.some(row => row.content?.some(cell => cell.type === 'tableCell')) ? data.results.map(result => {
+                    }).filter(Boolean),
+                    ...(item.content?.some(row => row.content?.some(cell => cell.type === 'tableCell')) ? data.results.map(result => {
 
-                  return [
-                    { text: formatEvents(result.event), style: 'paragraph' },
-                    { text: formatResults(result.average, result.event), style: 'paragraph' },
-                    { text: result.ranking, style: 'paragraph' }
+                      const cell = item.content?.find(row => row.content?.some(cell => cell.type === 'tableCell'));
+
+                      let event;
+                      let average;
+                      let ranking;
+
+                      for (const row of cell?.content || []) {
+                        for (const cell of row.content || []) {
+                          if (cell.content?.some(content => content.type === 'mention')) {
+                            switch (cell.content[0].attrs?.id) {
+                              case 'Evento (tabla)':
+                                event = renderDocumentContent({
+                                  content: [
+                                    {
+                                      type: 'paragraph',
+                                      attrs: cell.attrs,
+                                      content: [
+                                        {
+                                          type: 'text',
+                                          text: formatEvents(result.event),
+                                          marks: cell.content[0].marks
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }, data);
+                                break;
+                              case 'Resultado (tabla)':
+                                average = renderDocumentContent({
+                                  content: [
+                                    {
+                                      type: 'paragraph',
+                                      attrs: cell.attrs,
+                                      content: [
+                                        {
+                                          type: 'text',
+                                          text: formatResults(result.average, result.event),
+                                          marks: cell.content[0].marks
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }, data);
+                                break;
+                              case 'Posición (tabla)':
+                                ranking = renderDocumentContent({
+                                  content: [
+                                    {
+                                      type: 'paragraph',
+                                      attrs: cell.attrs,
+                                      content: [
+                                        {
+                                          type: 'text',
+                                          text: (result.ranking || '').toString(),
+                                          marks: cell.content[0].marks
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }, data);
+                                break;
+                              default:
+                                break;
+                            }
+                          }
+                        }
+                      }
+
+                      return [event || {}, average || {}, ranking || {}]
+                    }) : [])
                   ]
-                }) : [])
-              ]
-            }
+                },
+                width: 'auto'
+              },
+              { width: '*', text: '' },
+            ]
           };
         default:
           return null;
@@ -187,7 +258,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
     return content?.map((contentItem) => {
       const bold = contentItem.marks?.some(mark => mark.type === 'bold');
       const font = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.fontFamily || 'Roboto';
-      const fontSize = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.fontSize as string || '12pt';
+      const fontSize = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.fontSize || '12pt';
       const color = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.color || '#000000';
       const transform = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.transform as 'lowercase' | 'capitalize' | 'uppercase' | 'none' | undefined || 'none';
 
@@ -195,7 +266,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
         text,
         bold,
         font,
-        fontSize: parseInt(fontSize) * 1.039,
+        fontSize: parseInt(fontSize as string) * 1.039,
         color
       });
 
@@ -216,15 +287,6 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
               return textObject(transformString(formatDates(date, days.toString()), transform));
             case 'Ciudad':
               return textObject(transformString(`${city}, ${state}`, transform));
-            case 'Evento (tabla)':
-              // here's where the row data is rendered
-              return 'Evento (tabla)';
-            case 'Posición (tabla)':
-              // here's where the row data is rendered
-              return null;
-            case 'Resultado (tabla)':
-              // here's where the row data is rendered
-              return null;
             default:
               return null;
           }

@@ -136,7 +136,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
     return content?.map((contentItem) => {
       const bold = contentItem.marks?.some(mark => mark.type === 'bold');
       const font = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.fontFamily || 'Roboto';
-      const fontSize = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.fontSize as string || '12pt';
+      const fontSize = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.fontSize || '12pt';
       const color = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.color || '#000000';
       const transform = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.transform as 'lowercase' | 'capitalize' | 'uppercase' | 'none' | undefined || 'none';
 
@@ -144,7 +144,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
         text,
         bold,
         font,
-        fontSize: parseInt(fontSize) * 1.039,
+        fontSize: parseInt(fontSize as string) * 1.039,
         color
       });
 

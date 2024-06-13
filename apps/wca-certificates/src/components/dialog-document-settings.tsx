@@ -1,18 +1,18 @@
 import React from 'react';
 import { Label } from "@repo/ui/label";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
 } from "@repo/ui/dialog"
 import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem
+	Select,
+	SelectTrigger,
+	SelectValue,
+	SelectContent,
+	SelectItem
 } from '@repo/ui/select';
 import { RadioGroup, RadioGroupItem } from "@repo/ui/radio-group"
 import { Input } from '@repo/ui/input';

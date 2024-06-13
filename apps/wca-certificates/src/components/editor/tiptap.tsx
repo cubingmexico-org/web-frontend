@@ -30,7 +30,8 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from "@repo/ui/menubar"
-import { Save, Loader, RotateCcw, Sheet } from 'lucide-react';
+import { Save, Loader, RotateCcw, Sheet, FileDown } from 'lucide-react';
+import { Button } from '@repo/ui/button';
 import { DialogDocumentSettings } from '@/components/dialog-document-settings';
 import { TextTransform } from '@/lib/text-transform';
 import { FontSize } from '@/lib/font-size';
@@ -40,9 +41,11 @@ import Submenu from './submenu';
 
 interface TiptapProps {
   content: JSONContent;
+  pdfDisabled: boolean;
   pageSize: PageSize;
   pageOrientation: PageOrientation;
   pageMargins: Margins;
+  pdfOnClick: () => void;
   setPageSize: (value: PageSize) => void;
   setPageOrientation: (value: PageOrientation) => void;
   setPageMargins: (value: Margins) => void;
@@ -51,9 +54,11 @@ interface TiptapProps {
 
 export default function Tiptap({
   content,
+  pdfDisabled,
   pageSize,
   pageOrientation,
   pageMargins,
+  pdfOnClick,
   setPageSize,
   setPageOrientation,
   setPageMargins,
@@ -121,6 +126,12 @@ export default function Tiptap({
             <MenubarItem disabled><RotateCcw className='h-5 w-5 mr-2' />Reiniciar</MenubarItem>
             <MenubarItem disabled><Save className='h-5 w-5 mr-2' />Guardar</MenubarItem>
             <MenubarItem disabled><Loader className='h-5 w-5 mr-2' />Cargar</MenubarItem>
+            <MenubarSeparator />
+            <MenubarItem asChild>
+              <Button className='!w-full !px-2 !py-1.5 !justify-start !font-normal !h-8' disabled={pdfDisabled} onClick={pdfOnClick} type="submit" variant='ghost'>
+                <FileDown className='h-5 w-5 mr-2' />Exportar como PDF
+              </Button>
+            </MenubarItem>
             <MenubarSeparator />
             <MenubarItem asChild>
               <DialogDocumentSettings

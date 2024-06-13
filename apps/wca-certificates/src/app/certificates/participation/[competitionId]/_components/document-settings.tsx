@@ -8,8 +8,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import type { JSONContent } from '@tiptap/react'
-import { Button } from "@repo/ui/button"
+import type { JSONContent } from '@tiptap/react';
 import { Label } from "@repo/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs"
 import * as pdfMake from "pdfmake/build/pdfmake";
@@ -331,15 +330,15 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                 pageMargins={pageMargins}
                 pageOrientation={pageOrientation}
                 pageSize={pageSize}
+                pdfDisabled={Object.keys(rowSelection).length === 0}
+                pdfOnClick={generatePDF}
                 setPageMargins={(value: Margins) => { setPageMargins(value); }}
                 setPageOrientation={(value: PageOrientation) => { setPageOrientation(value); }}
                 setPageSize={(value: PageSize) => { setPageSize(value); }}
               />
-
-              <Button disabled={Object.keys(rowSelection).length === 0} onClick={generatePDF} type="submit">Generar PDF</Button>
             </form>
             <div>
-              <Label htmlFor='background'>Fondo</Label>
+              <Label htmlFor='background'>Fondo del certificado</Label>
               <FileUploader
                 id='background'
                 maxFiles={1}

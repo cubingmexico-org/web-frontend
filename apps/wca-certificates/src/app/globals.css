@@ -120,3 +120,7 @@
 .tiptap table th {
   border: 1px solid #000;
 }
+
+.tiptap table th {
+  font-weight: normal;
+}

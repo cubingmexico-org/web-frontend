@@ -109,20 +109,20 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
     setPdfData(tempPdfData);
   }
 
-  const renderContent = (content: JSONContent, data: PodiumData) => {
+  const renderDocumentContent = (content: JSONContent, data: PodiumData) => {
     return content.content?.map((item) => {
       const alignment = item.attrs?.textAlign || 'left';
-      const textContent = item.content && item.content.length > 0 ? renderTextContent(item.content, data) : '\u00A0';
+      const text = item.content && item.content.length > 0 ? renderTextContent(item.content, data) : '\u00A0';
       switch (item.type) {
         case 'paragraph':
           return {
-            text: textContent,
+            text,
             style: 'paragraph',
             alignment
           };
         case 'heading':
           return {
-            text: renderTextContent(item.content, data),
+            text,
             style: `header${item.attrs?.level}`,
             alignment
           };
@@ -135,10 +135,10 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
   const renderTextContent = (content: JSONContent['content'], data: PodiumData) => {
     return content?.map((contentItem) => {
       const bold = contentItem.marks?.some(mark => mark.type === 'bold');
-      const font = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.fontFamily;
-      const fontSize = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.fontSize as string;
-      const color = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.color;
-      const transform = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.transform as 'lowercase' | 'capitalize' | 'uppercase' | 'none';
+      const font = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.fontFamily || 'Roboto';
+      const fontSize = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.fontSize as string || '12pt';
+      const color = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.color || '#000000';
+      const transform = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.transform as 'lowercase' | 'capitalize' | 'uppercase' | 'none' | undefined || 'none';
 
       const textObject = (text: string | undefined) => ({
         text,
@@ -189,7 +189,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
   const generatePDF = () => {
     const docDefinition = {
       content: pdfData.map((data, index) => ({
-        stack: renderContent(content, data),
+        stack: renderDocumentContent(content, data),
         pageBreak: index < pdfData.length - 1 ? 'after' : ''
       })),
       background(currentPage, pageSize) {

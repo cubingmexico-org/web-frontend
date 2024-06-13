@@ -980,6 +980,20 @@ export const participation = {
                   "content": [
                     {
                       "type": "text",
+                      "marks": [
+                        {
+                          "type": "bold"
+                        },
+                        {
+                          "type": "textStyle",
+                          "attrs": {
+                            "fontFamily": "Roboto",
+                            "fontSize": "12pt",
+                            "color": "#000000",
+                            "transform": "none"
+                          }
+                        }
+                      ],
                       "text": "Evento"
                     }
                   ]
@@ -1002,6 +1016,20 @@ export const participation = {
                   "content": [
                     {
                       "type": "text",
+                      "marks": [
+                        {
+                          "type": "bold"
+                        },
+                        {
+                          "type": "textStyle",
+                          "attrs": {
+                            "fontFamily": "Roboto",
+                            "fontSize": "12pt",
+                            "color": "#000000",
+                            "transform": "none"
+                          }
+                        }
+                      ],
                       "text": "Resultado"
                     }
                   ]
@@ -1024,6 +1052,20 @@ export const participation = {
                   "content": [
                     {
                       "type": "text",
+                      "marks": [
+                        {
+                          "type": "bold"
+                        },
+                        {
+                          "type": "textStyle",
+                          "attrs": {
+                            "fontFamily": "Roboto",
+                            "fontSize": "12pt",
+                            "color": "#000000",
+                            "transform": "none"
+                          }
+                        }
+                      ],
                       "text": "Posición"
                     }
                   ]
@@ -1054,7 +1096,18 @@ export const participation = {
                       "attrs": {
                         "id": "Evento (tabla)",
                         "label": null
-                      }
+                      },
+                      "marks": [
+                        {
+                          "type": "textStyle",
+                          "attrs": {
+                            "fontFamily": "Roboto",
+                            "fontSize": "12pt",
+                            "color": "#000000",
+                            "transform": "none"
+                          }
+                        }
+                      ]
                     }
                   ]
                 }
@@ -1079,7 +1132,18 @@ export const participation = {
                       "attrs": {
                         "id": "Resultado (tabla)",
                         "label": null
-                      }
+                      },
+                      "marks": [
+                        {
+                          "type": "textStyle",
+                          "attrs": {
+                            "fontFamily": "Roboto",
+                            "fontSize": "12pt",
+                            "color": "#000000",
+                            "transform": "none"
+                          }
+                        }
+                      ]
                     }
                   ]
                 }
@@ -1104,7 +1168,18 @@ export const participation = {
                       "attrs": {
                         "id": "Posición (tabla)",
                         "label": null
-                      }
+                      },
+                      "marks": [
+                        {
+                          "type": "textStyle",
+                          "attrs": {
+                            "fontFamily": "Roboto",
+                            "fontSize": "12pt",
+                            "color": "#000000",
+                            "transform": "none"
+                          }
+                        }
+                      ]
                     }
                   ]
                 }

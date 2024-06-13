@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- . */
+/* eslint-disable @typescript-eslint/no-unsafe-return -- . */
 /* eslint-disable no-nested-ternary -- . */
 /* eslint-disable react-hooks/exhaustive-deps -- . */
 /* eslint-disable @typescript-eslint/restrict-template-expressions -- . */
@@ -131,7 +133,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
     setPdfData(filteredResults);
   };
 
-  const renderContent = (content: JSONContent, data: ParticipantData) => {
+  const renderDocumentContent = (content: JSONContent, data: ParticipantData): any => {
     return content.content?.map((item) => {
       const text = item.content && item.content.length > 0 ? renderTextContent(item.content, data) : '\u00A0';
       const alignment = item.attrs?.textAlign || 'left';
@@ -144,7 +146,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
           };
         case 'heading':
           return {
-            text: renderTextContent(item.content, data),
+            text,
             style: `header${item.attrs?.level}`,
             alignment
           };
@@ -156,28 +158,13 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
               body: [
                 ...(item.content || []).map(row => {
                   const headerCells = row.content?.filter(cell => cell.type === 'tableHeader') || [];
-                  switch (row.type) {
-                    case 'tableRow':
-                      if (headerCells.length === 0) {
-                        return null;
-                      }
-                      return headerCells.map(cell => {
-                        return cell.content?.map((contentCell) => {
-                          const text = contentCell.content && contentCell.content.length > 0 ? renderTextContent(contentCell.content, data) : '\u00A0';
-                          const alignment = contentCell.attrs?.textAlign || 'left';
-                          if (contentCell.type === 'paragraph') {
-                            return {
-                              text,
-                              style: 'paragraph',
-                              alignment
-                            }
-                          }
-                          return null;
-                        });
-                      });
-                    default:
+                  if (row.type === 'tableRow') {
+                    if (headerCells.length === 0) {
                       return null;
+                    }
+                    return headerCells.map(cell => cell.content?.map((contentCell) => renderDocumentContent({ content: [contentCell] }, data)));
                   }
+                  return null;
                 }).filter(Boolean),
                 ...data.results.map(result => [
                   { text: formatEvents(result.event), style: 'paragraph' },
@@ -196,10 +183,10 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
   const renderTextContent = (content: JSONContent['content'], data: ParticipantData) => {
     return content?.map((contentItem) => {
       const bold = contentItem.marks?.some(mark => mark.type === 'bold');
-      const font = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.fontFamily;
-      const fontSize = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.fontSize as string;
-      const color = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.color;
-      const transform = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.transform as 'lowercase' | 'capitalize' | 'uppercase' | 'none';
+      const font = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.fontFamily || 'Roboto';
+      const fontSize = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.fontSize as string || '12pt';
+      const color = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.color || '#000000';
+      const transform = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.transform as 'lowercase' | 'capitalize' | 'uppercase' | 'none' | undefined || 'none';
 
       const textObject = (text: string | undefined) => ({
         text,
@@ -227,17 +214,14 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
             case 'Ciudad':
               return bold || font || fontSize || color ? textObject(transformString(`${city}, ${state}`, transform)) : transformString(`${city}, ${state}`, transform);
             case 'Evento (tabla)':
-              return data.results.map(result => {
-                return result.event;
-              });
+              // here's where the row data is rendered
+              return 'Evento (tabla)';
             case 'Posición (tabla)':
-              return data.results.map(result => {
-                return result.average;
-              });
+              // here's where the row data is rendered
+              return null;
             case 'Resultado (tabla)':
-              return data.results.map(result => {
-                return result.ranking;
-              });
+              // here's where the row data is rendered
+              return null;
             default:
               return null;
           }
@@ -250,7 +234,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
   const generatePDF = () => {
     const docDefinition = {
       content: pdfData.map((data, index) => ({
-        stack: renderContent(content, data),
+        stack: renderDocumentContent(content, data),
         pageBreak: index < pdfData.length - 1 ? 'after' : ''
       })),
       background(currentPage, pageSize) {

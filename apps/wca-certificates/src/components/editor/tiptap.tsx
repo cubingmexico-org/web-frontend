@@ -30,9 +30,9 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from "@repo/ui/menubar"
-import { Save, Loader, RotateCcw, Sheet, FileDown } from 'lucide-react';
+import { Save, Loader, RotateCcw, Sheet, FileDown, Bold, Pilcrow, AlignLeft, Undo, Redo, Scissors, Files, Clipboard, TextSelect } from 'lucide-react';
 import { Button } from '@repo/ui/button';
-import { DialogDocumentSettings } from '@/components/dialog-document-settings';
+import { DialogDocumentSettings } from '@/components/editor/dialog-document-settings';
 import { TextTransform } from '@/lib/text-transform';
 import { FontSize } from '@/lib/font-size';
 import Toolbar from './toolbar';
@@ -99,7 +99,7 @@ export default function Tiptap({
     editorProps: {
       attributes: {
         class: cn(
-          'flex flex-col shadow bg-background px-[40pt] py-[60pt] focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 overflow-y-clip', {
+          'shadow bg-background px-[40pt] py-[60pt] focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 overflow-y-clip', {
           'w-[612pt] h-[792pt]': pageSize === 'LETTER' && pageOrientation === 'portrait',
           'w-[792pt] h-[612pt]': pageSize === 'LETTER' && pageOrientation === 'landscape',
           'w-[595pt] h-[842pt]': pageSize === 'A4' && pageOrientation === 'portrait',
@@ -123,13 +123,13 @@ export default function Tiptap({
         <MenubarMenu>
           <MenubarTrigger>Archivo</MenubarTrigger>
           <MenubarContent>
-            <MenubarItem disabled><RotateCcw className='h-5 w-5 mr-2' />Reiniciar</MenubarItem>
-            <MenubarItem disabled><Save className='h-5 w-5 mr-2' />Guardar</MenubarItem>
-            <MenubarItem disabled><Loader className='h-5 w-5 mr-2' />Cargar</MenubarItem>
+            <MenubarItem disabled><RotateCcw className='h-4 w-4 mr-2' />Reiniciar</MenubarItem>
+            <MenubarItem disabled><Save className='h-4 w-4 mr-2' />Guardar</MenubarItem>
+            <MenubarItem disabled><Loader className='h-4 w-4 mr-2' />Cargar</MenubarItem>
             <MenubarSeparator />
             <MenubarItem asChild>
               <Button className='!w-full !px-2 !py-1.5 !justify-start !font-normal !h-8' disabled={pdfDisabled} onClick={pdfOnClick} type="submit" variant='ghost'>
-                <FileDown className='h-5 w-5 mr-2' />Exportar como PDF
+                <FileDown className='h-4 w-4 mr-2' />Exportar como PDF
               </Button>
             </MenubarItem>
             <MenubarSeparator />
@@ -146,10 +146,23 @@ export default function Tiptap({
           </MenubarContent>
         </MenubarMenu>
         <MenubarMenu>
+          <MenubarTrigger>Editar</MenubarTrigger>
+          <MenubarContent>
+            <MenubarItem><Undo className='h-4 w-4 mr-2' />Deshacer</MenubarItem>
+            <MenubarItem><Redo className='h-4 w-4 mr-2' />Rehacer</MenubarItem>
+            <MenubarSeparator />
+            <MenubarItem><Scissors className='h-4 w-4 mr-2' />Cortar</MenubarItem>
+            <MenubarItem><Files className='h-4 w-4 mr-2' />Copiar</MenubarItem>
+            <MenubarItem><Clipboard className='h-4 w-4 mr-2' />Pegar</MenubarItem>
+            <MenubarSeparator />
+            <MenubarItem><TextSelect className='h-4 w-4 mr-2' />Seleccionar todo</MenubarItem>
+          </MenubarContent>
+        </MenubarMenu>
+        <MenubarMenu>
           <MenubarTrigger>Insertar</MenubarTrigger>
           <MenubarContent>
             <MenubarItem onClick={() => editor.chain().focus().insertTable({ rows: 2, cols: 3, withHeaderRow: true }).run()}>
-              <Sheet className='h-5 w-5 mr-2' />Tabla
+              <Sheet className='h-4 w-4 mr-2' />Tabla
             </MenubarItem>
           </MenubarContent>
         </MenubarMenu>
@@ -157,9 +170,28 @@ export default function Tiptap({
           <MenubarTrigger>Formato</MenubarTrigger>
           <MenubarContent>
             <MenubarSub>
-              <MenubarSubTrigger>Texto</MenubarSubTrigger>
+              <MenubarSubTrigger><Bold className='h-4 w-4 mr-2' />Texto</MenubarSubTrigger>
               <MenubarSubContent>
                 <Submenu editor={editor} />
+              </MenubarSubContent>
+            </MenubarSub>
+            <MenubarSub>
+              <MenubarSubTrigger><Pilcrow className='h-4 w-4 mr-2' />Estilos de párrafo</MenubarSubTrigger>
+              <MenubarSubContent>
+
+              </MenubarSubContent>
+            </MenubarSub>
+            <MenubarSub>
+              <MenubarSubTrigger><AlignLeft className='h-4 w-4 mr-2' />Alinear</MenubarSubTrigger>
+              <MenubarSubContent>
+                
+              </MenubarSubContent>
+            </MenubarSub>
+            <MenubarSeparator />
+            <MenubarSub>
+              <MenubarSubTrigger><Sheet className='h-4 w-4 mr-2' />Tabla</MenubarSubTrigger>
+              <MenubarSubContent>
+                
               </MenubarSubContent>
             </MenubarSub>
           </MenubarContent>

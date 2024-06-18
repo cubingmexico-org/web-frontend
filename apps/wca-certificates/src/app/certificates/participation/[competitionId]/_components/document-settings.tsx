@@ -153,7 +153,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
         case 'table':
           return {
             columns: [
-              { width: '*', text: '' },
+              // { width: '*', text: '' },
               {
                 table: {
                   headerRows: 1,
@@ -245,7 +245,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                 },
                 width: 'auto'
               },
-              { width: '*', text: '' },
+              // { width: '*', text: '' },
             ]
           };
         default:

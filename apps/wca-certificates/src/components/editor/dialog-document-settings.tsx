@@ -39,7 +39,7 @@ export function DialogDocumentSettings({
 	return (
 		<Dialog>
 			<DialogTrigger className='flex text-sm hover:bg-accent px-2 py-1.5 cursor-default rounded-sm'>
-				<FileText className='h-5 w-5 mr-2' />Configuración de página
+				<FileText className='h-4 w-4 mr-2' />Configuración de página
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>

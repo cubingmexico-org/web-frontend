@@ -48,16 +48,17 @@ export const TextTransform = Extension.create<TextTransformOptions>({
 
   addCommands() {
     return {
-      setTransform: (transform) => ({ commands }) => {
-        return this.options.types
-          .map(type => commands.updateAttributes(type, { transform }))
-          .every(response => response)
+      setTransform: (transform: 'uppercase' | 'lowercase' | 'capitalize') => ({ chain }) => {
+        return chain()
+          .focus()
+          .setMark('textStyle', { transform })
+          .run()
       },
-
-      unsetTransform: () => ({ commands }) => {
-        return this.options.types
-          .map(type => commands.resetAttributes(type, 'transform'))
-          .every(response => response)
+      unsetTransform: () => ({ chain }) => {
+        return chain()
+          .focus()
+          .unsetMark('textStyle')
+          .run()
       },
     }
   },

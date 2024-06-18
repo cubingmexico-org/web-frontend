@@ -7,7 +7,6 @@ import React from "react";
 import type { Editor } from "@tiptap/react";
 import {
   Bold,
-  Pilcrow,
   Heading1,
   Heading2,
   Heading3,
@@ -20,6 +19,7 @@ import {
   AlignJustify,
   Undo,
   Redo,
+  Type,
 } from "lucide-react";
 import {
   Select,
@@ -115,7 +115,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
           pressed={editor.isActive("paragraph")}
           size="sm"
         >
-          <Pilcrow className="h-4 w-4" />
+          <Type className="h-4 w-4" />
         </Toggle>
         <Toggle
           onPressedChange={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}

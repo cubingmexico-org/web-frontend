@@ -24,13 +24,37 @@ import {
   MenubarContent,
   MenubarItem,
   MenubarMenu,
+  MenubarCheckboxItem,
   MenubarSeparator,
+  MenubarShortcut,
   MenubarSub,
   MenubarSubContent,
   MenubarSubTrigger,
   MenubarTrigger,
 } from "@repo/ui/menubar"
-import { Save, Loader, RotateCcw, Sheet, FileDown, Bold, Pilcrow, AlignLeft, Undo, Redo, Scissors, Files, Clipboard, TextSelect } from 'lucide-react';
+import {
+  Save,
+  Loader,
+  RotateCcw,
+  Sheet,
+  FileDown,
+  Bold,
+  AlignLeft,
+  Undo,
+  Redo,
+  Scissors,
+  Files,
+  Clipboard,
+  TextSelect,
+  AlignCenter,
+  AlignRight,
+  AlignJustify,
+  Plus,
+  Trash2,
+  TableCellsMerge,
+  TableCellsSplit,
+  RemoveFormatting
+} from 'lucide-react';
 import { Button } from '@repo/ui/button';
 import { DialogDocumentSettings } from '@/components/editor/dialog-document-settings';
 import { TextTransform } from '@/lib/text-transform';
@@ -147,15 +171,33 @@ export default function Tiptap({
         </MenubarMenu>
         <MenubarMenu>
           <MenubarTrigger>Editar</MenubarTrigger>
-          <MenubarContent>
-            <MenubarItem><Undo className='h-4 w-4 mr-2' />Deshacer</MenubarItem>
-            <MenubarItem><Redo className='h-4 w-4 mr-2' />Rehacer</MenubarItem>
+          <MenubarContent className='w-60'>
+            <MenubarItem
+              disabled={!editor.can().chain().focus().undo().run()}
+              onClick={() => editor.chain().focus().undo().run()}
+            >
+              <Undo className='h-4 w-4 mr-2' />Deshacer<MenubarShortcut>Ctrl+Y</MenubarShortcut>
+            </MenubarItem>
+            <MenubarItem
+              disabled={!editor.can().chain().focus().redo().run()}
+              onClick={() => editor.chain().focus().redo().run()}
+            >
+              <Redo className='h-4 w-4 mr-2' />Rehacer<MenubarShortcut>Ctrl+Z</MenubarShortcut>
+            </MenubarItem>
             <MenubarSeparator />
-            <MenubarItem><Scissors className='h-4 w-4 mr-2' />Cortar</MenubarItem>
-            <MenubarItem><Files className='h-4 w-4 mr-2' />Copiar</MenubarItem>
-            <MenubarItem><Clipboard className='h-4 w-4 mr-2' />Pegar</MenubarItem>
+            <MenubarItem disabled>
+              <Scissors className='h-4 w-4 mr-2' />Cortar<MenubarShortcut>Ctrl+X</MenubarShortcut>
+            </MenubarItem>
+            <MenubarItem disabled>
+              <Files className='h-4 w-4 mr-2' />Copiar<MenubarShortcut>Ctrl+C</MenubarShortcut>
+            </MenubarItem>
+            <MenubarItem disabled>
+              <Clipboard className='h-4 w-4 mr-2' />Pegar<MenubarShortcut>Ctrl+V</MenubarShortcut>
+            </MenubarItem>
             <MenubarSeparator />
-            <MenubarItem><TextSelect className='h-4 w-4 mr-2' />Seleccionar todo</MenubarItem>
+            <MenubarItem disabled>
+              <TextSelect className='h-4 w-4 mr-2' />Seleccionar todo <MenubarShortcut>Ctrl+A</MenubarShortcut>
+            </MenubarItem>
           </MenubarContent>
         </MenubarMenu>
         <MenubarMenu>
@@ -170,30 +212,124 @@ export default function Tiptap({
           <MenubarTrigger>Formato</MenubarTrigger>
           <MenubarContent>
             <MenubarSub>
-              <MenubarSubTrigger><Bold className='h-4 w-4 mr-2' />Texto</MenubarSubTrigger>
+              <MenubarSubTrigger>
+                <Bold className='h-4 w-4 mr-2' />Texto
+              </MenubarSubTrigger>
               <MenubarSubContent>
+                <MenubarItem onClick={() => editor.chain().focus().toggleBold().run()}>
+                  <Bold className='h-4 w-4 mr-2' />Negrita
+                </MenubarItem>
+                <MenubarSeparator />
                 <Submenu editor={editor} />
               </MenubarSubContent>
             </MenubarSub>
             <MenubarSub>
-              <MenubarSubTrigger><Pilcrow className='h-4 w-4 mr-2' />Estilos de párrafo</MenubarSubTrigger>
+              <MenubarSubTrigger><AlignJustify className='h-4 w-4 mr-2' />Estilos de párrafo</MenubarSubTrigger>
               <MenubarSubContent>
-
+                <MenubarCheckboxItem
+                  checked={editor.isActive("paragraph")}
+                  disabled={!editor.can().chain().focus().setParagraph().run()}
+                  onClick={() => editor.chain().focus().setParagraph().run()}
+                >
+                  Texto normal
+                </MenubarCheckboxItem>
+                <MenubarCheckboxItem
+                  checked={editor.isActive("heading", { level: 1 })}
+                  onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+                >
+                  Encabezado 1
+                </MenubarCheckboxItem>
+                <MenubarCheckboxItem
+                  checked={editor.isActive("heading", { level: 2 })}
+                  onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+                >
+                  Encabezado 2
+                </MenubarCheckboxItem>
+                <MenubarCheckboxItem
+                  checked={editor.isActive("heading", { level: 3 })}
+                  onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+                >
+                  Encabezado 3
+                </MenubarCheckboxItem>
+                <MenubarCheckboxItem
+                  checked={editor.isActive("heading", { level: 4 })}
+                  onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
+                >
+                  Encabezado 4
+                </MenubarCheckboxItem>
+                <MenubarCheckboxItem
+                  checked={editor.isActive("heading", { level: 5 })}
+                  onClick={() => editor.chain().focus().toggleHeading({ level: 5 }).run()}
+                >
+                  Encabezado 5
+                </MenubarCheckboxItem>
+                <MenubarCheckboxItem
+                  checked={editor.isActive("heading", { level: 6 })}
+                  onClick={() => editor.chain().focus().toggleHeading({ level: 6 }).run()}
+                >
+                  Encabezado 6
+                </MenubarCheckboxItem>
               </MenubarSubContent>
             </MenubarSub>
             <MenubarSub>
               <MenubarSubTrigger><AlignLeft className='h-4 w-4 mr-2' />Alinear</MenubarSubTrigger>
               <MenubarSubContent>
-                
+                <MenubarItem onClick={() => editor.chain().focus().setTextAlign('left').run()}>
+                  <AlignLeft className="h-4 w-4 mr-2" />Izquierda
+                </MenubarItem>
+                <MenubarItem onClick={() => editor.chain().focus().setTextAlign('center').run()}>
+                  <AlignCenter className="h-4 w-4 mr-2" />Centro
+                </MenubarItem>
+                <MenubarItem onClick={() => editor.chain().focus().setTextAlign('right').run()}>
+                  <AlignRight className="h-4 w-4 mr-2" />Derecha
+                </MenubarItem>
+                <MenubarItem onClick={() => editor.chain().focus().setTextAlign('justify').run()}>
+                  <AlignJustify className="h-4 w-4 mr-2" />Justificado
+                </MenubarItem>
               </MenubarSubContent>
             </MenubarSub>
             <MenubarSeparator />
             <MenubarSub>
               <MenubarSubTrigger><Sheet className='h-4 w-4 mr-2' />Tabla</MenubarSubTrigger>
               <MenubarSubContent>
-                
+                <MenubarItem disabled={!editor.can().addRowBefore()} onClick={() => editor.chain().focus().addRowBefore().run()}>
+                  <Plus className='h-4 w-4 mr-2' />Insertar fila arriba
+                </MenubarItem>
+                <MenubarItem disabled={!editor.can().addRowAfter()} onClick={() => editor.chain().focus().addRowAfter().run()}>
+                  <Plus className='h-4 w-4 mr-2' />Insertar fila abajo
+                </MenubarItem>
+                <MenubarItem disabled={!editor.can().addColumnBefore()} onClick={() => editor.chain().focus().addColumnBefore().run()}>
+                  <Plus className='h-4 w-4 mr-2' />Insertar columna a la izquierda
+                </MenubarItem>
+                <MenubarItem disabled={!editor.can().addColumnAfter()} onClick={() => editor.chain().focus().addColumnAfter().run()}>
+                  <Plus className='h-4 w-4 mr-2' />Insertar columna a la derecha
+                </MenubarItem>
+                <MenubarSeparator />
+                <MenubarItem disabled={!editor.can().deleteRow()} onClick={() => editor.chain().focus().deleteRow().run()}>
+                  <Trash2 className='h-4 w-4 mr-2' />Eliminar fila
+                </MenubarItem>
+                <MenubarItem disabled={!editor.can().deleteColumn()} onClick={() => editor.chain().focus().deleteColumn().run()}>
+                  <Trash2 className='h-4 w-4 mr-2' />Eliminar columna
+                </MenubarItem>
+                <MenubarItem disabled={!editor.can().deleteTable()} onClick={() => editor.chain().focus().deleteTable().run()}>
+                  <Trash2 className='h-4 w-4 mr-2' />Eliminar tabla
+                </MenubarItem>
+                <MenubarSeparator />
+                <MenubarItem disabled={!editor.can().mergeCells()} onClick={() => editor.chain().focus().mergeCells().run()}>
+                  <TableCellsMerge className='h-4 w-4 mr-2' />Combinar celdas
+                </MenubarItem>
+                <MenubarItem disabled={!editor.can().splitCell()} onClick={() => editor.chain().focus().splitCell().run()}>
+                  <TableCellsSplit className='h-4 w-4 mr-2' />Separar celdas
+                </MenubarItem>
               </MenubarSubContent>
             </MenubarSub>
+            <MenubarSeparator />
+            <MenubarItem onClick={() => {
+              editor.chain().focus().unsetAllMarks().run()
+              editor.chain().focus().clearNodes().run()
+            }}>
+              <RemoveFormatting className='h-4 w-4 mr-2' />Borrar formato
+            </MenubarItem>
           </MenubarContent>
         </MenubarMenu>
       </Menubar>

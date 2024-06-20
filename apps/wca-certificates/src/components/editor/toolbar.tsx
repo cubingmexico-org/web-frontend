@@ -30,8 +30,8 @@ import {
 import { Button } from "@repo/ui/button";
 import { Toggle } from "@repo/ui/toggle";
 import { Input } from "@repo/ui/input";
-import { Combobox } from "../combobox-font";
 import { fontFamilies, fontSizes } from "@/lib/fonts"
+import { Combobox } from "./combobox-font";
 
 interface ToolbarProps {
   editor: Editor | null;

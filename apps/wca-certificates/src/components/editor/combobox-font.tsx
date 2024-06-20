@@ -43,7 +43,9 @@ export function Combobox({
           variant="outline"
         >
           {value
-            ? fonts.find((font) => font.value === value)?.label
+            ? <p style={{
+              fontFamily: fonts.find((font) => font.value === value)?.value,
+            }}>{fonts.find((font) => font.value === value)?.label}</p>
             : 'Buscar fuente...'}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -69,7 +71,9 @@ export function Combobox({
                       value === font.value ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {font.label}
+                  <p style={{
+                    fontFamily: font.value,
+                  }}>{font.label}</p>
                 </CommandItem>
               ))}
             </CommandList>

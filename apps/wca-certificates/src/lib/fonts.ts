@@ -28,8 +28,16 @@ export const fonts = [
     label: "Montserrat",
   },
   {
+    value: "Noto Sans",
+    label: "Noto Sans",
+  },
+  {
     value: "Nunito",
     label: "Nunito",
+  },
+  {
+    value: "Open Sans",
+    label: "Open Sans",
   },
   {
     value: "Oswald",
@@ -40,8 +48,16 @@ export const fonts = [
     label: "Pacifico",
   },
   {
+    value: "Playfair Display",
+    label: "Playfair Display",
+  },
+  {
     value: "Poppins",
     label: "Poppins",
+  },
+  {
+    value: "PT Sans",
+    label: "PT Sans",
   },
   {
     value: "Raleway",
@@ -52,8 +68,16 @@ export const fonts = [
     label: "Roboto",
   },
   {
+    value: "Roboto Condensed",
+    label: "Roboto Condensed",
+  },
+  {
     value: "Roboto Mono",
     label: "Roboto Mono",
+  },
+  {
+    value: "Roboto Slab",
+    label: "Roboto Slab",
   },
   {
     value: "Rubik",
@@ -62,6 +86,10 @@ export const fonts = [
   {
     value: "Ubuntu",
     label: "Ubuntu",
+  },
+  {
+    value: "Work Sans",
+    label: "Work Sans",
   },
 ]
 
@@ -108,11 +136,23 @@ export const fontDeclarations = {
     italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Montserrat/Montserrat-Regular.ttf`,
     bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Montserrat/Montserrat-Regular.ttf`
   },
+  'Noto Sans': {
+    normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Noto_Sans/NotoSans-Regular.ttf`,
+    bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Noto_Sans/NotoSans-Bold.ttf`,
+    italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Noto_Sans/NotoSans-Regular.ttf`,
+    bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Noto_Sans/NotoSans-Regular.ttf`
+  },
   'Nunito': {
     normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Nunito/Nunito-Regular.ttf`,
     bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Nunito/Nunito-Bold.ttf`,
     italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Nunito/Nunito-Regular.ttf`,
     bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Nunito/Nunito-Regular.ttf`
+  },
+  'Open Sans': {
+    normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Open_Sans/OpenSans-Regular.ttf`,
+    bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Open_Sans/OpenSans-Bold.ttf`,
+    italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Open_Sans/OpenSans-Regular.ttf`,
+    bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Open_Sans/OpenSans-Regular.ttf`
   },
   'Oswald': {
     normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Oswald/Oswald-Regular.ttf`,
@@ -126,11 +166,23 @@ export const fontDeclarations = {
     italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Pacifico/Pacifico-Regular.ttf`,
     bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Pacifico/Pacifico-Regular.ttf`
   },
+  'Playfair Display': {
+    normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Playfair_Display/PlayfairDisplay-Regular.ttf`,
+    bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Playfair_Display/PlayfairDisplay-Bold.ttf`,
+    italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Playfair_Display/PlayfairDisplay-Regular.ttf`,
+    bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Playfair_Display/PlayfairDisplay-Regular.ttf`
+  },
   'Poppins': {
     normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Poppins/Poppins-Regular.ttf`,
     bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Poppins/Poppins-Bold.ttf`,
     italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Poppins/Poppins-Regular.ttf`,
     bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Poppins/Poppins-Regular.ttf`
+  },
+  'PT Sans': {
+    normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/PT_Sans/PTSans-Regular.ttf`,
+    bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/PT_Sans/PTSans-Bold.ttf`,
+    italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/PT_Sans/PTSans-Regular.ttf`,
+    bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/PT_Sans/PTSans-Regular.ttf`
   },
   'Raleway': {
     normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Raleway/Raleway-Regular.ttf`,
@@ -144,11 +196,23 @@ export const fontDeclarations = {
     italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Roboto/Roboto-Regular.ttf`,
     bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Roboto/Roboto-Regular.ttf`
   },
+  'Roboto Condensed': {
+    normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Roboto_Condensed/RobotoCondensed-Regular.ttf`,
+    bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Roboto_Condensed/RobotoCondensed-Bold.ttf`,
+    italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Roboto_Condensed/RobotoCondensed-Regular.ttf`,
+    bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Roboto_Condensed/RobotoCondensed-Regular.ttf`
+  },
   'Roboto Mono': {
     normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Roboto_Mono/RobotoMono-Regular.ttf`,
     bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Roboto_Mono/RobotoMono-Bold.ttf`,
     italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Roboto_Mono/RobotoMono-Regular.ttf`,
     bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Roboto_Mono/RobotoMono-Regular.ttf`
+  },
+  'Roboto Slab': {
+    normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Roboto_Slab/RobotoSlab-Regular.ttf`,
+    bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Roboto_Slab/RobotoSlab-Bold.ttf`,
+    italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Roboto_Slab/RobotoSlab-Regular.ttf`,
+    bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Roboto_Slab/RobotoSlab-Regular.ttf`
   },
   'Rubik': {
     normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Rubik/Rubik-Regular.ttf`,
@@ -162,6 +226,12 @@ export const fontDeclarations = {
     italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Ubuntu/Ubuntu-Regular.ttf`,
     bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Ubuntu/Ubuntu-Regular.ttf`
   },
+  'Work Sans': {
+    normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Work_Sans/WorkSans-Regular.ttf`,
+    bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Work_Sans/WorkSans-Bold.ttf`,
+    italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Work_Sans/WorkSans-Regular.ttf`,
+    bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Work_Sans/WorkSans-Regular.ttf`
+  },
 }
 
 export const fontFamilies = [
@@ -172,15 +242,22 @@ export const fontFamilies = [
   'Maven Pro',
   'Merriweather',
   'Montserrat',
+  'Noto Sans',
   'Nunito',
+  'Open Sans',
   'Oswald',
   'Pacifico',
+  'Playfair Display',
   'Poppins',
+  'PT Sans',
   'Raleway',
   'Roboto',
+  'Roboto Condensed',
   'Roboto Mono',
+  'Roboto Slab',
   'Rubik',
-  'Ubuntu'
+  'Ubuntu',
+  'Work Sans',
 ]
 
 export const fontSizes = [

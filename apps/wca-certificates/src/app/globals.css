@@ -116,6 +116,11 @@
   line-height: 1.217;
 }
 
+.tiptap table {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .tiptap table td,
 .tiptap table th {
   border: 1px solid #000;

@@ -30,21 +30,7 @@ import { DataTable } from "@/app/certificates/participation/[competitionId]/_com
 import { FileUploader } from "@/components/file-uploader";
 import { participation } from '@/lib/placeholders';
 import Tiptap from '@/components/editor/tiptap'
-
-const fonts = {
-  'Roboto': {
-    normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Roboto/Roboto-Regular.ttf`,
-    bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Roboto/Roboto-Bold.ttf`,
-    italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Roboto/Roboto-Regular.ttf`,
-    bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Roboto/Roboto-Regular.ttf`
-  },
-  'Maven Pro': {
-    normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/MavenPro/MavenPro-Regular.ttf`,
-    bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/MavenPro/MavenPro-Bold.ttf`,
-    italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/MavenPro/MavenPro-Regular.ttf`,
-    bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/MavenPro/MavenPro-Regular.ttf`
-  },
-}
+import { fontDeclarations } from '@/lib/fonts';
 
 interface DocumentSettingsProps {
   competition: Competition;
@@ -348,7 +334,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
       language: 'es'
     } as TDocumentDefinitions;
 
-    pdfMake.createPdf(docDefinition, undefined, fonts).open();
+    pdfMake.createPdf(docDefinition, undefined, fontDeclarations).open();
   };
 
   return (
@@ -384,6 +370,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                 setPageMargins={(value: Margins) => { setPageMargins(value); }}
                 setPageOrientation={(value: PageOrientation) => { setPageOrientation(value); }}
                 setPageSize={(value: PageSize) => { setPageSize(value); }}
+                variant='participation'
               />
             </form>
             <div>

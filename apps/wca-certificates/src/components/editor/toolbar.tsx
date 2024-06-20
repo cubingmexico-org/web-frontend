@@ -18,8 +18,7 @@ import {
   AlignRight,
   AlignJustify,
   Undo,
-  Redo,
-  Type,
+  Redo
 } from "lucide-react";
 import {
   Select,
@@ -32,6 +31,7 @@ import { Button } from "@repo/ui/button";
 import { Toggle } from "@repo/ui/toggle";
 import { Input } from "@repo/ui/input";
 import { Combobox } from "../combobox-font";
+import { fontFamilies, fontSizes } from "@/lib/fonts"
 
 interface ToolbarProps {
   editor: Editor | null;
@@ -43,7 +43,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
     const WebFont = await import('webfontloader');
     WebFont.load({
       google: {
-        families: ['Roboto:400,700', 'Maven Pro:400,700']
+        families: fontFamilies.map(font => `${font}:400,700`)
       }
     });
   }
@@ -67,31 +67,20 @@ export default function Toolbar({ editor }: ToolbarProps) {
             });
             editor.chain().focus().setFontFamily(value).run();
           }}
-          value={editor.isActive('textStyle', { fontFamily: 'Maven Pro' }) ? 'Maven Pro' : 'Roboto'}
+          value={fontFamilies.find(font => editor.isActive('textStyle', { fontFamily: font })) || 'Roboto'}
         />
         <Select
           defaultValue="12"
           onValueChange={(value) => editor.chain().focus().setFontSize(`${value}pt`).run()}
-          value={editor.isActive('textStyle', { fontSize: '12pt' }) ? '12' : ''}
+          value={fontSizes.find(size => editor.isActive('textStyle', { fontSize: `${size}pt` })) || '12'}
         >
           <SelectTrigger className="!w-20">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="8">8</SelectItem>
-            <SelectItem value="9">9</SelectItem>
-            <SelectItem value="10">10</SelectItem>
-            <SelectItem value="11">11</SelectItem>
-            <SelectItem value="12">12</SelectItem>
-            <SelectItem value="14">14</SelectItem>
-            <SelectItem value="18">18</SelectItem>
-            <SelectItem value="24">24</SelectItem>
-            <SelectItem value="30">30</SelectItem>
-            <SelectItem value="36">36</SelectItem>
-            <SelectItem value="48">48</SelectItem>
-            <SelectItem value="60">60</SelectItem>
-            <SelectItem value="72">72</SelectItem>
-            <SelectItem value="96">96</SelectItem>
+            {fontSizes.map(size => (
+              <SelectItem key={size} value={size}>{size}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <Input
@@ -108,14 +97,6 @@ export default function Toolbar({ editor }: ToolbarProps) {
           size="sm"
         >
           <Bold className="h-4 w-4" />
-        </Toggle>
-        <Toggle
-          disabled={!editor.can().chain().focus().setParagraph().run()}
-          onPressedChange={() => editor.chain().focus().setParagraph().run()}
-          pressed={editor.isActive("paragraph")}
-          size="sm"
-        >
-          <Type className="h-4 w-4" />
         </Toggle>
         <Toggle
           onPressedChange={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}

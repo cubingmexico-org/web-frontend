@@ -57,10 +57,11 @@ import {
 } from 'lucide-react';
 import { Button } from '@repo/ui/button';
 import { DialogDocumentSettings } from '@/components/editor/dialog-document-settings';
-import { TextTransform } from '@/lib/text-transform';
-import { FontSize } from '@/lib/font-size';
+import { TextTransform } from '@/components/editor/extensions/text-transform';
+import { FontSize } from '@/components/editor/extensions/font-size';
 import Toolbar from './toolbar';
-import suggestion from './mentions/suggestion'
+import suggestionPodium from './mentions/suggestion-podium'
+import suggestionParticipation from './mentions/suggestion-participation'
 import Submenu from './submenu';
 
 interface TiptapProps {
@@ -74,6 +75,7 @@ interface TiptapProps {
   setPageOrientation: (value: PageOrientation) => void;
   setPageMargins: (value: Margins) => void;
   onChange: (newContent: JSONContent) => void;
+  variant: 'podium' | 'participation';
 };
 
 export default function Tiptap({
@@ -86,7 +88,8 @@ export default function Tiptap({
   setPageSize,
   setPageOrientation,
   setPageMargins,
-  onChange
+  onChange,
+  variant,
 }: TiptapProps) {
   const handleChange = (newContent: JSONContent) => {
     onChange(newContent);
@@ -98,7 +101,7 @@ export default function Tiptap({
         HTMLAttributes: {
           class: 'mention',
         },
-        suggestion,
+        suggestion: variant === 'podium' ? suggestionPodium : suggestionParticipation,
       }),
       TextAlign.configure({
         types: ['heading', 'paragraph'],

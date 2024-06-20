@@ -8,15 +8,15 @@ import Image from "next/image"
 export default function LoginButton(): JSX.Element {
   return (
     <Button onClick={() => signIn('wca')}>
-      Inicia sesión con la WCA
       <Image
         alt="Logo de la WCA"
-        className='ml-2'
+        className='mr-2'
         height={20}
         priority
-        src="https://www.worldcubeassociation.org/files/WCAlogo_notext.svg"
+        src='https://www.worldcubeassociation.org/files/WCAlogo.svg'
         width={20}
       />
+      Inicia sesión con la WCA
     </Button>
   );
 }

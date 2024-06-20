@@ -1,3 +1,5 @@
+export type EventId = '333' | '222' | '444' | '555' | '666' | '777' | '333bf' | '333fm' | '333oh' | '333ft' | 'clock' | 'minx' | 'pyram' | 'skewb' | 'sq1' | '444bf' | '555bf' | '333mbf'
+
 export interface Avatar {
   url: string;
   thumbUrl: string;
@@ -38,13 +40,14 @@ export interface Round {
 }
 
 export interface Event {
-  id: string;
+  id: EventId;
   rounds: Round[];
   extensions: unknown[];
   qualification: unknown;
 }
 
-export interface Data {
+export interface Competition {
+  id: string;
   name: string;
   schedule: {
     startDate: string,
@@ -62,17 +65,15 @@ export interface ParticipantData {
   name: string;
   wcaId: string;
   results: {
-    event: string;
+    event: EventId;
     average: number;
     ranking: number | null;
   }[];
 }
 
-export interface Podium {
-  id: string;
-  rounds: {
-    results: {
-      ranking: null
-    }[]
-  }[];
+export interface PodiumData {
+  name: string;
+  place: number;
+  event: EventId;
+  result: number;
 }

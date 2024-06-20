@@ -6,7 +6,7 @@ import {
   AlertCircle,
 } from 'lucide-react'
 import { Checkbox } from "@repo/ui/checkbox"
-import type { Event } from '@/types/types';
+import type { Event } from '@/types/wca-live';
 
 export const columns: ColumnDef<Event>[] = [
   {

@@ -23,7 +23,7 @@ export default async function Page(): Promise<JSX.Element> {
                 className="mb-8"
                 height={300}
                 priority
-                src="https://storage.googleapis.com/cubingmexico_dev_bucket/img/cubingmexico_logo.svg"
+                src="/cubingmexico_logo.svg"
                 width={300}
               />
             </div>
@@ -48,7 +48,7 @@ export default async function Page(): Promise<JSX.Element> {
           alt="Image"
           className="h-screen w-full object-cover dark:brightness-[0.2] dark:grayscale"
           height="1080"
-          src="https://storage.googleapis.com/cubingmexico_dev_bucket/img/competidores.jpg"
+          src="/competidores.jpg"
           width="1920"
         />
       </div>

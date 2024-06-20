@@ -7,7 +7,7 @@ import {
 } from 'lucide-react'
 import { Checkbox } from "@repo/ui/checkbox"
 import { DataTableColumnHeader } from "@repo/ui/data-table-column-header"
-import type { ParticipantData } from '@/types/types';
+import type { ParticipantData } from '@/types/wca-live';
 
 export const columns: ColumnDef<ParticipantData>[] = [
   {

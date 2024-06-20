@@ -25,7 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "@repo/ui/table"
-import type { ParticipantData } from '@/types/types';
+import type { ParticipantData } from '@/types/wca-live';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]

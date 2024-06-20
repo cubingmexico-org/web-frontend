@@ -32,19 +32,16 @@ export default function Header({
           alt="Logo de Cubing México"
           height={50}
           priority
-          src="https://storage.googleapis.com/cubingmexico_dev_bucket/img/cubingmexico_logo.svg"
+          src="/cubingmexico_logo.svg"
           width={50}
         />
-        <h1 className="text-2xl ml-2">Certificados de la WCA</h1>
+        <h1 className="sm:text-2xl text-xl ml-2">Certificados de la WCA</h1>
       </Link>
-      <div className="relative ml-auto flex-1 md:grow-0">
+      <div className="relative ml-auto grow-0">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar>
-              <AvatarImage className="object-cover" src={
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We know the user has an image
-                user.image!
-              } />
+              <AvatarImage className="object-cover" src={user.image ?? ''} />
               <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>

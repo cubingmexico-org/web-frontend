@@ -97,7 +97,7 @@ export async function insertCompetitions() {
       const fromDate = new Date(comp.date.from);
       const month = fromDate.getMonth();
       const year = fromDate.getFullYear();
-      return year === 2024 && month >= 3 && month <= 6;
+      return year === 2024 && month >= 3 && month <= 7;
     });
 
     for (const comp of filteredComps) {

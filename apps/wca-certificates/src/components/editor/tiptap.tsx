@@ -131,6 +131,10 @@ export default function Tiptap({
           'w-[792pt] h-[612pt]': pageSize === 'LETTER' && pageOrientation === 'landscape',
           'w-[595pt] h-[842pt]': pageSize === 'A4' && pageOrientation === 'portrait',
           'w-[842pt] h-[595pt]': pageSize === 'A4' && pageOrientation === 'landscape',
+          // [`pl-[${Array.isArray(pageMargins) ? pageMargins[0] : 0}pt]`]: Array.isArray(pageMargins),
+          // [`pt-[${Array.isArray(pageMargins) ? pageMargins[1] : 0}pt]`]: Array.isArray(pageMargins),
+          // [`pr-[${Array.isArray(pageMargins) ? pageMargins[2] : 0}pt]`]: Array.isArray(pageMargins),
+          // [`pb-[${Array.isArray(pageMargins) ? pageMargins[3] : 0}pt]`]: Array.isArray(pageMargins),
         })
       },
     },

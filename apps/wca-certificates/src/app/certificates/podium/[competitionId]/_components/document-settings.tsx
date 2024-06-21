@@ -174,6 +174,10 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
 
   const generatePDF = () => {
     const docDefinition = {
+      info: {
+        title: `Certificados de Podio - ${competition.name}`,
+        author: 'Cubing México',
+      },
       content: pdfData.map((data, index) => ({
         stack: renderDocumentContent(content, data),
         pageBreak: index < pdfData.length - 1 ? 'after' : ''

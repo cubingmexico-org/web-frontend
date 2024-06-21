@@ -103,6 +103,7 @@ export function DialogDocumentSettings({
 							<Input
 								className='w-full'
 								id='top'
+								max={200}
 								min={0}
 								onChange={(e) => {
 									if (Array.isArray(tempPageMargins) && tempPageMargins.length === 4) {
@@ -121,6 +122,7 @@ export function DialogDocumentSettings({
 							<Input
 								className='w-full'
 								id='bottom'
+								max={200}
 								min={0}
 								onChange={(e) => {
 									if (Array.isArray(tempPageMargins) && tempPageMargins.length === 4) {
@@ -139,6 +141,7 @@ export function DialogDocumentSettings({
 							<Input
 								className='w-full'
 								id='right'
+								max={200}
 								min={0}
 								onChange={(e) => {
 									if (Array.isArray(tempPageMargins) && tempPageMargins.length === 4) {
@@ -157,6 +160,7 @@ export function DialogDocumentSettings({
 							<Input
 								className='w-full'
 								id='left'
+								max={200}
 								min={0}
 								onChange={(e) => {
 									if (Array.isArray(tempPageMargins) && tempPageMargins.length === 4) {

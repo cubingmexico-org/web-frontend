@@ -90,7 +90,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
               const newResult = {
                 event: event.id,
                 ranking: result.ranking,
-                average: event.id === '333bf' ? result.best : result.average === 0 ? result.best : result.average,
+                average: event.id === '333bf' || event.id === '444bf' || event.id === '555bf' || event.id === '333mbf' ? result.best : result.average === 0 ? result.best : result.average,
               };
               if (existingResultIndex !== -1) {
                 results[existingResultIndex] = newResult;

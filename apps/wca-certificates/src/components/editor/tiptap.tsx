@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument -- . */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
 /* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
 /* eslint-disable @typescript-eslint/no-shadow -- . */
@@ -70,11 +71,11 @@ import { Button } from '@repo/ui/button';
 import { DialogDocumentSettings } from '@/components/editor/dialog-document-settings';
 import { TextTransform } from '@/components/editor/extensions/text-transform';
 import { FontSize } from '@/components/editor/extensions/font-size';
+import { participation, podium } from '@/lib/placeholders';
 import Toolbar from './toolbar';
 import suggestionPodium from './mentions/suggestion-podium'
 import suggestionParticipation from './mentions/suggestion-participation'
 import Submenu from './submenu';
-import { participation, podium } from '@/lib/placeholders';
 
 interface TiptapProps {
   content: JSONContent;
@@ -163,7 +164,7 @@ export default function Tiptap({
   })
 
   if (!editor) {
-    return <></>
+    return <>null</>
   }
 
   const savedContent = localStorage.getItem(`${competitionId}-${variant}`);
@@ -184,12 +185,12 @@ export default function Tiptap({
           <MenubarTrigger>Archivo</MenubarTrigger>
           <MenubarContent>
             <MenubarItem
+              disabled={variant === 'podium' ? content === podium : content === participation}
               onClick={() => {
                 const newContent = variant === 'podium' ? podium : participation;
                 editor.commands.setContent(newContent);
                 handleChange(newContent);
               }}
-              disabled={variant === 'podium' ? content === podium : content === participation}
             >
               <RotateCcw className='h-4 w-4 mr-2' />Reiniciar
             </MenubarItem>
@@ -218,6 +219,7 @@ export default function Tiptap({
               </MenubarItem>
             )}
             <MenubarItem
+              disabled={!savedContent}
               onClick={() => {
                 if (savedContent) {
                   const { content } = JSON.parse(savedContent);
@@ -225,7 +227,6 @@ export default function Tiptap({
                   handleChange(content);
                 }
               }}
-              disabled={!savedContent}
             >
               <Loader className='h-4 w-4 mr-2' />Cargar
             </MenubarItem>

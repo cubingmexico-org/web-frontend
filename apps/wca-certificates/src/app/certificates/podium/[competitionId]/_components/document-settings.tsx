@@ -253,6 +253,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
               onSubmit={(e) => { e.preventDefault(); }}
             >
               <Tiptap
+                competitionId={competition.id}
                 content={content}
                 key={`${pageSize}-${pageOrientation}-${pageMargins}`}
                 onChange={(newContent: JSONContent) => { setContent(newContent); }}
@@ -265,7 +266,6 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                 setPageOrientation={(value: PageOrientation) => { setPageOrientation(value); }}
                 setPageSize={(value: PageSize) => { setPageSize(value); }}
                 variant='podium'
-                competitionId={competition.id}
               />
             </form>
             <div>

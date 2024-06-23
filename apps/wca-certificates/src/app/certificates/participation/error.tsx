@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-confusing-void-expression -- . */
+/* eslint-disable no-console -- . */
 'use client'
  
+import { Button } from '@repo/ui/button'
 import { useEffect } from 'react'
  
 export default function Error({
@@ -16,13 +19,13 @@ export default function Error({
   return (
     <div>
       <h2>Something went wrong!</h2>
-      <button
+      <Button
         onClick={
           () => reset()
         }
       >
         Try again
-      </button>
+      </Button>
     </div>
   )
 }

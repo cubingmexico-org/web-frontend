@@ -78,6 +78,14 @@ export interface TableData {
   totalPoints: number;
 }
 
+export interface IndividualTableData {
+  memberId: string;
+  memberName: string;
+  teamName: string;
+  scores: Record<string, number>;
+  totalScore: number;
+}
+
 export interface Ranking {
   eventId: string;
   best: number;

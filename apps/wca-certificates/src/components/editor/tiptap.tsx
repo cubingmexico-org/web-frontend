@@ -33,6 +33,17 @@ import {
   MenubarTrigger,
 } from "@repo/ui/menubar"
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@repo/ui/alert-dialog"
+import {
   Save,
   Loader,
   RotateCcw,
@@ -63,6 +74,7 @@ import Toolbar from './toolbar';
 import suggestionPodium from './mentions/suggestion-podium'
 import suggestionParticipation from './mentions/suggestion-participation'
 import Submenu from './submenu';
+import { participation, podium } from '@/lib/placeholders';
 
 interface TiptapProps {
   content: JSONContent;
@@ -76,6 +88,7 @@ interface TiptapProps {
   setPageMargins: (value: Margins) => void;
   onChange: (newContent: JSONContent) => void;
   variant: 'podium' | 'participation';
+  competitionId: string;
 };
 
 export default function Tiptap({
@@ -90,7 +103,8 @@ export default function Tiptap({
   setPageMargins,
   onChange,
   variant,
-}: TiptapProps) {
+  competitionId,
+}: TiptapProps): JSX.Element {
 
   const handleChange = (newContent: JSONContent) => {
     onChange(newContent);
@@ -149,7 +163,18 @@ export default function Tiptap({
   })
 
   if (!editor) {
-    return null
+    return <></>
+  }
+
+  const savedContent = localStorage.getItem(`${competitionId}-${variant}`);
+  const { date } = JSON.parse(savedContent || '{}');
+
+  const saveContent = () => {
+    const contentWithDate = {
+      content: editor.getJSON(),
+      date: new Date().toISOString(),
+    };
+    localStorage.setItem(`${competitionId}-${variant}`, JSON.stringify(contentWithDate));
   }
 
   return (
@@ -158,9 +183,52 @@ export default function Tiptap({
         <MenubarMenu>
           <MenubarTrigger>Archivo</MenubarTrigger>
           <MenubarContent>
-            <MenubarItem disabled><RotateCcw className='h-4 w-4 mr-2' />Reiniciar</MenubarItem>
-            <MenubarItem disabled><Save className='h-4 w-4 mr-2' />Guardar</MenubarItem>
-            <MenubarItem disabled><Loader className='h-4 w-4 mr-2' />Cargar</MenubarItem>
+            <MenubarItem
+              onClick={() => {
+                const newContent = variant === 'podium' ? podium : participation;
+                editor.commands.setContent(newContent);
+                handleChange(newContent);
+              }}
+              disabled={variant === 'podium' ? content === podium : content === participation}
+            >
+              <RotateCcw className='h-4 w-4 mr-2' />Reiniciar
+            </MenubarItem>
+            {savedContent ? (
+              <AlertDialog>
+                <AlertDialogTrigger className='flex text-sm hover:bg-accent px-2 py-1.5 cursor-default rounded-sm w-full'>
+                  <Save className='h-4 w-4 mr-2' />Guardar
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>¿Estás seguro que deseas guardar el documento?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Esto guardará el documento actual y reemplazará el que estaba guardado anteriormente.<br />
+                      <span><span className='font-bold'>Documento anterior:</span> {new Date(date).toLocaleString()}</span>
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction onClick={saveContent}>Continuar</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            ) : (
+              <MenubarItem onClick={saveContent}>
+                <Save className='h-4 w-4 mr-2' />Guardar
+              </MenubarItem>
+            )}
+            <MenubarItem
+              onClick={() => {
+                if (savedContent) {
+                  const { content } = JSON.parse(savedContent);
+                  editor.commands.setContent(content);
+                  handleChange(content);
+                }
+              }}
+              disabled={!savedContent}
+            >
+              <Loader className='h-4 w-4 mr-2' />Cargar
+            </MenubarItem>
             <MenubarSeparator />
             <MenubarItem asChild>
               <Button className='!w-full !px-2 !py-1.5 !justify-start !font-normal !h-8' disabled={pdfDisabled} onClick={pdfOnClick} type="submit" variant='ghost'>
@@ -348,7 +416,7 @@ export default function Tiptap({
       <div className='flex justify-center bg-secondary py-8 my-4'>
         <EditorContent editor={editor} />
       </div>
-    </div>
+    </div >
   )
 }
 

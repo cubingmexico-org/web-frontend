@@ -61,7 +61,7 @@ export function DialogDocumentSettings({
 
 	return (
 		<Dialog onOpenChange={(value) => setOpen(value)} open={open}>
-			<DialogTrigger className='flex text-sm hover:bg-accent px-2 py-1.5 cursor-default rounded-sm'>
+			<DialogTrigger className='flex text-sm hover:bg-accent px-2 py-1.5 cursor-default rounded-sm w-full'>
 				<FileText className='h-4 w-4 mr-2' />Configuración de página
 			</DialogTrigger>
 			<DialogContent>

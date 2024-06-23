@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
 import { sql } from '@vercel/postgres';
 import { unstable_noStore as noStore } from 'next/cache';
-import type { Competition, Member, TableData } from './definitions';
+import type { Competition, IndividualTableData, Member, TableData } from './definitions';
 
 export async function fetchTableData() {
   noStore();
@@ -32,6 +32,40 @@ export async function fetchTableData() {
     GROUP BY 
       Teams.name, Teams.sponsor_id, Teams.total_points
     ORDER BY Teams.total_points DESC, Teams.sponsor_id
+  `;
+    return data.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch table data.');
+  }
+}
+
+export async function fetchIndividualTableData() {
+  noStore();
+
+  try {
+    const data = await sql<IndividualTableData>`
+    SELECT 
+      Members.id AS "memberId",
+      Members.name AS "memberName",
+      Teams.name AS "teamName",
+      json_object_agg(Competitions.id, Scores.score) AS "scores",
+      SUM(Scores.score) AS "totalScore"
+    FROM 
+      Members
+    INNER JOIN 
+      Teams ON Members.team_id = Teams.id
+    INNER JOIN 
+      Scores ON Members.id = Scores.member_id
+    INNER JOIN 
+      Competitions ON Scores.competition_id = Competitions.id
+    WHERE 
+      (Competitions.startDate <= CURRENT_DATE AND Competitions.endDate >= CURRENT_DATE) 
+      OR Competitions.endDate < CURRENT_DATE
+    GROUP BY 
+      Members.id, Teams.name
+    ORDER BY 
+      sum(Scores.score) DESC
   `;
     return data.rows;
   } catch (error) {
@@ -97,7 +131,7 @@ export async function insertCompetitions() {
       const fromDate = new Date(comp.date.from);
       const month = fromDate.getMonth();
       const year = fromDate.getFullYear();
-      return year === 2024 && month >= 3 && month <= 6;
+      return year === 2024 && month >= 3 && month <= 7;
     });
 
     for (const comp of filteredComps) {

@@ -1,27 +1,177 @@
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@repo/ui/table"
 import { Skeleton } from "@repo/ui/skeleton"
 
 export default function Loading(): JSX.Element {
   return (
     <div className="container mx-auto py-10">
       <Skeleton className="h-9 w-1/3 rounded-xl mb-4" />
-      <div className="rounded-md border">
-        <table className="w-full">
-          <thead>
-            <tr>
-              <th className="p-4"><Skeleton className="h-6 w-[75px]" /></th>
-              <th className="p-4"><Skeleton className="h-6 w-[100px]" /></th>
-            </tr>
-          </thead>
-          {/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- . */}
-          {[...Array(8)].map((_, i) => (
-            // eslint-disable-next-line react/no-array-index-key -- No unique id needed
-            <tr key={i}>
-              <td className="p-4"><Skeleton className="h-8 w-8" /></td>
-              <td className="p-4"><Skeleton className="h-6 w-[100px]" /></td>
-            </tr>
-          ))}
-        </table>
-      </div>
+      <Table>
+        <TableHeader>
+          <TableRow className="h-12">
+            <TableHead>
+              <Skeleton className="h-5 w-5 rounded-tl-xl" />
+            </TableHead>
+            <TableHead>
+              <Skeleton className="h-5 w-32 rounded-tl-xl" />
+            </TableHead>
+            <TableHead>
+              <Skeleton className="h-5 w-48 rounded-tl-xl" />
+            </TableHead>
+            <TableHead>
+              <Skeleton className="h-5 w-48 rounded-tl-xl" />
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow className="h-[57px]">
+            <TableCell>
+              <Skeleton className="h-5 w-5" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-5 w-32" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-5 w-48" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-10 w-48" />
+            </TableCell>
+          </TableRow>
+          <TableRow className="h-[57px]">
+            <TableCell>
+              <Skeleton className="h-5 w-5" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-5 w-32" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-5 w-48" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-10 w-48" />
+            </TableCell>
+          </TableRow>
+          <TableRow className="h-[57px]">
+            <TableCell>
+              <Skeleton className="h-5 w-5" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-5 w-32" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-5 w-48" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-10 w-48" />
+            </TableCell>
+          </TableRow>
+          <TableRow className="h-[57px]">
+            <TableCell>
+              <Skeleton className="h-5 w-5" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-5 w-32" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-5 w-48" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-10 w-48" />
+            </TableCell>
+          </TableRow>
+          <TableRow className="h-[57px]">
+            <TableCell>
+              <Skeleton className="h-5 w-5" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-5 w-32" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-5 w-48" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-10 w-48" />
+            </TableCell>
+          </TableRow>
+          <TableRow className="h-[57px]">
+            <TableCell>
+              <Skeleton className="h-5 w-5" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-5 w-32" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-5 w-48" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-10 w-48" />
+            </TableCell>
+          </TableRow>
+          <TableRow className="h-[57px]">
+            <TableCell>
+              <Skeleton className="h-5 w-5" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-5 w-32" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-5 w-48" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-10 w-48" />
+            </TableCell>
+          </TableRow>
+          <TableRow className="h-[57px]">
+            <TableCell>
+              <Skeleton className="h-5 w-5" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-5 w-32" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-5 w-48" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-10 w-48" />
+            </TableCell>
+          </TableRow>
+          <TableRow className="h-[57px]">
+            <TableCell>
+              <Skeleton className="h-5 w-5" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-5 w-32" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-5 w-48" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-10 w-48" />
+            </TableCell>
+          </TableRow>
+          <TableRow className="h-[57px]">
+            <TableCell>
+              <Skeleton className="h-5 w-5" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-5 w-32" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-5 w-48" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-10 w-48" />
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
     </div>
   )
 }

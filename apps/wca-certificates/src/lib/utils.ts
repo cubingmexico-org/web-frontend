@@ -16,7 +16,7 @@ export function processPersons(persons: Person[]) {
   function getEventData(event: Event) {
     const rounds = event.rounds;
     const results = rounds[rounds.length - 1].results
-      .filter((result: Result) => result.ranking !== null && result.ranking >= 1 && result.ranking <= 3)
+      .filter((result: Result) => result.ranking !== null && result.best !== -1 && result.best !== -2 && result.ranking >= 1 && result.ranking <= 3)
       .map((person) => ({
         personName: personIdToName[person.personId],
         result: event.id === '333bf' || event.id === '444bf' || event.id === '555bf' || event.id === '333mbf' ? person.best : person.average,
@@ -48,6 +48,14 @@ export function transformString(s: string, caseType?: 'lowercase' | 'capitalize'
 
 export function formatResults(result: number, eventId: EventId): string {
 
+  if (result === -1) {
+    return 'DNF';
+  }
+
+  if (result === -2) {
+    return 'DNS';
+  }
+
   if (eventId === '333mbf') {
     const valueStr = result.toString();
     const DD = valueStr.slice(0, 2);
@@ -65,14 +73,6 @@ export function formatResults(result: number, eventId: EventId): string {
     const time = `${solved}/${attempted} en ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
     return time;
-  }
-
-  if (result === -1) {
-    return 'DNF';
-  }
-
-  if (result === -2) {
-    return 'DNS';
   }
 
   const number = result / 100;

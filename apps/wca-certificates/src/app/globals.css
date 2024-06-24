@@ -121,10 +121,14 @@
   margin-right: auto;
 }
 
-.tiptap table td,
 .tiptap table th {
-  border: 1px solid #000;
+  border-bottom: 3px solid #000;
 }
+
+.tiptap table td {
+  border-bottom: 1px solid #AAA;
+}
+
 
 .tiptap table th {
   font-weight: normal;

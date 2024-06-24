@@ -229,6 +229,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                     }) : [])
                   ]
                 },
+                layout: 'lightHorizontalLines',
                 width: 'auto'
               },
               { width: '*', text: '' },

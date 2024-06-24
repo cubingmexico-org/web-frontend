@@ -65,7 +65,8 @@ import {
   Trash2,
   TableCellsMerge,
   TableCellsSplit,
-  RemoveFormatting
+  RemoveFormatting,
+  Heading
 } from 'lucide-react';
 import { Button } from '@repo/ui/button';
 import { DialogDocumentSettings } from '@/components/editor/dialog-document-settings';
@@ -393,6 +394,10 @@ export default function Tiptap({
                 </MenubarItem>
                 <MenubarItem disabled={!editor.can().deleteTable()} onClick={() => editor.chain().focus().deleteTable().run()}>
                   <Trash2 className='h-4 w-4 mr-2' />Eliminar tabla
+                </MenubarItem>
+                <MenubarSeparator />
+                <MenubarItem disabled={!editor.can().toggleHeaderRow()} onClick={() => editor.chain().focus().toggleHeaderRow().run()}>
+                  <Heading className='h-4 w-4 mr-2' />Alternar fila de encabezado
                 </MenubarItem>
                 <MenubarSeparator />
                 <MenubarItem disabled={!editor.can().mergeCells()} onClick={() => editor.chain().focus().mergeCells().run()}>

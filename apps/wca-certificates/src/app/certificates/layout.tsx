@@ -1,23 +1,16 @@
-import type { User } from 'next-auth';
-import { getServerSession } from 'next-auth'
-import { authOptions } from "@/lib/auth"
 import Header from '@/components/header'
 import Footer from '@/components/footer';
 import "@cubing/icons"
 
-export default async function Layout({ children }: { children: React.ReactNode }): Promise<JSX.Element> {
-
-  const session = await getServerSession(authOptions)
-
-  const user = session?.user as User
+export default function Layout({ children }: { children: React.ReactNode }): JSX.Element {
 
   return (
-    <main className="flex flex-col min-h-screen justify-between sm:gap-4 sm:py-4">
+    <div className="flex flex-col justify-between w-full h-full min-h-screen">
       <div>
-        <Header user={user} />
+        <Header />
         {children}
       </div>
       <Footer />
-    </main>
+    </div>
   );
 }

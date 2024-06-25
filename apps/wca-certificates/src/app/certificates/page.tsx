@@ -1,6 +1,4 @@
 /* eslint-disable react/no-array-index-key -- . */
-/* eslint-disable @typescript-eslint/restrict-template-expressions -- . */
-import { getServerSession } from 'next-auth'
 import {
   Card,
   CardContent,
@@ -9,14 +7,14 @@ import {
   CardTitle,
 } from "@repo/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs"
-import { authOptions } from "@/lib/auth"
+import { auth } from "@/auth"
 import type { Competition } from '@/types/competitions'
 import "@cubing/icons"
 import { CardCompetition } from '@/components/card-competition'
 
 export default async function Page(): Promise<JSX.Element> {
 
-  const session = await getServerSession(authOptions)
+  const session = await auth()
 
   const response = await fetch('https://www.worldcubeassociation.org/api/v0/competitions?managed_by_me=true', {
     headers: {
@@ -32,10 +30,10 @@ export default async function Page(): Promise<JSX.Element> {
   const pastCompetitions = competitions.filter(comp => new Date(comp.end_date) < currentDate);
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mt-4 text-center">Bienvenido</h1>
-      <p className='text-center m-4'>A continuación se muestran tus competencias como organizador:</p>
-      <div className='flex justify-center text-center mx-4'>
+    <div className="grid gap-4 mx-4">
+      <h1 className="text-3xl font-bold text-center mt-4">Bienvenido</h1>
+      <p className='text-center'>A continuación se muestran tus competencias como organizador:</p>
+      <div className='flex justify-center text-center'>
         <Tabs className="w-full" defaultValue="current">
           <TabsList>
             <TabsTrigger value="upcoming">Próximas</TabsTrigger>

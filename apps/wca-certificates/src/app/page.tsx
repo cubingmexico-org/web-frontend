@@ -1,12 +1,11 @@
-import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import Image from "next/image"
 import Link from "next/link"
-import { authOptions } from "../lib/auth"
-import LoginButton from "../components/login-button";
+import { auth } from "@/auth"
+import { SignIn } from '@/components/auth-components';
 
 export default async function Page(): Promise<JSX.Element> {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
 
   if (session) {
     redirect('/certificates')
@@ -33,7 +32,7 @@ export default async function Page(): Promise<JSX.Element> {
             </p>
           </div>
           <div className="grid gap-4">
-            <LoginButton />
+            <SignIn provider='wca' />
           </div>
           <div className="mt-4 text-center text-sm">
             ¿No tienes cuenta de la World Cube Association?{" "}

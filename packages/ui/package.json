@@ -18,6 +18,7 @@
     "./dialog": "./src/components/dialog.tsx",
     "./dropdown-menu": "./src/components/dropdown-menu.tsx",
     "./form": "./src/components/form.tsx",
+    "./icons": "./src/components/icons.tsx",
     "./input": "./src/components/input.tsx",
     "./label": "./src/components/label.tsx",
     "./menubar": "./src/components/menubar.tsx",

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
-import type { Event, Person, Result, EventId } from '@/types/wca-live';
+import { faker } from '@faker-js/faker';
+import type { Event, Person, Result, EventId, Round } from '@/types/wca-live';
 
 export function processPersons(persons: Person[]) {
   const getRole = (role: string) => (person: Person) => person.roles.includes(role);
@@ -290,4 +291,29 @@ export function formatBytes(
   const i = Math.floor(Math.log(bytes) / Math.log(1024))
   return `${(bytes / Math.pow(1024, i)).toFixed(decimals)} ${sizeType === "accurate" ? accurateSizes[i] ?? "Bytest" : sizes[i] ?? "Bytes"
     }`
+}
+
+export function generateFakeResult(ranking: number): Result {
+  return {
+    personId: faker.number.int({min: 1, max: 3}),
+    ranking,
+    attempts: Array.from({length: 5}, () => faker.number.int({min: 500, max: 10000})),
+    best: faker.number.int({min: 500, max: 1000}),
+    average: faker.number.int({min: 500, max: 10000}),
+  };
+}
+
+export function generateFakeResultsForRound(round: Round): Round {
+  const rankings = [1, 2, 3];
+  const results = rankings.map(ranking => generateFakeResult(ranking));
+  return {...round, results};
+}
+
+export function generateFakeResultsForEvent(event: Event): Event {
+  const rounds = event.rounds.map(generateFakeResultsForRound);
+  return {...event, rounds};
+}
+
+export function generateFakeResultsForAllEvents(events: Event[]): Event[] {
+  return events.map(generateFakeResultsForEvent);
 }

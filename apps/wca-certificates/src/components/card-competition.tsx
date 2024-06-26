@@ -16,12 +16,14 @@ import type { Competition } from "@/types/competitions";
 
 interface CardCompetitionProps {
   competition: Competition;
+  allowDesign?: boolean;
   allowPodiumCertificates?: boolean;
   allowParticipationCertificates?: boolean;
 };
 
 export function CardCompetition({
   competition,
+  allowDesign = false,
   allowPodiumCertificates = true,
   allowParticipationCertificates = true
 }: CardCompetitionProps): JSX.Element {
@@ -48,6 +50,18 @@ export function CardCompetition({
             <User className="size-4 mr-2" />
             <span>Certificados de participación</span>
           </Link>
+        ) : null}
+        {allowDesign ? (
+          <>
+            <Link className={`${buttonVariants({ variant: 'default' })} mb-2`} href={`/certificates/design/podium/${competition.id}`}>
+              <Medal className="size-4 mr-2" />
+              <span>Diseñar certificados de podio</span>
+            </Link>
+            <Link className={`${buttonVariants({ variant: 'secondary' })} mb-2`} href={`/certificates/design/participation/${competition.id}`}>
+              <User className="size-4 mr-2" />
+              <span>Diseñar certificados de participación</span>
+            </Link>
+          </>
         ) : null}
         <Link className={`${buttonVariants({ variant: 'outline' })}`} href={`https://live.worldcubeassociation.org/link/competitions/${competition.id}`}>
           <Image

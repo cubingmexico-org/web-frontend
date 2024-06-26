@@ -9,6 +9,7 @@
     "./utils": "./src/lib/utils.ts",
     "./alert-dialog": "./src/components/alert-dialog.tsx",
     "./avatar": "./src/components/avatar.tsx",
+    "./badge": "./src/components/badge.tsx",
     "./button": "./src/components/button.tsx",
     "./card": "./src/components/card.tsx",
     "./checkbox": "./src/components/checkbox.tsx",

@@ -1,10 +1,24 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- . */
+
 import { redirect } from 'next/navigation'
 import Image from "next/image"
 import Link from "next/link"
+import { Icons } from '@repo/ui/icons';
 import { auth } from "@/auth"
 import { SignIn } from '@/components/auth-components';
+import { getDictionary } from '@/get-dictionary';
+import type { Locale } from '@/i18n-config';
 
-export default async function Page(): Promise<JSX.Element> {
+interface PageProps {
+  params: {
+    lang: Locale
+  },
+}
+
+export default async function Page({ params }: PageProps): Promise<JSX.Element> {
+  const dictionary = await getDictionary(params.lang);
+
   const session = await auth()
 
   if (session) {
@@ -17,27 +31,20 @@ export default async function Page(): Promise<JSX.Element> {
         <div className="mx-auto grid w-[350px] gap-6">
           <div className="grid gap-2 text-center">
             <div className='flex items-center justify-center'>
-              <Image
-                alt="Logo de Cubing México"
-                className="mb-8"
-                height={300}
-                priority
-                src="/cubingmexico_logo.svg"
-                width={300}
-              />
+              <Icons.CubingMexico className="size-72" />
             </div>
-            <h1 className="text-3xl font-bold">Inicia sesión</h1>
+            <h1 className="text-3xl font-bold">{dictionary.signin.signInTitle}</h1>
             <p className="text-balance text-muted-foreground">
-              Serás redirigido a la página de la World Cube Association
+              {dictionary.signin.signInDescription}
             </p>
           </div>
           <div className="grid gap-4">
-            <SignIn provider='wca' />
+            <SignIn dictionary={dictionary.auth_components} provider='wca' />
           </div>
           <div className="mt-4 text-center text-sm">
-            ¿No tienes cuenta de la World Cube Association?{" "}
+            <p>{dictionary.signin.noAccountQuestion}</p>
             <Link className="underline" href="https://www.worldcubeassociation.org/users/sign_up">
-              Regístrate
+              {dictionary.signin.signUp}
             </Link>
           </div>
         </div>

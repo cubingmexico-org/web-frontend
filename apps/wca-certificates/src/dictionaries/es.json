@@ -1,5 +1,53 @@
 {
+  "metadata": {
+    "title": "Certificados WCA - Cubing México",
+    "description": "Certificados WCA - Cubing México"
+  },
+  "signin": {
+    "signInTitle": "Inicia Sesión",
+    "signInDescription": "Serás redirigido a la página de la World Cube Association",
+    "noAccountQuestion": "¿No tienes cuenta de la World Cube Association?",
+    "signUp": "Regístrate"
+  },
+  "certificates": {
+    "welcomeTitle": "Bienvenido",
+    "introText": "A continuación se muestran las competencias en las que eres organizador:",
+    "tabs": {
+      "upcoming": "Próximas",
+      "current": "Actuales",
+      "past": "Pasadas"
+    },
+    "competitions": {
+      "upcomingTitle": "Competencias próximas",
+      "noUpcoming": "Parece que no tienes ninguna competencia próxima",
+      "upcomingDescription": "Estas competencias están próximas a celebrarse",
+      "currentTitle": "Competencias actuales",
+      "noCurrent": "Parece que no tienes ninguna competencia siendo celebrada justo ahora",
+      "currentDescription": "Estas competencias se estan celebrando actualmente",
+      "pastTitle": "Competencias pasadas",
+      "noPast": "Parece que no tienes ninguna competencia pasada",
+      "pastDescription": "Estas competencias ya fueron celebradas"
+    },
+    "podium": "Certificados de podio para el",
+    "participation": "Certificados de participación para el"
+  },
+  "auth_components": {
+    "signIn": "Iniciar Sesión",
+    "signOut": "Cerrar Sesión"
+  },
+  "header": {
+    "title": "Certificados de la WCA"
+  },
   "locale_switcher": {
     "language": "Idioma"
+  },
+  "card_competition": {
+    "certificates": {
+      "podium": "Certificados de podio",
+      "participation": "Certificados de participación",
+      "designPodium": "Diseñar certificados de podio",
+      "designParticipation": "Diseñar certificados de participación"
+    },
+    "liveLink": "WCA Live"
   }
 }

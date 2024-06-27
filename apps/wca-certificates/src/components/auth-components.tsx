@@ -1,14 +1,16 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- . */
 /* eslint-disable @typescript-eslint/no-misused-promises -- . */
-/* eslint-disable react/jsx-pascal-case -- . */
 
 import { Button } from "@repo/ui/button"
 import { Icons } from "@repo/ui/icons"
+import type { getDictionary } from "@/get-dictionary";
 import { signIn, signOut } from "auth"
 
 export function SignIn({
   provider,
+  dictionary,
   ...props
-}: { provider?: string } & React.ComponentPropsWithRef<typeof Button>): JSX.Element {
+}: { provider?: string; dictionary: Awaited<ReturnType<typeof getDictionary>>["auth_components"] } & React.ComponentPropsWithRef<typeof Button>): JSX.Element {
   return (
     <form
       action={async () => {
@@ -18,13 +20,16 @@ export function SignIn({
       className="flex justify-center"
     >
       <Button className="flex gap-2" {...props}>
-        <Icons.wca className="size-5" />Iniciar sesión
+        <Icons.WcaMonochrome className="size-5" />{dictionary.signIn}
       </Button>
     </form>
   )
 }
 
-export function SignOut(props: React.ComponentPropsWithRef<typeof Button>): JSX.Element {
+export function SignOut({
+  dictionary,
+  ...props
+}: { dictionary: Awaited<ReturnType<typeof getDictionary>>["auth_components"] } & React.ComponentPropsWithRef<typeof Button>): JSX.Element {
   return (
     <form
       action={async () => {
@@ -34,7 +39,7 @@ export function SignOut(props: React.ComponentPropsWithRef<typeof Button>): JSX.
       className="w-full"
     >
       <Button className="w-full p-0" variant="ghost" {...props}>
-        Cerrar sesión
+        {dictionary.signOut}
       </Button>
     </form>
   )

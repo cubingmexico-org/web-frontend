@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- . */
 /* eslint-disable react/no-array-index-key -- . */
+
 import { redirect } from "next/navigation"
 import {
   Card,
@@ -9,47 +12,50 @@ import {
 } from "@repo/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs"
 import { auth } from "@/auth"
-import type { Competition } from '@/types/competitions'
 import "@cubing/icons"
 import { CardCompetition } from '@/components/card-competition'
+import type { Locale } from "@/i18n-config"
+import { getDictionary } from "@/get-dictionary"
+import { fetchCompetitions } from "@/app/[lang]/actions"
 
-export default async function Page(): Promise<JSX.Element> {
+interface PageProps {
+  params: {
+    lang: Locale
+  },
+}
+
+export default async function Page({ params }: PageProps): Promise<JSX.Element> {
+  const dictionary = await getDictionary(params.lang);
+
   const session = await auth()
-
-  const response = await fetch('https://www.worldcubeassociation.org/api/v0/competitions?managed_by_me=true', {
-    headers: {
-      'Authorization': `Bearer ${session?.token}`,
-    },
-    cache: 'no-store'
-  });
 
   if (!session) {
     redirect('/')
   }
 
+  const competitions = await fetchCompetitions(session.token || '');
   const currentDate = new Date();
-  const competitions = await response.json() as Competition[];
-  const upcomingCompetitions = competitions.filter(comp => new Date(comp.start_date) > currentDate);
-  const currentCompetitions = competitions.filter(comp => new Date(comp.start_date) <= currentDate && new Date(comp.end_date) >= currentDate);
-  const pastCompetitions = competitions.filter(comp => new Date(comp.end_date) < currentDate);
+  const upcomingCompetitions = competitions.filter(competition => new Date(competition.start_date) > currentDate);
+  const currentCompetitions = competitions.filter(competition => new Date(competition.start_date) <= currentDate && new Date(competition.end_date) >= currentDate);
+  const pastCompetitions = competitions.filter(competition => new Date(competition.end_date) < currentDate);
 
   return (
     <div className="grid gap-4 mx-4">
-      <h1 className="text-3xl font-bold text-center mt-4">Bienvenido</h1>
-      <p className='text-center'>A continuación se muestran tus competencias como organizador:</p>
+      <h1 className="text-3xl font-bold text-center mt-4">{dictionary.certificates.welcomeTitle}</h1>
+      <p className='text-center'>{dictionary.certificates.introText}</p>
       <div className='flex justify-center text-center'>
         <Tabs className="w-full" defaultValue="current">
           <TabsList>
-            <TabsTrigger value="upcoming">Próximas</TabsTrigger>
-            <TabsTrigger value="current">Actuales</TabsTrigger>
-            <TabsTrigger value="past">Pasadas</TabsTrigger>
+            <TabsTrigger value="upcoming">{dictionary.certificates.tabs.upcoming}</TabsTrigger>
+            <TabsTrigger value="current">{dictionary.certificates.tabs.current}</TabsTrigger>
+            <TabsTrigger value="past">{dictionary.certificates.tabs.past}</TabsTrigger>
           </TabsList>
           <TabsContent value="upcoming">
             <Card>
               <CardHeader>
-                <CardTitle>Competencias próximas</CardTitle>
+                <CardTitle>{dictionary.certificates.competitions.upcomingTitle}</CardTitle>
                 <CardDescription>
-                  {upcomingCompetitions.length === 0 ? 'Parece que no tienes ninguna competencia próxima' : 'Estas competencias están próximas a celebrarse'}
+                  {upcomingCompetitions.length === 0 ? dictionary.certificates.competitions.noUpcoming : dictionary.certificates.competitions.upcomingDescription}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -66,6 +72,7 @@ export default async function Page(): Promise<JSX.Element> {
                         allowParticipationCertificates={false}
                         allowPodiumCertificates={false}
                         competition={competition}
+                        dictionary={dictionary.card_competition}
                         key={index}
                       />
                     );
@@ -77,15 +84,15 @@ export default async function Page(): Promise<JSX.Element> {
           <TabsContent value="current">
             <Card>
               <CardHeader>
-                <CardTitle>Competencias actuales</CardTitle>
+                <CardTitle>{dictionary.certificates.competitions.currentTitle}</CardTitle>
                 <CardDescription>
-                  {currentCompetitions.length === 0 ? 'Parece que no tienes ninguna competencia siendo celebrada justo ahora' : 'Estas competencias se estan celebrando actualmente'}
+                  {currentCompetitions.length === 0 ? dictionary.certificates.competitions.noCurrent : dictionary.certificates.competitions.currentDescription}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className={`grid grid-cols-1 gap-4 ${currentCompetitions.length > 1 ? 'sm:grid-cols-2 ' : ''} ${currentCompetitions.length > 2 ? 'md:grid-cols-3' : ''}`}>
                   {currentCompetitions.map((competition, index: number) => (
-                    <CardCompetition competition={competition} key={index} />
+                    <CardCompetition competition={competition} dictionary={dictionary.card_competition} key={index} />
                   ))}
                 </div>
               </CardContent>
@@ -94,15 +101,15 @@ export default async function Page(): Promise<JSX.Element> {
           <TabsContent value="past">
             <Card>
               <CardHeader>
-                <CardTitle>Competencias pasadas</CardTitle>
+                <CardTitle>{dictionary.certificates.competitions.pastTitle}</CardTitle>
                 <CardDescription>
-                  {pastCompetitions.length === 0 ? 'Parece que no tienes ninguna competencia pasada' : 'Estas competencias ya fueron celebradas'}
+                  {pastCompetitions.length === 0 ? dictionary.certificates.competitions.noPast : dictionary.certificates.competitions.pastDescription}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className={`grid grid-cols-1 gap-4 ${pastCompetitions.length > 1 ? 'sm:grid-cols-2 ' : ''} ${pastCompetitions.length > 2 ? 'md:grid-cols-3' : ''}`}>
                   {pastCompetitions.map((competition, index: number) => (
-                    <CardCompetition competition={competition} key={index} />
+                    <CardCompetition competition={competition} dictionary={dictionary.card_competition} key={index} />
                   ))}
                 </div>
               </CardContent>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- . */
 /* eslint-disable react/no-array-index-key -- . */
 
 import { Medal, User } from "lucide-react"
@@ -10,11 +11,13 @@ import {
   CardTitle,
 } from "@repo/ui/card"
 import { buttonVariants } from '@repo/ui/button'
-import Image from "next/image"
 import Link from "next/link"
+import { Icons } from "@repo/ui/icons";
 import type { Competition } from "@/types/competitions";
+import type { getDictionary } from "@/get-dictionary";
 
 interface CardCompetitionProps {
+  dictionary: Awaited<ReturnType<typeof getDictionary>>["card_competition"]
   competition: Competition;
   allowDesign?: boolean;
   allowPodiumCertificates?: boolean;
@@ -22,11 +25,13 @@ interface CardCompetitionProps {
 };
 
 export function CardCompetition({
+  dictionary,
   competition,
   allowDesign = false,
   allowPodiumCertificates = true,
   allowParticipationCertificates = true
 }: CardCompetitionProps): JSX.Element {
+
   return (
     <Card className='mt-2'>
       <CardHeader>
@@ -42,35 +47,30 @@ export function CardCompetition({
         {allowPodiumCertificates ? (
           <Link className={`${buttonVariants({ variant: 'default' })} mb-2`} href={`/certificates/podium/${competition.id}`}>
             <Medal className="size-4 mr-2" />
-            <span>Certificados de podio</span>
+            <span>{dictionary.certificates.podium}</span>
           </Link>
         ) : null}
         {allowParticipationCertificates ? (
           <Link className={`${buttonVariants({ variant: 'secondary' })} mb-2`} href={`/certificates/participation/${competition.id}`}>
             <User className="size-4 mr-2" />
-            <span>Certificados de participación</span>
+            <span>{dictionary.certificates.participation}</span>
           </Link>
         ) : null}
         {allowDesign ? (
           <>
             <Link className={`${buttonVariants({ variant: 'default' })} mb-2`} href={`/certificates/design/podium/${competition.id}`}>
               <Medal className="size-4 mr-2" />
-              <span>Diseñar certificados de podio</span>
+              <span>{dictionary.certificates.designPodium}</span>
             </Link>
             <Link className={`${buttonVariants({ variant: 'secondary' })} mb-2`} href={`/certificates/design/participation/${competition.id}`}>
               <User className="size-4 mr-2" />
-              <span>Diseñar certificados de participación</span>
+              <span>{dictionary.certificates.participation}</span>
             </Link>
           </>
         ) : null}
         <Link className={`${buttonVariants({ variant: 'outline' })}`} href={`https://live.worldcubeassociation.org/link/competitions/${competition.id}`}>
-          <Image
-            alt="WCA Logo"
-            height={16}
-            src='https://www.worldcubeassociation.org/files/WCAlogo.svg'
-            width={16}
-          />
-          <span className="ml-2">WCA Live</span>
+          <Icons.WcaMonochrome className="size-4" />
+          <span className="ml-2">{dictionary.liveLink}</span>
         </Link>
       </CardFooter>
     </Card>

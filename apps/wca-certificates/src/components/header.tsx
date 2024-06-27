@@ -1,5 +1,7 @@
-import Image from "next/image"
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- . */
+
 import Link from "next/link"
+import { Icons } from "@repo/ui/icons"
 import type { getDictionary } from "@/get-dictionary"
 import UserButton from './user-button'
 
@@ -12,14 +14,8 @@ export default function Header({ dictionary }: HeaderProps): JSX.Element {
     <header className="sticky flex justify-center border-b">
       <div className="flex items-center justify-between w-full h-16 max-w-3xl px-4 mx-auto sm:px-6">
         <Link className='flex items-center' href='/certificates'>
-          <Image
-            alt="Logo de Cubing México"
-            height={50}
-            priority
-            src="/cubingmexico_logo.svg"
-            width={50}
-          />
-          <h1 className="sm:text-2xl text-xl ml-2">Certificados de la WCA</h1>
+          <Icons.CubingMexico className="size-12" />
+          <h1 className="sm:text-2xl text-xl ml-2 font-bold">{dictionary.header.title}</h1>
         </Link>
         <UserButton dictionary={dictionary} />
       </div>

@@ -46,7 +46,6 @@ export function middleware(request: NextRequest) {
   if (
     [
       '/competidores.jpg',
-      '/cubingmexico_logo.svg',
       '/fonts/Inter/Inter-Bold.ttf',
       '/fonts/Inter/Inter-Regular.ttf',
       '/fonts/Kanit/Kanit-Bold.ttf',
@@ -82,10 +81,10 @@ export function middleware(request: NextRequest) {
       '/fonts/Roboto/Roboto-Regular.ttf',
       '/fonts/Roboto_Condensed/RobotoCondensed-Bold.ttf',
       '/fonts/Roboto_Condensed/RobotoCondensed-Regular.ttf',
-      '/fonts/Robot_Mono/RobotMono-Bold.ttf',
-      '/fonts/Robot_Mono/RobotMono-Regular.ttf',
-      '/fonts/Robot_Slab/RobotSlab-Bold.ttf',
-      '/fonts/Robot_Slab/RobotSlab-Regular.ttf',
+      '/fonts/Roboto_Mono/RobotoMono-Bold.ttf',
+      '/fonts/Roboto_Mono/RobotoMono-Regular.ttf',
+      '/fonts/Roboto_Slab/RobotoSlab-Bold.ttf',
+      '/fonts/Roboto_Slab/RobotoSlab-Regular.ttf',
       '/fonts/Rubik/Rubik-Bold.ttf',
       '/fonts/Rubik/Rubik-Regular.ttf',
       '/fonts/Ubuntu/Ubuntu-Bold.ttf',

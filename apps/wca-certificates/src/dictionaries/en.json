@@ -1,5 +1,53 @@
 {
+  "metadata": {
+    "title": "WCA Certificates - Cubing México",
+    "description": "WCA Certificates - Cubing México"
+  },
+  "signin": {
+    "signInTitle": "Sign In",
+    "signInDescription": "You will be redirected to the World Cube Association page",
+    "noAccountQuestion": "Don't have a World Cube Association account?",
+    "signUp": "Sign up"
+  },
+  "certificates": {
+    "welcomeTitle": "Welcome",
+    "introText": "Below are the competitions you are organizing:",
+    "tabs": {
+      "upcoming": "Upcoming",
+      "current": "Current",
+      "past": "Past"
+    },
+    "competitions": {
+      "upcomingTitle": "Upcoming Competitions",
+      "noUpcoming": "It seems you have no upcoming competitions",
+      "upcomingDescription": "These competitions are about to be held",
+      "currentTitle": "Current Competitions",
+      "noCurrent": "It seems you have no competitions being held right now",
+      "currentDescription": "These competitions are currently being held",
+      "pastTitle": "Past Competitions",
+      "noPast": "It seems you have no past competitions",
+      "pastDescription": "These competitions have already been held"
+    },
+    "podium": "Podium Certificates for",
+    "participation": "Participation Certificates for"
+  },
+  "auth_components": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out"
+  },
+  "header": {
+    "title": "WCA Certificates"
+  },
   "locale_switcher": {
     "language": "Language"
+  },
+  "card_competition": {
+    "certificates": {
+      "podium": "Podium Certificates",
+      "participation": "Participation Certificates",
+      "designPodium": "Design Podium Certificates",
+      "designParticipation": "Design Participation Certificates"
+    },
+    "liveLink": "WCA Live"
   }
 }

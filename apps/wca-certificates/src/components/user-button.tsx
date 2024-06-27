@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
+
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar"
 import { Button } from "@repo/ui/button"
 import {
@@ -47,7 +49,7 @@ export default async function UserButton({ dictionary }: UserButtonProps): Promi
         <LocaleSwitcher dictionary={dictionary.locale_switcher} />
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <SignOut />
+          <SignOut dictionary={dictionary.auth_components} />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

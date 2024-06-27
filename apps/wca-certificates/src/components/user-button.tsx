@@ -5,12 +5,19 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@repo/ui/dropdown-menu"
 import { auth } from "@/auth"
+import type { getDictionary } from "@/get-dictionary"
 import { SignOut } from "./auth-components"
+import LocaleSwitcher from "./locale-switcher"
 
-export default async function UserButton(): Promise<JSX.Element> {
+interface UserButtonProps {
+  dictionary: Awaited<ReturnType<typeof getDictionary>>
+}
+
+export default async function UserButton({ dictionary }: UserButtonProps): Promise<JSX.Element> {
   const session = await auth()
 
   return (
@@ -37,6 +44,8 @@ export default async function UserButton(): Promise<JSX.Element> {
             </p>
           </div>
         </DropdownMenuLabel>
+        <LocaleSwitcher dictionary={dictionary.locale_switcher} />
+        <DropdownMenuSeparator />
         <DropdownMenuItem>
           <SignOut />
         </DropdownMenuItem>

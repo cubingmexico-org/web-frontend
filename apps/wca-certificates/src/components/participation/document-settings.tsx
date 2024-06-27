@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- . */
+/* eslint-disable @typescript-eslint/no-unsafe-return -- . */
+/* eslint-disable no-nested-ternary -- . */
 /* eslint-disable react-hooks/exhaustive-deps -- . */
-/* eslint-disable array-callback-return -- . */
 /* eslint-disable @typescript-eslint/restrict-template-expressions -- . */
 /* eslint-disable @typescript-eslint/no-base-to-string -- . */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
@@ -8,26 +10,25 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import type { JSONContent } from '@tiptap/react'
+import type { JSONContent } from '@tiptap/react';
 import { Label } from "@repo/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs"
 import * as pdfMake from "pdfmake/build/pdfmake";
 import type { Margins, PageOrientation, PageSize, TDocumentDefinitions } from 'pdfmake/interfaces';
 import { useMediaQuery } from '@repo/ui/use-media-query';
-import type { Event, Competition, PodiumData } from '@/types/wca-live';
+import type { Competition, ParticipantData } from '@/types/wca-live';
 import {
   processPersons,
-  formatResults,
-  formatEvents,
-  formatPlace,
   formatDates,
   joinPersons,
-  transformString
+  transformString,
+  formatEvents,
+  formatResults
 } from "@/lib/utils"
-import { columns } from "@/app/certificates/podium/[competitionId]/_components/columns"
-import { DataTable } from "@/app/certificates/podium/[competitionId]/_components/data-table"
+import { columns } from "@/components/participation/columns"
+import { DataTable } from "@/components/participation/data-table"
 import { FileUploader } from "@/components/file-uploader";
-import { podium } from '@/lib/placeholders';
+import { participation } from '@/lib/placeholders';
 import Tiptap from '@/components/editor/tiptap'
 import { fontDeclarations } from '@/lib/fonts';
 
@@ -39,28 +40,28 @@ interface DocumentSettingsProps {
 
 export default function DocumentSettings({ competition, city, state }: DocumentSettingsProps): JSX.Element {
 
+  const people = competition.persons;
+  const events = competition.events;
   const date = competition.schedule.startDate;
   const days = competition.schedule.numberOfDays;
 
-  const { delegates, organizers, getEventData } = processPersons(competition.persons);
-  const [pdfData, setPdfData] = useState<PodiumData[]>([]);
+  const { delegates, organizers } = processPersons(competition.persons);
+  const [pdfData, setPdfData] = useState<ParticipantData[]>([]);
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
 
   const [pageMargins, setPageMargins] = useState<Margins>([40, 60, 40, 60]);
-  const [pageOrientation, setPageOrientation] = useState<PageOrientation>("landscape");
+  const [pageOrientation, setPageOrientation] = useState<PageOrientation>("portrait");
   const [pageSize, setPageSize] = useState<PageSize>("LETTER");
   const isDesktop = useMediaQuery("(min-width: 768px)")
 
   const [files, setFiles] = useState<File[]>([]);
   const [background, setBackground] = useState<string>();
 
-  const [content, setContent] = useState<JSONContent>(podium);
-
-  const selectedEvents = competition.events.filter(event => rowSelection[event.id]);
+  const [content, setContent] = useState<JSONContent>(participation);
 
   useEffect(() => {
     if (Object.keys(rowSelection).length !== 0) {
-      generatePodiumCertificates();
+      generateParticipationCertificates();
     }
   }, [rowSelection]);
 
@@ -76,29 +77,52 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
     }
   }, [files]);
 
-  function generatePodiumCertificates() {
-    const tempPdfData: PodiumData[] = [];
+  const allResults: ParticipantData[] = [];
 
-    selectedEvents.map((event: Event) => {
-      const results = getEventData(event);
+  for (const person of people) {
+    const results = [];
+    for (const event of events) {
+      if (person.registration.eventIds.includes(event.id)) {
+        for (const round of event.rounds) {
+          for (const result of round.results) {
+            if (result.personId === person.registrantId) {
+              const existingResultIndex: number = results.findIndex(r => r.event === event.id);
+              const newResult = {
+                event: event.id,
+                ranking: result.ranking,
+                average: event.id === '333bf' || event.id === '444bf' || event.id === '555bf' || event.id === '333mbf' ? result.best : result.average === 0 ? result.best : result.average,
+              };
+              if (existingResultIndex !== -1) {
+                results[existingResultIndex] = newResult;
+              } else {
+                results.push(newResult);
+              }
+            }
+          }
+        }
+      }
+    }
 
-      results.map((result, index: number) => {
-        tempPdfData.push({
-          name: result.personName,
-          place: index + 1,
-          event: event.id,
-          result: result.result,
-        });
-      });
-    });
+    const personWithResults = {
+      wcaId: person.wcaId,
+      name: person.name,
+      results
+    };
 
-    setPdfData(tempPdfData);
-  }
+    if (personWithResults.results.length > 0) {
+      allResults.push(personWithResults);
+    }
+  };
 
-  const renderDocumentContent = (content: JSONContent, data: PodiumData) => {
+  function generateParticipationCertificates() {
+    const filteredResults = allResults.filter(result => rowSelection[result.wcaId]);
+    setPdfData(filteredResults);
+  };
+
+  const renderDocumentContent = (content: JSONContent, data: ParticipantData): any => {
     return content.content?.map((item) => {
-      const alignment = item.attrs?.textAlign || 'left';
       const text = item.content && item.content.length > 0 ? renderTextContent(item.content, data) : '\u00A0';
+      const alignment = item.attrs?.textAlign || 'left';
       switch (item.type) {
         case 'paragraph':
           return {
@@ -112,13 +136,112 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
             style: `header${item.attrs?.level}`,
             alignment
           };
+        case 'table':
+          return {
+            columns: [
+              { width: '*', text: '' },
+              {
+                table: {
+                  headerRows: 1,
+                  // widths: item.attrs?.widths,
+                  body: [
+                    ...(item.content || []).map(row => {
+                      const headerCells = row.content?.filter(cell => cell.type === 'tableHeader') || [];
+                      if (row.type === 'tableRow') {
+                        if (headerCells.length === 0) {
+                          return null;
+                        }
+                        return headerCells.map(cell => cell.content?.map((contentCell) => renderDocumentContent({ content: [contentCell] }, data)));
+                      }
+                      return null;
+                    }).filter(Boolean),
+                    ...(item.content?.some(row => row.content?.some(cell => cell.type === 'tableCell')) ? data.results.map(result => {
+
+                      const cell = item.content?.find(row => row.content?.some(cell => cell.type === 'tableCell'));
+
+                      let event;
+                      let average;
+                      let ranking;
+
+                      for (const row of cell?.content || []) {
+                        for (const cell of row.content || []) {
+                          if (cell.content?.some(content => content.type === 'mention')) {
+                            switch (cell.content[0].attrs?.id) {
+                              case 'Evento (tabla)':
+                                event = renderDocumentContent({
+                                  content: [
+                                    {
+                                      type: 'paragraph',
+                                      attrs: cell.attrs,
+                                      content: [
+                                        {
+                                          type: 'text',
+                                          text: formatEvents(result.event),
+                                          marks: cell.content[0].marks
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }, data);
+                                break;
+                              case 'Resultado (tabla)':
+                                average = renderDocumentContent({
+                                  content: [
+                                    {
+                                      type: 'paragraph',
+                                      attrs: cell.attrs,
+                                      content: [
+                                        {
+                                          type: 'text',
+                                          text: formatResults(result.average, result.event),
+                                          marks: cell.content[0].marks
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }, data);
+                                break;
+                              case 'Posición (tabla)':
+                                ranking = renderDocumentContent({
+                                  content: [
+                                    {
+                                      type: 'paragraph',
+                                      attrs: cell.attrs,
+                                      content: [
+                                        {
+                                          type: 'text',
+                                          text: (result.ranking || '').toString(),
+                                          marks: cell.content[0].marks
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }, data);
+                                break;
+                              default:
+                                break;
+                            }
+                          }
+                        }
+                      }
+
+                      return [event || {}, average || {}, ranking || {}]
+                    }) : [])
+                  ]
+                },
+                layout: 'lightHorizontalLines',
+                width: 'auto'
+              },
+              { width: '*', text: '' },
+            ]
+          };
         default:
           return null;
       }
     }).filter(Boolean);
   };
 
-  const renderTextContent = (content: JSONContent['content'], data: PodiumData) => {
+  const renderTextContent = (content: JSONContent['content'], data: ParticipantData) => {
     return content?.map((contentItem) => {
       const bold = contentItem.marks?.some(mark => mark.type === 'bold');
       const font = contentItem.marks?.find(mark => mark.type === 'textStyle')?.attrs?.fontFamily || 'Roboto';
@@ -143,20 +266,8 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
               return textObject(transformString(joinPersons(delegates), transform));
             case 'Organizadores':
               return textObject(transformString(joinPersons(organizers), transform));
-            case 'Posición (cardinal)':
-              return textObject(transformString(formatPlace(data.place, 'cardinal'), transform));
-            case 'Posición (ordinal)':
-              return textObject(transformString(formatPlace(data.place, 'ordinal'), transform));
-            case 'Posición (ordinal con texto)':
-              return textObject(transformString(formatPlace(data.place, 'ordinal_text'), transform));
-            case 'Medalla':
-              return textObject(transformString(formatPlace(data.place, 'medal'), transform));
             case 'Competidor':
               return textObject(transformString(data.name, transform));
-            case 'Evento':
-              return textObject(transformString(formatEvents(data.event), transform));
-            case 'Resultado':
-              return textObject(transformString(formatResults(data.result, data.event), transform));
             case 'Competencia':
               return textObject(transformString(competition.name, transform));
             case 'Fecha':
@@ -175,7 +286,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
   const generatePDF = () => {
     const docDefinition = {
       info: {
-        title: `Certificados de Podio - ${competition.name}`,
+        title: `Certificados de Participación - ${competition.name}`,
         author: 'Cubing México',
       },
       content: pdfData.map((data, index) => ({
@@ -229,7 +340,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
     } as TDocumentDefinitions;
 
     pdfMake.createPdf(docDefinition, undefined, fontDeclarations).open();
-  }
+  };
 
   return (
     <Tabs defaultValue="results">
@@ -240,7 +351,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
       <TabsContent value="results">
         <DataTable
           columns={columns}
-          data={competition.events}
+          data={allResults}
           rowSelection={rowSelection}
           setRowSelection={setRowSelection}
         />
@@ -265,11 +376,11 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
                 setPageMargins={(value: Margins) => { setPageMargins(value); }}
                 setPageOrientation={(value: PageOrientation) => { setPageOrientation(value); }}
                 setPageSize={(value: PageSize) => { setPageSize(value); }}
-                variant='podium'
+                variant='participation'
               />
             </form>
             <div>
-              <Label htmlFor='background'>Fondo</Label>
+              <Label htmlFor='background'>Fondo del certificado</Label>
               <FileUploader
                 id='background'
                 maxFiles={1}

@@ -1,4 +1,5 @@
 /* eslint-disable react/no-array-index-key -- . */
+import { redirect } from "next/navigation"
 import {
   Card,
   CardContent,
@@ -13,7 +14,6 @@ import "@cubing/icons"
 import { CardCompetition } from '@/components/card-competition'
 
 export default async function Page(): Promise<JSX.Element> {
-
   const session = await auth()
 
   const response = await fetch('https://www.worldcubeassociation.org/api/v0/competitions?managed_by_me=true', {
@@ -22,6 +22,10 @@ export default async function Page(): Promise<JSX.Element> {
     },
     cache: 'no-store'
   });
+
+  if (!session) {
+    redirect('/')
+  }
 
   const currentDate = new Date();
   const competitions = await response.json() as Competition[];

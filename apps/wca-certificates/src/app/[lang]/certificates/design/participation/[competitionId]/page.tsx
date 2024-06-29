@@ -26,14 +26,14 @@ export default async function Page({ params }: PageProps): Promise<JSX.Element> 
 
   const competition = await fetchCompetition(params.competitionId);
   competition.events = competition.events.map((event) => generateFakeResultsForEvent(event));
-  const { city, state } = await retrieveLocation(competition.schedule.venues[0].latitudeMicrodegrees/1000000, competition.schedule.venues[0].longitudeMicrodegrees/1000000);
+  const city = await retrieveLocation(params.competitionId);
 
   return (
     <div className="container flex flex-col gap-2 mx-auto py-10">
       <div className="flex gap-2">
         <h1 className="text-3xl">{dictionary.certificates.participation.title} {competition.name}</h1><Badge className="text-lg" variant='destructive'>{dictionary.certificates.participation.design}</Badge>
       </div>
-      <DocumentSettings city={city} competition={competition} dictionary={dictionary.certificates.participation.document_settings} state={state} />
+      <DocumentSettings city={city} competition={competition} dictionary={dictionary.certificates.participation.document_settings} />
     </div>
   );
 }

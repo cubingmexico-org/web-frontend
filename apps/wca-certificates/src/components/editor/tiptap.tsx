@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary -- . */
 /* eslint-disable @typescript-eslint/no-unsafe-argument -- . */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
 /* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
@@ -5,6 +6,7 @@
 /* eslint-disable import/no-named-as-default -- . */
 'use client'
 
+import { usePathname } from 'next/navigation';
 import type { JSONContent } from '@tiptap/react';
 import { useEditor, EditorContent } from '@tiptap/react'
 import Mention from '@tiptap/extension-mention'
@@ -72,11 +74,14 @@ import { Button } from '@repo/ui/button';
 import { DialogDocumentSettings } from '@/components/editor/dialog-document-settings';
 import { TextTransform } from '@/components/editor/extensions/text-transform';
 import { FontSize } from '@/components/editor/extensions/font-size';
-import { participation, podium } from '@/data/certificates';
+import { participation as participationEs, podium as podiumEs } from '@/data/es/certificates';
+import { participation as participationEn, podium as podiumEn } from '@/data/en/certificates';
 import type { getDictionary } from '@/get-dictionary';
 import Toolbar from './toolbar';
-import suggestionPodium from './mentions/suggestion-podium'
-import suggestionParticipation from './mentions/suggestion-participation'
+import suggestionPodiumEs from './mentions/suggestions/es/suggestion-podium'
+import suggestionParticipationEs from './mentions/suggestions/es/suggestion-participation'
+import suggestionPodiumEn from './mentions/suggestions/en/suggestion-podium'
+import suggestionParticipationEn from './mentions/suggestions/en/suggestion-participation'
 import Submenu from './submenu';
 
 interface TiptapProps {
@@ -111,6 +116,9 @@ export default function Tiptap({
   competitionId,
 }: TiptapProps): JSX.Element {
 
+  const pathname = usePathname()
+  const lang = pathname.startsWith('/es') ? 'es' : 'en'
+
   const handleChange = (newContent: JSONContent) => {
     onChange(newContent);
   };
@@ -122,7 +130,9 @@ export default function Tiptap({
         HTMLAttributes: {
           class: 'mention',
         },
-        suggestion: variant === 'podium' ? suggestionPodium : suggestionParticipation,
+        suggestion: lang === 'es' 
+        ? (variant === 'podium' ? suggestionPodiumEs : suggestionParticipationEs)
+        : (variant === 'podium' ? suggestionPodiumEn : suggestionParticipationEn),
       }),
       TextAlign.configure({
         types: ['heading', 'paragraph'],
@@ -189,9 +199,15 @@ export default function Tiptap({
           <MenubarTrigger>{dictionary.file}</MenubarTrigger>
           <MenubarContent>
             <MenubarItem
-              disabled={variant === 'podium' ? content === podium : content === participation}
+              disabled={
+                lang === 'es'
+                ? variant === 'podium' ? content === podiumEs : content === participationEs
+                : variant === 'podium' ? content === podiumEn : content === participationEn
+              }
               onClick={() => {
-                const newContent = variant === 'podium' ? podium : participation;
+                const newContent = lang === 'es'
+                ? variant === 'podium' ? podiumEs : participationEs
+                : variant === 'podium' ? podiumEn : participationEn;
                 editor.commands.setContent(newContent);
                 handleChange(newContent);
               }}

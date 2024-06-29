@@ -76,23 +76,29 @@ export const podium = {
         {
           "type": "mention",
           "attrs": {
-            "id": "Delegados",
+            "id": "Delegates",
             "label": null
           },
           "marks": [
             {
               "type": "bold"
-            },
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "marks": [
             {
               "type": "textStyle",
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
+                "color": "rgb(0, 0, 0)",
+                "transform": ""
               }
             }
-          ]
+          ],
+          "text": ", on behalf of the"
         },
         {
           "type": "text",
@@ -107,26 +113,17 @@ export const podium = {
               }
             }
           ],
-          "text": ", en nombre de la World Cube Association, y "
+          "text": " World Cube Association, and "
         },
         {
           "type": "mention",
           "attrs": {
-            "id": "Organizadores",
+            "id": "Organizers",
             "label": null
           },
           "marks": [
             {
               "type": "bold"
-            },
-            {
-              "type": "textStyle",
-              "attrs": {
-                "fontFamily": "Roboto",
-                "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
-              }
             }
           ]
         },
@@ -143,7 +140,85 @@ export const podium = {
               }
             }
           ],
-          "text": ", en nombre del equipo organizador, otorgan el presente"
+          "text": ", "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": "Roboto",
+                "fontSize": "12pt",
+                "color": "rgb(0, 0, 0)",
+                "transform": ""
+              }
+            }
+          ],
+          "text": "on behalf of the organization team"
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": "Roboto",
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
+            }
+          ],
+          "text": ", present this"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "textAlign": "center",
+        "level": 3
+      },
+      "content": [
+        {
+          "type": "mention",
+          "attrs": {
+            "id": "Medal",
+            "label": null
+          },
+          "marks": [
+            {
+              "type": "bold"
+            },
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "20pt",
+                "color": null,
+                "transform": "uppercase"
+              }
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "bold"
+            },
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": "Roboto",
+                "fontSize": "20pt",
+                "color": "#000000",
+                "transform": "none"
+              }
+            }
+          ],
+          "text": " MEDAL"
         }
       ]
     },
@@ -165,60 +240,12 @@ export const podium = {
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "24pt",
-                "color": "#000000",
-                "transform": "none"
+                "color": "rgb(0, 0, 0)",
+                "transform": ""
               }
             }
           ],
-          "text": "CERTIFICADO"
-        }
-      ]
-    },
-    {
-      "type": "heading",
-      "attrs": {
-        "textAlign": "center",
-        "level": 3
-      },
-      "content": [
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "bold"
-            },
-            {
-              "type": "textStyle",
-              "attrs": {
-                "fontFamily": "Roboto",
-                "fontSize": "20pt",
-                "color": "#000000",
-                "transform": "none"
-              }
-            }
-          ],
-          "text": "DE MEDALLA DE "
-        },
-        {
-          "type": "mention",
-          "attrs": {
-            "id": "Medalla",
-            "label": null
-          },
-          "marks": [
-            {
-              "type": "bold"
-            },
-            {
-              "type": "textStyle",
-              "attrs": {
-                "fontFamily": "Roboto",
-                "fontSize": "20pt",
-                "color": "#000000",
-                "transform": "uppercase"
-              }
-            }
-          ]
+          "text": "CERTIFICATE"
         }
       ]
     },
@@ -241,7 +268,7 @@ export const podium = {
               }
             }
           ],
-          "text": "a"
+          "text": "to"
         }
       ]
     },
@@ -255,7 +282,7 @@ export const podium = {
         {
           "type": "mention",
           "attrs": {
-            "id": "Competidor",
+            "id": "Competitor",
             "label": null
           },
           "marks": [
@@ -289,31 +316,22 @@ export const podium = {
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
+                "color": "rgb(0, 0, 0)",
+                "transform": ""
               }
             }
           ],
-          "text": "por haber obtenido el "
+          "text": "who has placed "
         },
         {
           "type": "mention",
           "attrs": {
-            "id": "Posición (ordinal con texto)",
+            "id": "Ranking (ordinal with text)",
             "label": null
           },
           "marks": [
             {
               "type": "bold"
-            },
-            {
-              "type": "textStyle",
-              "attrs": {
-                "fontFamily": "Roboto",
-                "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
-              }
             }
           ]
         },
@@ -321,13 +339,7 @@ export const podium = {
           "type": "text",
           "marks": [
             {
-              "type": "textStyle",
-              "attrs": {
-                "fontFamily": "Roboto",
-                "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
-              }
+              "type": "bold"
             }
           ],
           "text": " "
@@ -336,124 +348,58 @@ export const podium = {
           "type": "text",
           "marks": [
             {
-              "type": "bold"
-            },
-            {
               "type": "textStyle",
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
+                "color": "rgb(0, 0, 0)",
+                "transform": ""
               }
             }
           ],
-          "text": "Lugar"
-        },
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "textStyle",
-              "attrs": {
-                "fontFamily": "Roboto",
-                "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
-              }
-            }
-          ],
-          "text": " en "
+          "text": "at "
         },
         {
           "type": "mention",
           "attrs": {
-            "id": "Evento",
+            "id": "Event",
             "label": null
           },
           "marks": [
             {
               "type": "bold"
-            },
-            {
-              "type": "textStyle",
-              "attrs": {
-                "fontFamily": "Roboto",
-                "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
-              }
             }
           ]
         },
         {
           "type": "text",
-          "marks": [
-            {
-              "type": "textStyle",
-              "attrs": {
-                "fontFamily": "Roboto",
-                "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
-              }
-            }
-          ],
-          "text": " con un promedio de "
-        },
-        {
-          "type": "mention",
-          "attrs": {
-            "id": "Resultado",
-            "label": null
-          },
-          "marks": [
-            {
-              "type": "bold"
-            },
-            {
-              "type": "textStyle",
-              "attrs": {
-                "fontFamily": "Roboto",
-                "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
-              }
-            }
-          ]
-        },
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "textStyle",
-              "attrs": {
-                "fontFamily": "Roboto",
-                "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
-              }
-            }
-          ],
           "text": " "
         },
         {
           "type": "text",
           "marks": [
             {
-              "type": "bold"
-            },
-            {
               "type": "textStyle",
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
+                "color": "rgb(0, 0, 0)",
+                "transform": ""
               }
             }
           ],
-          "text": "segundos "
+          "text": "with "
+        },
+        {
+          "type": "mention",
+          "attrs": {
+            "id": "Result type",
+            "label": null
+          }
+        },
+        {
+          "type": "text",
+          "text": " "
         },
         {
           "type": "text",
@@ -463,31 +409,53 @@ export const podium = {
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
+                "color": "rgb(0, 0, 0)",
+                "transform": ""
               }
             }
           ],
-          "text": "en el "
+          "text": "of "
         },
         {
           "type": "mention",
           "attrs": {
-            "id": "Competencia",
+            "id": "Result",
             "label": null
           },
           "marks": [
             {
               "type": "bold"
-            },
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": " "
+        },
+        {
+          "type": "text",
+          "marks": [
             {
               "type": "textStyle",
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
+                "color": "rgb(0, 0, 0)",
+                "transform": ""
               }
+            }
+          ],
+          "text": "at "
+        },
+        {
+          "type": "mention",
+          "attrs": {
+            "id": "Competition",
+            "label": null
+          },
+          "marks": [
+            {
+              "type": "bold"
             }
           ]
         },
@@ -499,31 +467,53 @@ export const podium = {
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
+                "color": "rgb(0, 0, 0)",
+                "transform": ""
               }
             }
           ],
-          "text": ", llevado a cabo los días "
+          "text": ", that took place on "
         },
         {
           "type": "mention",
           "attrs": {
-            "id": "Fecha",
+            "id": "Date",
             "label": null
           },
           "marks": [
             {
               "type": "bold"
-            },
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": " "
+        },
+        {
+          "type": "text",
+          "marks": [
             {
               "type": "textStyle",
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
+                "color": "rgb(0, 0, 0)",
+                "transform": ""
               }
+            }
+          ],
+          "text": "at "
+        },
+        {
+          "type": "mention",
+          "attrs": {
+            "id": "City",
+            "label": null
+          },
+          "marks": [
+            {
+              "type": "bold"
             }
           ]
         },
@@ -535,44 +525,8 @@ export const podium = {
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
-              }
-            }
-          ],
-          "text": " en "
-        },
-        {
-          "type": "mention",
-          "attrs": {
-            "id": "Ciudad",
-            "label": null
-          },
-          "marks": [
-            {
-              "type": "bold"
-            },
-            {
-              "type": "textStyle",
-              "attrs": {
-                "fontFamily": "Roboto",
-                "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
-              }
-            }
-          ]
-        },
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "textStyle",
-              "attrs": {
-                "fontFamily": "Roboto",
-                "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
+                "color": "rgb(0, 0, 0)",
+                "transform": ""
               }
             }
           ],
@@ -643,21 +597,12 @@ export const participation = {
         {
           "type": "mention",
           "attrs": {
-            "id": "Delegados",
+            "id": "Delegates",
             "label": null
           },
           "marks": [
             {
               "type": "bold"
-            },
-            {
-              "type": "textStyle",
-              "attrs": {
-                "fontFamily": "Roboto",
-                "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
-              }
             }
           ]
         },
@@ -669,31 +614,22 @@ export const participation = {
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
+                "color": "rgb(0, 0, 0)",
+                "transform": ""
               }
             }
           ],
-          "text": ", en nombre de la World Cube Association, y "
+          "text": ", on behalf of the World Cube Association, and "
         },
         {
           "type": "mention",
           "attrs": {
-            "id": "Organizadores",
+            "id": "Organizers",
             "label": null
           },
           "marks": [
             {
               "type": "bold"
-            },
-            {
-              "type": "textStyle",
-              "attrs": {
-                "fontFamily": "Roboto",
-                "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
-              }
             }
           ]
         },
@@ -705,12 +641,39 @@ export const participation = {
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
+                "color": "rgb(0, 0, 0)",
+                "transform": ""
               }
             }
           ],
-          "text": ", en nombre del equipo organizador, otorgan el presente"
+          "text": ", on behalf of the organization team, present this"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "textAlign": "center",
+        "level": 3
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "bold"
+            },
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": "Roboto",
+                "fontSize": "20pt",
+                "color": "rgb(0, 0, 0)",
+                "transform": ""
+              }
+            }
+          ],
+          "text": "PARTICIPATION"
         }
       ]
     },
@@ -737,34 +700,7 @@ export const participation = {
               }
             }
           ],
-          "text": "CERTIFICADO"
-        }
-      ]
-    },
-    {
-      "type": "heading",
-      "attrs": {
-        "textAlign": "center",
-        "level": 3
-      },
-      "content": [
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "bold"
-            },
-            {
-              "type": "textStyle",
-              "attrs": {
-                "fontFamily": "Roboto",
-                "fontSize": "20pt",
-                "color": "#000000",
-                "transform": "none"
-              }
-            }
-          ],
-          "text": "DE PARTICIPACIÓN"
+          "text": "CERTIFICATE"
         }
       ]
     },
@@ -787,7 +723,7 @@ export const participation = {
               }
             }
           ],
-          "text": "a"
+          "text": "to"
         }
       ]
     },
@@ -801,7 +737,7 @@ export const participation = {
         {
           "type": "mention",
           "attrs": {
-            "id": "Competidor",
+            "id": "Competitor",
             "label": null
           },
           "marks": [
@@ -811,9 +747,9 @@ export const participation = {
             {
               "type": "textStyle",
               "attrs": {
-                "fontFamily": "Roboto",
+                "fontFamily": null,
                 "fontSize": "32pt",
-                "color": "#000000",
+                "color": null,
                 "transform": "none"
               }
             }
@@ -840,26 +776,17 @@ export const participation = {
               }
             }
           ],
-          "text": "por haber participado en el "
+          "text": "for participating at "
         },
         {
           "type": "mention",
           "attrs": {
-            "id": "Competencia",
+            "id": "Competition",
             "label": null
           },
           "marks": [
             {
               "type": "bold"
-            },
-            {
-              "type": "textStyle",
-              "attrs": {
-                "fontFamily": "Roboto",
-                "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
-              }
             }
           ]
         },
@@ -876,18 +803,27 @@ export const participation = {
               }
             }
           ],
-          "text": ", llevado a cabo los días "
+          "text": ", that took place on "
         },
         {
           "type": "mention",
           "attrs": {
-            "id": "Fecha",
+            "id": "Date",
             "label": null
           },
           "marks": [
             {
               "type": "bold"
-            },
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": " "
+        },
+        {
+          "type": "text",
+          "marks": [
             {
               "type": "textStyle",
               "attrs": {
@@ -896,6 +832,19 @@ export const participation = {
                 "color": "#000000",
                 "transform": "none"
               }
+            }
+          ],
+          "text": "at "
+        },
+        {
+          "type": "mention",
+          "attrs": {
+            "id": "City",
+            "label": null
+          },
+          "marks": [
+            {
+              "type": "bold"
             }
           ]
         },
@@ -912,43 +861,7 @@ export const participation = {
               }
             }
           ],
-          "text": " en "
-        },
-        {
-          "type": "mention",
-          "attrs": {
-            "id": "Ciudad",
-            "label": null
-          },
-          "marks": [
-            {
-              "type": "bold"
-            },
-            {
-              "type": "textStyle",
-              "attrs": {
-                "fontFamily": "Roboto",
-                "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
-              }
-            }
-          ]
-        },
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "textStyle",
-              "attrs": {
-                "fontFamily": "Roboto",
-                "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
-              }
-            }
-          ],
-          "text": ", obteniendo los siguientes resultados:"
+          "text": ", obtaining the following results:"
         }
       ]
     },
@@ -994,7 +907,7 @@ export const participation = {
                           }
                         }
                       ],
-                      "text": "Evento"
+                      "text": "Event"
                     }
                   ]
                 }
@@ -1030,7 +943,7 @@ export const participation = {
                           }
                         }
                       ],
-                      "text": "Resultado"
+                      "text": "Result"
                     }
                   ]
                 }
@@ -1066,7 +979,7 @@ export const participation = {
                           }
                         }
                       ],
-                      "text": "Posición"
+                      "text": "Ranking"
                     }
                   ]
                 }
@@ -1094,20 +1007,9 @@ export const participation = {
                     {
                       "type": "mention",
                       "attrs": {
-                        "id": "Evento (tabla)",
+                        "id": "Event (table)",
                         "label": null
-                      },
-                      "marks": [
-                        {
-                          "type": "textStyle",
-                          "attrs": {
-                            "fontFamily": "Roboto",
-                            "fontSize": "12pt",
-                            "color": "#000000",
-                            "transform": "none"
-                          }
-                        }
-                      ]
+                      }
                     }
                   ]
                 }
@@ -1130,20 +1032,9 @@ export const participation = {
                     {
                       "type": "mention",
                       "attrs": {
-                        "id": "Resultado (tabla)",
+                        "id": "Result (table)",
                         "label": null
-                      },
-                      "marks": [
-                        {
-                          "type": "textStyle",
-                          "attrs": {
-                            "fontFamily": "Roboto",
-                            "fontSize": "12pt",
-                            "color": "#000000",
-                            "transform": "none"
-                          }
-                        }
-                      ]
+                      }
                     }
                   ]
                 }
@@ -1166,20 +1057,9 @@ export const participation = {
                     {
                       "type": "mention",
                       "attrs": {
-                        "id": "Posición (tabla)",
+                        "id": "Ranking (table)",
                         "label": null
-                      },
-                      "marks": [
-                        {
-                          "type": "textStyle",
-                          "attrs": {
-                            "fontFamily": "Roboto",
-                            "fontSize": "12pt",
-                            "color": "#000000",
-                            "transform": "none"
-                          }
-                        }
-                      ]
+                      }
                     }
                   ]
                 }

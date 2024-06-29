@@ -32,6 +32,7 @@
       "title": "Podium Certificates for",
       "design": "Design",
       "document_settings": {
+        "title": "Podium Certificates",
         "results": "Results",
         "document": "Document",
         "background": "Background",
@@ -135,6 +136,7 @@
       "title": "Participation Certificates for",
       "design": "Design",
       "document_settings": {
+        "title": "Participation Certificates",
         "results": "Results",
         "document": "Document",
         "background": "Background",

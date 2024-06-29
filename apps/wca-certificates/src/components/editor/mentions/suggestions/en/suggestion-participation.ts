@@ -6,23 +6,20 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument -- . */
 import { ReactRenderer } from '@tiptap/react'
 import tippy from 'tippy.js'
-import { MentionList } from './mention-list'
+import { MentionList } from '../../mention-list'
 
 export default {
   items: ({ query }: any) => {
     return [
-      'Delegados',
-      'Organizadores',
-      'Medalla',
-      'Competidor',
-      'Posición (ordinal con texto)',
-      'Posición (ordinal)',
-      'Posición (cardinal)',
-      'Evento',
-      'Resultado',
-      'Competencia',
-      'Fecha',
-      'Ciudad'
+      'Delegates',
+      'Organizers',
+      'Competitor',
+      'Competition',
+      'Date',
+      'City',
+      'Event (table)',
+      'Result (table)',
+      'Ranking (table)'
 
     ].filter(item => item.toLowerCase().startsWith(query.toLowerCase()))
   },

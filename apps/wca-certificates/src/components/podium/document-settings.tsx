@@ -23,12 +23,14 @@ import {
   formatPlace,
   formatDates,
   joinPersons,
-  transformString
+  transformString,
+  formatResultType
 } from "@/lib/utils"
 import { columnsEs, columnsEn } from "@/components/podium/columns"
 import { DataTable } from "@/components/podium/data-table"
 import { FileUploader } from "@/components/file-uploader";
-import { podium } from '@/data/certificates';
+import { podium as podiumEs } from '@/data/es/certificates';
+import { podium as podiumEn } from '@/data/en/certificates';
 import Tiptap from '@/components/editor/tiptap'
 import { fontDeclarations } from '@/lib/fonts';
 import type { getDictionary } from '@/get-dictionary';
@@ -37,10 +39,9 @@ interface DocumentSettingsProps {
   dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["podium"]["document_settings"]
   competition: Competition;
   city: string;
-  state: string;
 }
 
-export default function DocumentSettings({ dictionary, competition, city, state }: DocumentSettingsProps): JSX.Element {
+export default function DocumentSettings({ dictionary, competition, city }: DocumentSettingsProps): JSX.Element {
 
   const pathname = usePathname()
   const lang = pathname.startsWith('/es') ? 'es' : 'en'
@@ -60,7 +61,7 @@ export default function DocumentSettings({ dictionary, competition, city, state 
   const [files, setFiles] = useState<File[]>([]);
   const [background, setBackground] = useState<string>();
 
-  const [content, setContent] = useState<JSONContent>(podium);
+  const [content, setContent] = useState<JSONContent>(lang === 'es' ? podiumEs : podiumEn);
 
   const selectedEvents = competition.events.filter(event => rowSelection[event.id]);
 
@@ -146,29 +147,44 @@ export default function DocumentSettings({ dictionary, competition, city, state 
         case 'mention':
           switch (contentItem.attrs?.id) {
             case 'Delegados':
-              return textObject(transformString(joinPersons(delegates), transform));
+            case 'Delegates':
+              return textObject(transformString(joinPersons(delegates, lang), transform));
             case 'Organizadores':
-              return textObject(transformString(joinPersons(organizers), transform));
+            case 'Organizers':
+              return textObject(transformString(joinPersons(organizers, lang), transform));
             case 'Posición (cardinal)':
-              return textObject(transformString(formatPlace(data.place, 'cardinal'), transform));
+            case 'Ranking (cardinal)':
+              return textObject(transformString(formatPlace(data.place, 'cardinal', lang), transform));
             case 'Posición (ordinal)':
-              return textObject(transformString(formatPlace(data.place, 'ordinal'), transform));
+            case 'Ranking (ordinal)':
+              return textObject(transformString(formatPlace(data.place, 'ordinal', lang), transform));
             case 'Posición (ordinal con texto)':
-              return textObject(transformString(formatPlace(data.place, 'ordinal_text'), transform));
+            case 'Ranking (ordinal with text)':
+              return textObject(transformString(formatPlace(data.place, 'ordinal_text', lang), transform));
             case 'Medalla':
-              return textObject(transformString(formatPlace(data.place, 'medal'), transform));
+            case 'Medal':
+              return textObject(transformString(formatPlace(data.place, 'medal', lang), transform));
             case 'Competidor':
+            case 'Competitor':
               return textObject(transformString(data.name, transform));
             case 'Evento':
-              return textObject(transformString(formatEvents(data.event), transform));
+            case 'Event':
+              return textObject(transformString(formatEvents(data.event, lang), transform));
             case 'Resultado':
-              return textObject(transformString(formatResults(data.result, data.event), transform));
+            case 'Result':
+              return textObject(transformString(formatResults(data.result, data.event, lang), transform));
+            case 'Tipo de resultado':
+            case 'Result type':
+              return textObject(transformString(formatResultType(data.event, lang), transform));
             case 'Competencia':
+            case 'Competition':
               return textObject(transformString(competition.name, transform));
             case 'Fecha':
-              return textObject(transformString(formatDates(date, days.toString()), transform));
+            case 'Date':
+              return textObject(transformString(formatDates(date, days.toString(), lang), transform));
             case 'Ciudad':
-              return textObject(transformString(`${city}, ${state}`, transform));
+            case 'City':
+              return textObject(transformString(city, transform));
             default:
               return null;
           }
@@ -181,7 +197,7 @@ export default function DocumentSettings({ dictionary, competition, city, state 
   const generatePDF = () => {
     const docDefinition = {
       info: {
-        title: `Certificados de Podio - ${competition.name}`,
+        title: `${dictionary.title} - ${competition.name}`,
         author: 'Cubing México',
       },
       content: pdfData.map((data, index) => ({

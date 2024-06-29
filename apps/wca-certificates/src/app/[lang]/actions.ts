@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access -- . */
-/* eslint-disable @typescript-eslint/no-unsafe-call -- . */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
 /* eslint-disable @typescript-eslint/no-unsafe-return -- . */
 
@@ -33,15 +32,12 @@ export async function fetchCompetition(competitionId: string): Promise<Competiti
   return res.json();
 }
 
-export async function retrieveLocation(lat: number, lng: number): Promise<{ city: string, state: string}> {
-  const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.GOOGLE_MAPS_API_KEY}`, {
+export async function retrieveLocation(competitionId: string): Promise<string> {
+  const res = await fetch(`https://www.worldcubeassociation.org/api/v0/competitions/${competitionId}`, {
     cache: 'no-store'
   });
 
-  const locationData = await res.json();
-  const addressComponents = locationData.results[0].address_components;
-  const cityObj = addressComponents.find((component: { types: string | string[]; }) => component.types.includes('locality'));
-  const stateObj = addressComponents.find((component: { types: string | string[]; }) => component.types.includes('administrative_area_level_1'));
+  const data = await res.json();
 
-  return { city: cityObj.long_name, state: stateObj.long_name };
+  return data.city;
 }

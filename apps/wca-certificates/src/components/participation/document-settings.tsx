@@ -29,7 +29,8 @@ import {
 import { columnsEs, columnsEn } from "@/components/participation/columns"
 import { DataTable } from "@/components/participation/data-table"
 import { FileUploader } from "@/components/file-uploader";
-import { participation } from '@/data/certificates';
+import { participation as participationEs } from '@/data/es/certificates';
+import { participation as participationEn } from '@/data/en/certificates';
 import Tiptap from '@/components/editor/tiptap'
 import { fontDeclarations } from '@/lib/fonts';
 import type { getDictionary } from '@/get-dictionary';
@@ -38,10 +39,9 @@ interface DocumentSettingsProps {
   dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["participation"]["document_settings"]
   competition: Competition;
   city: string;
-  state: string;
 }
 
-export default function DocumentSettings({ dictionary, competition, city, state }: DocumentSettingsProps): JSX.Element {
+export default function DocumentSettings({ dictionary, competition, city }: DocumentSettingsProps): JSX.Element {
 
   const pathname = usePathname()
   const lang = pathname.startsWith('/es') ? 'es' : 'en'
@@ -63,7 +63,7 @@ export default function DocumentSettings({ dictionary, competition, city, state 
   const [files, setFiles] = useState<File[]>([]);
   const [background, setBackground] = useState<string>();
 
-  const [content, setContent] = useState<JSONContent>(participation);
+  const [content, setContent] = useState<JSONContent>(lang === 'es' ? participationEs : participationEn);
 
   useEffect(() => {
     if (Object.keys(rowSelection).length !== 0) {
@@ -174,6 +174,7 @@ export default function DocumentSettings({ dictionary, competition, city, state 
                           if (cell.content?.some(content => content.type === 'mention')) {
                             switch (cell.content[0].attrs?.id) {
                               case 'Evento (tabla)':
+                              case 'Event (table)':
                                 event = renderDocumentContent({
                                   content: [
                                     {
@@ -182,7 +183,7 @@ export default function DocumentSettings({ dictionary, competition, city, state 
                                       content: [
                                         {
                                           type: 'text',
-                                          text: formatEvents(result.event),
+                                          text: formatEvents(result.event, lang),
                                           marks: cell.content[0].marks
                                         }
                                       ]
@@ -191,6 +192,7 @@ export default function DocumentSettings({ dictionary, competition, city, state 
                                 }, data);
                                 break;
                               case 'Resultado (tabla)':
+                              case 'Result (table)':
                                 average = renderDocumentContent({
                                   content: [
                                     {
@@ -199,7 +201,7 @@ export default function DocumentSettings({ dictionary, competition, city, state 
                                       content: [
                                         {
                                           type: 'text',
-                                          text: formatResults(result.average, result.event),
+                                          text: formatResults(result.average, result.event, lang),
                                           marks: cell.content[0].marks
                                         }
                                       ]
@@ -208,6 +210,7 @@ export default function DocumentSettings({ dictionary, competition, city, state 
                                 }, data);
                                 break;
                               case 'Posición (tabla)':
+                              case 'Ranking (table)':
                                 ranking = renderDocumentContent({
                                   content: [
                                     {
@@ -269,17 +272,23 @@ export default function DocumentSettings({ dictionary, competition, city, state 
         case 'mention':
           switch (contentItem.attrs?.id) {
             case 'Delegados':
-              return textObject(transformString(joinPersons(delegates), transform));
+            case 'Delegates':
+              return textObject(transformString(joinPersons(delegates, lang), transform));
             case 'Organizadores':
-              return textObject(transformString(joinPersons(organizers), transform));
+            case 'Organizers':
+              return textObject(transformString(joinPersons(organizers, lang), transform));
             case 'Competidor':
+            case 'Competitor':
               return textObject(transformString(data.name, transform));
             case 'Competencia':
+            case 'Competition':
               return textObject(transformString(competition.name, transform));
             case 'Fecha':
-              return textObject(transformString(formatDates(date, days.toString()), transform));
+            case 'Date':
+              return textObject(transformString(formatDates(date, days.toString(), lang), transform));
             case 'Ciudad':
-              return textObject(transformString(`${city}, ${state}`, transform));
+            case 'City':
+              return textObject(transformString(city, transform));
             default:
               return null;
           }
@@ -292,7 +301,7 @@ export default function DocumentSettings({ dictionary, competition, city, state 
   const generatePDF = () => {
     const docDefinition = {
       info: {
-        title: `Certificados de Participación - ${competition.name}`,
+        title: `${dictionary.title} - ${competition.name}`,
         author: 'Cubing México',
       },
       content: pdfData.map((data, index) => ({

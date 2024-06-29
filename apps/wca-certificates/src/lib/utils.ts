@@ -1,6 +1,9 @@
+/* eslint-disable @typescript-eslint/no-shadow -- . */
+/* eslint-disable no-case-declarations -- . */
 /* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
 import { faker } from '@faker-js/faker';
 import type { Event, Person, Result, EventId, Round } from '@/types/wca-live';
+import type { Locale } from '@/i18n-config';
 
 export function processPersons(persons: Person[]) {
   const getRole = (role: string) => (person: Person) => person.roles.includes(role);
@@ -47,7 +50,7 @@ export function transformString(s: string, caseType?: 'lowercase' | 'capitalize'
   }
 }
 
-export function formatResults(result: number, eventId: EventId): string {
+export function formatResults(result: number, eventId: EventId, lang?: Locale): string {
 
   if (result === -1) {
     return 'DNF';
@@ -71,7 +74,7 @@ export function formatResults(result: number, eventId: EventId): string {
     const TTTTTInt = parseInt(TTTTT);
     const minutes = Math.floor(TTTTTInt / 60);
     const seconds = TTTTTInt % 60;
-    const time = `${solved}/${attempted} en ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    const time = lang === 'es' ? `${solved}/${attempted} en ${minutes}:${seconds < 10 ? '0' : ''}${seconds}` : `${solved}/${attempted} in ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
     return time;
   }
@@ -90,8 +93,8 @@ export function formatResults(result: number, eventId: EventId): string {
   return time;
 }
 
-export function formatEvents(eventId: EventId, mode?: 'en' | 'es') {
-  switch (mode) {
+export function formatEvents(eventId: EventId, lang?: Locale) {
+  switch (lang) {
     case 'es':
       switch (eventId) {
         case '333':
@@ -174,7 +177,7 @@ export function formatEvents(eventId: EventId, mode?: 'en' | 'es') {
   }
 }
 
-export function formatPlace(place: number, formatType: 'cardinal' | 'ordinal' | 'ordinal_text' | 'medal' | 'other'): string {
+export function formatPlace(place: number, formatType: 'cardinal' | 'ordinal' | 'ordinal_text' | 'medal' | 'other', lang?: Locale): string {
   switch (formatType) {
     case 'cardinal':
       switch (place) {
@@ -190,33 +193,33 @@ export function formatPlace(place: number, formatType: 'cardinal' | 'ordinal' | 
     case 'ordinal':
       switch (place) {
         case 1:
-          return '1er';
+          return lang === 'es' ? '1er' : '1st';
         case 2:
-          return '2do';
+          return lang === 'es' ? '2do' : '2nd';
         case 3:
-          return '3er';
+          return lang === 'es' ? '3er' : '3rd';
         default:
           return String(place);
       }
     case 'ordinal_text':
       switch (place) {
         case 1:
-          return 'Primer';
+          return lang === 'es' ? 'Primer' : 'First';
         case 2:
-          return 'Segundo';
+          return lang === 'es' ? 'Segundo' : 'Second';
         case 3:
-          return 'Tercer';
+          return lang === 'es' ? 'Tercer' : 'Third';
         default:
           return String(place);
       }
     case 'medal':
       switch (place) {
         case 1:
-          return 'Oro';
+          return lang === 'es' ? 'Oro' : 'Gold';
         case 2:
-          return 'Plata';
+          return lang === 'es' ? 'Plata' : 'Silver';
         case 3:
-          return 'Bronce';
+          return lang === 'es' ? 'Bronce' : 'Bronze';
         default:
           return String(place);
       }
@@ -225,47 +228,71 @@ export function formatPlace(place: number, formatType: 'cardinal' | 'ordinal' | 
   }
 }
 
-export function formatResultType(eventId: EventId): string {
+export function formatResultType(eventId: EventId, lang?: Locale): string {
   switch (eventId) {
     case '333bf':
     case '444bf':
     case '555bf':
-      return 'un mejor tiempo';
+      return lang === 'es' ? 'un mejor tiempo' : 'a single';
     case '333mbf':
     case '333fm':
-      return 'un mejor resultado';
+      return lang === 'es' ? 'un mejor resultado' : 'a single';
     case '666':
     case '777':
-      return 'una media';
+      return lang === 'es' ? 'una media' : 'a mean';
     default:
-      return 'un promedio';
+      return lang === 'es' ? 'un promedio' : 'an average';
   }
 }
 
-export function formatDates(date: string, days: string): string {
-  const daysNumber = Number(days);
-  const [year, month, day] = date.split('-');
-  const startDate = new Date(Number(year), Number(month) - 1, Number(day));
-  const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+export function formatDates(date: string, days: string, lang?: Locale): string {
+  switch (lang) {
+    case 'es':
+      const daysNumber = Number(days);
+      const [year, month, day] = date.split('-');
+      const startDate = new Date(Number(year), Number(month) - 1, Number(day));
+      const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' };
 
-  const dates = [];
-  for (let i = 0; i < daysNumber; i++) {
-    const currentDate = new Date(startDate);
-    currentDate.setDate(startDate.getDate() + i);
-    dates.push(new Intl.DateTimeFormat('es-ES', options).format(currentDate).split(' ')[0]);
+      const dates = [];
+      for (let i = 0; i < daysNumber; i++) {
+        const currentDate = new Date(startDate);
+        currentDate.setDate(startDate.getDate() + i);
+        dates.push(new Intl.DateTimeFormat(lang, options).format(currentDate).split(' ')[0]);
+      }
+
+      const lastDate = dates.pop();
+      const monthYear = new Intl.DateTimeFormat(lang, options).format(startDate).split(' ').slice(1).join(' ');
+
+      if (daysNumber === 1) {
+        const day = new Intl.DateTimeFormat(lang, { day: 'numeric' }).format(startDate);
+        return `${day} ${monthYear}`;
+      } return `${dates.join(', ')} y ${lastDate} ${monthYear}`;
+    case 'en':
+    default:
+      const startDate2 = new Date(date);
+      const endDate = new Date(startDate2);
+      endDate.setDate(startDate2.getDate() + Number(days) - 1);
+
+      const month2 = startDate2.toLocaleString('default', { month: 'long' });
+      const year2 = startDate2.getFullYear();
+      const dayNumbers = [];
+
+      for (let d = startDate2.getDate(); d <= endDate.getDate(); d++) {
+        dayNumbers.push(d);
+      }
+
+      if (dayNumbers.length === 1) {
+        return `${month2} ${dayNumbers[0]}, ${year2}`;
+      } else if (dayNumbers.length === 2) {
+        return `${month2} ${dayNumbers[0]} and ${dayNumbers[1]}, ${year2}`;
+      }
+      const lastDay = dayNumbers.pop();
+      return `${month2} ${dayNumbers.join(', ')}, and ${lastDay}, ${year2}`;
   }
 
-  const lastDate = dates.pop();
-  const monthYear = new Intl.DateTimeFormat('es-ES', options).format(startDate).split(' ').slice(1).join(' ');
-
-  if (daysNumber === 1) {
-    // eslint-disable-next-line @typescript-eslint/no-shadow -- This is a different variable
-    const day = new Intl.DateTimeFormat('es-ES', { day: 'numeric' }).format(startDate);
-    return `${day} ${monthYear}`;
-  } return `${dates.join(', ')} y ${lastDate} ${monthYear}`;
 }
 
-export function joinPersons(persons: string[]): string {
+export function joinPersons(persons: string[], lang?: Locale): string {
   const personsCopy = [...persons];
 
   if (personsCopy.length === 1) {
@@ -273,7 +300,7 @@ export function joinPersons(persons: string[]): string {
   }
 
   const lastPerson = personsCopy.pop();
-  return `${personsCopy.join(', ')} y ${lastPerson}`;
+  return lang === 'es' ? `${personsCopy.join(', ')} y ${lastPerson}` : `${personsCopy.join(', ')} and ${lastPerson}`;
 }
 
 export function formatBytes(
@@ -295,23 +322,23 @@ export function formatBytes(
 
 export function generateFakeResult(ranking: number): Result {
   return {
-    personId: faker.number.int({min: 1, max: 3}),
+    personId: faker.number.int({ min: 1, max: 3 }),
     ranking,
-    attempts: Array.from({length: 5}, () => faker.number.int({min: 500, max: 10000})),
-    best: faker.number.int({min: 500, max: 1000}),
-    average: faker.number.int({min: 500, max: 10000}),
+    attempts: Array.from({ length: 5 }, () => faker.number.int({ min: 500, max: 10000 })),
+    best: faker.number.int({ min: 500, max: 1000 }),
+    average: faker.number.int({ min: 500, max: 10000 }),
   };
 }
 
 export function generateFakeResultsForRound(round: Round): Round {
   const rankings = [1, 2, 3];
   const results = rankings.map(ranking => generateFakeResult(ranking));
-  return {...round, results};
+  return { ...round, results };
 }
 
 export function generateFakeResultsForEvent(event: Event): Event {
   const rounds = event.rounds.map(generateFakeResultsForRound);
-  return {...event, rounds};
+  return { ...event, rounds };
 }
 
 export function generateFakeResultsForAllEvents(events: Event[]): Event[] {

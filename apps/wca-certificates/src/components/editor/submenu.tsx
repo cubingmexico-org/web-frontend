@@ -9,12 +9,14 @@ import {
   MenubarSubContent,
   MenubarSubTrigger,
 } from "@repo/ui/menubar"
+import { getDictionary } from "@/get-dictionary";
 
 interface SubmenuProps {
+  dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["podium"]["document_settings"]["tiptap"]["submenu"]
   editor: Editor | null;
 };
 
-export default function Submenu({ editor }: SubmenuProps) {
+export default function Submenu({ dictionary, editor }: SubmenuProps) {
 
   if (!editor) {
     return null;
@@ -22,11 +24,11 @@ export default function Submenu({ editor }: SubmenuProps) {
 
   return (
     <MenubarSub>
-      <MenubarSubTrigger>Uso de mayúsculas</MenubarSubTrigger>
+      <MenubarSubTrigger>{dictionary.useCapitalLetters}</MenubarSubTrigger>
       <MenubarSubContent>
-        <MenubarItem onClick={() => editor.chain().focus().setTransform('lowercase').run()}>minúscula</MenubarItem>
-        <MenubarItem onClick={() => editor.chain().focus().setTransform('uppercase').run()}>MAYÚSCULA</MenubarItem>
-        <MenubarItem onClick={() => editor.chain().focus().setTransform('capitalize').run()}>Todas Las Palabras Con Mayúscula</MenubarItem>
+        <MenubarItem onClick={() => editor.chain().focus().setTransform('lowercase').run()}>{dictionary.lowercase}</MenubarItem>
+        <MenubarItem onClick={() => editor.chain().focus().setTransform('uppercase').run()}>{dictionary.uppercase}</MenubarItem>
+        <MenubarItem onClick={() => editor.chain().focus().setTransform('capitalize').run()}>{dictionary.capitalize}</MenubarItem>
       </MenubarSubContent>
     </MenubarSub>
   );

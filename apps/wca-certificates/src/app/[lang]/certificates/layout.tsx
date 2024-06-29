@@ -20,7 +20,7 @@ export default async function Layout({ params, children }: LayoutProps): Promise
         <Header dictionary={dictionary} />
         {children}
       </div>
-      <Footer />
+      <Footer dictionary={dictionary} />
     </div>
   );
 }

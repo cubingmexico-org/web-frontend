@@ -1,7 +1,8 @@
 "use client"
 
 import type {
-  ColumnDef} from "@tanstack/react-table";
+  ColumnDef
+} from "@tanstack/react-table";
 import {
   flexRender,
   getCoreRowModel,
@@ -16,8 +17,10 @@ import {
   TableRow,
 } from "@repo/ui/table"
 import type { Event, Result } from '@/types/wca-live';
+import { getDictionary } from "@/get-dictionary";
 
 interface DataTableProps<TData, TValue> {
+  dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["podium"]["document_settings"]["data_table"]
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   rowSelection: Record<string, boolean>;
@@ -25,6 +28,7 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData extends Event, TValue>({
+  dictionary,
   columns,
   data,
   rowSelection,
@@ -54,9 +58,9 @@ export function DataTable<TData extends Event, TValue>({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                   </TableHead>
                 )
               })}
@@ -80,7 +84,7 @@ export function DataTable<TData extends Event, TValue>({
           ) : (
             <TableRow>
               <TableCell className="h-24 text-center" colSpan={columns.length}>
-                Sin resultados.
+                {dictionary.noResults}
               </TableCell>
             </TableRow>
           )}

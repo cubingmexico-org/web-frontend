@@ -8,6 +8,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation';
 import type { JSONContent } from '@tiptap/react'
 import { Label } from "@repo/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs"
@@ -24,20 +25,25 @@ import {
   joinPersons,
   transformString
 } from "@/lib/utils"
-import { columns } from "@/components/podium/columns"
+import { columnsEs, columnsEn } from "@/components/podium/columns"
 import { DataTable } from "@/components/podium/data-table"
 import { FileUploader } from "@/components/file-uploader";
 import { podium } from '@/lib/placeholders';
 import Tiptap from '@/components/editor/tiptap'
 import { fontDeclarations } from '@/lib/fonts';
+import { getDictionary } from '@/get-dictionary';
 
 interface DocumentSettingsProps {
+  dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["podium"]["document_settings"]
   competition: Competition;
   city: string;
   state: string;
 }
 
-export default function DocumentSettings({ competition, city, state }: DocumentSettingsProps): JSX.Element {
+export default function DocumentSettings({ dictionary, competition, city, state }: DocumentSettingsProps): JSX.Element {
+
+  const pathname = usePathname()
+  const lang = pathname.startsWith('/es') ? 'es' : 'en'
 
   const date = competition.schedule.startDate;
   const days = competition.schedule.numberOfDays;
@@ -234,12 +240,13 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
   return (
     <Tabs defaultValue="results">
       <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="results">Resultados</TabsTrigger>
-        <TabsTrigger value="document">Documento</TabsTrigger>
+        <TabsTrigger value="results">{dictionary.results}</TabsTrigger>
+        <TabsTrigger value="document">{dictionary.document}</TabsTrigger>
       </TabsList>
       <TabsContent value="results">
         <DataTable
-          columns={columns}
+          dictionary={dictionary.data_table}
+          columns={lang === 'es' ? columnsEs : columnsEn}
           data={competition.events}
           rowSelection={rowSelection}
           setRowSelection={setRowSelection}
@@ -253,6 +260,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
               onSubmit={(e) => { e.preventDefault(); }}
             >
               <Tiptap
+                dictionary={dictionary.tiptap}
                 competitionId={competition.id}
                 content={content}
                 key={`${pageSize}-${pageOrientation}-${pageMargins}`}
@@ -269,8 +277,9 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
               />
             </form>
             <div>
-              <Label htmlFor='background'>Fondo</Label>
+              <Label htmlFor='background'>{dictionary.background}</Label>
               <FileUploader
+                dictionary={dictionary.fileUploader}
                 id='background'
                 maxFiles={1}
                 maxSize={1 * 1024 * 1024}
@@ -281,7 +290,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
           </div>
         ) : (
           <div className='text-center'>
-            De momento el editor de texto no está disponible en dispositivos móviles. Por favor, utiliza un dispositivo de escritorio.
+            {dictionary.mobileFallback}
           </div>
         )}
       </TabsContent>

@@ -28,8 +28,211 @@
       "noPast": "Parece que no tienes ninguna competencia pasada",
       "pastDescription": "Estas competencias ya fueron celebradas"
     },
-    "podium": "Certificados de podio para el",
-    "participation": "Certificados de participación para el"
+    "podium": {
+      "title": "Certificados de podio para el",
+      "document_settings": {
+        "results": "Resultados",
+        "document": "Documento",
+        "background": "Fondo",
+        "mobileFallback": "De momento el editor de texto no está disponible en dispositivos móviles. Por favor, utiliza un dispositivo de escritorio.",
+        "fileUploader": {
+          "moreThanOneFileError": "No se puede subir más de 1 archivo a la vez",
+          "maxFilesError": "No se pueden subir más de ${maxFiles} archivos",
+          "fileRejectedError": "El archivo ${file.name} fue rechazado",
+          "uploadingFiles": "Subiendo ${target}...",
+          "uploadSuccess": "${target} uploaded",
+          "uploadFailed": "Falló la subida de ${target}",
+          "dropFilesHere": "Suelta los archivos aquí",
+          "dragAndDropOrClick": "Arrastra y suelta archivos aquí, o haz clic para seleccionar archivos",
+          "canUploadMultiple": "Puedes subir ${maxFiles === Infinity ? 'múltiples' : maxFiles} archivos (hasta ${formatBytes(maxSize)} cada uno)",
+          "canUploadSingle": "un archivo de ${formatBytes(maxSize)}",
+          "removeFile": "Eliminar archivo"
+        },
+        "data_table": {
+          "noResults": "Sin resultados."
+        },
+        "tiptap": {
+          "loading": "Cargando...",
+          "file": "Archivo",
+          "reset": "Reiniciar",
+          "save": "Guardar",
+          "dialogDocumentSettings": {
+            "pageSettings": "Configuración de página",
+            "orientation": "Orientación",
+            "portrait": "Vertical",
+            "landscape": "Horizontal",
+            "paperSize": "Tamaño de papel",
+            "size": "Tamaño",
+            "letter": "Carta (21.6 cm x 27.9 cm)",
+            "a4": "A4 (21 cm x 29.7 cm)",
+            "margins": "Márgenes",
+            "top": "Superior",
+            "bottom": "Inferior",
+            "right": "Derecho",
+            "left": "Izquierdo",
+            "cancel": "Cancelar",
+            "save": "Guardar"
+          },
+          "areYouSure": "¿Estás seguro que deseas guardar el documento?",
+          "saveDocument": "Esto guardará el documento actual y reemplazará el que estaba guardado anteriormente.",
+          "otherDocument": "Documento anterior:",
+          "cancel": "Cancelar",
+          "continue": "Continuar",
+          "load": "Cargar",
+          "exportAsPDF": "Exportar como PDF",
+          "edit": "Editar",
+          "undo": "Deshacer",
+          "redo": "Rehacer",
+          "cut": "Cortar",
+          "copy": "Copiar",
+          "paste": "Pegar",
+          "selectAll": "Seleccionar todo",
+          "insert": "Insertar",
+          "table": "Tabla",
+          "format": "Formato",
+          "text": "Texto",
+          "bold": "Negrita",
+          "submenu": {
+            "useCapitalLetters": "Uso de mayúsculas",
+            "lowercase": "minúscula",
+            "uppercase": "MAYÚSCULA",
+            "capitalize": "Todas Las Palabras Con Mayúscula"
+          },
+          "paragraphStyles": "Estilos de párrafo",
+          "normalText": "Texto normal",
+          "heading1": "Encabezado 1",
+          "heading2": "Encabezado 2",
+          "heading3": "Encabezado 3",
+          "heading4": "Encabezado 4",
+          "heading5": "Encabezado 5",
+          "heading6": "Encabezado 6",
+          "align": "Alinear",
+          "left": "Izquierda",
+          "center": "Centro",
+          "right": "Derecha",
+          "justify": "Justificado",
+          "insertRowAbove": "Insertar fila arriba",
+          "insertRowBelow": "Insertar fila abajo",
+          "insertColumnLeft": "Insertar columna a la izquierda",
+          "insertColumnRight": "Insertar columna a la derecha",
+          "deleteRow": "Eliminar fila",
+          "deleteColumn": "Eliminar columna",
+          "deleteTable": "Eliminar tabla",
+          "toggleHeaderRow": "Alternar fila de encabezado",
+          "mergeCells": "Combinar celdas",
+          "splitCells": "Separar celdas",
+          "clearFormatting": "Borrar formato",
+          "toolbar": {
+            "comboboxFont": {
+              "searchFont": "Buscar fuente..."
+            }
+          }
+        }
+      }
+    },
+    "participation": {
+      "title": "Certificados de participación para el",
+      "document_settings": {
+        "results": "Resultados",
+        "document": "Documento",
+        "background": "Fondo",
+        "mobileFallback": "De momento el editor de texto no está disponible en dispositivos móviles. Por favor, utiliza un dispositivo de escritorio.",
+        "fileUploader": {
+          "moreThanOneFileError": "No se puede subir más de 1 archivo a la vez",
+          "maxFilesError": "No se pueden subir más de ${maxFiles} archivos",
+          "fileRejectedError": "El archivo ${file.name} fue rechazado",
+          "uploadingFiles": "Subiendo ${target}...",
+          "uploadSuccess": "${target} uploaded",
+          "uploadFailed": "Falló la subida de ${target}",
+          "dropFilesHere": "Suelta los archivos aquí",
+          "dragAndDropOrClick": "Arrastra y suelta archivos aquí, o haz clic para seleccionar archivos",
+          "canUploadMultiple": "Puedes subir ${maxFiles === Infinity ? 'múltiples' : maxFiles} archivos (hasta ${formatBytes(maxSize)} cada uno)",
+          "canUploadSingle": "un archivo de ${formatBytes(maxSize)}",
+          "removeFile": "Eliminar archivo"
+        },
+        "data_table": {
+          "filterByName": "Filtrar por nombre...",
+          "noResults": "Sin resultados."
+        },
+        "tiptap": {
+          "loading": "Cargando...",
+          "file": "Archivo",
+          "reset": "Reiniciar",
+          "save": "Guardar",
+          "dialogDocumentSettings": {
+            "pageSettings": "Configuración de página",
+            "orientation": "Orientación",
+            "portrait": "Vertical",
+            "landscape": "Horizontal",
+            "paperSize": "Tamaño de papel",
+            "size": "Tamaño",
+            "letter": "Carta (21.6 cm x 27.9 cm)",
+            "a4": "A4 (21 cm x 29.7 cm)",
+            "margins": "Márgenes",
+            "top": "Superior",
+            "bottom": "Inferior",
+            "right": "Derecho",
+            "left": "Izquierdo",
+            "cancel": "Cancelar",
+            "save": "Guardar"
+          },
+          "areYouSure": "¿Estás seguro que deseas guardar el documento?",
+          "saveDocument": "Esto guardará el documento actual y reemplazará el que estaba guardado anteriormente.",
+          "otherDocument": "Documento anterior:",
+          "cancel": "Cancelar",
+          "continue": "Continuar",
+          "load": "Cargar",
+          "exportAsPDF": "Exportar como PDF",
+          "edit": "Editar",
+          "undo": "Deshacer",
+          "redo": "Rehacer",
+          "cut": "Cortar",
+          "copy": "Copiar",
+          "paste": "Pegar",
+          "selectAll": "Seleccionar todo",
+          "insert": "Insertar",
+          "table": "Tabla",
+          "format": "Formato",
+          "text": "Texto",
+          "bold": "Negrita",
+          "submenu": {
+            "useCapitalLetters": "Uso de mayúsculas",
+            "lowercase": "minúscula",
+            "uppercase": "MAYÚSCULA",
+            "capitalize": "Todas Las Palabras Con Mayúscula"
+          },
+          "paragraphStyles": "Estilos de párrafo",
+          "normalText": "Texto normal",
+          "heading1": "Encabezado 1",
+          "heading2": "Encabezado 2",
+          "heading3": "Encabezado 3",
+          "heading4": "Encabezado 4",
+          "heading5": "Encabezado 5",
+          "heading6": "Encabezado 6",
+          "align": "Alinear",
+          "left": "Izquierda",
+          "center": "Centro",
+          "right": "Derecha",
+          "justify": "Justificado",
+          "insertRowAbove": "Insertar fila arriba",
+          "insertRowBelow": "Insertar fila abajo",
+          "insertColumnLeft": "Insertar columna a la izquierda",
+          "insertColumnRight": "Insertar columna a la derecha",
+          "deleteRow": "Eliminar fila",
+          "deleteColumn": "Eliminar columna",
+          "deleteTable": "Eliminar tabla",
+          "toggleHeaderRow": "Alternar fila de encabezado",
+          "mergeCells": "Combinar celdas",
+          "splitCells": "Separar celdas",
+          "clearFormatting": "Borrar formato",
+          "toolbar": {
+            "comboboxFont": {
+              "searchFont": "Buscar fuente..."
+            }
+          }
+        }
+      }
+    }
   },
   "auth_components": {
     "signIn": "Iniciar Sesión",
@@ -37,6 +240,12 @@
   },
   "header": {
     "title": "Certificados de la WCA"
+  },
+  "footer": {
+    "github": "GitHub",
+    "wiki": "Wiki",
+    "wikiHref": "https://github.com/cubingmexico-org/web-frontend/wiki/Certificados-de-la-WCA",
+    "version": "v 1.0.0"
   },
   "locale_switcher": {
     "language": "Idioma"

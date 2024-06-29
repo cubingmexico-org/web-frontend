@@ -24,8 +24,10 @@ import { Input } from '@repo/ui/input';
 import type { Margins, PageOrientation, PageSize } from 'pdfmake/interfaces';
 import { FileText } from 'lucide-react';
 import { Button } from '@repo/ui/button';
+import { getDictionary } from '@/get-dictionary';
 
 interface DialogDocumentSettingsProps {
+  dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["podium"]["document_settings"]["tiptap"]["dialogDocumentSettings"]
 	pageOrientation: PageOrientation;
 	setPageOrientation: (value: PageOrientation) => void;
 	pageSize: PageSize;
@@ -35,6 +37,7 @@ interface DialogDocumentSettingsProps {
 }
 
 export function DialogDocumentSettings({
+	dictionary,
 	pageOrientation,
 	setPageOrientation,
 	pageSize,
@@ -62,44 +65,44 @@ export function DialogDocumentSettings({
 	return (
 		<Dialog onOpenChange={(value) => setOpen(value)} open={open}>
 			<DialogTrigger className='flex text-sm hover:bg-accent px-2 py-1.5 cursor-default rounded-sm w-full'>
-				<FileText className='h-4 w-4 mr-2' />Configuración de página
+				<FileText className='h-4 w-4 mr-2' />{dictionary.pageSettings}
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Configuración de página</DialogTitle>
+					<DialogTitle>{dictionary.pageSettings}</DialogTitle>
 				</DialogHeader>
 				<div className='grid grid-cols-2 gap-4'>
 					<div className='flex flex-col gap-4'>
 						<div className='grid gap-2'>
-							<Label htmlFor='pageOrientation'>Orientación</Label>
+							<Label htmlFor='pageOrientation'>{dictionary.orientation}</Label>
 							<RadioGroup className='flex' defaultValue="portrait" id='pageOrientation' onValueChange={(value: PageOrientation) => { setTempPageOrientation(value); }} value={tempPageOrientation}>
 								<div className="flex items-center space-x-2">
 									<RadioGroupItem id="portrait" value="portrait" />
-									<Label htmlFor="portrait">Vertical</Label>
+									<Label htmlFor="portrait">{dictionary.portrait}</Label>
 								</div>
 								<div className="flex items-center space-x-2">
 									<RadioGroupItem id="landscape" value="landscape" />
-									<Label htmlFor="landscape">Horizontal</Label>
+									<Label htmlFor="landscape">{dictionary.landscape}</Label>
 								</div>
 							</RadioGroup>
 						</div>
 						<div className='grid gap-2'>
-							<Label htmlFor='pageSize'>Tamaño de papel</Label>
+							<Label htmlFor='pageSize'>{dictionary.paperSize}</Label>
 							<Select onValueChange={(value: string) => { setTempPageSize(value as PageSize); }} value={tempPageSize as string}>
 								<SelectTrigger className="w-full" id='pageSize'>
-									<SelectValue placeholder="Tamaño *" />
+									<SelectValue placeholder={dictionary.size} />
 								</SelectTrigger>
 								<SelectContent>
-									<SelectItem value="LETTER">Carta (21.6 cm x 27.9 cm)</SelectItem>
-									<SelectItem value="A4">A4 (21 cm x 29.7 cm)</SelectItem>
+									<SelectItem value="LETTER">{dictionary.letter}</SelectItem>
+									<SelectItem value="A4">{dictionary.a4}</SelectItem>
 								</SelectContent>
 							</Select>
 						</div>
 					</div>
 					<div className='grid gap-2'>
-						<Label htmlFor='pageMargins'>Márgenes</Label>
+						<Label htmlFor='pageMargins'>{dictionary.margins}</Label>
 						<div className='grid items-center grid-cols-2 gap-2'>
-							<Label htmlFor='top'>Superior</Label>
+							<Label htmlFor='top'>{dictionary.top}</Label>
 							<Input
 								className='w-full'
 								id='top'
@@ -118,7 +121,7 @@ export function DialogDocumentSettings({
 								type='number'
 								value={Array.isArray(tempPageMargins) && tempPageMargins.length === 4 ? tempPageMargins[1] : 0}
 							/>
-							<Label htmlFor='bottom'>Inferior</Label>
+							<Label htmlFor='bottom'>{dictionary.bottom}</Label>
 							<Input
 								className='w-full'
 								id='bottom'
@@ -137,7 +140,7 @@ export function DialogDocumentSettings({
 								type='number'
 								value={Array.isArray(tempPageMargins) && tempPageMargins.length === 4 ? tempPageMargins[3] : 0}
 							/>
-							<Label htmlFor='right'>Derecho</Label>
+							<Label htmlFor='right'>{dictionary.right}</Label>
 							<Input
 								className='w-full'
 								id='right'
@@ -156,7 +159,7 @@ export function DialogDocumentSettings({
 								type='number'
 								value={Array.isArray(tempPageMargins) && tempPageMargins.length === 4 ? tempPageMargins[2] : 0}
 							/>
-							<Label htmlFor='left'>Izquierdo</Label>
+							<Label htmlFor='left'>{dictionary.left}</Label>
 							<Input
 								className='w-full'
 								id='left'
@@ -179,8 +182,8 @@ export function DialogDocumentSettings({
 					</div>
 				</div>
 				<DialogFooter>
-					<Button onClick={() => setOpen(false)} variant='secondary'>Cancelar</Button>
-					<Button onClick={handleSave}>Guardar</Button>
+					<Button onClick={() => setOpen(false)} variant='secondary'>{dictionary.cancel}</Button>
+					<Button onClick={handleSave}>{dictionary.save}</Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>

@@ -26,8 +26,10 @@ import {
   TableRow,
 } from "@repo/ui/table"
 import type { ParticipantData } from '@/types/wca-live';
+import { getDictionary } from "@/get-dictionary";
 
 interface DataTableProps<TData, TValue> {
+  dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["participation"]["document_settings"]["data_table"]
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   rowSelection: Record<string, boolean>;
@@ -35,6 +37,7 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData extends ParticipantData, TValue>({
+  dictionary,
   columns,
   data,
   rowSelection,
@@ -74,7 +77,7 @@ export function DataTable<TData extends ParticipantData, TValue>({
           onChange={(event) => 
             table.getColumn("name")?.setFilterValue(event.target.value)
           }
-          placeholder="Filtrar nombre..."
+          placeholder={dictionary.filterByName}
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
         />
       </div>
@@ -115,7 +118,7 @@ export function DataTable<TData extends ParticipantData, TValue>({
             ) : (
               <TableRow>
                 <TableCell className="h-24 text-center" colSpan={columns.length}>
-                  Sin resultados.
+                  {dictionary.noResults}
                 </TableCell>
               </TableRow>
             )}

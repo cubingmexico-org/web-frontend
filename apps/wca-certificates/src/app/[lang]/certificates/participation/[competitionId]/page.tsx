@@ -29,8 +29,8 @@ export default async function Page({ params }: PageProps): Promise<JSX.Element> 
 
   return (
     <div className="container mx-auto py-10">
-      <h1 className="text-3xl mb-4">{dictionary.certificates.participation} {competition.name}</h1>
-      <DocumentSettings city={city} competition={competition} state={state} />
+      <h1 className="text-3xl mb-4">{dictionary.certificates.participation.title} {competition.name}</h1>
+      <DocumentSettings city={city} competition={competition} dictionary={dictionary.certificates.participation.document_settings} state={state} />
     </div>
   );
 }

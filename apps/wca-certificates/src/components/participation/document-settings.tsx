@@ -10,6 +10,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation';
 import type { JSONContent } from '@tiptap/react';
 import { Label } from "@repo/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs"
@@ -25,21 +26,26 @@ import {
   formatEvents,
   formatResults
 } from "@/lib/utils"
-import { columns } from "@/components/participation/columns"
+import { columnsEs, columnsEn } from "@/components/participation/columns"
 import { DataTable } from "@/components/participation/data-table"
 import { FileUploader } from "@/components/file-uploader";
 import { participation } from '@/lib/placeholders';
 import Tiptap from '@/components/editor/tiptap'
 import { fontDeclarations } from '@/lib/fonts';
+import { getDictionary } from '@/get-dictionary';
 
 interface DocumentSettingsProps {
+  dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["participation"]["document_settings"]
   competition: Competition;
   city: string;
   state: string;
 }
 
-export default function DocumentSettings({ competition, city, state }: DocumentSettingsProps): JSX.Element {
+export default function DocumentSettings({ dictionary, competition, city, state }: DocumentSettingsProps): JSX.Element {
 
+  const pathname = usePathname()
+  const lang = pathname.startsWith('/es') ? 'es' : 'en'
+  
   const people = competition.persons;
   const events = competition.events;
   const date = competition.schedule.startDate;
@@ -345,12 +351,13 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
   return (
     <Tabs defaultValue="results">
       <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="results">Resultados</TabsTrigger>
-        <TabsTrigger value="document">Documento</TabsTrigger>
+        <TabsTrigger value="results">{dictionary.results}</TabsTrigger>
+        <TabsTrigger value="document">{dictionary.document}</TabsTrigger>
       </TabsList>
       <TabsContent value="results">
         <DataTable
-          columns={columns}
+          columns={lang === 'es' ? columnsEs : columnsEn}
+          dictionary={dictionary.data_table}
           data={allResults}
           rowSelection={rowSelection}
           setRowSelection={setRowSelection}
@@ -364,6 +371,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
               onSubmit={(e) => { e.preventDefault(); }}
             >
               <Tiptap
+                dictionary={dictionary.tiptap}
                 competitionId={competition.id}
                 content={content}
                 key={`${pageSize}-${pageOrientation}-${pageMargins}`}
@@ -382,6 +390,7 @@ export default function DocumentSettings({ competition, city, state }: DocumentS
             <div>
               <Label htmlFor='background'>Fondo del certificado</Label>
               <FileUploader
+                dictionary={dictionary.fileUploader}
                 id='background'
                 maxFiles={1}
                 maxSize={1 * 1024 * 1024}

@@ -18,18 +18,21 @@ import {
 } from "@repo/ui/popover"
 import { cn } from "@repo/ui/utils"
 import { fonts } from "@/lib/fonts"
+import { getDictionary } from "@/get-dictionary"
 
-interface ComboboxProps {
+interface ComboboxFontProps {
+  dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["podium"]["document_settings"]["tiptap"]["toolbar"]["comboboxFont"]
   value: string;
   setValue: (value: string) => void;
   disabled?: boolean;
 }
 
-export function Combobox({
+export function ComboboxFont({
+  dictionary,
   value,
   setValue,
   disabled,
-}: ComboboxProps): JSX.Element {
+}: ComboboxFontProps): JSX.Element {
   const [open, setOpen] = React.useState(false)
 
   return (
@@ -46,13 +49,13 @@ export function Combobox({
             ? <p style={{
               fontFamily: fonts.find((font) => font.value === value)?.value,
             }}>{fonts.find((font) => font.value === value)?.label}</p>
-            : 'Buscar fuente...'}
+            : dictionary.searchFont}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
         <Command>
-          <CommandInput placeholder='Buscar fuente...' />
+          <CommandInput placeholder={dictionary.searchFont} />
           <CommandEmpty>Sin resultados.</CommandEmpty>
           <CommandGroup>
             <CommandList>

@@ -5,8 +5,19 @@ import "@cubing/icons"
 import { auth } from "@/auth";
 import { fetchCompetition, retrieveLocation } from "@/app/[lang]/actions";
 import { generateFakeResultsForEvent } from "@/lib/utils";
+import { Locale } from "@/i18n-config";
+import { getDictionary } from "@/get-dictionary"
 
-export default async function Page({ params }: { params: { competitionId: string } }): Promise<JSX.Element> {
+interface PageProps {
+  params: {
+    lang: Locale,
+    competitionId: string
+  },
+}
+
+export default async function Page({ params }: PageProps): Promise<JSX.Element> {
+  const dictionary = await getDictionary(params.lang);
+  
   const session = await auth()
 
   if (!session) {
@@ -22,7 +33,7 @@ export default async function Page({ params }: { params: { competitionId: string
       <div className="flex gap-2">
         <h1 className="text-3xl">Certificados de podio para el {competition.name}</h1><Badge className="text-lg" variant='destructive'>Diseño</Badge>
       </div>
-      <DocumentSettings city={city} competition={competition} state={state} />
+      <DocumentSettings city={city} competition={competition} dictionary={dictionary.certificates.podium.document_settings} state={state} />
     </div>
   );
 }

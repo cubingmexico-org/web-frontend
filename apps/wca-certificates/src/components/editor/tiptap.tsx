@@ -157,7 +157,7 @@ export default function Tiptap({
     editorProps: {
       attributes: {
         class: cn(
-          'shadow bg-background focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 overflow-y-clip',
+          'shadow bg-white text-black focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 overflow-y-clip',
           {
             [getLeftMarginValue(Array.isArray(pageMargins) ? pageMargins[0] : 0)]: Array.isArray(pageMargins) && pageMargins[0] >= 0 && pageMargins[0] <= 200,
             [getTopMarginValue(Array.isArray(pageMargins) ? pageMargins[1] : 0)]: Array.isArray(pageMargins) && pageMargins[1] >= 0 && pageMargins[1] <= 200,

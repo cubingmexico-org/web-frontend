@@ -247,10 +247,10 @@
     "title": "Certificados de la WCA"
   },
   "footer": {
-    "github": "GitHub",
+    "github": "¿Ves algo erróneo o tienes alguna sugerencia? Repórtalo en GitHub",
     "wiki": "Wiki",
     "wikiHref": "https://github.com/cubingmexico-org/web-frontend/wiki/Certificados-de-la-WCA",
-    "version": "v 1.0.0"
+    "version": "1.0.0"
   },
   "locale_switcher": {
     "language": "Idioma"

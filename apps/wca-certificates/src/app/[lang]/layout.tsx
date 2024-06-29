@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/react"
 import { Toaster } from "@repo/ui/toaster";
 import type { Locale } from "@/i18n-config";
 import { getDictionary } from "@/get-dictionary";
+import { ThemeProvider } from "@/components/theme-provider"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,13 +24,20 @@ export async function generateMetadata({ params }: RootLayoutProps): Promise<Met
   }
 }
 
-export default function RootLayout({children, params}: RootLayoutProps): JSX.Element {
+export default function RootLayout({ children, params }: RootLayoutProps): JSX.Element {
   return (
     <html lang={params.lang}>
       <body className={inter.className}>
-        {children}
-        <Analytics />
-        <Toaster />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          disableTransitionOnChange
+          enableSystem
+        >
+          {children}
+          <Analytics />
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

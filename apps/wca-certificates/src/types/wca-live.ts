@@ -57,6 +57,7 @@ export interface Competition {
       longitudeMicrodegrees: number
     }[]
   };
+  competitorLimit: number;
   events: Event[];
   persons: Person[];
 }

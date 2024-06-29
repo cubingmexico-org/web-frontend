@@ -1,5 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps -- . */
+/* eslint-disable no-template-curly-in-string -- . */
 /* eslint-disable react/no-array-index-key -- . */
 /* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
+
 "use client"
 
 import * as React from "react"
@@ -16,8 +19,10 @@ import { ScrollArea } from "@repo/ui/scroll-area"
 import { cn } from "@repo/ui/utils"
 import { formatBytes } from "@/lib/utils"
 import { useControllableState } from "@/hooks/use-controllable-state"
+import type { getDictionary } from "@/get-dictionary"
 
 interface FileUploaderProps extends React.HTMLAttributes<HTMLDivElement> {
+  dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["podium"]["document_settings"]["fileUploader"]
   value?: File[]
   onValueChange?: React.Dispatch<React.SetStateAction<File[]>>
   onUpload?: (files: File[]) => Promise<void>
@@ -31,6 +36,7 @@ interface FileUploaderProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function FileUploader(props: FileUploaderProps) {
   const {
+    dictionary,
     value: valueProp,
     onValueChange,
     onUpload,
@@ -52,12 +58,12 @@ export function FileUploader(props: FileUploaderProps) {
   const onDrop = React.useCallback(
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
       if (!multiple && maxFiles === 1 && acceptedFiles.length > 1) {
-        toast.error("No se puede subir más de 1 archivo a la vez")
+        toast.error(dictionary.moreThanOneFileError)
         return
       }
 
       if ((files?.length ?? 0) + acceptedFiles.length > maxFiles) {
-        toast.error(`No se pueden subir más de ${maxFiles} archivos`)
+        toast.error(dictionary.maxFilesError.replace('${maxFiles}', maxFiles.toString()))
         return
       }
 
@@ -73,7 +79,7 @@ export function FileUploader(props: FileUploaderProps) {
 
       if (rejectedFiles.length > 0) {
         rejectedFiles.forEach(({ file }) => {
-          toast.error(`El archivo ${file.name} fue rechazado`)
+          toast.error(dictionary.fileRejectedError.replace('${file.name}', file.name))
         })
       }
 
@@ -86,12 +92,12 @@ export function FileUploader(props: FileUploaderProps) {
           updatedFiles.length > 0 ? `${updatedFiles.length} files` : `file`
 
         toast.promise(onUpload(updatedFiles), {
-          loading: `Subiendo ${target}...`,
+          loading: dictionary.uploadingFiles.replace('${target}', target),
           success: () => {
             setFiles([])
-            return `${target} uploaded`
+            return dictionary.uploadSuccess.replace('${target}', target)
           },
-          error: `Falló la subida de ${target}`,
+          error: dictionary.uploadFailed.replace('${target}', target),
         })
       }
     },
@@ -116,7 +122,6 @@ export function FileUploader(props: FileUploaderProps) {
         }
       })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- .
   }, [])
 
   const isDisabled = disabled || (files?.length ?? 0) >= maxFiles
@@ -153,7 +158,7 @@ export function FileUploader(props: FileUploaderProps) {
                   />
                 </div>
                 <p className="font-medium text-muted-foreground">
-                  Suelta los archivos aquí
+                  {dictionary.dropFilesHere}
                 </p>
               </div>
             ) : (
@@ -166,14 +171,12 @@ export function FileUploader(props: FileUploaderProps) {
                 </div>
                 <div className="space-y-px">
                   <p className="font-medium text-muted-foreground">
-                    Arrastra y suelta archivos aquí, o haz clic para seleccionar archivos
+                    {dictionary.dragAndDropOrClick}
                   </p>
                   <p className="text-sm text-muted-foreground/70">
-                    Puedes subir
                     {maxFiles > 1
-                      ? ` ${maxFiles === Infinity ? "múltiples" : maxFiles}
-                      archivos (hasta ${formatBytes(maxSize)} cada uno)`
-                      : ` un archivo de ${formatBytes(maxSize)}`}
+                      ? dictionary.canUploadMultiple.replace('${maxFiles}', maxFiles === Infinity ? 'múltiples' : maxFiles.toString()).replace('${formatBytes(maxSize)}', formatBytes(maxSize))
+                      : dictionary.canUploadSingle.replace('${formatBytes(maxSize)}', formatBytes(maxSize))}
                   </p>
                 </div>
               </div>
@@ -186,6 +189,7 @@ export function FileUploader(props: FileUploaderProps) {
           <div className="max-h-48 space-y-4">
             {files.map((file: File, index: number) => (
               <FileCard
+                dictionary={dictionary}
                 file={file}
                 key={index}
                 onRemove={() => { onRemove(index); }}
@@ -200,12 +204,13 @@ export function FileUploader(props: FileUploaderProps) {
 }
 
 interface FileCardProps {
+  dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["podium"]["document_settings"]["fileUploader"]
   file: File
   onRemove: () => void
   progress?: number
 }
 
-function FileCard({ file, progress, onRemove }: FileCardProps) {
+function FileCard({ dictionary, file, progress, onRemove }: FileCardProps) {
   return (
     <div className="relative flex items-center space-x-4">
       <div className="flex flex-1 space-x-4">
@@ -240,7 +245,7 @@ function FileCard({ file, progress, onRemove }: FileCardProps) {
           variant="outline"
         >
           <X aria-hidden="true" className="size-4 " />
-          <span className="sr-only">Eliminar archivo</span>
+          <span className="sr-only">{dictionary.removeFile}</span>
         </Button>
       </div>
     </div>

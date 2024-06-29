@@ -1,0 +1,267 @@
+{
+  "metadata": {
+    "title": "WCA Certificates - Cubing México",
+    "description": "WCA Certificates - Cubing México"
+  },
+  "signin": {
+    "signInTitle": "Sign In",
+    "signInDescription": "You will be redirected to the World Cube Association page",
+    "noAccountQuestion": "Don't have a World Cube Association account?",
+    "signUp": "Sign up"
+  },
+  "certificates": {
+    "welcomeTitle": "Welcome",
+    "introText": "Below are the competitions you are organizing:",
+    "noPermissions": "You do not have permission to access this competition.",
+    "tabs": {
+      "upcoming": "Upcoming",
+      "current": "Current",
+      "past": "Past"
+    },
+    "competitions": {
+      "upcomingTitle": "Upcoming Competitions",
+      "noUpcoming": "It seems you have no upcoming competitions",
+      "upcomingDescription": "These competitions are about to be held",
+      "currentTitle": "Current Competitions",
+      "noCurrent": "It seems you have no competitions being held right now",
+      "currentDescription": "These competitions are currently being held",
+      "pastTitle": "Past Competitions",
+      "noPast": "It seems you have no past competitions",
+      "pastDescription": "These competitions have already been held"
+    },
+    "podium": {
+      "title": "Podium Certificates for",
+      "design": "Design",
+      "document_settings": {
+        "title": "Podium Certificates",
+        "results": "Results",
+        "document": "Document",
+        "background": "Background",
+        "mobileFallback": "At the moment the text editor is not available on mobile devices. Please, use a desktop device.",
+        "fileUploader": {
+          "moreThanOneFileError": "You cannot upload more than 1 file at a time",
+          "maxFilesError": "You cannot upload more than ${maxFiles} files",
+          "fileRejectedError": "The file ${file.name} was rejected",
+          "uploadingFiles": "Uploading ${target}...",
+          "uploadSuccess": "${target} uploaded",
+          "uploadFailed": "Failed to upload ${target}",
+          "dropFilesHere": "Drop files here",
+          "dragAndDropOrClick": "Drag and drop files here, or click to select files",
+          "canUploadMultiple": "You can upload ${maxFiles === Infinity ? 'multiple' : maxFiles} files (up to ${formatBytes(maxSize)} each)",
+          "canUploadSingle": "a file of up to ${formatBytes(maxSize)}",
+          "removeFile": "Remove file"
+        },
+        "data_table": {
+          "noResults": "No results."
+        },
+        "tiptap": {
+          "loading": "Loading...",
+          "file": "File",
+          "reset": "Reset",
+          "save": "Save",
+          "dialogDocumentSettings": {
+            "pageSettings": "Page setup",
+            "orientation": "Orientation",
+            "portrait": "Portrait",
+            "landscape": "Landscape",
+            "paperSize": "Paper Size",
+            "size": "Size",
+            "letter": "Letter (21.6 cm x 27.9 cm)",
+            "a4": "A4 (21 cm x 29.7 cm)",
+            "margins": "Margins",
+            "top": "Top",
+            "bottom": "Bottom",
+            "right": "Right",
+            "left": "Left",
+            "cancel": "Cancel",
+            "save": "Save"
+          },
+          "areYouSure": "Are you sure you want to save the document?",
+          "saveDocument": "This will save the current document and replace the one that was previously saved.",
+          "otherDocument": "Previous document:",
+          "cancel": "Cancel",
+          "continue": "Continue",
+          "load": "Load",
+          "exportAsPDF": "Export as PDF",
+          "edit": "Edit",
+          "undo": "Undo",
+          "redo": "Redo",
+          "cut": "Cut",
+          "copy": "Copy",
+          "paste": "Paste",
+          "selectAll": "Select all",
+          "insert": "Insert",
+          "table": "Table",
+          "format": "Format",
+          "text": "Text",
+          "bold": "Bold",
+          "submenu": {
+            "useCapitalLetters": "Capitalization",
+            "lowercase": "lowercase",
+            "uppercase": "UPPERCASE",
+            "capitalize": "Title Case"
+          },
+          "paragraphStyles": "Paragraph styles",
+          "normalText": "Normal text",
+          "heading1": "Heading 1",
+          "heading2": "Heading 2",
+          "heading3": "Heading 3",
+          "heading4": "Heading 4",
+          "heading5": "Heading 5",
+          "heading6": "Heading 6",
+          "align": "Align",
+          "left": "Left",
+          "center": "Center",
+          "right": "Right",
+          "justify": "Justify",
+          "insertRowAbove": "Insert row above",
+          "insertRowBelow": "Insert row below",
+          "insertColumnLeft": "Insert column left",
+          "insertColumnRight": "Insert column right",
+          "deleteRow": "Delete row",
+          "deleteColumn": "Delete column",
+          "deleteTable": "Delete table",
+          "toggleHeaderRow": "Toggle header row",
+          "mergeCells": "Merge cells",
+          "splitCells": "Split cells",
+          "clearFormatting": "Clear formatting",
+          "toolbar": {
+            "comboboxFont": {
+              "searchFont": "Search font..."
+            }
+          }
+        }
+      }
+    },
+    "participation": {
+      "title": "Participation Certificates for",
+      "design": "Design",
+      "document_settings": {
+        "title": "Participation Certificates",
+        "results": "Results",
+        "document": "Document",
+        "background": "Background",
+        "mobileFallback": "At the moment the text editor is not available on mobile devices. Please, use a desktop device.",
+        "fileUploader": {
+          "moreThanOneFileError": "You cannot upload more than 1 file at a time",
+          "maxFilesError": "You cannot upload more than ${maxFiles} files",
+          "fileRejectedError": "The file ${file.name} was rejected",
+          "uploadingFiles": "Uploading ${target}...",
+          "uploadSuccess": "${target} uploaded",
+          "uploadFailed": "Failed to upload ${target}",
+          "dropFilesHere": "Drop files here",
+          "dragAndDropOrClick": "Drag and drop files here, or click to select files",
+          "canUploadMultiple": "You can upload ${maxFiles === Infinity ? 'multiple' : maxFiles} files (up to ${formatBytes(maxSize)} each)",
+          "canUploadSingle": "a file of up to ${formatBytes(maxSize)}",
+          "removeFile": "Remove file"
+        },
+        "data_table": {
+          "filterByName": "Filter by name...",
+          "noResults": "No results."
+        },
+        "tiptap": {
+          "loading": "Loading...",
+          "file": "File",
+          "reset": "Reset",
+          "save": "Save",
+          "dialogDocumentSettings": {
+            "pageSettings": "Page Settings",
+            "orientation": "Orientation",
+            "portrait": "Portrait",
+            "landscape": "Landscape",
+            "paperSize": "Paper Size",
+            "size": "Size",
+            "letter": "Letter (21.6 cm x 27.9 cm)",
+            "a4": "A4 (21 cm x 29.7 cm)",
+            "margins": "Margins",
+            "top": "Top",
+            "bottom": "Bottom",
+            "right": "Right",
+            "left": "Left",
+            "cancel": "Cancel",
+            "save": "Save"
+          },
+          "areYouSure": "Are you sure you want to save the document?",
+          "saveDocument": "This will save the current document and replace the one that was previously saved.",
+          "otherDocument": "Previous document:",
+          "cancel": "Cancel",
+          "continue": "Continue",
+          "load": "Load",
+          "exportAsPDF": "Export as PDF",
+          "edit": "Edit",
+          "undo": "Undo",
+          "redo": "Redo",
+          "cut": "Cut",
+          "copy": "Copy",
+          "paste": "Paste",
+          "selectAll": "Select all",
+          "insert": "Insert",
+          "table": "Table",
+          "format": "Format",
+          "text": "Text",
+          "bold": "Bold",
+          "submenu": {
+            "useCapitalLetters": "Use of capital letters",
+            "lowercase": "lowercase",
+            "uppercase": "UPPERCASE",
+            "capitalize": "Capitalize All Words"
+          },
+          "paragraphStyles": "Paragraph styles",
+          "normalText": "Normal text",
+          "heading1": "Heading 1",
+          "heading2": "Heading 2",
+          "heading3": "Heading 3",
+          "heading4": "Heading 4",
+          "heading5": "Heading 5",
+          "heading6": "Heading 6",
+          "align": "Align",
+          "left": "Left",
+          "center": "Center",
+          "right": "Right",
+          "justify": "Justify",
+          "insertRowAbove": "Insert row above",
+          "insertRowBelow": "Insert row below",
+          "insertColumnLeft": "Insert column left",
+          "insertColumnRight": "Insert column right",
+          "deleteRow": "Delete row",
+          "deleteColumn": "Delete column",
+          "deleteTable": "Delete table",
+          "toggleHeaderRow": "Toggle header row",
+          "mergeCells": "Merge cells",
+          "splitCells": "Split cells",
+          "clearFormatting": "Clear formatting",
+          "toolbar": {
+            "comboboxFont": {
+              "searchFont": "Search font..."
+            }
+          }
+        }
+      }
+    }
+  },
+  "auth_components": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out"
+  },
+  "header": {
+    "title": "WCA Certificates"
+  },
+  "footer": {
+    "github": "See anything wrong? Open an issue on GitHub",
+    "wiki": "Wiki",
+    "wikiHref": "https://github.com/cubingmexico-org/web-frontend/wiki/Certificados-de-la-WCA",
+    "version": "1.0.0"
+  },
+  "locale_switcher": {
+    "language": "Language"
+  },
+  "card_competition": {
+    "certificates": {
+      "podium": "Podium Certificates",
+      "participation": "Participation Certificates",
+      "designPodium": "Design Podium Certificates",
+      "designParticipation": "Design Participation Certificates"
+    },
+    "liveLink": "WCA Live"
+  }
+}

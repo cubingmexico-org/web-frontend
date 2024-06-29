@@ -17,17 +17,33 @@ import { cn } from "../lib/utils"
 
 interface DataTableColumnHeaderProps<TData, TValue>
   extends React.HTMLAttributes<HTMLDivElement> {
+  lang: 'es' | 'en'
   column: Column<TData, TValue>
   title: string
   showHide?: boolean
 }
 
 export function DataTableColumnHeader<TData, TValue>({
+  lang = 'es',
   column,
   title,
   className,
   showHide = false,
 }: DataTableColumnHeaderProps<TData, TValue>): JSX.Element {
+
+  const dictionary = {
+    es: {
+      asc: "Ascendente",
+      desc: "Descendente",
+      hide: "Esconder",
+    },
+    en: {
+      asc: "Ascending",
+      desc: "Descending",
+      hide: "Hide",
+    },
+  }[lang];
+
   if (!column.getCanSort()) {
     return <div className={cn(className)}>{title}</div>
   }
@@ -55,19 +71,19 @@ export function DataTableColumnHeader<TData, TValue>({
         <DropdownMenuContent align="start">
           <DropdownMenuItem onClick={() => { column.toggleSorting(false); }}>
             <ArrowUpIcon className="ui-mr-2 ui-h-3.5 ui-w-3.5 ui-text-muted-foreground/70" />
-            Ascendente
+            {dictionary.asc}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => { column.toggleSorting(true); }}>
             <ArrowDownIcon className="ui-mr-2 ui-h-3.5 ui-w-3.5 ui-text-muted-foreground/70" />
-            Descendente
+            {dictionary.desc}
           </DropdownMenuItem>
           {showHide ? <>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => { column.toggleVisibility(false); }}>
-                <EyeNoneIcon className="ui-mr-2 ui-h-3.5 ui-w-3.5 ui-text-muted-foreground/70" />
-                Esconder
-              </DropdownMenuItem>
-            </> : null
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => { column.toggleVisibility(false); }}>
+              <EyeNoneIcon className="ui-mr-2 ui-h-3.5 ui-w-3.5 ui-text-muted-foreground/70" />
+              {dictionary.hide}
+            </DropdownMenuItem>
+          </> : null
           }
         </DropdownMenuContent>
       </DropdownMenu>

@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary -- . */
 /* eslint-disable @typescript-eslint/no-unsafe-argument -- . */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
 /* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
@@ -5,6 +6,7 @@
 /* eslint-disable import/no-named-as-default -- . */
 'use client'
 
+import { usePathname } from 'next/navigation';
 import type { JSONContent } from '@tiptap/react';
 import { useEditor, EditorContent } from '@tiptap/react'
 import Mention from '@tiptap/extension-mention'
@@ -65,19 +67,25 @@ import {
   Trash2,
   TableCellsMerge,
   TableCellsSplit,
-  RemoveFormatting
+  RemoveFormatting,
+  Heading
 } from 'lucide-react';
 import { Button } from '@repo/ui/button';
 import { DialogDocumentSettings } from '@/components/editor/dialog-document-settings';
 import { TextTransform } from '@/components/editor/extensions/text-transform';
 import { FontSize } from '@/components/editor/extensions/font-size';
-import { participation, podium } from '@/lib/placeholders';
+import { participation as participationEs, podium as podiumEs } from '@/data/es/certificates';
+import { participation as participationEn, podium as podiumEn } from '@/data/en/certificates';
+import type { getDictionary } from '@/get-dictionary';
 import Toolbar from './toolbar';
-import suggestionPodium from './mentions/suggestion-podium'
-import suggestionParticipation from './mentions/suggestion-participation'
+import suggestionPodiumEs from './mentions/suggestions/es/suggestion-podium'
+import suggestionParticipationEs from './mentions/suggestions/es/suggestion-participation'
+import suggestionPodiumEn from './mentions/suggestions/en/suggestion-podium'
+import suggestionParticipationEn from './mentions/suggestions/en/suggestion-participation'
 import Submenu from './submenu';
 
 interface TiptapProps {
+  dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["podium"]["document_settings"]["tiptap"]
   content: JSONContent;
   pdfDisabled: boolean;
   pageSize: PageSize;
@@ -93,6 +101,7 @@ interface TiptapProps {
 };
 
 export default function Tiptap({
+  dictionary,
   content,
   pdfDisabled,
   pageSize,
@@ -107,6 +116,9 @@ export default function Tiptap({
   competitionId,
 }: TiptapProps): JSX.Element {
 
+  const pathname = usePathname()
+  const lang = pathname.startsWith('/es') ? 'es' : 'en'
+
   const handleChange = (newContent: JSONContent) => {
     onChange(newContent);
   };
@@ -118,7 +130,9 @@ export default function Tiptap({
         HTMLAttributes: {
           class: 'mention',
         },
-        suggestion: variant === 'podium' ? suggestionPodium : suggestionParticipation,
+        suggestion: lang === 'es' 
+        ? (variant === 'podium' ? suggestionPodiumEs : suggestionParticipationEs)
+        : (variant === 'podium' ? suggestionPodiumEn : suggestionParticipationEn),
       }),
       TextAlign.configure({
         types: ['heading', 'paragraph'],
@@ -143,7 +157,7 @@ export default function Tiptap({
     editorProps: {
       attributes: {
         class: cn(
-          'shadow bg-background focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 overflow-y-clip',
+          'shadow bg-white text-black focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 overflow-y-clip',
           {
             [getLeftMarginValue(Array.isArray(pageMargins) ? pageMargins[0] : 0)]: Array.isArray(pageMargins) && pageMargins[0] >= 0 && pageMargins[0] <= 200,
             [getTopMarginValue(Array.isArray(pageMargins) ? pageMargins[1] : 0)]: Array.isArray(pageMargins) && pageMargins[1] >= 0 && pageMargins[1] <= 200,
@@ -164,7 +178,7 @@ export default function Tiptap({
   })
 
   if (!editor) {
-    return <>null</>
+    return <>{dictionary.loading}</>
   }
 
   const savedContent = localStorage.getItem(`${competitionId}-${variant}`);
@@ -182,40 +196,46 @@ export default function Tiptap({
     <div className="w-full">
       <Menubar className='mb-4'>
         <MenubarMenu>
-          <MenubarTrigger>Archivo</MenubarTrigger>
+          <MenubarTrigger>{dictionary.file}</MenubarTrigger>
           <MenubarContent>
             <MenubarItem
-              disabled={variant === 'podium' ? content === podium : content === participation}
+              disabled={
+                lang === 'es'
+                ? variant === 'podium' ? content === podiumEs : content === participationEs
+                : variant === 'podium' ? content === podiumEn : content === participationEn
+              }
               onClick={() => {
-                const newContent = variant === 'podium' ? podium : participation;
+                const newContent = lang === 'es'
+                ? variant === 'podium' ? podiumEs : participationEs
+                : variant === 'podium' ? podiumEn : participationEn;
                 editor.commands.setContent(newContent);
                 handleChange(newContent);
               }}
             >
-              <RotateCcw className='h-4 w-4 mr-2' />Reiniciar
+              <RotateCcw className='h-4 w-4 mr-2' />{dictionary.reset}
             </MenubarItem>
             {savedContent ? (
               <AlertDialog>
                 <AlertDialogTrigger className='flex text-sm hover:bg-accent px-2 py-1.5 cursor-default rounded-sm w-full'>
-                  <Save className='h-4 w-4 mr-2' />Guardar
+                  <Save className='h-4 w-4 mr-2' />{dictionary.save}
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>¿Estás seguro que deseas guardar el documento?</AlertDialogTitle>
+                    <AlertDialogTitle>{dictionary.areYouSure}</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Esto guardará el documento actual y reemplazará el que estaba guardado anteriormente.<br />
-                      <span><span className='font-bold'>Documento anterior:</span> {new Date(date).toLocaleString()}</span>
+                      {dictionary.saveDocument}<br />
+                      <span><span className='font-bold'>{dictionary.otherDocument}</span> {new Date(date).toLocaleString()}</span>
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction onClick={saveContent}>Continuar</AlertDialogAction>
+                    <AlertDialogCancel>{dictionary.cancel}</AlertDialogCancel>
+                    <AlertDialogAction onClick={saveContent}>{dictionary.continue}</AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
             ) : (
               <MenubarItem onClick={saveContent}>
-                <Save className='h-4 w-4 mr-2' />Guardar
+                <Save className='h-4 w-4 mr-2' />{dictionary.save}
               </MenubarItem>
             )}
             <MenubarItem
@@ -228,17 +248,18 @@ export default function Tiptap({
                 }
               }}
             >
-              <Loader className='h-4 w-4 mr-2' />Cargar
+              <Loader className='h-4 w-4 mr-2' />{dictionary.load}
             </MenubarItem>
             <MenubarSeparator />
             <MenubarItem asChild>
               <Button className='!w-full !px-2 !py-1.5 !justify-start !font-normal !h-8' disabled={pdfDisabled} onClick={pdfOnClick} type="submit" variant='ghost'>
-                <FileDown className='h-4 w-4 mr-2' />Exportar como PDF
+                <FileDown className='h-4 w-4 mr-2' />{dictionary.exportAsPDF}
               </Button>
             </MenubarItem>
             <MenubarSeparator />
             <MenubarItem asChild>
               <DialogDocumentSettings
+                dictionary={dictionary.dialogDocumentSettings}
                 pageMargins={pageMargins}
                 pageOrientation={pageOrientation}
                 pageSize={pageSize}
@@ -250,156 +271,160 @@ export default function Tiptap({
           </MenubarContent>
         </MenubarMenu>
         <MenubarMenu>
-          <MenubarTrigger>Editar</MenubarTrigger>
+          <MenubarTrigger>{dictionary.edit}</MenubarTrigger>
           <MenubarContent className='w-60'>
             <MenubarItem
               disabled={!editor.can().chain().focus().undo().run()}
               onClick={() => editor.chain().focus().undo().run()}
             >
-              <Undo className='h-4 w-4 mr-2' />Deshacer<MenubarShortcut>Ctrl+Y</MenubarShortcut>
+              <Undo className='h-4 w-4 mr-2' />{dictionary.undo}<MenubarShortcut>Ctrl+Y</MenubarShortcut>
             </MenubarItem>
             <MenubarItem
               disabled={!editor.can().chain().focus().redo().run()}
               onClick={() => editor.chain().focus().redo().run()}
             >
-              <Redo className='h-4 w-4 mr-2' />Rehacer<MenubarShortcut>Ctrl+Z</MenubarShortcut>
+              <Redo className='h-4 w-4 mr-2' />{dictionary.redo}<MenubarShortcut>Ctrl+Z</MenubarShortcut>
             </MenubarItem>
             <MenubarSeparator />
             <MenubarItem disabled>
-              <Scissors className='h-4 w-4 mr-2' />Cortar<MenubarShortcut>Ctrl+X</MenubarShortcut>
+              <Scissors className='h-4 w-4 mr-2' />{dictionary.cut}<MenubarShortcut>Ctrl+X</MenubarShortcut>
             </MenubarItem>
             <MenubarItem disabled>
-              <Files className='h-4 w-4 mr-2' />Copiar<MenubarShortcut>Ctrl+C</MenubarShortcut>
+              <Files className='h-4 w-4 mr-2' />{dictionary.copy}<MenubarShortcut>Ctrl+C</MenubarShortcut>
             </MenubarItem>
             <MenubarItem disabled>
-              <Clipboard className='h-4 w-4 mr-2' />Pegar<MenubarShortcut>Ctrl+V</MenubarShortcut>
+              <Clipboard className='h-4 w-4 mr-2' />{dictionary.paste}<MenubarShortcut>Ctrl+V</MenubarShortcut>
             </MenubarItem>
             <MenubarSeparator />
             <MenubarItem disabled>
-              <TextSelect className='h-4 w-4 mr-2' />Seleccionar todo <MenubarShortcut>Ctrl+A</MenubarShortcut>
+              <TextSelect className='h-4 w-4 mr-2' />{dictionary.selectAll}<MenubarShortcut>Ctrl+A</MenubarShortcut>
             </MenubarItem>
           </MenubarContent>
         </MenubarMenu>
         <MenubarMenu>
-          <MenubarTrigger>Insertar</MenubarTrigger>
+          <MenubarTrigger>{dictionary.insert}</MenubarTrigger>
           <MenubarContent>
             <MenubarItem onClick={() => editor.chain().focus().insertTable({ rows: 2, cols: 3, withHeaderRow: true }).run()}>
-              <Sheet className='h-4 w-4 mr-2' />Tabla
+              <Sheet className='h-4 w-4 mr-2' />{dictionary.table}
             </MenubarItem>
           </MenubarContent>
         </MenubarMenu>
         <MenubarMenu>
-          <MenubarTrigger>Formato</MenubarTrigger>
+          <MenubarTrigger>{dictionary.format}</MenubarTrigger>
           <MenubarContent>
             <MenubarSub>
               <MenubarSubTrigger>
-                <Bold className='h-4 w-4 mr-2' />Texto
+                <Bold className='h-4 w-4 mr-2' />{dictionary.text}
               </MenubarSubTrigger>
               <MenubarSubContent>
                 <MenubarItem onClick={() => editor.chain().focus().toggleBold().run()}>
-                  <Bold className='h-4 w-4 mr-2' />Negrita
+                  <Bold className='h-4 w-4 mr-2' />{dictionary.bold}
                 </MenubarItem>
                 <MenubarSeparator />
-                <Submenu editor={editor} />
+                <Submenu dictionary={dictionary.submenu} editor={editor} />
               </MenubarSubContent>
             </MenubarSub>
             <MenubarSub>
-              <MenubarSubTrigger><AlignJustify className='h-4 w-4 mr-2' />Estilos de párrafo</MenubarSubTrigger>
+              <MenubarSubTrigger><AlignJustify className='h-4 w-4 mr-2' />{dictionary.paragraphStyles}</MenubarSubTrigger>
               <MenubarSubContent>
                 <MenubarCheckboxItem
                   checked={editor.isActive("paragraph")}
                   disabled={!editor.can().chain().focus().setParagraph().run()}
                   onClick={() => editor.chain().focus().setParagraph().run()}
                 >
-                  Texto normal
+                  {dictionary.normalText}
                 </MenubarCheckboxItem>
                 <MenubarCheckboxItem
                   checked={editor.isActive("heading", { level: 1 })}
                   onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
                 >
-                  Encabezado 1
+                  {dictionary.heading1}
                 </MenubarCheckboxItem>
                 <MenubarCheckboxItem
                   checked={editor.isActive("heading", { level: 2 })}
                   onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
                 >
-                  Encabezado 2
+                  {dictionary.heading2}
                 </MenubarCheckboxItem>
                 <MenubarCheckboxItem
                   checked={editor.isActive("heading", { level: 3 })}
                   onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
                 >
-                  Encabezado 3
+                  {dictionary.heading3}
                 </MenubarCheckboxItem>
                 <MenubarCheckboxItem
                   checked={editor.isActive("heading", { level: 4 })}
                   onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
                 >
-                  Encabezado 4
+                  {dictionary.heading4}
                 </MenubarCheckboxItem>
                 <MenubarCheckboxItem
                   checked={editor.isActive("heading", { level: 5 })}
                   onClick={() => editor.chain().focus().toggleHeading({ level: 5 }).run()}
                 >
-                  Encabezado 5
+                  {dictionary.heading5}
                 </MenubarCheckboxItem>
                 <MenubarCheckboxItem
                   checked={editor.isActive("heading", { level: 6 })}
                   onClick={() => editor.chain().focus().toggleHeading({ level: 6 }).run()}
                 >
-                  Encabezado 6
+                  {dictionary.heading6}
                 </MenubarCheckboxItem>
               </MenubarSubContent>
             </MenubarSub>
             <MenubarSub>
-              <MenubarSubTrigger><AlignLeft className='h-4 w-4 mr-2' />Alinear</MenubarSubTrigger>
+              <MenubarSubTrigger><AlignLeft className='h-4 w-4 mr-2' />{dictionary.align}</MenubarSubTrigger>
               <MenubarSubContent>
                 <MenubarItem onClick={() => editor.chain().focus().setTextAlign('left').run()}>
-                  <AlignLeft className="h-4 w-4 mr-2" />Izquierda
+                  <AlignLeft className="h-4 w-4 mr-2" />{dictionary.left}
                 </MenubarItem>
                 <MenubarItem onClick={() => editor.chain().focus().setTextAlign('center').run()}>
-                  <AlignCenter className="h-4 w-4 mr-2" />Centro
+                  <AlignCenter className="h-4 w-4 mr-2" />{dictionary.center}
                 </MenubarItem>
                 <MenubarItem onClick={() => editor.chain().focus().setTextAlign('right').run()}>
-                  <AlignRight className="h-4 w-4 mr-2" />Derecha
+                  <AlignRight className="h-4 w-4 mr-2" />{dictionary.right}
                 </MenubarItem>
                 <MenubarItem onClick={() => editor.chain().focus().setTextAlign('justify').run()}>
-                  <AlignJustify className="h-4 w-4 mr-2" />Justificado
+                  <AlignJustify className="h-4 w-4 mr-2" />{dictionary.justify}
                 </MenubarItem>
               </MenubarSubContent>
             </MenubarSub>
             <MenubarSeparator />
             <MenubarSub>
-              <MenubarSubTrigger><Sheet className='h-4 w-4 mr-2' />Tabla</MenubarSubTrigger>
+              <MenubarSubTrigger><Sheet className='h-4 w-4 mr-2' />{dictionary.table}</MenubarSubTrigger>
               <MenubarSubContent>
                 <MenubarItem disabled={!editor.can().addRowBefore()} onClick={() => editor.chain().focus().addRowBefore().run()}>
-                  <Plus className='h-4 w-4 mr-2' />Insertar fila arriba
+                  <Plus className='h-4 w-4 mr-2' />{dictionary.insertRowAbove}
                 </MenubarItem>
                 <MenubarItem disabled={!editor.can().addRowAfter()} onClick={() => editor.chain().focus().addRowAfter().run()}>
-                  <Plus className='h-4 w-4 mr-2' />Insertar fila abajo
+                  <Plus className='h-4 w-4 mr-2' />{dictionary.insertRowBelow}
                 </MenubarItem>
                 <MenubarItem disabled={!editor.can().addColumnBefore()} onClick={() => editor.chain().focus().addColumnBefore().run()}>
-                  <Plus className='h-4 w-4 mr-2' />Insertar columna a la izquierda
+                  <Plus className='h-4 w-4 mr-2' />{dictionary.insertColumnLeft}
                 </MenubarItem>
                 <MenubarItem disabled={!editor.can().addColumnAfter()} onClick={() => editor.chain().focus().addColumnAfter().run()}>
-                  <Plus className='h-4 w-4 mr-2' />Insertar columna a la derecha
+                  <Plus className='h-4 w-4 mr-2' />{dictionary.insertColumnRight}
                 </MenubarItem>
                 <MenubarSeparator />
                 <MenubarItem disabled={!editor.can().deleteRow()} onClick={() => editor.chain().focus().deleteRow().run()}>
-                  <Trash2 className='h-4 w-4 mr-2' />Eliminar fila
+                  <Trash2 className='h-4 w-4 mr-2' />{dictionary.deleteRow}
                 </MenubarItem>
                 <MenubarItem disabled={!editor.can().deleteColumn()} onClick={() => editor.chain().focus().deleteColumn().run()}>
-                  <Trash2 className='h-4 w-4 mr-2' />Eliminar columna
+                  <Trash2 className='h-4 w-4 mr-2' />{dictionary.deleteColumn}
                 </MenubarItem>
                 <MenubarItem disabled={!editor.can().deleteTable()} onClick={() => editor.chain().focus().deleteTable().run()}>
-                  <Trash2 className='h-4 w-4 mr-2' />Eliminar tabla
+                  <Trash2 className='h-4 w-4 mr-2' />{dictionary.deleteTable}
+                </MenubarItem>
+                <MenubarSeparator />
+                <MenubarItem disabled={!editor.can().toggleHeaderRow()} onClick={() => editor.chain().focus().toggleHeaderRow().run()}>
+                  <Heading className='h-4 w-4 mr-2' />{dictionary.toggleHeaderRow}
                 </MenubarItem>
                 <MenubarSeparator />
                 <MenubarItem disabled={!editor.can().mergeCells()} onClick={() => editor.chain().focus().mergeCells().run()}>
-                  <TableCellsMerge className='h-4 w-4 mr-2' />Combinar celdas
+                  <TableCellsMerge className='h-4 w-4 mr-2' />{dictionary.mergeCells}
                 </MenubarItem>
                 <MenubarItem disabled={!editor.can().splitCell()} onClick={() => editor.chain().focus().splitCell().run()}>
-                  <TableCellsSplit className='h-4 w-4 mr-2' />Separar celdas
+                  <TableCellsSplit className='h-4 w-4 mr-2' />{dictionary.splitCells}
                 </MenubarItem>
               </MenubarSubContent>
             </MenubarSub>
@@ -408,12 +433,12 @@ export default function Tiptap({
               editor.chain().focus().unsetAllMarks().run()
               editor.chain().focus().clearNodes().run()
             }}>
-              <RemoveFormatting className='h-4 w-4 mr-2' />Borrar formato
+              <RemoveFormatting className='h-4 w-4 mr-2' />{dictionary.clearFormatting}
             </MenubarItem>
           </MenubarContent>
         </MenubarMenu>
       </Menubar>
-      <Toolbar editor={editor} />
+      <Toolbar dictionary={dictionary.toolbar} editor={editor} />
       <div className='flex justify-center bg-secondary py-8 my-4'>
         <EditorContent editor={editor} />
       </div>

@@ -29,10 +29,10 @@ import {
 import { columnsEs, columnsEn } from "@/components/participation/columns"
 import { DataTable } from "@/components/participation/data-table"
 import { FileUploader } from "@/components/file-uploader";
-import { participation } from '@/lib/placeholders';
+import { participation } from '@/data/certificates';
 import Tiptap from '@/components/editor/tiptap'
 import { fontDeclarations } from '@/lib/fonts';
-import { getDictionary } from '@/get-dictionary';
+import type { getDictionary } from '@/get-dictionary';
 
 interface DocumentSettingsProps {
   dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["participation"]["document_settings"]
@@ -45,7 +45,7 @@ export default function DocumentSettings({ dictionary, competition, city, state 
 
   const pathname = usePathname()
   const lang = pathname.startsWith('/es') ? 'es' : 'en'
-  
+
   const people = competition.persons;
   const events = competition.events;
   const date = competition.schedule.startDate;
@@ -357,8 +357,8 @@ export default function DocumentSettings({ dictionary, competition, city, state 
       <TabsContent value="results">
         <DataTable
           columns={lang === 'es' ? columnsEs : columnsEn}
-          dictionary={dictionary.data_table}
           data={allResults}
+          dictionary={dictionary.data_table}
           rowSelection={rowSelection}
           setRowSelection={setRowSelection}
         />
@@ -371,9 +371,9 @@ export default function DocumentSettings({ dictionary, competition, city, state 
               onSubmit={(e) => { e.preventDefault(); }}
             >
               <Tiptap
-                dictionary={dictionary.tiptap}
                 competitionId={competition.id}
                 content={content}
+                dictionary={dictionary.tiptap}
                 key={`${pageSize}-${pageOrientation}-${pageMargins}`}
                 onChange={(newContent: JSONContent) => { setContent(newContent); }}
                 pageMargins={pageMargins}
@@ -388,7 +388,7 @@ export default function DocumentSettings({ dictionary, competition, city, state 
               />
             </form>
             <div>
-              <Label htmlFor='background'>Fondo del certificado</Label>
+              <Label htmlFor='background'>{dictionary.background}</Label>
               <FileUploader
                 dictionary={dictionary.fileUploader}
                 id='background'
@@ -401,7 +401,7 @@ export default function DocumentSettings({ dictionary, competition, city, state 
           </div>
         ) : (
           <div className='text-center'>
-            De momento el editor de texto no está disponible en dispositivos móviles. Por favor, utiliza un dispositivo de escritorio.
+            {dictionary.mobileFallback}
           </div>
         )}
       </TabsContent>

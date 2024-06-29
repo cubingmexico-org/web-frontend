@@ -5,7 +5,7 @@ import "@cubing/icons"
 import { auth } from "@/auth";
 import { fetchCompetition, retrieveLocation } from "@/app/[lang]/actions";
 import { generateFakeResultsForEvent } from "@/lib/utils";
-import { Locale } from "@/i18n-config";
+import type { Locale } from "@/i18n-config";
 import { getDictionary } from "@/get-dictionary"
 
 interface PageProps {
@@ -31,7 +31,7 @@ export default async function Page({ params }: PageProps): Promise<JSX.Element> 
   return (
     <div className="container flex flex-col gap-2 mx-auto py-10">
       <div className="flex gap-2">
-        <h1 className="text-3xl">Certificados de podio para el {competition.name}</h1><Badge className="text-lg" variant='destructive'>Diseño</Badge>
+        <h1 className="text-3xl">{dictionary.certificates.podium.title} {competition.name}</h1><Badge className="text-lg" variant='destructive'>{dictionary.certificates.podium.design}</Badge>
       </div>
       <DocumentSettings city={city} competition={competition} dictionary={dictionary.certificates.podium.document_settings} state={state} />
     </div>

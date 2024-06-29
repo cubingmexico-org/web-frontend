@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "@repo/ui/table"
 import type { Event, Result } from '@/types/wca-live';
-import { getDictionary } from "@/get-dictionary";
+import type { getDictionary } from "@/get-dictionary";
 
 interface DataTableProps<TData, TValue> {
   dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["podium"]["document_settings"]["data_table"]

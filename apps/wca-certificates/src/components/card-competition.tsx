@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access -- . */
 /* eslint-disable react/no-array-index-key -- . */
 
 import { Medal, User } from "lucide-react"

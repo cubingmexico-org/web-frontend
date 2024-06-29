@@ -24,7 +24,7 @@ import { Input } from '@repo/ui/input';
 import type { Margins, PageOrientation, PageSize } from 'pdfmake/interfaces';
 import { FileText } from 'lucide-react';
 import { Button } from '@repo/ui/button';
-import { getDictionary } from '@/get-dictionary';
+import type { getDictionary } from '@/get-dictionary';
 
 interface DialogDocumentSettingsProps {
   dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["podium"]["document_settings"]["tiptap"]["dialogDocumentSettings"]

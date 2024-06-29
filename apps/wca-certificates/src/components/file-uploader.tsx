@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps -- . */
+/* eslint-disable no-template-curly-in-string -- . */
 /* eslint-disable react/no-array-index-key -- . */
 /* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
 
@@ -17,7 +19,7 @@ import { ScrollArea } from "@repo/ui/scroll-area"
 import { cn } from "@repo/ui/utils"
 import { formatBytes } from "@/lib/utils"
 import { useControllableState } from "@/hooks/use-controllable-state"
-import { getDictionary } from "@/get-dictionary"
+import type { getDictionary } from "@/get-dictionary"
 
 interface FileUploaderProps extends React.HTMLAttributes<HTMLDivElement> {
   dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["podium"]["document_settings"]["fileUploader"]
@@ -120,7 +122,6 @@ export function FileUploader(props: FileUploaderProps) {
         }
       })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- .
   }, [])
 
   const isDisabled = disabled || (files?.length ?? 0) >= maxFiles

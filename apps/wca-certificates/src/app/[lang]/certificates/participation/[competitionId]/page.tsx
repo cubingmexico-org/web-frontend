@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access -- . */
-
 import { redirect } from "next/navigation"
 import { auth } from "@/auth"
 import DocumentSettings from "@/components/participation/document-settings"

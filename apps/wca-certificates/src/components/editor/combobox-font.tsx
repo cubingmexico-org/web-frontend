@@ -18,7 +18,7 @@ import {
 } from "@repo/ui/popover"
 import { cn } from "@repo/ui/utils"
 import { fonts } from "@/lib/fonts"
-import { getDictionary } from "@/get-dictionary"
+import type { getDictionary } from "@/get-dictionary"
 
 interface ComboboxFontProps {
   dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["podium"]["document_settings"]["tiptap"]["toolbar"]["comboboxFont"]

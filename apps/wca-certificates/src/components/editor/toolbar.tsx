@@ -31,8 +31,8 @@ import { Button } from "@repo/ui/button";
 import { Toggle } from "@repo/ui/toggle";
 import { Input } from "@repo/ui/input";
 import { fontFamilies, fontSizes } from "@/lib/fonts"
+import type { getDictionary } from "@/get-dictionary";
 import { ComboboxFont } from "./combobox-font";
-import { getDictionary } from "@/get-dictionary";
 
 interface ToolbarProps {
   dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["podium"]["document_settings"]["tiptap"]["toolbar"]

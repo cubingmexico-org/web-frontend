@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Github, Book } from "lucide-react"
-import { getDictionary } from "@/get-dictionary";
+import type { getDictionary } from "@/get-dictionary";
 
 interface FooterProps {
   dictionary: Awaited<ReturnType<typeof getDictionary>>

@@ -9,7 +9,7 @@ import {
   MenubarSubContent,
   MenubarSubTrigger,
 } from "@repo/ui/menubar"
-import { getDictionary } from "@/get-dictionary";
+import type { getDictionary } from "@/get-dictionary";
 
 interface SubmenuProps {
   dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["podium"]["document_settings"]["tiptap"]["submenu"]

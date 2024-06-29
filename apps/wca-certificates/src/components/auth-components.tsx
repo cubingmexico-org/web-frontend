@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access -- . */
 /* eslint-disable @typescript-eslint/no-misused-promises -- . */
 
 import { Button } from "@repo/ui/button"

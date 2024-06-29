@@ -72,12 +72,12 @@ import { Button } from '@repo/ui/button';
 import { DialogDocumentSettings } from '@/components/editor/dialog-document-settings';
 import { TextTransform } from '@/components/editor/extensions/text-transform';
 import { FontSize } from '@/components/editor/extensions/font-size';
-import { participation, podium } from '@/lib/placeholders';
+import { participation, podium } from '@/data/certificates';
+import type { getDictionary } from '@/get-dictionary';
 import Toolbar from './toolbar';
 import suggestionPodium from './mentions/suggestion-podium'
 import suggestionParticipation from './mentions/suggestion-participation'
 import Submenu from './submenu';
-import { getDictionary } from '@/get-dictionary';
 
 interface TiptapProps {
   dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["podium"]["document_settings"]["tiptap"]

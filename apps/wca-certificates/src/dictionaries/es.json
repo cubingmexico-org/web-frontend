@@ -30,6 +30,7 @@
     },
     "podium": {
       "title": "Certificados de podio para el",
+      "design": "Diseño",
       "document_settings": {
         "results": "Resultados",
         "document": "Documento",
@@ -132,6 +133,7 @@
     },
     "participation": {
       "title": "Certificados de participación para el",
+      "design": "Diseño",
       "document_settings": {
         "results": "Resultados",
         "document": "Documento",

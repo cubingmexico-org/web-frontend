@@ -2,6 +2,7 @@
 "use client"
 
 import * as React from "react"
+import { usePathname } from "next/navigation";
 import type {
   ColumnDef,
   SortingState,
@@ -26,7 +27,7 @@ import {
   TableRow,
 } from "@repo/ui/table"
 import type { ParticipantData } from '@/types/wca-live';
-import { getDictionary } from "@/get-dictionary";
+import type { getDictionary } from "@/get-dictionary";
 
 interface DataTableProps<TData, TValue> {
   dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["participation"]["document_settings"]["data_table"]
@@ -43,6 +44,10 @@ export function DataTable<TData extends ParticipantData, TValue>({
   rowSelection,
   setRowSelection,
 }: DataTableProps<TData, TValue>): JSX.Element {
+  
+  const pathname = usePathname()
+  const lang = pathname.startsWith('/es') ? 'es' : 'en'
+  
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
 
@@ -126,7 +131,7 @@ export function DataTable<TData extends ParticipantData, TValue>({
         </Table>
       </div>
       <div className="flex flex-col gap-2.5 mt-2">
-        <DataTablePagination table={table} />
+        <DataTablePagination lang={lang} table={table} />
       </div>
     </div>
   )

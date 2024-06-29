@@ -30,6 +30,7 @@
     },
     "podium": {
       "title": "Podium Certificates for",
+      "design": "Design",
       "document_settings": {
         "results": "Results",
         "document": "Document",
@@ -57,7 +58,7 @@
           "reset": "Reset",
           "save": "Save",
           "dialogDocumentSettings": {
-            "pageSettings": "Page Settings",
+            "pageSettings": "Page setup",
             "orientation": "Orientation",
             "portrait": "Portrait",
             "landscape": "Landscape",
@@ -93,10 +94,10 @@
           "text": "Text",
           "bold": "Bold",
           "submenu": {
-            "useCapitalLetters": "Use of capital letters",
+            "useCapitalLetters": "Capitalization",
             "lowercase": "lowercase",
             "uppercase": "UPPERCASE",
-            "capitalize": "Capitalize All Words"
+            "capitalize": "Title Case"
           },
           "paragraphStyles": "Paragraph styles",
           "normalText": "Normal text",
@@ -132,6 +133,7 @@
     },
     "participation": {
       "title": "Participation Certificates for",
+      "design": "Design",
       "document_settings": {
         "results": "Results",
         "document": "Document",

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access -- . */
-
 import Link from "next/link"
 import { Icons } from "@repo/ui/icons"
 import type { getDictionary } from "@/get-dictionary"

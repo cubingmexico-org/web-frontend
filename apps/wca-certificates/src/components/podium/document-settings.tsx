@@ -28,10 +28,10 @@ import {
 import { columnsEs, columnsEn } from "@/components/podium/columns"
 import { DataTable } from "@/components/podium/data-table"
 import { FileUploader } from "@/components/file-uploader";
-import { podium } from '@/lib/placeholders';
+import { podium } from '@/data/certificates';
 import Tiptap from '@/components/editor/tiptap'
 import { fontDeclarations } from '@/lib/fonts';
-import { getDictionary } from '@/get-dictionary';
+import type { getDictionary } from '@/get-dictionary';
 
 interface DocumentSettingsProps {
   dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["podium"]["document_settings"]
@@ -245,9 +245,9 @@ export default function DocumentSettings({ dictionary, competition, city, state 
       </TabsList>
       <TabsContent value="results">
         <DataTable
-          dictionary={dictionary.data_table}
           columns={lang === 'es' ? columnsEs : columnsEn}
           data={competition.events}
+          dictionary={dictionary.data_table}
           rowSelection={rowSelection}
           setRowSelection={setRowSelection}
         />
@@ -260,9 +260,9 @@ export default function DocumentSettings({ dictionary, competition, city, state 
               onSubmit={(e) => { e.preventDefault(); }}
             >
               <Tiptap
-                dictionary={dictionary.tiptap}
                 competitionId={competition.id}
                 content={content}
+                dictionary={dictionary.tiptap}
                 key={`${pageSize}-${pageOrientation}-${pageMargins}`}
                 onChange={(newContent: JSONContent) => { setContent(newContent); }}
                 pageMargins={pageMargins}

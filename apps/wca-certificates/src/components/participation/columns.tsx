@@ -35,7 +35,7 @@ export const columnsEs: ColumnDef<ParticipantData>[] = [
   {
     accessorKey: "wcaId",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="WCA ID" />
+      <DataTableColumnHeader column={column} lang="es" title="WCA ID" />
     ),
     cell: ({ row }) => {
       return <p className="font-semibold">{row.original.wcaId}</p>
@@ -44,7 +44,7 @@ export const columnsEs: ColumnDef<ParticipantData>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Nombre" />
+      <DataTableColumnHeader column={column} lang="es" title="Nombre" />
     ),
     cell: ({ row }) => {
       return <p>{row.original.name}</p>
@@ -99,7 +99,7 @@ export const columnsEn: ColumnDef<ParticipantData>[] = [
   {
     accessorKey: "wcaId",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="WCA ID" />
+      <DataTableColumnHeader column={column} lang="en" title="WCA ID" />
     ),
     cell: ({ row }) => {
       return <p className="font-semibold">{row.original.wcaId}</p>
@@ -108,7 +108,7 @@ export const columnsEn: ColumnDef<ParticipantData>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Name" />
+      <DataTableColumnHeader column={column} lang="en" title="Name" />
     ),
     cell: ({ row }) => {
       return <p>{row.original.name}</p>

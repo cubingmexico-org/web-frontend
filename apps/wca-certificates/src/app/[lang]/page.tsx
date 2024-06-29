@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access -- . */
-
 import { redirect } from 'next/navigation'
 import Image from "next/image"
 import Link from "next/link"

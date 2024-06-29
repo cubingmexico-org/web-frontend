@@ -12,14 +12,21 @@ export function ModeToggle(): JSX.Element {
   const { theme, setTheme } = useTheme();
   const isDarkMode = theme === 'dark';
 
+  React.useEffect(() => {
+    if (theme === 'system') {
+      setTheme('light');
+    }
+  }, [theme, setTheme]);
+
   const toggleTheme = () => {
     setTheme(isDarkMode ? 'light' : 'dark');
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex items-center gap-2">
       <Switch
         checked={isDarkMode}
+        defaultChecked={!isDarkMode}
         onCheckedChange={toggleTheme}
       />
       {isDarkMode ? <Moon /> : <Sun />}

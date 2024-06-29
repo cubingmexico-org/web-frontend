@@ -14,11 +14,11 @@ export default function Footer({ dictionary }: FooterProps): JSX.Element {
         <div className="flex items-center">
           <Link className="hover:underline hover:cursor-pointer" href="https://github.com/cubingmexico-org/web-frontend/tree/main/apps/wca-certificates">{dictionary.footer.github}</Link><Github className="size-4 mx-2" />
         </div>
-        <div className="font-thin">
+        <div className="font-light">
           {dictionary.footer.version}
         </div>
         <div className="flex gap-2">
-          <Link href="https://www.facebook.com/cubingmexico"><Facebook className="size-4" /></Link><Link href="https://www.instagram.com/cubingmexico"><Instagram className="size-4" /></Link>
+          <Link href="https://www.facebook.com/cubingmexico"><Facebook className="size-4 hover:text-primary" /></Link><Link href="https://www.instagram.com/cubingmexico"><Instagram className="size-4 hover:text-primary" /></Link>
         </div>
       </div>
       <ModeToggle />

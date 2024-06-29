@@ -12,6 +12,7 @@
   "certificates": {
     "welcomeTitle": "Bienvenido",
     "introText": "A continuación se muestran las competencias en las que eres organizador:",
+    "noPermissions": "No tienes permisos para acceder a esta competencia.",
     "tabs": {
       "upcoming": "Próximas",
       "current": "Actuales",

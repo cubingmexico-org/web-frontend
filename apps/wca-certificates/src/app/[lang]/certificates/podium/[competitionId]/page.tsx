@@ -2,7 +2,7 @@ import { redirect } from "next/navigation"
 import { auth } from "@/auth"
 import DocumentSettings from "@/components/podium/document-settings"
 import "@cubing/icons"
-import { fetchCompetition, retrieveLocation } from "@/app/[lang]/actions"
+import { fetchCompetition, fetchCompetitions, retrieveLocation } from "@/app/[lang]/actions"
 import type { Locale } from "@/i18n-config"
 import { getDictionary } from "@/get-dictionary"
 
@@ -20,6 +20,16 @@ export default async function Page({ params }: PageProps): Promise<JSX.Element> 
 
   if (!session) {
     redirect('/')
+  }
+
+  const competitions = await fetchCompetitions(session.token || '');
+
+  if (!competitions.some(competition => competition.id === params.competitionId)) {
+    return (
+      <div className="container mx-auto py-10">
+        <h1 className="text-3xl mb-4">{dictionary.certificates.noPermissions}</h1>
+      </div>
+    )
   }
 
   const competition = await fetchCompetition(params.competitionId);

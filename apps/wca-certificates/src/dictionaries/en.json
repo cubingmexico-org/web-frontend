@@ -12,6 +12,7 @@
   "certificates": {
     "welcomeTitle": "Welcome",
     "introText": "Below are the competitions you are organizing:",
+    "noPermissions": "You do not have permission to access this competition.",
     "tabs": {
       "upcoming": "Upcoming",
       "current": "Current",

@@ -406,10 +406,32 @@ export const podium = {
           "attrs": {
             "id": "Tipo de resultado",
             "label": null
-          }
+          },
+          "marks": [
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
+            }
+          ]
         },
         {
           "type": "text",
+          "marks": [
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
+            }
+          ],
           "text": " "
         },
         {
@@ -461,40 +483,7 @@ export const podium = {
               }
             }
           ],
-          "text": " "
-        },
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "bold"
-            },
-            {
-              "type": "textStyle",
-              "attrs": {
-                "fontFamily": "Roboto",
-                "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
-              }
-            }
-          ],
-          "text": "segundos "
-        },
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "textStyle",
-              "attrs": {
-                "fontFamily": "Roboto",
-                "fontSize": "12pt",
-                "color": "#000000",
-                "transform": "none"
-              }
-            }
-          ],
-          "text": "en el "
+          "text": " en el "
         },
         {
           "type": "mention",

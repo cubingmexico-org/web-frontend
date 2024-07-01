@@ -82,6 +82,15 @@ export const podium = {
           "marks": [
             {
               "type": "bold"
+            },
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
             }
           ]
         },
@@ -93,7 +102,7 @@ export const podium = {
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "rgb(0, 0, 0)",
+                "color": "#000000",
                 "transform": ""
               }
             }
@@ -124,6 +133,15 @@ export const podium = {
           "marks": [
             {
               "type": "bold"
+            },
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
             }
           ]
         },
@@ -150,7 +168,7 @@ export const podium = {
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "rgb(0, 0, 0)",
+                "color": "#000000",
                 "transform": ""
               }
             }
@@ -196,7 +214,7 @@ export const podium = {
               "attrs": {
                 "fontFamily": null,
                 "fontSize": "20pt",
-                "color": null,
+                "color": "#000000",
                 "transform": "uppercase"
               }
             }
@@ -240,7 +258,7 @@ export const podium = {
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "24pt",
-                "color": "rgb(0, 0, 0)",
+                "color": "#000000",
                 "transform": ""
               }
             }
@@ -316,7 +334,7 @@ export const podium = {
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "rgb(0, 0, 0)",
+                "color": "#000000",
                 "transform": ""
               }
             }
@@ -332,6 +350,15 @@ export const podium = {
           "marks": [
             {
               "type": "bold"
+            },
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
             }
           ]
         },
@@ -340,6 +367,15 @@ export const podium = {
           "marks": [
             {
               "type": "bold"
+            },
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
             }
           ],
           "text": " "
@@ -352,7 +388,7 @@ export const podium = {
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "rgb(0, 0, 0)",
+                "color": "#000000",
                 "transform": ""
               }
             }
@@ -368,11 +404,31 @@ export const podium = {
           "marks": [
             {
               "type": "bold"
+            },
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
             }
           ]
         },
         {
           "type": "text",
+          "marks": [
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
+            }
+          ],
           "text": " "
         },
         {
@@ -383,7 +439,7 @@ export const podium = {
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "rgb(0, 0, 0)",
+                "color": "#000000",
                 "transform": ""
               }
             }
@@ -395,10 +451,32 @@ export const podium = {
           "attrs": {
             "id": "Result type",
             "label": null
-          }
+          },
+          "marks": [
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
+            }
+          ]
         },
         {
           "type": "text",
+          "marks": [
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
+            }
+          ],
           "text": " "
         },
         {
@@ -409,7 +487,7 @@ export const podium = {
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "rgb(0, 0, 0)",
+                "color": "#000000",
                 "transform": ""
               }
             }
@@ -425,11 +503,31 @@ export const podium = {
           "marks": [
             {
               "type": "bold"
+            },
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
             }
           ]
         },
         {
           "type": "text",
+          "marks": [
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
+            }
+          ],
           "text": " "
         },
         {
@@ -440,7 +538,7 @@ export const podium = {
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "rgb(0, 0, 0)",
+                "color": "#000000",
                 "transform": ""
               }
             }
@@ -456,6 +554,15 @@ export const podium = {
           "marks": [
             {
               "type": "bold"
+            },
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
             }
           ]
         },
@@ -467,12 +574,12 @@ export const podium = {
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "rgb(0, 0, 0)",
+                "color": "#000000",
                 "transform": ""
               }
             }
           ],
-          "text": ", that took place on "
+          "text": ", held on "
         },
         {
           "type": "mention",
@@ -483,11 +590,31 @@ export const podium = {
           "marks": [
             {
               "type": "bold"
+            },
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
             }
           ]
         },
         {
           "type": "text",
+          "marks": [
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
+            }
+          ],
           "text": " "
         },
         {
@@ -498,12 +625,12 @@ export const podium = {
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "rgb(0, 0, 0)",
+                "color": "#000000",
                 "transform": ""
               }
             }
           ],
-          "text": "at "
+          "text": "in "
         },
         {
           "type": "mention",
@@ -514,6 +641,15 @@ export const podium = {
           "marks": [
             {
               "type": "bold"
+            },
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
             }
           ]
         },
@@ -525,7 +661,7 @@ export const podium = {
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "rgb(0, 0, 0)",
+                "color": "#000000",
                 "transform": ""
               }
             }
@@ -603,6 +739,15 @@ export const participation = {
           "marks": [
             {
               "type": "bold"
+            },
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
             }
           ]
         },
@@ -614,7 +759,7 @@ export const participation = {
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "rgb(0, 0, 0)",
+                "color": "#000000",
                 "transform": ""
               }
             }
@@ -630,6 +775,15 @@ export const participation = {
           "marks": [
             {
               "type": "bold"
+            },
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
             }
           ]
         },
@@ -641,7 +795,7 @@ export const participation = {
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "12pt",
-                "color": "rgb(0, 0, 0)",
+                "color": "#000000",
                 "transform": ""
               }
             }
@@ -668,7 +822,7 @@ export const participation = {
               "attrs": {
                 "fontFamily": "Roboto",
                 "fontSize": "20pt",
-                "color": "rgb(0, 0, 0)",
+                "color": "#000000",
                 "transform": ""
               }
             }
@@ -749,7 +903,7 @@ export const participation = {
               "attrs": {
                 "fontFamily": null,
                 "fontSize": "32pt",
-                "color": null,
+                "color": "#000000",
                 "transform": "none"
               }
             }
@@ -787,6 +941,15 @@ export const participation = {
           "marks": [
             {
               "type": "bold"
+            },
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
             }
           ]
         },
@@ -803,7 +966,7 @@ export const participation = {
               }
             }
           ],
-          "text": ", that took place on "
+          "text": ", held on "
         },
         {
           "type": "mention",
@@ -814,11 +977,31 @@ export const participation = {
           "marks": [
             {
               "type": "bold"
+            },
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
             }
           ]
         },
         {
           "type": "text",
+          "marks": [
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
+            }
+          ],
           "text": " "
         },
         {
@@ -834,7 +1017,7 @@ export const participation = {
               }
             }
           ],
-          "text": "at "
+          "text": "in "
         },
         {
           "type": "mention",
@@ -845,6 +1028,15 @@ export const participation = {
           "marks": [
             {
               "type": "bold"
+            },
+            {
+              "type": "textStyle",
+              "attrs": {
+                "fontFamily": null,
+                "fontSize": "12pt",
+                "color": "#000000",
+                "transform": "none"
+              }
             }
           ]
         },
@@ -861,7 +1053,7 @@ export const participation = {
               }
             }
           ],
-          "text": ", obtaining the following results:"
+          "text": ", achieving the following results:"
         }
       ]
     },
@@ -1009,7 +1201,18 @@ export const participation = {
                       "attrs": {
                         "id": "Event (table)",
                         "label": null
-                      }
+                      },
+                      "marks": [
+                        {
+                          "type": "textStyle",
+                          "attrs": {
+                            "fontFamily": null,
+                            "fontSize": "12pt",
+                            "color": "#000000",
+                            "transform": "none"
+                          }
+                        }
+                      ]
                     }
                   ]
                 }
@@ -1034,7 +1237,18 @@ export const participation = {
                       "attrs": {
                         "id": "Result (table)",
                         "label": null
-                      }
+                      },
+                      "marks": [
+                        {
+                          "type": "textStyle",
+                          "attrs": {
+                            "fontFamily": null,
+                            "fontSize": "12pt",
+                            "color": "#000000",
+                            "transform": "none"
+                          }
+                        }
+                      ]
                     }
                   ]
                 }
@@ -1059,7 +1273,18 @@ export const participation = {
                       "attrs": {
                         "id": "Ranking (table)",
                         "label": null
-                      }
+                      },
+                      "marks": [
+                        {
+                          "type": "textStyle",
+                          "attrs": {
+                            "fontFamily": null,
+                            "fontSize": "12pt",
+                            "color": "#000000",
+                            "transform": "none"
+                          }
+                        }
+                      ]
                     }
                   ]
                 }

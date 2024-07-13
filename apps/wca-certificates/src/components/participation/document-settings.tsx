@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition -- . */
 /* eslint-disable @typescript-eslint/no-explicit-any -- . */
 /* eslint-disable @typescript-eslint/no-unsafe-return -- . */
 /* eslint-disable no-nested-ternary -- . */
@@ -88,7 +89,7 @@ export default function DocumentSettings({ dictionary, competition, city }: Docu
   for (const person of people) {
     const results = [];
     for (const event of events) {
-      if (person.registration.eventIds.includes(event.id)) {
+      if (person.registration && person.registration.eventIds.includes(event.id)) {
         for (const round of event.rounds) {
           for (const result of round.results) {
             if (result.personId === person.registrantId) {

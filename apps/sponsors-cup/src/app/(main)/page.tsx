@@ -32,7 +32,7 @@ export default async function Page(): Promise<JSX.Element> {
           <TableCaption>Resultados obtenidos del <Link className="hover:underline italic" href="https://github.com/thewca/wcif/blob/master/specification.md">WCA Competition Interchange Format</Link></TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-center text-lg font-bold" colSpan={competitions.length + 3}>Marcador por equipos</TableHead>
+              <TableHead className="text-center text-lg font-bold" colSpan={10}>Marcador por equipos</TableHead>
             </TableRow>
             <TableRow>
               <TableHead className="text-center font-bold" colSpan={2} rowSpan={2}>
@@ -41,7 +41,7 @@ export default async function Page(): Promise<JSX.Element> {
                   <Users className="w-4 h-4 ml-1" />
                 </div>
               </TableHead>
-              <TableHead className="text-center font-bold hidden sm:table-cell" colSpan={competitions.length}>
+              <TableHead className="text-center font-bold hidden sm:table-cell" colSpan={7}>
                 <div className="flex items-center justify-center">
                   Competencias
                   <Trophy className="w-4 h-4 ml-1" />
@@ -50,7 +50,15 @@ export default async function Page(): Promise<JSX.Element> {
               <TableHead className="text-center font-bold max-w-[100px]" rowSpan={2}>Puntos totales</TableHead>
             </TableRow>
             <TableRow>
-              {competitions.map((competition, index) => (
+              {competitions.slice(0, 1).map((competition, index) => (
+                <TableHead className="text-center hidden sm:table-cell max-w-[100px]" key={index}>
+                  <Link className="hover:underline" href={`https://live.worldcubeassociation.org/link/competitions/${competition.id}`}>
+                    {competition.name}
+                  </Link>
+                </TableHead>
+              ))}
+              <TableHead className="text-center hidden sm:table-cell max-w-[100px]">...</TableHead>
+              {competitions.slice(-5).map((competition, index) => (
                 <TableHead className="text-center hidden sm:table-cell max-w-[100px]" key={index}>
                   <Link className="hover:underline" href={`https://live.worldcubeassociation.org/link/competitions/${competition.id}`}>
                     {competition.name}
@@ -78,7 +86,11 @@ export default async function Page(): Promise<JSX.Element> {
                           {member.name}
                         </Link>
                       </TableCell>
-                      {competitions.map((competition) => (
+                      {competitions.slice(0, 1).map((competition) => (
+                        <TableCell className="text-center hidden sm:table-cell" key={competition.id}>{member.scores[competition.id]}</TableCell>
+                      ))}
+                      <TableCell className="text-center hidden sm:table-cell">...</TableCell>
+                      {competitions.slice(-5).map((competition) => (
                         <TableCell className="text-center hidden sm:table-cell" key={competition.id}>{member.scores[competition.id]}</TableCell>
                       ))}
                       <TableCell className="text-center" rowSpan={team.members.length}>{team.totalPoints}</TableCell>
@@ -91,7 +103,11 @@ export default async function Page(): Promise<JSX.Element> {
                           {member.name}
                         </Link>
                       </TableCell>
-                      {competitions.map((competition) => (
+                      {competitions.slice(0, 1).map((competition) => (
+                        <TableCell className="text-center hidden sm:table-cell" key={competition.id}>{member.scores[competition.id]}</TableCell>
+                      ))}
+                      <TableCell className="text-center hidden sm:table-cell">...</TableCell>
+                      {competitions.slice(-5).map((competition) => (
                         <TableCell className="text-center hidden sm:table-cell" key={competition.id}>{member.scores[competition.id]}</TableCell>
                       ))}
                     </>
@@ -107,7 +123,7 @@ export default async function Page(): Promise<JSX.Element> {
           <TableCaption>Resultados obtenidos del <Link className="hover:underline italic" href="https://github.com/thewca/wcif/blob/master/specification.md">WCA Competition Interchange Format</Link></TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-center text-lg font-bold" colSpan={competitions.length + 3}>Marcador individual</TableHead>
+              <TableHead className="text-center text-lg font-bold" colSpan={10}>Marcador individual</TableHead>
             </TableRow>
             <TableRow>
               <TableHead className="text-center font-bold" colSpan={2} rowSpan={2}>
@@ -116,7 +132,7 @@ export default async function Page(): Promise<JSX.Element> {
                   <User className="w-4 h-4 ml-1" />
                 </div>
               </TableHead>
-              <TableHead className="text-center font-bold hidden sm:table-cell" colSpan={competitions.length}>
+              <TableHead className="text-center font-bold hidden sm:table-cell" colSpan={7}>
                 <div className="flex items-center justify-center">
                   Competencias
                   <Trophy className="w-4 h-4 ml-1" />
@@ -125,7 +141,15 @@ export default async function Page(): Promise<JSX.Element> {
               <TableHead className="text-center font-bold max-w-[100px]" rowSpan={2}>Puntos totales</TableHead>
             </TableRow>
             <TableRow>
-              {competitions.map((competition, index) => (
+              {competitions.slice(0, 1).map((competition, index) => (
+                <TableHead className="text-center hidden sm:table-cell max-w-[100px]" key={index}>
+                  <Link className="hover:underline" href={`https://live.worldcubeassociation.org/link/competitions/${competition.id}`}>
+                    {competition.name}
+                  </Link>
+                </TableHead>
+              ))}
+              <TableHead className="text-center hidden sm:table-cell max-w-[100px]">...</TableHead>
+              {competitions.slice(-5).map((competition, index) => (
                 <TableHead className="text-center hidden sm:table-cell max-w-[100px]" key={index}>
                   <Link className="hover:underline" href={`https://live.worldcubeassociation.org/link/competitions/${competition.id}`}>
                     {competition.name}
@@ -143,7 +167,11 @@ export default async function Page(): Promise<JSX.Element> {
                     {member.memberName}
                   </Link>
                 </TableCell>
-                {competitions.map((competition) => (
+                {competitions.slice(0, 1).map((competition) => (
+                  <TableCell className="text-center hidden sm:table-cell" key={competition.id}>{member.scores[competition.id]}</TableCell>
+                ))}
+                <TableCell className="text-center hidden sm:table-cell">...</TableCell>
+                {competitions.slice(-5).map((competition) => (
                   <TableCell className="text-center hidden sm:table-cell" key={competition.id}>{member.scores[competition.id]}</TableCell>
                 ))}
                 <TableCell className="text-center">{member.totalScore}</TableCell>

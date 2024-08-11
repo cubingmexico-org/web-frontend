@@ -1,5 +1,4 @@
 /* eslint-disable no-nested-ternary -- . */
-/* eslint-disable @typescript-eslint/no-unsafe-argument -- . */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
 /* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
 /* eslint-disable @typescript-eslint/no-shadow -- . */
@@ -35,17 +34,6 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from "@repo/ui/menubar"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@repo/ui/alert-dialog"
 import {
   Save,
   Loader,
@@ -130,9 +118,9 @@ export default function Tiptap({
         HTMLAttributes: {
           class: 'mention',
         },
-        suggestion: lang === 'es' 
-        ? (variant === 'podium' ? suggestionPodiumEs : suggestionParticipationEs)
-        : (variant === 'podium' ? suggestionPodiumEn : suggestionParticipationEn),
+        suggestion: lang === 'es'
+          ? (variant === 'podium' ? suggestionPodiumEs : suggestionParticipationEs)
+          : (variant === 'podium' ? suggestionPodiumEn : suggestionParticipationEn),
       }),
       TextAlign.configure({
         types: ['heading', 'paragraph'],
@@ -181,15 +169,38 @@ export default function Tiptap({
     return <>{dictionary.loading}</>
   }
 
-  const savedContent = localStorage.getItem(`${competitionId}-${variant}`);
-  const { date } = JSON.parse(savedContent || '{}');
-
   const saveContent = () => {
-    const contentWithDate = {
-      content: editor.getJSON(),
-      date: new Date().toISOString(),
+    const content = editor.getJSON();
+    const jsonString = JSON.stringify(content);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${competitionId}-${variant}-doc.json`;
+    document.body.appendChild(a);
+    a.click();
+
+    // Clean up
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  const loadContent = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) {
+        return;
+      }
+
+      const jsonString = await file.text();
+      const content = JSON.parse(jsonString) as JSONContent;
+      editor.commands.setContent(content);
     };
-    localStorage.setItem(`${competitionId}-${variant}`, JSON.stringify(contentWithDate));
+    input.click();
   }
 
   return (
@@ -201,53 +212,23 @@ export default function Tiptap({
             <MenubarItem
               disabled={
                 lang === 'es'
-                ? variant === 'podium' ? content === podiumEs : content === participationEs
-                : variant === 'podium' ? content === podiumEn : content === participationEn
+                  ? variant === 'podium' ? content === podiumEs : content === participationEs
+                  : variant === 'podium' ? content === podiumEn : content === participationEn
               }
               onClick={() => {
                 const newContent = lang === 'es'
-                ? variant === 'podium' ? podiumEs : participationEs
-                : variant === 'podium' ? podiumEn : participationEn;
+                  ? variant === 'podium' ? podiumEs : participationEs
+                  : variant === 'podium' ? podiumEn : participationEn;
                 editor.commands.setContent(newContent);
                 handleChange(newContent);
               }}
             >
               <RotateCcw className='h-4 w-4 mr-2' />{dictionary.reset}
             </MenubarItem>
-            {savedContent ? (
-              <AlertDialog>
-                <AlertDialogTrigger className='flex text-sm hover:bg-accent px-2 py-1.5 cursor-default rounded-sm w-full'>
-                  <Save className='h-4 w-4 mr-2' />{dictionary.save}
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>{dictionary.areYouSure}</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      {dictionary.saveDocument}<br />
-                      <span><span className='font-bold'>{dictionary.otherDocument}</span> {new Date(date).toLocaleString()}</span>
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>{dictionary.cancel}</AlertDialogCancel>
-                    <AlertDialogAction onClick={saveContent}>{dictionary.continue}</AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            ) : (
-              <MenubarItem onClick={saveContent}>
+            <MenubarItem onClick={saveContent}>
                 <Save className='h-4 w-4 mr-2' />{dictionary.save}
               </MenubarItem>
-            )}
-            <MenubarItem
-              disabled={!savedContent}
-              onClick={() => {
-                if (savedContent) {
-                  const { content } = JSON.parse(savedContent);
-                  editor.commands.setContent(content);
-                  handleChange(content);
-                }
-              }}
-            >
+            <MenubarItem onClick={loadContent}>
               <Loader className='h-4 w-4 mr-2' />{dictionary.load}
             </MenubarItem>
             <MenubarSeparator />

@@ -63,7 +63,7 @@ export function CardCompetition({
             </Link>
             <Link className={`${buttonVariants({ variant: 'secondary' })} mb-2`} href={`/certificates/design/participation/${competition.id}`}>
               <User className="size-4 mr-2" />
-              <span>{dictionary.certificates.participation}</span>
+              <span>{dictionary.certificates.designParticipation}</span>
             </Link>
           </>
         ) : null}

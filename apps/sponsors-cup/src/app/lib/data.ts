@@ -1,9 +1,14 @@
 /* eslint-disable no-await-in-loop -- . */
 /* eslint-disable no-console -- . */
 /* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
-import { sql } from '@vercel/postgres';
-import { unstable_noStore as noStore } from 'next/cache';
-import type { Competition, IndividualTableData, Member, TableData } from './definitions';
+import { sql } from "@vercel/postgres";
+import { unstable_noStore as noStore } from "next/cache";
+import type {
+  Competition,
+  IndividualTableData,
+  Member,
+  TableData,
+} from "./definitions";
 
 export async function fetchTableData() {
   noStore();
@@ -35,8 +40,8 @@ export async function fetchTableData() {
   `;
     return data.rows;
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch table data.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch table data.");
   }
 }
 
@@ -69,8 +74,8 @@ export async function fetchIndividualTableData() {
   `;
     return data.rows;
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch table data.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch table data.");
   }
 }
 
@@ -102,8 +107,8 @@ export async function fetchIndividualData(memberId: string) {
 `;
     return data.rows;
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch table data.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch table data.");
   }
 }
 
@@ -111,11 +116,12 @@ export async function fetchCompetitions() {
   noStore();
 
   try {
-    const data = await sql<Competition>`SELECT * FROM Competitions WHERE CURRENT_DATE BETWEEN startDate AND endDate OR endDate < CURRENT_DATE ORDER BY startDate ASC`;
+    const data =
+      await sql<Competition>`SELECT * FROM Competitions WHERE CURRENT_DATE BETWEEN startDate AND endDate OR endDate < CURRENT_DATE ORDER BY startDate ASC`;
     return data.rows;
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch competitions data.');
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch competitions data.");
   }
 }
 
@@ -123,9 +129,9 @@ export async function insertCompetitions() {
   noStore();
 
   try {
-    const comps = await fetch(
-      'https://raw.githubusercontent.com/robiningelbrecht/wca-rest-api/master/api/competitions/MX.json'
-    ).then((res) => res.json()) as { items: Competition[] };
+    const comps = (await fetch(
+      "https://raw.githubusercontent.com/robiningelbrecht/wca-rest-api/master/api/competitions/MX.json",
+    ).then((res) => res.json())) as { items: Competition[] };
 
     const filteredComps = comps.items.filter((comp: Competition) => {
       const fromDate = new Date(comp.date.from);
@@ -138,7 +144,7 @@ export async function insertCompetitions() {
       await sql`INSERT INTO Competitions (id, name, startDate, endDate) VALUES (${comp.id}, ${comp.name}, ${comp.date.from}, ${comp.date.till}) ON CONFLICT (id) DO NOTHING;`;
     }
   } catch (error) {
-    throw new Error('Failed to fetch and insert competitions');
+    throw new Error("Failed to fetch and insert competitions");
   }
 }
 
@@ -162,7 +168,7 @@ export async function insertNewScores() {
       }
     }
   } catch (error) {
-    throw new Error('Failed to insert new scores');
+    throw new Error("Failed to insert new scores");
   }
 }
 
@@ -173,75 +179,120 @@ export async function updateScores() {
     const currentDate = new Date();
     currentDate.setHours(currentDate.getHours() - 6);
     console.log(currentDate);
-    const dataCompetitions = await sql<Competition>`SELECT * FROM Competitions WHERE endDate = ${currentDate.toISOString()}`;
+    const dataCompetitions =
+      await sql<Competition>`SELECT * FROM Competitions WHERE endDate = ${currentDate.toISOString()}`;
     const comps = dataCompetitions.rows;
     for (const comp of comps) {
-      const compWcif = await fetch(
-        `https://www.worldcubeassociation.org/api/v0/competitions/${comp.id}/wcif/public`
-      ).then((res) => res.json()) as Competition;
+      const compWcif = (await fetch(
+        `https://www.worldcubeassociation.org/api/v0/competitions/${comp.id}/wcif/public`,
+      ).then((res) => res.json())) as Competition;
 
-      const dataMembers = await sql<Member>`SELECT * FROM Members`
+      const dataMembers = await sql<Member>`SELECT * FROM Members`;
 
-      const participatingMembers = dataMembers.rows.filter(member => compWcif.persons.some(person => person.wcaId === member.id)).map(member => {
-        const person = compWcif.persons.find(pers => pers.wcaId === member.id);
-        return person && { ...member, personId: person.registrantId };
-      });
+      const participatingMembers = dataMembers.rows
+        .filter((member) =>
+          compWcif.persons.some((person) => person.wcaId === member.id),
+        )
+        .map((member) => {
+          const person = compWcif.persons.find(
+            (pers) => pers.wcaId === member.id,
+          );
+          return person && { ...member, personId: person.registrantId };
+        });
 
-      const membersPersonalBests = participatingMembers.map(member => {
-        const person = compWcif.persons.find(pers => pers.wcaId === member?.id);
+      const membersPersonalBests = participatingMembers.map((member) => {
+        const person = compWcif.persons.find(
+          (pers) => pers.wcaId === member?.id,
+        );
         if (person) {
           return {
             id: member?.id,
             personId: member?.personId,
-            personalBests: person.personalBests.map(({ eventId, best, type }) => ({ eventId, best, type }))
+            personalBests: person.personalBests.map(
+              ({ eventId, best, type }) => ({ eventId, best, type }),
+            ),
           };
         }
-        return { id: member?.id, personId: member?.personId, personalBests: [] };
+        return {
+          id: member?.id,
+          personId: member?.personId,
+          personalBests: [],
+        };
       });
 
-      const personalBestsBroken = membersPersonalBests.map(({ id, personId, personalBests }) => {
-        const bestsBroken = compWcif.events.flatMap(event =>
-          event.rounds.flatMap(round =>
-            round.results
-              .filter(result => result.personId === personId && result.best !== -1 && result.best !== -2)
-              .map(result => {
-                let singlePB = personalBests.find(pb => pb.eventId === event.id && pb.type === 'single');
-                let averagePB = personalBests.find(pb => pb.eventId === event.id && pb.type === 'average');
+      const personalBestsBroken = membersPersonalBests.map(
+        ({ id, personId, personalBests }) => {
+          const bestsBroken = compWcif.events.flatMap((event) =>
+            event.rounds.flatMap((round) =>
+              round.results
+                .filter(
+                  (result) =>
+                    result.personId === personId &&
+                    result.best !== -1 &&
+                    result.best !== -2,
+                )
+                .map((result) => {
+                  let singlePB = personalBests.find(
+                    (pb) => pb.eventId === event.id && pb.type === "single",
+                  );
+                  let averagePB = personalBests.find(
+                    (pb) => pb.eventId === event.id && pb.type === "average",
+                  );
 
-                let prsBroken = 0;
+                  let prsBroken = 0;
 
-                if (!singlePB || result.best <= singlePB.best) {
-                  console.log(`${id} broke single PR for ${event.id} with ${result.best}`);
-                  if (!singlePB) {
-                    singlePB = { eventId: event.id, type: 'single', best: result.best };
-                    personalBests.push(singlePB);
-                  } else {
-                    singlePB.best = result.best;
+                  if (!singlePB || result.best <= singlePB.best) {
+                    console.log(
+                      `${id} broke single PR for ${event.id} with ${result.best}`,
+                    );
+                    if (!singlePB) {
+                      singlePB = {
+                        eventId: event.id,
+                        type: "single",
+                        best: result.best,
+                      };
+                      personalBests.push(singlePB);
+                    } else {
+                      singlePB.best = result.best;
+                    }
+                    prsBroken++;
                   }
-                  prsBroken++;
-                }
 
-                if ((!averagePB || result.average <= averagePB.best) && result.average !== -1 && result.average !== 0) {
-                  console.log(`${id} broke average PR for ${event.id} with ${result.average}`);
-                  if (!averagePB) {
-                    averagePB = { eventId: event.id, type: 'average', best: result.average };
-                    personalBests.push(averagePB);
-                  } else {
-                    averagePB.best = result.average;
+                  if (
+                    (!averagePB || result.average <= averagePB.best) &&
+                    result.average !== -1 &&
+                    result.average !== 0
+                  ) {
+                    console.log(
+                      `${id} broke average PR for ${event.id} with ${result.average}`,
+                    );
+                    if (!averagePB) {
+                      averagePB = {
+                        eventId: event.id,
+                        type: "average",
+                        best: result.average,
+                      };
+                      personalBests.push(averagePB);
+                    } else {
+                      averagePB.best = result.average;
+                    }
+                    prsBroken++;
                   }
-                  prsBroken++;
-                }
 
-                return { prs: prsBroken };
-              })
-          )
-        );
+                  return { prs: prsBroken };
+                }),
+            ),
+          );
 
-        const totalPrsBroken = bestsBroken.reduce((total, current) => total + current.prs, 0);
-        console.log('-------------------')
+          const totalPrsBroken = bestsBroken.reduce(
+            (total, current) => total + current.prs,
+            0,
+          );
+          console.log("-------------------");
 
-        return { id, timesBroken: totalPrsBroken };
-      });
+          return { id, timesBroken: totalPrsBroken };
+        },
+      );
 
       for (const best of personalBestsBroken) {
         await sql<Competition>`UPDATE Scores SET score = score + ${best.timesBroken} WHERE member_id = ${best.id} AND competition_id = ${comp.id}`;
@@ -259,7 +310,7 @@ export async function updateScores() {
       }
     }
   } catch (error) {
-    throw new Error('Failed to update scores');
+    throw new Error("Failed to update scores");
   }
 }
 
@@ -280,7 +331,7 @@ export async function resetScores(competitionId: string) {
       await sql<Competition>`UPDATE Teams SET total_points = 0 WHERE id = ${row.team_id}`;
     }
   } catch (error) {
-    throw new Error('Failed to reset scores');
+    throw new Error("Failed to reset scores");
   }
 }
 
@@ -290,23 +341,30 @@ export async function findCompetitors() {
   try {
     const currentDate = new Date();
     currentDate.setHours(currentDate.getHours() - 6);
-    const dataCompetitions = await sql<Competition>`SELECT * FROM Competitions WHERE endDate = ${currentDate.toISOString()}`;
+    const dataCompetitions =
+      await sql<Competition>`SELECT * FROM Competitions WHERE endDate = ${currentDate.toISOString()}`;
     const comps = dataCompetitions.rows;
     for (const comp of comps) {
-      const compWcif = await fetch(
-        `https://www.worldcubeassociation.org/api/v0/competitions/${comp.id}/wcif/public`
-      ).then((res) => res.json()) as Competition;
+      const compWcif = (await fetch(
+        `https://www.worldcubeassociation.org/api/v0/competitions/${comp.id}/wcif/public`,
+      ).then((res) => res.json())) as Competition;
 
-      const dataMembers = await sql<Member>`SELECT * FROM Members`
+      const dataMembers = await sql<Member>`SELECT * FROM Members`;
 
-      const participatingMembers = dataMembers.rows.filter(member => compWcif.persons.some(person => person.wcaId === member.id)).map(member => {
-        const person = compWcif.persons.find(pers => pers.wcaId === member.id);
-        return person && { ...member, personId: person.registrantId };
-      });
+      const participatingMembers = dataMembers.rows
+        .filter((member) =>
+          compWcif.persons.some((person) => person.wcaId === member.id),
+        )
+        .map((member) => {
+          const person = compWcif.persons.find(
+            (pers) => pers.wcaId === member.id,
+          );
+          return person && { ...member, personId: person.registrantId };
+        });
 
       console.log(participatingMembers);
     }
   } catch (error) {
-    throw new Error('Failed to find competitors');
+    throw new Error("Failed to find competitors");
   }
 }

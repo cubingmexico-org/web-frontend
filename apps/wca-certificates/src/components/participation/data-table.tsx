@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition -- . */
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import { usePathname } from "next/navigation";
 import type {
   ColumnDef,
   SortingState,
-  ColumnFiltersState
+  ColumnFiltersState,
 } from "@tanstack/react-table";
 import {
   flexRender,
@@ -15,9 +15,9 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
-import { DataTablePagination } from "@repo/ui/data-table-pagination"
-import { Input } from "@repo/ui/input"
+} from "@tanstack/react-table";
+import { DataTablePagination } from "@repo/ui/data-table-pagination";
+import { Input } from "@repo/ui/input";
 import {
   Table,
   TableBody,
@@ -25,16 +25,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@repo/ui/table"
-import type { ParticipantData } from '@/types/wca-live';
+} from "@repo/ui/table";
+import type { ParticipantData } from "@/types/wca-live";
 import type { getDictionary } from "@/get-dictionary";
 
 interface DataTableProps<TData, TValue> {
-  dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["participation"]["document_settings"]["data_table"]
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+  dictionary: Awaited<
+    ReturnType<typeof getDictionary>
+  >["certificates"]["participation"]["document_settings"]["data_table"];
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
   rowSelection: Record<string, boolean>;
-  setRowSelection: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  setRowSelection: React.Dispatch<
+    React.SetStateAction<Record<string, boolean>>
+  >;
 }
 
 export function DataTable<TData extends ParticipantData, TValue>({
@@ -44,22 +48,23 @@ export function DataTable<TData extends ParticipantData, TValue>({
   rowSelection,
   setRowSelection,
 }: DataTableProps<TData, TValue>): JSX.Element {
-  
-  const pathname = usePathname()
-  const lang = pathname.startsWith('/es') ? 'es' : 'en'
-  
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const pathname = usePathname();
+  const lang = pathname.startsWith("/es") ? "es" : "en";
+
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
 
   const table = useReactTable({
     data,
     columns,
-    getRowId: row => row.wcaId,
-    enableRowSelection: row => row.original.results.every((result: {
-      event: string;
-      average: number;
-      ranking: number | null;
-    }) => result.ranking !== null),
+    getRowId: (row) => row.wcaId,
+    enableRowSelection: (row) =>
+      row.original.results.every(
+        (result: { event: string; average: number; ranking: number | null }) =>
+          result.ranking !== null,
+      ),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -72,14 +77,14 @@ export function DataTable<TData extends ParticipantData, TValue>({
       columnFilters,
       rowSelection,
     },
-  })
+  });
 
   return (
     <div>
       <div className="mb-2">
         <Input
           className="max-w-sm"
-          onChange={(event) => 
+          onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)
           }
           placeholder={dictionary.filterByName}
@@ -97,11 +102,11 @@ export function DataTable<TData extends ParticipantData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -115,14 +120,20 @@ export function DataTable<TData extends ParticipantData, TValue>({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell className="h-24 text-center" colSpan={columns.length}>
+                <TableCell
+                  className="h-24 text-center"
+                  colSpan={columns.length}
+                >
                   {dictionary.noResults}
                 </TableCell>
               </TableRow>
@@ -134,5 +145,5 @@ export function DataTable<TData extends ParticipantData, TValue>({
         <DataTablePagination lang={lang} table={table} />
       </div>
     </div>
-  )
+  );
 }

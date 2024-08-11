@@ -18,7 +18,7 @@ import {
   AlignRight,
   AlignJustify,
   Undo,
-  Redo
+  Redo,
 } from "lucide-react";
 import {
   Select,
@@ -26,29 +26,30 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@repo/ui/select"
+} from "@repo/ui/select";
 import { Button } from "@repo/ui/button";
 import { Toggle } from "@repo/ui/toggle";
 import { Input } from "@repo/ui/input";
-import { fontFamilies, fontSizes } from "@/lib/fonts"
+import { fontFamilies, fontSizes } from "@/lib/fonts";
 import type { getDictionary } from "@/get-dictionary";
 import { ComboboxFont } from "./combobox-font";
 
 interface ToolbarProps {
-  dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["podium"]["document_settings"]["tiptap"]["toolbar"]
+  dictionary: Awaited<
+    ReturnType<typeof getDictionary>
+  >["certificates"]["podium"]["document_settings"]["tiptap"]["toolbar"];
   editor: Editor | null;
-};
+}
 
 export default function Toolbar({ dictionary, editor }: ToolbarProps) {
-
   const loadFonts = async () => {
-    const WebFont = await import('webfontloader');
+    const WebFont = await import("webfontloader");
     WebFont.load({
       google: {
-        families: fontFamilies.map(font => `${font}:400,700`)
-      }
+        families: fontFamilies.map((font) => `${font}:400,700`),
+      },
     });
-  }
+  };
 
   if (!editor) {
     return null;
@@ -62,36 +63,50 @@ export default function Toolbar({ dictionary, editor }: ToolbarProps) {
         <ComboboxFont
           dictionary={dictionary.comboboxFont}
           setValue={async (value) => {
-            const WebFont = (await import('webfontloader')).default
+            const WebFont = (await import("webfontloader")).default;
             WebFont.load({
               google: {
-                families: [`${value}:400,700`]
-              }
+                families: [`${value}:400,700`],
+              },
             });
             editor.chain().focus().setFontFamily(value).run();
           }}
-          value={fontFamilies.find(font => editor.isActive('textStyle', { fontFamily: font })) || 'Roboto'}
+          value={
+            fontFamilies.find((font) =>
+              editor.isActive("textStyle", { fontFamily: font }),
+            ) || "Roboto"
+          }
         />
         <Select
           defaultValue="12"
-          onValueChange={(value) => editor.chain().focus().setFontSize(`${value}pt`).run()}
-          value={fontSizes.find(size => editor.isActive('textStyle', { fontSize: `${size}pt` })) || '12'}
+          onValueChange={(value) =>
+            editor.chain().focus().setFontSize(`${value}pt`).run()
+          }
+          value={
+            fontSizes.find((size) =>
+              editor.isActive("textStyle", { fontSize: `${size}pt` }),
+            ) || "12"
+          }
         >
           <SelectTrigger className="!w-20">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {fontSizes.map(size => (
-              <SelectItem key={size} value={size}>{size}</SelectItem>
+            {fontSizes.map((size) => (
+              <SelectItem key={size} value={size}>
+                {size}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
         <Input
           className="h-9 w-32 p-0 border-0"
           data-testid="setColor"
-          onChange={event => editor.chain().focus().setColor(event.target.value).run()}
+          onChange={(event) =>
+            editor.chain().focus().setColor(event.target.value).run()
+          }
           type="color"
-          value={editor.getAttributes('textStyle').color || '#000000'}
+          value={editor.getAttributes("textStyle").color || "#000000"}
         />
         <Toggle
           disabled={!editor.can().chain().focus().toggleBold().run()}
@@ -102,71 +117,91 @@ export default function Toolbar({ dictionary, editor }: ToolbarProps) {
           <Bold className="h-4 w-4" />
         </Toggle>
         <Toggle
-          onPressedChange={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+          onPressedChange={() =>
+            editor.chain().focus().toggleHeading({ level: 1 }).run()
+          }
           pressed={editor.isActive("heading", { level: 1 })}
           size="sm"
         >
           <Heading1 className="h-4 w-4" />
         </Toggle>
         <Toggle
-          onPressedChange={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          onPressedChange={() =>
+            editor.chain().focus().toggleHeading({ level: 2 }).run()
+          }
           pressed={editor.isActive("heading", { level: 2 })}
           size="sm"
         >
           <Heading2 className="h-4 w-4" />
         </Toggle>
         <Toggle
-          onPressedChange={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          onPressedChange={() =>
+            editor.chain().focus().toggleHeading({ level: 3 }).run()
+          }
           pressed={editor.isActive("heading", { level: 3 })}
           size="sm"
         >
           <Heading3 className="h-4 w-4" />
         </Toggle>
         <Toggle
-          onPressedChange={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
+          onPressedChange={() =>
+            editor.chain().focus().toggleHeading({ level: 4 }).run()
+          }
           pressed={editor.isActive("heading", { level: 4 })}
           size="sm"
         >
           <Heading4 className="h-4 w-4" />
         </Toggle>
         <Toggle
-          onPressedChange={() => editor.chain().focus().toggleHeading({ level: 5 }).run()}
+          onPressedChange={() =>
+            editor.chain().focus().toggleHeading({ level: 5 }).run()
+          }
           pressed={editor.isActive("heading", { level: 5 })}
           size="sm"
         >
           <Heading5 className="h-4 w-4" />
         </Toggle>
         <Toggle
-          onPressedChange={() => editor.chain().focus().toggleHeading({ level: 6 }).run()}
+          onPressedChange={() =>
+            editor.chain().focus().toggleHeading({ level: 6 }).run()
+          }
           pressed={editor.isActive("heading", { level: 6 })}
           size="sm"
         >
           <Heading6 className="h-4 w-4" />
         </Toggle>
         <Toggle
-          onPressedChange={() => editor.chain().focus().setTextAlign('left').run()}
-          pressed={editor.isActive({ textAlign: 'left' })}
+          onPressedChange={() =>
+            editor.chain().focus().setTextAlign("left").run()
+          }
+          pressed={editor.isActive({ textAlign: "left" })}
           size="sm"
         >
           <AlignLeft className="h-4 w-4" />
         </Toggle>
         <Toggle
-          onPressedChange={() => editor.chain().focus().setTextAlign('center').run()}
-          pressed={editor.isActive({ textAlign: 'center' })}
+          onPressedChange={() =>
+            editor.chain().focus().setTextAlign("center").run()
+          }
+          pressed={editor.isActive({ textAlign: "center" })}
           size="sm"
         >
           <AlignCenter className="h-4 w-4" />
         </Toggle>
         <Toggle
-          onPressedChange={() => editor.chain().focus().setTextAlign('right').run()}
-          pressed={editor.isActive({ textAlign: 'right' })}
+          onPressedChange={() =>
+            editor.chain().focus().setTextAlign("right").run()
+          }
+          pressed={editor.isActive({ textAlign: "right" })}
           size="sm"
         >
           <AlignRight className="h-4 w-4" />
         </Toggle>
         <Toggle
-          onPressedChange={() => editor.chain().focus().setTextAlign('justify').run()}
-          pressed={editor.isActive({ textAlign: 'justify' })}
+          onPressedChange={() =>
+            editor.chain().focus().setTextAlign("justify").run()
+          }
+          pressed={editor.isActive({ textAlign: "justify" })}
           size="sm"
         >
           <AlignJustify className="h-4 w-4" />
@@ -176,16 +211,16 @@ export default function Toolbar({ dictionary, editor }: ToolbarProps) {
         <Button
           disabled={!editor.can().chain().focus().undo().run()}
           onClick={() => editor.chain().focus().undo().run()}
-          size='sm'
-          variant='ghost'
+          size="sm"
+          variant="ghost"
         >
           <Undo className="w-4 h-4" />
         </Button>
         <Button
           disabled={!editor.can().chain().focus().redo().run()}
           onClick={() => editor.chain().focus().redo().run()}
-          size='sm'
-          variant='ghost'
+          size="sm"
+          variant="ghost"
         >
           <Redo className="w-4 h-4" />
         </Button>

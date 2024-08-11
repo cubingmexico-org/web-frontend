@@ -50,8 +50,8 @@ export interface Competition {
           activityCode: string;
           startTime: Date;
           endTime: Date;
-        }[]
-      }
+        }[];
+      };
     }[];
   };
 }

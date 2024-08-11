@@ -1,13 +1,11 @@
-"use client"
+"use client";
 
-import type {
-  ColumnDef
-} from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-} from "@tanstack/react-table"
+} from "@tanstack/react-table";
 import {
   Table,
   TableBody,
@@ -15,16 +13,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@repo/ui/table"
-import type { Event, Result } from '@/types/wca-live';
+} from "@repo/ui/table";
+import type { Event, Result } from "@/types/wca-live";
 import type { getDictionary } from "@/get-dictionary";
 
 interface DataTableProps<TData, TValue> {
-  dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["podium"]["document_settings"]["data_table"]
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+  dictionary: Awaited<
+    ReturnType<typeof getDictionary>
+  >["certificates"]["podium"]["document_settings"]["data_table"];
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
   rowSelection: Record<string, boolean>;
-  setRowSelection: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  setRowSelection: React.Dispatch<
+    React.SetStateAction<Record<string, boolean>>
+  >;
 }
 
 export function DataTable<TData extends Event, TValue>({
@@ -37,14 +39,18 @@ export function DataTable<TData extends Event, TValue>({
   const table = useReactTable({
     data,
     columns,
-    getRowId: row => row.id,
-    enableRowSelection: row => row.original.rounds[row.original.rounds.length - 1].results.length > 0 && row.original.rounds[row.original.rounds.length - 1].results.every((result: Result) => result.ranking !== null),
+    getRowId: (row) => row.id,
+    enableRowSelection: (row) =>
+      row.original.rounds[row.original.rounds.length - 1].results.length > 0 &&
+      row.original.rounds[row.original.rounds.length - 1].results.every(
+        (result: Result) => result.ranking !== null,
+      ),
     getCoreRowModel: getCoreRowModel(),
     onRowSelectionChange: setRowSelection,
     state: {
       rowSelection,
     },
-  })
+  });
 
   return (
     <div className="rounded-md border">
@@ -58,11 +64,11 @@ export function DataTable<TData extends Event, TValue>({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                   </TableHead>
-                )
+                );
               })}
             </TableRow>
           ))}
@@ -91,5 +97,5 @@ export function DataTable<TData extends Event, TValue>({
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }

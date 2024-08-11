@@ -1,5 +1,5 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar"
-import { Button } from "@repo/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
+import { Button } from "@repo/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,18 +7,20 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@repo/ui/dropdown-menu"
-import { auth } from "@/auth"
-import type { getDictionary } from "@/get-dictionary"
-import { SignOut } from "./auth-components"
-import LocaleSwitcher from "./locale-switcher"
+} from "@repo/ui/dropdown-menu";
+import { auth } from "@/auth";
+import type { getDictionary } from "@/get-dictionary";
+import { SignOut } from "./auth-components";
+import LocaleSwitcher from "./locale-switcher";
 
 interface UserButtonProps {
-  dictionary: Awaited<ReturnType<typeof getDictionary>>
+  dictionary: Awaited<ReturnType<typeof getDictionary>>;
 }
 
-export default async function UserButton({ dictionary }: UserButtonProps): Promise<JSX.Element> {
-  const session = await auth()
+export default async function UserButton({
+  dictionary,
+}: UserButtonProps): Promise<JSX.Element> {
+  const session = await auth();
 
   return (
     <DropdownMenu>
@@ -51,5 +53,5 @@ export default async function UserButton({ dictionary }: UserButtonProps): Promi
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

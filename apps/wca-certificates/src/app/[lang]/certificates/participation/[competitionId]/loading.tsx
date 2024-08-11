@@ -5,8 +5,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@repo/ui/table"
-import { Skeleton } from "@repo/ui/skeleton"
+} from "@repo/ui/table";
+import { Skeleton } from "@repo/ui/skeleton";
 
 export default function Loading(): JSX.Element {
   return (
@@ -173,5 +173,5 @@ export default function Loading(): JSX.Element {
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }

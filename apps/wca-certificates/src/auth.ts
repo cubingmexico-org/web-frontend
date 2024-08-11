@@ -2,31 +2,31 @@
 /* eslint-disable @typescript-eslint/require-await -- . */
 /* eslint-disable no-unneeded-ternary -- . */
 
-import NextAuth from "next-auth"
-import "next-auth/jwt"
-import type { NextAuthConfig } from "next-auth"
+import NextAuth from "next-auth";
+import "next-auth/jwt";
+import type { NextAuthConfig } from "next-auth";
 
 interface WCAProfile {
   me: {
-    id: string
-    wca_id: string
-    name: string
+    id: string;
+    wca_id: string;
+    name: string;
     avatar: {
-      url: string
-      thumb_url: string
-      pending_url: string
-    }
-  }
+      url: string;
+      thumb_url: string;
+      pending_url: string;
+    };
+  };
 }
 
 export const config = {
   providers: [
     {
-      id: 'wca',
-      name: 'WCA',
-      type: 'oauth',
+      id: "wca",
+      name: "WCA",
+      type: "oauth",
       authorization: {
-        url: 'https://www.worldcubeassociation.org/oauth/authorize',
+        url: "https://www.worldcubeassociation.org/oauth/authorize",
         params: { scope: "public manage_competitions" },
       },
       token: "https://www.worldcubeassociation.org/oauth/token",
@@ -36,12 +36,14 @@ export const config = {
           id: profile.me.wca_id,
           name: profile.me.name,
           email: null,
-          image: profile.me.avatar.url ? profile.me.avatar.thumb_url : profile.me.avatar.pending_url
-        }
+          image: profile.me.avatar.url
+            ? profile.me.avatar.thumb_url
+            : profile.me.avatar.pending_url,
+        };
       },
       clientId: process.env.WCA_CLIENT_ID,
-      clientSecret: process.env.WCA_CLIENT_SECRET
-    }
+      clientSecret: process.env.WCA_CLIENT_SECRET,
+    },
   ],
   pages: {
     signIn: "/",
@@ -49,31 +51,31 @@ export const config = {
   },
   callbacks: {
     authorized({ request, auth }) {
-      const { pathname } = request.nextUrl
-      if (pathname === "/certificates") return !!auth
-      return true
+      const { pathname } = request.nextUrl;
+      if (pathname === "/certificates") return !!auth;
+      return true;
     },
     jwt({ token, account }) {
       if (account) {
-        token.access_token = account.access_token
+        token.access_token = account.access_token;
       }
 
-      return token
+      return token;
     },
     async session({ session, token }) {
-      session.token = token.access_token as string
+      session.token = token.access_token as string;
 
-      return session
+      return session;
     },
   },
   debug: process.env.NODE_ENV !== "production" ? true : false,
-} satisfies NextAuthConfig
+} satisfies NextAuthConfig;
 
-export const { handlers, auth, signIn, signOut } = NextAuth(config)
+export const { handlers, auth, signIn, signOut } = NextAuth(config);
 
 declare module "next-auth" {
   interface Session {
-    token?: string
+    token?: string;
     /**
      * By default, TypeScript merges new interface properties and overwrites existing ones.
      * In this case, the default session user properties will be overwritten,

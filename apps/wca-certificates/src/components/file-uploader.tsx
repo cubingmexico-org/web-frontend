@@ -3,35 +3,37 @@
 /* eslint-disable react/no-array-index-key -- . */
 /* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
 
-"use client"
+"use client";
 
-import * as React from "react"
-import Image from "next/image"
-import { X, UploadIcon } from "lucide-react"
+import * as React from "react";
+import Image from "next/image";
+import { X, UploadIcon } from "lucide-react";
 import Dropzone, {
   type DropzoneProps,
   type FileRejection,
-} from "react-dropzone"
-import { toast } from "sonner"
-import { Button } from "@repo/ui/button"
-import { Progress } from "@repo/ui/progress"
-import { ScrollArea } from "@repo/ui/scroll-area"
-import { cn } from "@repo/ui/utils"
-import { formatBytes } from "@/lib/utils"
-import { useControllableState } from "@/hooks/use-controllable-state"
-import type { getDictionary } from "@/get-dictionary"
+} from "react-dropzone";
+import { toast } from "sonner";
+import { Button } from "@repo/ui/button";
+import { Progress } from "@repo/ui/progress";
+import { ScrollArea } from "@repo/ui/scroll-area";
+import { cn } from "@repo/ui/utils";
+import { formatBytes } from "@/lib/utils";
+import { useControllableState } from "@/hooks/use-controllable-state";
+import type { getDictionary } from "@/get-dictionary";
 
 interface FileUploaderProps extends React.HTMLAttributes<HTMLDivElement> {
-  dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["podium"]["document_settings"]["fileUploader"]
-  value?: File[]
-  onValueChange?: React.Dispatch<React.SetStateAction<File[]>>
-  onUpload?: (files: File[]) => Promise<void>
-  progresses?: Record<string, number>
-  accept?: DropzoneProps["accept"]
-  maxSize?: DropzoneProps["maxSize"]
-  maxFiles?: DropzoneProps["maxFiles"]
-  multiple?: boolean
-  disabled?: boolean
+  dictionary: Awaited<
+    ReturnType<typeof getDictionary>
+  >["certificates"]["podium"]["document_settings"]["fileUploader"];
+  value?: File[];
+  onValueChange?: React.Dispatch<React.SetStateAction<File[]>>;
+  onUpload?: (files: File[]) => Promise<void>;
+  progresses?: Record<string, number>;
+  accept?: DropzoneProps["accept"];
+  maxSize?: DropzoneProps["maxSize"];
+  maxFiles?: DropzoneProps["maxFiles"];
+  multiple?: boolean;
+  disabled?: boolean;
 }
 
 export function FileUploader(props: FileUploaderProps) {
@@ -48,39 +50,43 @@ export function FileUploader(props: FileUploaderProps) {
     disabled = false,
     className,
     ...dropzoneProps
-  } = props
+  } = props;
 
   const [files, setFiles] = useControllableState({
     prop: valueProp,
     onChange: onValueChange,
-  })
+  });
 
   const onDrop = React.useCallback(
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
       if (!multiple && maxFiles === 1 && acceptedFiles.length > 1) {
-        toast.error(dictionary.moreThanOneFileError)
-        return
+        toast.error(dictionary.moreThanOneFileError);
+        return;
       }
 
       if ((files?.length ?? 0) + acceptedFiles.length > maxFiles) {
-        toast.error(dictionary.maxFilesError.replace('${maxFiles}', maxFiles.toString()))
-        return
+        toast.error(
+          dictionary.maxFilesError.replace("${maxFiles}", maxFiles.toString()),
+        );
+        return;
       }
 
       const newFiles = acceptedFiles.map((file) =>
         Object.assign(file, {
           preview: URL.createObjectURL(file),
-        })
-      )
+        }),
+      );
 
-      const updatedFiles = files ? [...files, ...newFiles] : newFiles
+      const updatedFiles = files ? [...files, ...newFiles] : newFiles;
 
-      setFiles(updatedFiles)
+      setFiles(updatedFiles);
 
       if (rejectedFiles.length > 0) {
         rejectedFiles.forEach(({ file }) => {
-          toast.error(dictionary.fileRejectedError.replace('${file.name}', file.name))
-        })
+          toast.error(
+            dictionary.fileRejectedError.replace("${file.name}", file.name),
+          );
+        });
       }
 
       if (
@@ -89,42 +95,42 @@ export function FileUploader(props: FileUploaderProps) {
         updatedFiles.length <= maxFiles
       ) {
         const target =
-          updatedFiles.length > 0 ? `${updatedFiles.length} files` : `file`
+          updatedFiles.length > 0 ? `${updatedFiles.length} files` : `file`;
 
         toast.promise(onUpload(updatedFiles), {
-          loading: dictionary.uploadingFiles.replace('${target}', target),
+          loading: dictionary.uploadingFiles.replace("${target}", target),
           success: () => {
-            setFiles([])
-            return dictionary.uploadSuccess.replace('${target}', target)
+            setFiles([]);
+            return dictionary.uploadSuccess.replace("${target}", target);
           },
-          error: dictionary.uploadFailed.replace('${target}', target),
-        })
+          error: dictionary.uploadFailed.replace("${target}", target),
+        });
       }
     },
 
-    [files, maxFiles, multiple, onUpload, setFiles]
-  )
+    [files, maxFiles, multiple, onUpload, setFiles],
+  );
 
   function onRemove(index: number) {
-    if (!files) return
-    const newFiles = files.filter((_, i) => i !== index)
-    setFiles(newFiles)
-    onValueChange?.(newFiles)
+    if (!files) return;
+    const newFiles = files.filter((_, i) => i !== index);
+    setFiles(newFiles);
+    onValueChange?.(newFiles);
   }
 
   // Revoke preview url when component unmounts
   React.useEffect(() => {
     return () => {
-      if (!files) return
+      if (!files) return;
       files.forEach((file: File) => {
         if (isFileWithPreview(file)) {
-          URL.revokeObjectURL(file.preview)
+          URL.revokeObjectURL(file.preview);
         }
-      })
-    }
-  }, [])
+      });
+    };
+  }, []);
 
-  const isDisabled = disabled || (files?.length ?? 0) >= maxFiles
+  const isDisabled = disabled || (files?.length ?? 0) >= maxFiles;
 
   return (
     <div className="relative flex flex-col gap-6 overflow-hidden">
@@ -144,7 +150,7 @@ export function FileUploader(props: FileUploaderProps) {
               "ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
               isDragActive && "border-muted-foreground/50",
               isDisabled && "pointer-events-none opacity-60",
-              className
+              className,
             )}
             {...dropzoneProps}
           >
@@ -175,8 +181,21 @@ export function FileUploader(props: FileUploaderProps) {
                   </p>
                   <p className="text-sm text-muted-foreground/70">
                     {maxFiles > 1
-                      ? dictionary.canUploadMultiple.replace('${maxFiles}', maxFiles === Infinity ? 'múltiples' : maxFiles.toString()).replace('${formatBytes(maxSize)}', formatBytes(maxSize))
-                      : dictionary.canUploadSingle.replace('${formatBytes(maxSize)}', formatBytes(maxSize))}
+                      ? dictionary.canUploadMultiple
+                          .replace(
+                            "${maxFiles}",
+                            maxFiles === Infinity
+                              ? "múltiples"
+                              : maxFiles.toString(),
+                          )
+                          .replace(
+                            "${formatBytes(maxSize)}",
+                            formatBytes(maxSize),
+                          )
+                      : dictionary.canUploadSingle.replace(
+                          "${formatBytes(maxSize)}",
+                          formatBytes(maxSize),
+                        )}
                   </p>
                 </div>
               </div>
@@ -192,7 +211,9 @@ export function FileUploader(props: FileUploaderProps) {
                 dictionary={dictionary}
                 file={file}
                 key={index}
-                onRemove={() => { onRemove(index); }}
+                onRemove={() => {
+                  onRemove(index);
+                }}
                 progress={progresses?.[file.name]}
               />
             ))}
@@ -200,14 +221,16 @@ export function FileUploader(props: FileUploaderProps) {
         </ScrollArea>
       ) : null}
     </div>
-  )
+  );
 }
 
 interface FileCardProps {
-  dictionary: Awaited<ReturnType<typeof getDictionary>>["certificates"]["podium"]["document_settings"]["fileUploader"]
-  file: File
-  onRemove: () => void
-  progress?: number
+  dictionary: Awaited<
+    ReturnType<typeof getDictionary>
+  >["certificates"]["podium"]["document_settings"]["fileUploader"];
+  file: File;
+  onRemove: () => void;
+  progress?: number;
 }
 
 function FileCard({ dictionary, file, progress, onRemove }: FileCardProps) {
@@ -249,9 +272,9 @@ function FileCard({ dictionary, file, progress, onRemove }: FileCardProps) {
         </Button>
       </div>
     </div>
-  )
+  );
 }
 
 function isFileWithPreview(file: File): file is File & { preview: string } {
-  return "preview" in file && typeof file.preview === "string"
+  return "preview" in file && typeof file.preview === "string";
 }

@@ -1,25 +1,27 @@
-import { redirect } from 'next/navigation'
-import Image from "next/image"
-import Link from "next/link"
-import { Icons } from '@repo/ui/icons';
-import { auth } from "@/auth"
-import { SignIn } from '@/components/auth-components';
-import { getDictionary } from '@/get-dictionary';
-import type { Locale } from '@/i18n-config';
+import { redirect } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { Icons } from "@repo/ui/icons";
+import { auth } from "@/auth";
+import { SignIn } from "@/components/auth-components";
+import { getDictionary } from "@/get-dictionary";
+import type { Locale } from "@/i18n-config";
 
 interface PageProps {
   params: {
-    lang: Locale
-  },
+    lang: Locale;
+  };
 }
 
-export default async function Page({ params }: PageProps): Promise<JSX.Element> {
+export default async function Page({
+  params,
+}: PageProps): Promise<JSX.Element> {
   const dictionary = await getDictionary(params.lang);
 
-  const session = await auth()
+  const session = await auth();
 
   if (session) {
-    redirect('/certificates')
+    redirect("/certificates");
   }
 
   return (
@@ -27,20 +29,25 @@ export default async function Page({ params }: PageProps): Promise<JSX.Element> 
       <div className="flex items-center justify-center py-12">
         <div className="mx-auto grid w-[350px] gap-6">
           <div className="grid gap-2 text-center">
-            <div className='flex items-center justify-center'>
+            <div className="flex items-center justify-center">
               <Icons.CubingMexico className="size-72" />
             </div>
-            <h1 className="text-3xl font-bold">{dictionary.signin.signInTitle}</h1>
+            <h1 className="text-3xl font-bold">
+              {dictionary.signin.signInTitle}
+            </h1>
             <p className="text-balance text-muted-foreground">
               {dictionary.signin.signInDescription}
             </p>
           </div>
           <div className="grid gap-4">
-            <SignIn dictionary={dictionary.auth_components} provider='wca' />
+            <SignIn dictionary={dictionary.auth_components} provider="wca" />
           </div>
           <div className="mt-4 text-center text-sm">
             <p>{dictionary.signin.noAccountQuestion}</p>
-            <Link className="underline" href="https://www.worldcubeassociation.org/users/sign_up">
+            <Link
+              className="underline"
+              href="https://www.worldcubeassociation.org/users/sign_up"
+            >
               {dictionary.signin.signUp}
             </Link>
           </div>

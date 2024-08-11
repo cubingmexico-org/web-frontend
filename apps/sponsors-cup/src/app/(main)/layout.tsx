@@ -1,11 +1,11 @@
 import React from "react";
-import Image from 'next/image';
-import Link from 'next/link';
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Layout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }): JSX.Element {
   return (
     <main className="flex flex-col items-center justify-center min-h-screen">
@@ -47,7 +47,7 @@ export default function Layout({
       </div>
       <div className="text-center">
         <div className="mx-auto inline-block">
-          <Link href='/'>
+          <Link href="/">
             <Image
               alt="Logo de la Copa Inter-Patrocinadores"
               className="mx-auto"
@@ -59,23 +59,46 @@ export default function Layout({
         </div>
         <h1 className="text-2xl font-semibold">Copa Inter-Patrocinadores</h1>
         <h2 className="text-lg">Primera temporada (Abril - Julio)</h2>
-        <p className="p-4">Competencia dirigida a la comunidad nacional, con el propósito de dar mayor protagonismo a los speedcubers y a las tiendas que los apoyan, motivarlos a seguir compitiendo y mejorando sus tiempos, y hacer crecer el speedcubing en todo el país.</p>
+        <p className="p-4">
+          Competencia dirigida a la comunidad nacional, con el propósito de dar
+          mayor protagonismo a los speedcubers y a las tiendas que los apoyan,
+          motivarlos a seguir compitiendo y mejorando sus tiempos, y hacer
+          crecer el speedcubing en todo el país.
+        </p>
       </div>
-      <div className="p-4">
-        {children}
-      </div>
+      <div className="p-4">{children}</div>
       <div className="text-center p-4">
         <p className="font-bold text-lg">Aviso</p>
         <p>
-          El contador aún se encuentra en fase de pruebas, por lo que podría haber ocasiones en las que los PRs no se contabilicen correctamente. Si observas alguna inconsistencia, te agradeceríamos que la reportaras. Agradecemos tu comprensión y colaboración en este asunto.
+          El contador aún se encuentra en fase de pruebas, por lo que podría
+          haber ocasiones en las que los PRs no se contabilicen correctamente.
+          Si observas alguna inconsistencia, te agradeceríamos que la
+          reportaras. Agradecemos tu comprensión y colaboración en este asunto.
         </p>
-        <p className="mt-2">Esta página se actualiza los domingos a las 19:00 UTC-6 (7:00 PM hora de la Ciudad de México).</p>
+        <p className="mt-2">
+          Esta página se actualiza los domingos a las 19:00 UTC-6 (7:00 PM hora
+          de la Ciudad de México).
+        </p>
         <div className="mt-2">
           Puedes contactarnos a través de:
           <ul className="list-disc list-inside mt-2">
-            <li><Link className="text-red-700 hover:underline" href="https://www.facebook.com/cubingmexico">Cubing México</Link></li>
+            <li>
+              <Link
+                className="text-red-700 hover:underline"
+                href="https://www.facebook.com/cubingmexico"
+              >
+                Cubing México
+              </Link>
+            </li>
             {/* eslint-disable-next-line react/no-unescaped-entities -- . */}
-            <li className="mt-2"><Link className="text-red-700 hover:underline" href="https://www.facebook.com/profile.php?id=100063651453072">SanLuis Rubik's Team</Link></li>
+            <li className="mt-2">
+              <Link
+                className="text-red-700 hover:underline"
+                href="https://www.facebook.com/profile.php?id=100063651453072"
+              >
+                SanLuis Rubik's Team
+              </Link>
+            </li>
           </ul>
         </div>
         <div className="flex justify-center items-center pt-4">
@@ -130,5 +153,5 @@ export default function Layout({
         />
       </div>
     </main>
-  )
+  );
 }

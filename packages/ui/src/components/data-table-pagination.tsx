@@ -3,29 +3,28 @@ import {
   ChevronRightIcon,
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
-} from "@radix-ui/react-icons"
-import { type Table } from "@tanstack/react-table"
-import { Button } from "@repo/ui/button"
+} from "@radix-ui/react-icons";
+import { type Table } from "@tanstack/react-table";
+import { Button } from "@repo/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@repo/ui/select"
+} from "@repo/ui/select";
 
 interface DataTablePaginationProps<TData> {
-  lang: 'es' | 'en'
-  table: Table<TData>
-  pageSizeOptions?: number[]
+  lang: "es" | "en";
+  table: Table<TData>;
+  pageSizeOptions?: number[];
 }
 
 export function DataTablePagination<TData>({
-  lang = 'es',
+  lang = "es",
   table,
   pageSizeOptions = [10, 20, 30, 40, 50, 100],
 }: DataTablePaginationProps<TData>): JSX.Element {
-
   const dictionary = {
     es: {
       rowsSelected: "{0} de {1} fila(s) seleccionadas.",
@@ -54,10 +53,12 @@ export function DataTablePagination<TData>({
       </div>
       <div className="!ui-flex !ui-flex-col-reverse !ui-items-center !ui-gap-4 sm:!ui-flex-row sm:!ui-gap-6 lg:!ui-gap-8">
         <div className="ui-flex ui-items-center ui-space-x-2">
-          <p className="ui-whitespace-nowrap ui-text-sm ui-font-medium">{dictionary.rowsPerPage}</p>
+          <p className="ui-whitespace-nowrap ui-text-sm ui-font-medium">
+            {dictionary.rowsPerPage}
+          </p>
           <Select
             onValueChange={(value) => {
-              table.setPageSize(Number(value))
+              table.setPageSize(Number(value));
             }}
             value={`${table.getState().pagination.pageSize}`}
           >
@@ -74,14 +75,21 @@ export function DataTablePagination<TData>({
           </Select>
         </div>
         <div className="ui-flex ui-items-center ui-justify-center ui-text-sm ui-font-medium">
-          {dictionary.pageOf.replace("{0}", (table.getState().pagination.pageIndex + 1).toString()).replace("{1}", (table.getPageCount()).toString())}
+          {dictionary.pageOf
+            .replace(
+              "{0}",
+              (table.getState().pagination.pageIndex + 1).toString(),
+            )
+            .replace("{1}", table.getPageCount().toString())}
         </div>
         <div className="ui-flex ui-items-center ui-space-x-2">
           <Button
             aria-label={dictionary.goToFirstPage}
             className="ui-hidden !ui-size-8 !ui-p-0 lg:ui-flex"
             disabled={!table.getCanPreviousPage()}
-            onClick={() => { table.setPageIndex(0); }}
+            onClick={() => {
+              table.setPageIndex(0);
+            }}
             variant="outline"
           >
             <DoubleArrowLeftIcon aria-hidden="true" className="ui-size-4" />
@@ -90,7 +98,9 @@ export function DataTablePagination<TData>({
             aria-label={dictionary.goToPreviousPage}
             className="!ui-size-8"
             disabled={!table.getCanPreviousPage()}
-            onClick={() => { table.previousPage(); }}
+            onClick={() => {
+              table.previousPage();
+            }}
             size="icon"
             variant="outline"
           >
@@ -100,7 +110,9 @@ export function DataTablePagination<TData>({
             aria-label={dictionary.goToNextPage}
             className="!ui-size-8"
             disabled={!table.getCanNextPage()}
-            onClick={() => { table.nextPage(); }}
+            onClick={() => {
+              table.nextPage();
+            }}
             size="icon"
             variant="outline"
           >
@@ -110,7 +122,9 @@ export function DataTablePagination<TData>({
             aria-label={dictionary.goToLastPage}
             className="ui-hidden !ui-size-8 lg:ui-flex"
             disabled={!table.getCanNextPage()}
-            onClick={() => { table.setPageIndex(table.getPageCount() - 1); }}
+            onClick={() => {
+              table.setPageIndex(table.getPageCount() - 1);
+            }}
             size="icon"
             variant="outline"
           >
@@ -119,5 +133,5 @@ export function DataTablePagination<TData>({
         </div>
       </div>
     </div>
-  )
+  );
 }

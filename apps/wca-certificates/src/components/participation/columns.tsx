@@ -1,13 +1,10 @@
-"use client"
+"use client";
 
-import type { ColumnDef } from "@tanstack/react-table"
-import {
-  CheckCircle,
-  AlertCircle,
-} from 'lucide-react'
-import { Checkbox } from "@repo/ui/checkbox"
-import { DataTableColumnHeader } from "@repo/ui/data-table-column-header"
-import type { ParticipantData } from '@/types/wca-live';
+import type { ColumnDef } from "@tanstack/react-table";
+import { CheckCircle, AlertCircle } from "lucide-react";
+import { Checkbox } from "@repo/ui/checkbox";
+import { DataTableColumnHeader } from "@repo/ui/data-table-column-header";
+import type { ParticipantData } from "@/types/wca-live";
 
 export const columnsEs: ColumnDef<ParticipantData>[] = [
   {
@@ -19,7 +16,9 @@ export const columnsEs: ColumnDef<ParticipantData>[] = [
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
-        onCheckedChange={(value) => { table.toggleAllPageRowsSelected(Boolean(value)); }}
+        onCheckedChange={(value) => {
+          table.toggleAllPageRowsSelected(Boolean(value));
+        }}
       />
     ),
     cell: ({ row }) => {
@@ -27,9 +26,11 @@ export const columnsEs: ColumnDef<ParticipantData>[] = [
         <Checkbox
           aria-label="Seleccionar fila"
           checked={row.getIsSelected()}
-          onCheckedChange={(value) => { row.toggleSelected(Boolean(value)); }}
+          onCheckedChange={(value) => {
+            row.toggleSelected(Boolean(value));
+          }}
         />
-      )
+      );
     },
   },
   {
@@ -38,7 +39,7 @@ export const columnsEs: ColumnDef<ParticipantData>[] = [
       <DataTableColumnHeader column={column} lang="es" title="WCA ID" />
     ),
     cell: ({ row }) => {
-      return <p className="font-semibold">{row.original.wcaId}</p>
+      return <p className="font-semibold">{row.original.wcaId}</p>;
     },
   },
   {
@@ -47,20 +48,20 @@ export const columnsEs: ColumnDef<ParticipantData>[] = [
       <DataTableColumnHeader column={column} lang="es" title="Nombre" />
     ),
     cell: ({ row }) => {
-      return <p>{row.original.name}</p>
+      return <p>{row.original.name}</p>;
     },
   },
   {
     accessorKey: "results",
     header: "Resultados",
     cell: ({ row }) => {
-      if (row.original.results.every(result => result.ranking !== null)) {
+      if (row.original.results.every((result) => result.ranking !== null)) {
         return (
           <p className="flex items-center justify-center md:justify-start">
             <span className="hidden md:inline">Disponibles</span>
             <CheckCircle className="ml-2" color="green" />
           </p>
-        )
+        );
       }
 
       return (
@@ -68,10 +69,10 @@ export const columnsEs: ColumnDef<ParticipantData>[] = [
           <span className="hidden md:inline">No disponibles todavía</span>
           <AlertCircle className="ml-2" color="red" />
         </p>
-      )
+      );
     },
-  }
-]
+  },
+];
 
 export const columnsEn: ColumnDef<ParticipantData>[] = [
   {
@@ -83,7 +84,9 @@ export const columnsEn: ColumnDef<ParticipantData>[] = [
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
-        onCheckedChange={(value) => { table.toggleAllPageRowsSelected(Boolean(value)); }}
+        onCheckedChange={(value) => {
+          table.toggleAllPageRowsSelected(Boolean(value));
+        }}
       />
     ),
     cell: ({ row }) => {
@@ -91,9 +94,11 @@ export const columnsEn: ColumnDef<ParticipantData>[] = [
         <Checkbox
           aria-label="Select row"
           checked={row.getIsSelected()}
-          onCheckedChange={(value) => { row.toggleSelected(Boolean(value)); }}
+          onCheckedChange={(value) => {
+            row.toggleSelected(Boolean(value));
+          }}
         />
-      )
+      );
     },
   },
   {
@@ -102,7 +107,7 @@ export const columnsEn: ColumnDef<ParticipantData>[] = [
       <DataTableColumnHeader column={column} lang="en" title="WCA ID" />
     ),
     cell: ({ row }) => {
-      return <p className="font-semibold">{row.original.wcaId}</p>
+      return <p className="font-semibold">{row.original.wcaId}</p>;
     },
   },
   {
@@ -111,20 +116,20 @@ export const columnsEn: ColumnDef<ParticipantData>[] = [
       <DataTableColumnHeader column={column} lang="en" title="Name" />
     ),
     cell: ({ row }) => {
-      return <p>{row.original.name}</p>
+      return <p>{row.original.name}</p>;
     },
   },
   {
     accessorKey: "results",
     header: "Results",
     cell: ({ row }) => {
-      if (row.original.results.every(result => result.ranking !== null)) {
+      if (row.original.results.every((result) => result.ranking !== null)) {
         return (
           <p className="flex items-center justify-center md:justify-start">
             <span className="hidden md:inline">Available</span>
             <CheckCircle className="ml-2" color="green" />
           </p>
-        )
+        );
       }
 
       return (
@@ -132,7 +137,7 @@ export const columnsEn: ColumnDef<ParticipantData>[] = [
           <span className="hidden md:inline">Not available yet</span>
           <AlertCircle className="ml-2" color="red" />
         </p>
-      )
+      );
     },
-  }
-]
+  },
+];

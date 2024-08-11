@@ -4,22 +4,24 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Languages } from "lucide-react"
+import { Languages } from "lucide-react";
 import {
   DropdownMenuItem,
   DropdownMenuPortal,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "@repo/ui/dropdown-menu"
+} from "@repo/ui/dropdown-menu";
 import { i18n, type Locale } from "@/i18n-config";
-import type { getDictionary } from "@/get-dictionary"
+import type { getDictionary } from "@/get-dictionary";
 
 interface LocaleSwitcherProps {
-  dictionary: Awaited<ReturnType<typeof getDictionary>>["locale_switcher"]
+  dictionary: Awaited<ReturnType<typeof getDictionary>>["locale_switcher"];
 }
 
-export default function LocaleSwitcher({ dictionary }: LocaleSwitcherProps): JSX.Element {
+export default function LocaleSwitcher({
+  dictionary,
+}: LocaleSwitcherProps): JSX.Element {
   const pathName = usePathname();
   const redirectedPathName = (locale: Locale) => {
     if (!pathName) return "/";
@@ -31,7 +33,8 @@ export default function LocaleSwitcher({ dictionary }: LocaleSwitcherProps): JSX
   return (
     <DropdownMenuSub>
       <DropdownMenuSubTrigger>
-        <Languages className="mr-2 h-4 w-4" />{dictionary.language}
+        <Languages className="mr-2 h-4 w-4" />
+        {dictionary.language}
       </DropdownMenuSubTrigger>
       <DropdownMenuPortal>
         <DropdownMenuSubContent>

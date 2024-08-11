@@ -1,5 +1,5 @@
-import * as React from "react"
-import { cn } from "../lib/utils"
+import * as React from "react";
+import { cn } from "../lib/utils";
 
 const Card = React.forwardRef<
   HTMLDivElement,
@@ -8,13 +8,13 @@ const Card = React.forwardRef<
   <div
     className={cn(
       "ui-rounded-lg ui-border ui-bg-card ui-text-card-foreground ui-shadow-sm",
-      className
+      className,
     )}
     ref={ref}
     {...props}
   />
-))
-Card.displayName = "Card"
+));
+Card.displayName = "Card";
 
 const CardHeader = React.forwardRef<
   HTMLDivElement,
@@ -25,25 +25,24 @@ const CardHeader = React.forwardRef<
     ref={ref}
     {...props}
   />
-))
-CardHeader.displayName = "CardHeader"
+));
+CardHeader.displayName = "CardHeader";
 
 const CardTitle = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLHeadingElement>
 >(({ className, ...props }, ref) => (
-   
   // eslint-disable-next-line jsx-a11y/heading-has-content -- The content is passed as a prop
   <h3
     className={cn(
       "ui-text-2xl ui-font-semibold ui-leading-none ui-tracking-tight",
-      className
+      className,
     )}
     ref={ref}
     {...props}
   />
-))
-CardTitle.displayName = "CardTitle"
+));
+CardTitle.displayName = "CardTitle";
 
 const CardDescription = React.forwardRef<
   HTMLParagraphElement,
@@ -54,16 +53,16 @@ const CardDescription = React.forwardRef<
     ref={ref}
     {...props}
   />
-))
-CardDescription.displayName = "CardDescription"
+));
+CardDescription.displayName = "CardDescription";
 
 const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div className={cn("ui-p-6 ui-pt-0", className)} ref={ref} {...props} />
-))
-CardContent.displayName = "CardContent"
+));
+CardContent.displayName = "CardContent";
 
 const CardFooter = React.forwardRef<
   HTMLDivElement,
@@ -74,7 +73,14 @@ const CardFooter = React.forwardRef<
     ref={ref}
     {...props}
   />
-))
-CardFooter.displayName = "CardFooter"
+));
+CardFooter.displayName = "CardFooter";
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+  CardContent,
+};

@@ -1,4 +1,22 @@
-export type EventId = '333' | '222' | '444' | '555' | '666' | '777' | '333bf' | '333fm' | '333oh' | '333ft' | 'clock' | 'minx' | 'pyram' | 'skewb' | 'sq1' | '444bf' | '555bf' | '333mbf'
+export type EventId =
+  | "333"
+  | "222"
+  | "444"
+  | "555"
+  | "666"
+  | "777"
+  | "333bf"
+  | "333fm"
+  | "333oh"
+  | "333ft"
+  | "clock"
+  | "minx"
+  | "pyram"
+  | "skewb"
+  | "sq1"
+  | "444bf"
+  | "555bf"
+  | "333mbf";
 
 export interface Avatar {
   url: string;
@@ -50,12 +68,12 @@ export interface Competition {
   id: string;
   name: string;
   schedule: {
-    startDate: string,
-    numberOfDays: number,
+    startDate: string;
+    numberOfDays: number;
     venues: {
       latitudeMicrodegrees: number;
-      longitudeMicrodegrees: number
-    }[]
+      longitudeMicrodegrees: number;
+    }[];
   };
   competitorLimit: number;
   events: Event[];

@@ -3,34 +3,33 @@ import {
   ArrowUpIcon,
   CaretSortIcon,
   EyeNoneIcon,
-} from "@radix-ui/react-icons"
-import type { Column } from "@tanstack/react-table"
-import { Button } from "@repo/ui/button"
+} from "@radix-ui/react-icons";
+import type { Column } from "@tanstack/react-table";
+import { Button } from "@repo/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@repo/ui/dropdown-menu"
-import { cn } from "../lib/utils"
+} from "@repo/ui/dropdown-menu";
+import { cn } from "../lib/utils";
 
 interface DataTableColumnHeaderProps<TData, TValue>
   extends React.HTMLAttributes<HTMLDivElement> {
-  lang: 'es' | 'en'
-  column: Column<TData, TValue>
-  title: string
-  showHide?: boolean
+  lang: "es" | "en";
+  column: Column<TData, TValue>;
+  title: string;
+  showHide?: boolean;
 }
 
 export function DataTableColumnHeader<TData, TValue>({
-  lang = 'es',
+  lang = "es",
   column,
   title,
   className,
   showHide = false,
 }: DataTableColumnHeaderProps<TData, TValue>): JSX.Element {
-
   const dictionary = {
     es: {
       asc: "Ascendente",
@@ -45,7 +44,7 @@ export function DataTableColumnHeader<TData, TValue>({
   }[lang];
 
   if (!column.getCanSort()) {
-    return <div className={cn(className)}>{title}</div>
+    return <div className={cn(className)}>{title}</div>;
   }
 
   return (
@@ -69,24 +68,37 @@ export function DataTableColumnHeader<TData, TValue>({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          <DropdownMenuItem onClick={() => { column.toggleSorting(false); }}>
+          <DropdownMenuItem
+            onClick={() => {
+              column.toggleSorting(false);
+            }}
+          >
             <ArrowUpIcon className="ui-mr-2 ui-h-3.5 ui-w-3.5 ui-text-muted-foreground/70" />
             {dictionary.asc}
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => { column.toggleSorting(true); }}>
+          <DropdownMenuItem
+            onClick={() => {
+              column.toggleSorting(true);
+            }}
+          >
             <ArrowDownIcon className="ui-mr-2 ui-h-3.5 ui-w-3.5 ui-text-muted-foreground/70" />
             {dictionary.desc}
           </DropdownMenuItem>
-          {showHide ? <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => { column.toggleVisibility(false); }}>
-              <EyeNoneIcon className="ui-mr-2 ui-h-3.5 ui-w-3.5 ui-text-muted-foreground/70" />
-              {dictionary.hide}
-            </DropdownMenuItem>
-          </> : null
-          }
+          {showHide ? (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => {
+                  column.toggleVisibility(false);
+                }}
+              >
+                <EyeNoneIcon className="ui-mr-2 ui-h-3.5 ui-w-3.5 ui-text-muted-foreground/70" />
+                {dictionary.hide}
+              </DropdownMenuItem>
+            </>
+          ) : null}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-  )
+  );
 }

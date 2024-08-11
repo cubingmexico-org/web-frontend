@@ -241,6 +241,7 @@ export default function Tiptap({
       const jsonString = await file.text();
       const content = JSON.parse(jsonString) as JSONContent;
       editor.commands.setContent(content);
+      handleChange(content);
     };
     input.click();
   };

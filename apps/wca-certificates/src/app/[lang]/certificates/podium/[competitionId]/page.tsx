@@ -28,19 +28,19 @@ export default async function Page({
     redirect("/");
   }
 
-  const competitions = await fetchCompetitions(session.token || "");
+  // const competitions = await fetchCompetitions(session.token || "");
 
-  if (
-    !competitions.some((competition) => competition.id === params.competitionId)
-  ) {
-    return (
-      <div className="container mx-auto py-10">
-        <h1 className="text-3xl mb-4">
-          {dictionary.certificates.noPermissions}
-        </h1>
-      </div>
-    );
-  }
+  // if (
+  //   !competitions.some((competition) => competition.id === params.competitionId)
+  // ) {
+  //   return (
+  //     <div className="container mx-auto py-10">
+  //       <h1 className="text-3xl mb-4">
+  //         {dictionary.certificates.noPermissions}
+  //       </h1>
+  //     </div>
+  //   );
+  // }
 
   const competition = await fetchCompetition(params.competitionId);
   const city = await retrieveLocation(params.competitionId);

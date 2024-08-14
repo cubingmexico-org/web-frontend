@@ -46,6 +46,11 @@ export function middleware(request: NextRequest) {
   if (
     [
       "/competidores.jpg",
+      "/fonts/Allura/Allura-Regular.ttf",
+      "/fonts/Cookie/Cookie-Regular.ttf",
+      "/fonts/Dancing_Script/DancingScript-Bold.ttf",
+      "/fonts/Dancing_Script/DancingScript-Regular.ttf",
+      "/fonts/Great_Vibes/GreatVibes-Regular.ttf",
       "/fonts/Inter/Inter-Bold.ttf",
       "/fonts/Inter/Inter-Regular.ttf",
       "/fonts/Kanit/Kanit-Bold.ttf",
@@ -87,6 +92,7 @@ export function middleware(request: NextRequest) {
       "/fonts/Roboto_Slab/RobotoSlab-Regular.ttf",
       "/fonts/Rubik/Rubik-Bold.ttf",
       "/fonts/Rubik/Rubik-Regular.ttf",
+      "/fonts/Satisfy/Satisfy-Regular.ttf",
       "/fonts/Ubuntu/Ubuntu-Bold.ttf",
       "/fonts/Ubuntu/Ubuntu-Regular.ttf",
       "/fonts/Work_Sans/WorkSans-Bold.ttf",

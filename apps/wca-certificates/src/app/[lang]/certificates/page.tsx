@@ -83,17 +83,10 @@ export default async function Page({
                   className={`grid grid-cols-1 gap-4 ${upcomingCompetitions.length > 1 ? "sm:grid-cols-2 " : ""} ${upcomingCompetitions.length > 2 ? "md:grid-cols-3" : ""}`}
                 >
                   {upcomingCompetitions.map((competition, index: number) => {
-                    const upcomingCurrentDate = new Date();
-                    const registrationCloseDate = new Date(
-                      competition.registration_close,
-                    );
-
-                    const allowCertificates =
-                      registrationCloseDate < upcomingCurrentDate;
 
                     return (
                       <CardCompetition
-                        allowDesign={allowCertificates}
+                        allowDesign={true}
                         allowParticipationCertificates={false}
                         allowPodiumCertificates={false}
                         competition={competition}

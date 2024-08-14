@@ -1,5 +1,21 @@
 export const fonts = [
   {
+    value: "Allura",
+    label: "Allura",
+  },
+  {
+    value: "Cookie",
+    label: "Cookie",
+  },
+  {
+    value: "Dancing Script",
+    label: "Dancing Script",
+  },
+  {
+    value: "Great Vibes",
+    label: "Great Vibes",
+  },
+  {
     value: "Inter",
     label: "Inter",
   },
@@ -84,6 +100,10 @@ export const fonts = [
     label: "Rubik",
   },
   {
+    value: "Satisfy",
+    label: "Satisfy",
+  },
+  {
     value: "Ubuntu",
     label: "Ubuntu",
   },
@@ -94,6 +114,30 @@ export const fonts = [
 ];
 
 export const fontDeclarations = {
+  Allura: {
+    normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Allura/Allura-Regular.ttf`,
+    bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Allura/Allura-Regular.ttf`,
+    italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Allura/Allura-Regular.ttf`,
+    bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Allura/Allura-Regular.ttf`,
+  },
+  Cookie: {
+    normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Cookie/Cookie-Regular.ttf`,
+    bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Cookie/Cookie-Regular.ttf`,
+    italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Cookie/Cookie-Regular.ttf`,
+    bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Cookie/Cookie-Regular.ttf`,
+  },
+  "Dancing Script": {
+    normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Dancing_Script/DancingScript-Regular.ttf`,
+    bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Dancing_Script/DancingScript-Bold.ttf`,
+    italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Dancing_Script/DancingScript-Regular.ttf`,
+    bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Dancing_Script/DancingScript-Regular.ttf`,
+  },
+  "Great Vibes": {
+    normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Great_Vibes/GreatVibes-Regular.ttf`,
+    bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Great_Vibes/GreatVibes-Regular.ttf`,
+    italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Great_Vibes/GreatVibes-Regular.ttf`,
+    bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Great_Vibes/GreatVibes-Regular.ttf`,
+  },
   Inter: {
     normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Inter/Inter-Regular.ttf`,
     bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Inter/Inter-Bold.ttf`,
@@ -220,6 +264,12 @@ export const fontDeclarations = {
     italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Rubik/Rubik-Regular.ttf`,
     bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Rubik/Rubik-Regular.ttf`,
   },
+  Satisfy: {
+    normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Satisfy/Satisfy-Regular.ttf`,
+    bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Satisfy/Satisfy-Regular.ttf`,
+    italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Satisfy/Satisfy-Regular.ttf`,
+    bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Satisfy/Satisfy-Regular.ttf`,
+  },
   Ubuntu: {
     normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Ubuntu/Ubuntu-Regular.ttf`,
     bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Ubuntu/Ubuntu-Bold.ttf`,
@@ -235,6 +285,10 @@ export const fontDeclarations = {
 };
 
 export const fontFamilies = [
+  "Allura",
+  "Cookie",
+  "Dancing Script",
+  "Great Vibes",
   "Inter",
   "Kanit",
   "Lato",
@@ -256,6 +310,7 @@ export const fontFamilies = [
   "Roboto Mono",
   "Roboto Slab",
   "Rubik",
+  "Satisfy",
   "Ubuntu",
   "Work Sans",
 ];

@@ -86,7 +86,7 @@ export default async function Page({
 
                     return (
                       <CardCompetition
-                        allowDesign={true}
+                        allowDesign
                         allowParticipationCertificates={false}
                         allowPodiumCertificates={false}
                         competition={competition}

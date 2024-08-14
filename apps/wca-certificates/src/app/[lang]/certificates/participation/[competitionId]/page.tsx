@@ -4,7 +4,7 @@ import DocumentSettings from "@/components/participation/document-settings";
 import "@cubing/icons";
 import {
   fetchCompetition,
-  fetchCompetitions,
+  // fetchCompetitions,
   retrieveLocation,
 } from "@/app/[lang]/actions";
 import type { Locale } from "@/i18n-config";

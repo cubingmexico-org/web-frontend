@@ -138,6 +138,7 @@ export default function DocumentSettings({
 
     const personWithResults = {
       wcaId: person.wcaId,
+      registrantId: person.registrantId,
       name: person.name,
       results,
     };
@@ -149,7 +150,7 @@ export default function DocumentSettings({
 
   function generateParticipationCertificates() {
     const filteredResults = allResults.filter(
-      (result) => rowSelection[result.wcaId],
+      (result) => rowSelection[result.registrantId.toString()],
     );
     setPdfData(filteredResults);
   }

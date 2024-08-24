@@ -82,7 +82,8 @@ export interface Competition {
 
 export interface ParticipantData {
   name: string;
-  wcaId: string;
+  wcaId: string | null;
+  registrantId: number;
   results: {
     event: EventId;
     average: number;

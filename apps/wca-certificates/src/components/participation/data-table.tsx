@@ -59,7 +59,7 @@ export function DataTable<TData extends ParticipantData, TValue>({
   const table = useReactTable({
     data,
     columns,
-    getRowId: (row) => row.wcaId,
+    getRowId: (row) => row.registrantId.toString(),
     enableRowSelection: (row) =>
       row.original.results.every(
         (result: { event: string; average: number; ranking: number | null }) =>

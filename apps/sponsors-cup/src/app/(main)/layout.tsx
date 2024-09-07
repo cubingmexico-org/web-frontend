@@ -57,7 +57,9 @@ export default function Layout({
             />
           </Link>
         </div>
-        <h1 className="text-2xl font-semibold">Copa Inter-Patrocinadores</h1>
+        <h1 className="text-2xl font-semibold">
+          Copa Inter-Patrocinadores 2024
+        </h1>
         <h2 className="text-lg">Segunda temporada (Septiembre - Diciembre)</h2>
         <p className="p-4">
           Competencia dirigida a la comunidad nacional, con el propósito de dar

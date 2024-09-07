@@ -35,3 +35,15 @@ export type GroupedData = Record<
     total_score: number;
   }
 >;
+
+export interface TableDataByCompetitor extends TeamMember {
+  total_score: string;
+}
+
+export interface CompetitorTable {
+  member_id: string;
+  member_name: string;
+  competition_id: string;
+  competition_name: string;
+  score: number;
+}

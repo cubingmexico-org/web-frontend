@@ -10,14 +10,14 @@ import {
   TableRow,
 } from "@repo/ui/table";
 import { ArrowLeft } from "lucide-react";
-import { fetchIndividualData } from "@/app/lib/data";
+import { fetchCompetitorTable } from "@/app/actions";
 
 export default async function Page({
   params,
 }: {
   params: { id: string };
 }): Promise<JSX.Element> {
-  const data = await fetchIndividualData(params.id);
+  const data = await fetchCompetitorTable(params.id);
 
   return (
     <>

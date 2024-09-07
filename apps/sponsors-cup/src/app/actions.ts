@@ -5,7 +5,12 @@ import { unstable_noStore as noStore } from "next/cache";
 import { sql } from "@vercel/postgres";
 import type { Competition } from "./types/unofficial-wca-api";
 import type { Competition as WCIFCompetition } from "./types/wcif";
-import type { Member, TableDataByTeam } from "./types";
+import type {
+  CompetitorTable,
+  Member,
+  TableDataByCompetitor,
+  TableDataByTeam,
+} from "./types";
 
 export async function fetchTeamsTable(
   competitions: Competition[],
@@ -61,6 +66,90 @@ export async function fetchTeamsTable(
   `;
 
   const data = await sql.query<TableDataByTeam>(query);
+
+  return data.rows;
+}
+
+export async function fetchIndividualTable(
+  competitions: Competition[],
+): Promise<TableDataByCompetitor[]> {
+  noStore();
+
+  const competitionIds = competitions.map((comp) => comp.id);
+  const maxStatements = competitionIds
+    .map(
+      (id) => `MAX(CASE WHEN competition_id = '${id}' THEN score END) AS ${id}`,
+    )
+    .join(",");
+
+  const query = `
+  WITH ScorePerMember AS (
+    SELECT
+      Members.id AS member_id,
+      Members.name AS member_name,
+      Competitions.id AS competition_id,
+      Scores.score
+    FROM
+      Members
+    JOIN
+      Scores ON Members.id = Scores.member_id
+    JOIN
+      Competitions ON Scores.competition_id = Competitions.id
+  ),
+  CompetitionScores AS (
+    SELECT
+      member_id,
+      member_name,
+      ${maxStatements},
+      SUM(score) AS total_score
+    FROM
+      ScorePerMember
+    GROUP BY
+      member_id, member_name
+  )
+  SELECT
+    member_id,
+    member_name,
+    ${competitionIds.join(",")},
+    total_score
+  FROM
+    CompetitionScores
+  ORDER BY
+    total_score DESC, member_name;
+`;
+
+  const data = await sql.query<TableDataByCompetitor>(query);
+
+  return data.rows;
+}
+
+export async function fetchCompetitorTable(
+  memberId: string,
+): Promise<CompetitorTable[]> {
+  noStore();
+
+  const data = await sql<CompetitorTable>`
+    SELECT 
+      Members.name as member_name, 
+      Members.id as member_id, 
+      Scores.score, 
+      Competitions.name as competition_name, 
+      Competitions.id as competition_id 
+    FROM 
+      Members 
+    INNER JOIN 
+      Scores ON Members.id = Scores.member_id 
+    INNER JOIN 
+      Competitions ON Scores.competition_id = Competitions.id 
+    WHERE 
+      Members.id = ${memberId} 
+      AND (
+        (Competitions.startDate <= CURRENT_DATE AND Competitions.endDate >= CURRENT_DATE) 
+        OR Competitions.endDate < CURRENT_DATE
+      )
+    ORDER BY 
+      Scores.score DESC
+    `;
 
   return data.rows;
 }

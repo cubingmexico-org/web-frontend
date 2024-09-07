@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { findCompetitors } from "@/app/lib/data";
+import { findCompetitors } from "@/app/actions";
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest): Promise<Response> {
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return new Response("Unauthorized", {
@@ -11,9 +10,14 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  // eslint-disable-next-line no-console -- Logging
-  console.log("Finding competitors");
+  const url = new URL(request.url);
+  const competitionId = url.searchParams.get("competition_id");
+  if (!competitionId) {
+    return new Response("Bad Request: Missing competition_id parameter", {
+      status: 400,
+    });
+  }
 
-  await findCompetitors();
-  return NextResponse.json({ success: true });
+  const competitors = await findCompetitors(competitionId);
+  return NextResponse.json({ competitors });
 }

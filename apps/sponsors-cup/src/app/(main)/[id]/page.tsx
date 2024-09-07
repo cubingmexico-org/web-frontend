@@ -12,8 +12,11 @@ import {
 import { ArrowLeft } from "lucide-react";
 import { fetchIndividualData } from "@/app/lib/data";
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- ignore
-export default async function Page({ params }: { params: { id: string } }) {
+export default async function Page({
+  params,
+}: {
+  params: { id: string };
+}): Promise<JSX.Element> {
   const data = await fetchIndividualData(params.id);
 
   return (

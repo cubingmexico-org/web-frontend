@@ -58,7 +58,7 @@ export default function Layout({
           </Link>
         </div>
         <h1 className="text-2xl font-semibold">Copa Inter-Patrocinadores</h1>
-        <h2 className="text-lg">Primera temporada (Abril - Julio)</h2>
+        <h2 className="text-lg">Segunda temporada (Septiembre - Diciembre)</h2>
         <p className="p-4">
           Competencia dirigida a la comunidad nacional, con el propósito de dar
           mayor protagonismo a los speedcubers y a las tiendas que los apoyan,
@@ -70,8 +70,6 @@ export default function Layout({
       <div className="text-center p-4">
         <p className="font-bold text-lg">Aviso</p>
         <p>
-          El contador aún se encuentra en fase de pruebas, por lo que podría
-          haber ocasiones en las que los PRs no se contabilicen correctamente.
           Si observas alguna inconsistencia, te agradeceríamos que la
           reportaras. Agradecemos tu comprensión y colaboración en este asunto.
         </p>
@@ -90,13 +88,12 @@ export default function Layout({
                 Cubing México
               </Link>
             </li>
-            {/* eslint-disable-next-line react/no-unescaped-entities -- . */}
             <li className="mt-2">
               <Link
                 className="text-red-700 hover:underline"
                 href="https://www.facebook.com/profile.php?id=100063651453072"
               >
-                SanLuis Rubik's Team
+                {`SanLuis Rubik's Team`}
               </Link>
             </li>
           </ul>

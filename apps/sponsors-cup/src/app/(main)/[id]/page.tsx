@@ -10,11 +10,14 @@ import {
   TableRow,
 } from "@repo/ui/table";
 import { ArrowLeft } from "lucide-react";
-import { fetchIndividualData } from "@/app/lib/data";
+import { fetchCompetitorTable } from "@/app/actions";
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- ignore
-export default async function Page({ params }: { params: { id: string } }) {
-  const data = await fetchIndividualData(params.id);
+export default async function Page({
+  params,
+}: {
+  params: { id: string };
+}): Promise<JSX.Element> {
+  const data = await fetchCompetitorTable(params.id);
 
   return (
     <>

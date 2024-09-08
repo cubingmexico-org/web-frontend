@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- . */
 /* eslint-disable no-await-in-loop -- . */
 "use server";
 
@@ -281,9 +282,9 @@ export async function updateScores(): Promise<void> {
                 let prsBroken = 0;
 
                 if (!singlePB || result.best <= singlePB.best) {
-                  // console.log(
-                  //   `${id} broke single PR for ${event.id} with ${result.best}`,
-                  // );
+                  console.log(
+                    `${id} broke single PR for ${event.id} with ${result.best}`,
+                  );
                   if (!singlePB) {
                     singlePB = {
                       eventId: event.id,
@@ -302,9 +303,9 @@ export async function updateScores(): Promise<void> {
                   result.average !== -1 &&
                   result.average !== 0
                 ) {
-                  // console.log(
-                  //   `${id} broke average PR for ${event.id} with ${result.average}`,
-                  // );
+                  console.log(
+                    `${id} broke average PR for ${event.id} with ${result.average}`,
+                  );
                   if (!averagePB) {
                     averagePB = {
                       eventId: event.id,
@@ -327,14 +328,14 @@ export async function updateScores(): Promise<void> {
           (total, current) => total + current.prs,
           0,
         );
-        // console.log("-------------------");
+        console.log("-------------------");
 
         return { id, timesBroken: totalPrsBroken };
       },
     );
 
     for (const best of personalBestsBroken) {
-      await sql<Competition>`UPDATE MemberScores SET score = score + ${best.timesBroken} WHERE member_id = ${best.id} AND competition_id = ${competition.id}`;
+      await sql<Competition>`UPDATE Scores SET score = score + ${best.timesBroken} WHERE member_id = ${best.id} AND competition_id = ${competition.id}`;
     }
   }
 }

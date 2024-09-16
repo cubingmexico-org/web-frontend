@@ -345,7 +345,7 @@ export function joinPersons(persons: string[], lang?: Locale): string {
 
   const lastPerson = personsCopy.pop();
   return lang === "es"
-    ? `${personsCopy.join(", ")} y ${lastPerson}`
+    ? `${personsCopy.join(", ")} ${lastPerson?.startsWith("I") ? "e" : "y"} ${lastPerson}`
     : `${personsCopy.join(", ")} and ${lastPerson}`;
 }
 

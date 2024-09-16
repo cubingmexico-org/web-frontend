@@ -40,6 +40,13 @@ export default async function Page(): Promise<JSX.Element> {
     {},
   );
 
+  // Convert to array, sort by total_score, and convert back to object
+  const sortedGroupedTeamsData = Object.fromEntries(
+    Object.entries(groupedTeamsData).sort(
+      ([, a], [, b]) => b.total_score - a.total_score
+    )
+  );
+
   return (
     <Tabs defaultValue="teams">
       <div className="flex justify-center w-full">
@@ -112,8 +119,8 @@ export default async function Page(): Promise<JSX.Element> {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {Object.keys(groupedTeamsData).map((team, teamIndex) => {
-              const { members, total_score } = groupedTeamsData[team];
+            {Object.keys(sortedGroupedTeamsData).map((team, teamIndex) => {
+              const { members, total_score } = sortedGroupedTeamsData[team];
               return members.map((member, memberIndex) => (
                 <TableRow key={`${team}-${member.member_name}`}>
                   {memberIndex === 0 && (

@@ -43,9 +43,11 @@ export default async function Page(): Promise<JSX.Element> {
   // Convert to array, sort by total_score, and convert back to object
   const sortedGroupedTeamsData = Object.fromEntries(
     Object.entries(groupedTeamsData).sort(
-      ([, a], [, b]) => b.total_score - a.total_score
-    )
+      ([, a], [, b]) => b.total_score - a.total_score,
+    ),
   );
+
+  const lastNCompetitions = competitions.slice(-5);
 
   return (
     <Tabs defaultValue="teams">
@@ -70,7 +72,7 @@ export default async function Page(): Promise<JSX.Element> {
             <TableRow>
               <TableHead
                 className="text-center text-lg font-bold"
-                colSpan={competitions.length + 3}
+                colSpan={lastNCompetitions.length + 3}
               >
                 Marcador por equipos
               </TableHead>
@@ -88,7 +90,7 @@ export default async function Page(): Promise<JSX.Element> {
               </TableHead>
               <TableHead
                 className="text-center font-bold hidden sm:table-cell"
-                colSpan={competitions.length}
+                colSpan={lastNCompetitions.length}
               >
                 <div className="flex items-center justify-center">
                   Competencias
@@ -103,7 +105,7 @@ export default async function Page(): Promise<JSX.Element> {
               </TableHead>
             </TableRow>
             <TableRow>
-              {competitions.map((competition) => (
+              {lastNCompetitions.map((competition) => (
                 <TableHead
                   className="text-center hidden sm:table-cell max-w-[100px]"
                   key={competition.id}
@@ -150,7 +152,7 @@ export default async function Page(): Promise<JSX.Element> {
                       {member.member_name}
                     </Link>
                   </TableCell>
-                  {competitions.map((competition) => (
+                  {lastNCompetitions.map((competition) => (
                     <TableCell
                       className="text-center hidden sm:table-cell"
                       key={competition.id}
@@ -184,7 +186,7 @@ export default async function Page(): Promise<JSX.Element> {
             <TableRow>
               <TableHead
                 className="text-center text-lg font-bold"
-                colSpan={competitions.length + 3}
+                colSpan={lastNCompetitions.length + 3}
               >
                 Marcador individual
               </TableHead>
@@ -198,7 +200,7 @@ export default async function Page(): Promise<JSX.Element> {
               </TableHead>
               <TableHead
                 className="text-center font-bold hidden sm:table-cell"
-                colSpan={competitions.length}
+                colSpan={lastNCompetitions.length}
               >
                 <div className="flex items-center justify-center">
                   Competencias
@@ -213,7 +215,7 @@ export default async function Page(): Promise<JSX.Element> {
               </TableHead>
             </TableRow>
             <TableRow>
-              {competitions.map((competition) => (
+              {lastNCompetitions.map((competition) => (
                 <TableHead
                   className="text-center hidden sm:table-cell max-w-[100px]"
                   key={competition.id}
@@ -248,7 +250,7 @@ export default async function Page(): Promise<JSX.Element> {
                     </Link>
                   </div>
                 </TableCell>
-                {competitions.map((competition) => (
+                {lastNCompetitions.map((competition) => (
                   <TableCell
                     className="text-center hidden sm:table-cell"
                     key={competition.id}

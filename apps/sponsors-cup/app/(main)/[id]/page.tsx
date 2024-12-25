@@ -12,12 +12,11 @@ import {
 import { ArrowLeft } from "lucide-react";
 import { fetchCompetitorTable } from "@/app/actions";
 
-export default async function Page({
-  params,
-}: {
-  params: { id: string };
-}): Promise<JSX.Element> {
-  const data = await fetchCompetitorTable(params.id);
+type Params = Promise<{ id: string }>
+
+export default async function Page({ params }: { params: Params }): Promise<JSX.Element> {
+  const { id } = await params;
+  const data = await fetchCompetitorTable(id);
 
   return (
     <>
@@ -46,9 +45,9 @@ export default async function Page({
               Puntos de{" "}
               <Link
                 className="hover:underline"
-                href={`https://www.worldcubeassociation.org/persons/${data[0].member_id}`}
+                href={`https://www.worldcubeassociation.org/persons/${data[0]?.member_id}`}
               >
-                {data[0].member_name}
+                {data[0]?.member_name}
               </Link>
             </TableHead>
           </TableRow>

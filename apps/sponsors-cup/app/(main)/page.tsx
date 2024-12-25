@@ -125,7 +125,7 @@ export default async function Page(): Promise<JSX.Element> {
           </TableHeader>
           <TableBody>
             {Object.keys(sortedGroupedTeamsData).map((team, teamIndex) => {
-              const { members, total_score } = sortedGroupedTeamsData[team];
+              const { members, total_score } = sortedGroupedTeamsData[team]!;
               return members.map((member, memberIndex) => (
                 <TableRow key={`${team}-${member.member_name}`}>
                   {memberIndex === 0 && (

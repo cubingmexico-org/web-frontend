@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-misused-promises -- . */
-
-import { Button } from "@repo/ui/button";
+import { Button } from "@workspace/ui/components/button";
 import { Icons } from "@repo/ui/icons";
 import type { getDictionary } from "@/get-dictionary";
 import { signIn, signOut } from "auth";

@@ -1,5 +1,3 @@
-/* eslint-disable no-console -- . */
-/* eslint-disable no-await-in-loop -- . */
 "use server";
 
 import { unstable_noStore as noStore } from "next/cache";

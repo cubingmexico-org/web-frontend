@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
-/* eslint-disable @typescript-eslint/no-confusing-void-expression -- . */
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Label } from "@repo/ui/label";
+import { Label } from "@workspace/ui/components/label";
 import {
   Dialog,
   DialogContent,
@@ -11,19 +9,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@repo/ui/dialog";
+} from "@workspace/ui/components/dialog";
 import {
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@repo/ui/select";
-import { RadioGroup, RadioGroupItem } from "@repo/ui/radio-group";
-import { Input } from "@repo/ui/input";
+} from "@workspace/ui/components/select";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@workspace/ui/components/radio-group";
+import { Input } from "@workspace/ui/components/input";
 import type { Margins, PageOrientation, PageSize } from "pdfmake/interfaces";
 import { FileText } from "lucide-react";
-import { Button } from "@repo/ui/button";
+import { Button } from "@workspace/ui/components/button";
 import type { getDictionary } from "@/get-dictionary";
 
 interface DialogDocumentSettingsProps {

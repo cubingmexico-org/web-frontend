@@ -13,7 +13,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@repo/ui/table";
+} from "@workspace/ui/components/table";
 import type { Event, Result } from "@/types/wca-live";
 import type { getDictionary } from "@/get-dictionary";
 

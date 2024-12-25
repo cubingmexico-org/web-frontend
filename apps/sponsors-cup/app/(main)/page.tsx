@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-condition -- . */
-/* eslint-disable camelcase -- . */
 import {
   TableCaption,
   TableHeader,
@@ -8,8 +6,13 @@ import {
   TableBody,
   TableCell,
   Table,
-} from "@repo/ui/table";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@repo/ui/tabs";
+} from "@workspace/ui/components/table";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@workspace/ui/components/tabs";
 import { Medal, Trophy, User, Users } from "lucide-react";
 import Link from "next/link";
 import {

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
-
 "use client";
 
 import { usePathname } from "next/navigation";
@@ -11,7 +9,7 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "@repo/ui/dropdown-menu";
+} from "@workspace/ui/components/dropdown-menu";
 import { i18n, type Locale } from "@/i18n-config";
 import type { getDictionary } from "@/get-dictionary";
 

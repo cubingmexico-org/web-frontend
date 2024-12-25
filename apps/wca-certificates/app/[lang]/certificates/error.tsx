@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-confusing-void-expression -- . */
-/* eslint-disable no-console -- . */
 "use client";
 
-import { Button } from "@repo/ui/button";
+import { Button } from "@workspace/ui/components/button";
 import { useEffect } from "react";
 
 export default function Error({

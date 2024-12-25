@@ -1,11 +1,6 @@
-/* eslint-disable react/no-array-index-key -- . */
 /* eslint-disable @typescript-eslint/no-explicit-any -- . */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access -- . */
 /* eslint-disable react/display-name -- . */
-/* eslint-disable @typescript-eslint/no-unsafe-call -- . */
-/* eslint-disable react/button-has-type -- . */
-/* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
+
 import { usePathname } from "next/navigation";
 import React, {
   forwardRef,

@@ -1,8 +1,3 @@
-/* eslint-disable no-nested-ternary -- . */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
-/* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
-/* eslint-disable @typescript-eslint/no-shadow -- . */
-/* eslint-disable import/no-named-as-default -- . */
 "use client";
 
 import { usePathname } from "next/navigation";
@@ -19,7 +14,7 @@ import TableCell from "@tiptap/extension-table-cell";
 import TableHeader from "@tiptap/extension-table-header";
 import TableRow from "@tiptap/extension-table-row";
 import type { PageSize, PageOrientation, Margins } from "pdfmake/interfaces";
-import { cn } from "@repo/ui/utils";
+import { cn } from "@workspace/ui/lib/utils";
 import Color from "@tiptap/extension-color";
 import {
   Menubar,
@@ -33,7 +28,7 @@ import {
   MenubarSubContent,
   MenubarSubTrigger,
   MenubarTrigger,
-} from "@repo/ui/menubar";
+} from "@workspace/ui/components/menubar";
 import {
   Save,
   Loader,
@@ -58,7 +53,7 @@ import {
   RemoveFormatting,
   Heading,
 } from "lucide-react";
-import { Button } from "@repo/ui/button";
+import { Button } from "@workspace/ui/components/button";
 import { DialogDocumentSettings } from "@/components/editor/dialog-document-settings";
 import { TextTransform } from "@/components/editor/extensions/text-transform";
 import { FontSize } from "@/components/editor/extensions/font-size";

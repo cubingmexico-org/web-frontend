@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-condition -- . */
 "use client";
 
 import * as React from "react";
@@ -17,7 +16,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { DataTablePagination } from "@repo/ui/data-table-pagination";
-import { Input } from "@repo/ui/input";
+import { Input } from "@workspace/ui/components/input";
 import {
   Table,
   TableBody,
@@ -25,7 +24,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@repo/ui/table";
+} from "@workspace/ui/components/table";
 import type { ParticipantData } from "@/types/wca-live";
 import type { getDictionary } from "@/get-dictionary";
 

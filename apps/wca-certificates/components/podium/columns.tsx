@@ -2,7 +2,7 @@
 
 import type { ColumnDef } from "@tanstack/react-table";
 import { CheckCircle, AlertCircle } from "lucide-react";
-import { Checkbox } from "@repo/ui/checkbox";
+import { Checkbox } from "@workspace/ui/components/checkbox";
 import type { Event } from "@/types/wca-live";
 
 export const columnsEs: ColumnDef<Event>[] = [
@@ -51,7 +51,7 @@ export const columnsEs: ColumnDef<Event>[] = [
           {rounds.length > 0 && (
             <>
               {rounds[rounds.length - 1].results.length > 0 &&
-              rounds[rounds.length - 1].results.every(
+              rounds[rounds.length - 1]?.results.every(
                 (result) => result.ranking !== null,
               ) ? (
                 <>

@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-shadow -- . */
 /* eslint-disable no-case-declarations -- . */
-/* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
 import { faker } from "@faker-js/faker";
 import type { Event, Person, Result, EventId, Round } from "@/types/wca-live";
 import type { Locale } from "@/i18n-config";
@@ -20,7 +18,7 @@ export function processPersons(persons: Person[]) {
 
   function getEventData(event: Event) {
     const rounds = event.rounds;
-    const results = rounds[rounds.length - 1].results
+    const results = rounds[rounds.length - 1]?.results
       .filter(
         (result: Result) =>
           result.ranking !== null &&
@@ -340,7 +338,7 @@ export function joinPersons(persons: string[], lang?: Locale): string {
   const personsCopy = [...persons];
 
   if (personsCopy.length === 1) {
-    return personsCopy[0];
+    return personsCopy[0] ?? "";
   }
 
   const lastPerson = personsCopy.pop();

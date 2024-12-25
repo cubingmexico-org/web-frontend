@@ -1,5 +1,4 @@
-import "./globals.css";
-import "@repo/ui/styles.css";
+import "@workspace/ui/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";

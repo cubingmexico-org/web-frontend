@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
 "use client";
 
 import React from "react";
@@ -8,7 +7,7 @@ import {
   MenubarSub,
   MenubarSubContent,
   MenubarSubTrigger,
-} from "@repo/ui/menubar";
+} from "@workspace/ui/components/menubar";
 import type { getDictionary } from "@/get-dictionary";
 
 interface SubmenuProps {

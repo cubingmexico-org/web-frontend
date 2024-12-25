@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
-
 "use client";
 
 import * as React from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { Switch } from "@repo/ui/switch";
+import { Switch } from "@workspace/ui/components/switch";
 
 export function ModeToggle(): JSX.Element {
   const { theme, setTheme } = useTheme();

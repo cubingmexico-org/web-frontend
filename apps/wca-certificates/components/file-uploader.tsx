@@ -1,7 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps -- . */
-/* eslint-disable no-template-curly-in-string -- . */
-/* eslint-disable react/no-array-index-key -- . */
-/* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
 
 "use client";
 
@@ -13,10 +10,10 @@ import Dropzone, {
   type FileRejection,
 } from "react-dropzone";
 import { toast } from "sonner";
-import { Button } from "@repo/ui/button";
-import { Progress } from "@repo/ui/progress";
-import { ScrollArea } from "@repo/ui/scroll-area";
-import { cn } from "@repo/ui/utils";
+import { Button } from "@workspace/ui/components/button";
+import { Progress } from "@workspace/ui/components/progress";
+import { ScrollArea } from "@workspace/ui/components/scroll-area";
+import { cn } from "@workspace/ui//lib/utils";
 import { formatBytes } from "@/lib/utils";
 import { useControllableState } from "@/hooks/use-controllable-state";
 import type { getDictionary } from "@/get-dictionary";

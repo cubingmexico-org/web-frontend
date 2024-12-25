@@ -1,5 +1,3 @@
-/* eslint-disable react/no-array-index-key -- . */
-
 import { redirect } from "next/navigation";
 import {
   Card,
@@ -7,8 +5,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@repo/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs";
+} from "@workspace/ui/components/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@workspace/ui/components/tabs";
 import { auth } from "@/auth";
 import "@cubing/icons";
 import { CardCompetition } from "@/components/card-competition";

@@ -1,8 +1,12 @@
-/* eslint-disable @typescript-eslint/await-thenable -- . */
-
-import { Button } from "@repo/ui/button";
-// import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@repo/ui/select";
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@repo/ui/table";
+import { Button } from "@workspace/ui/components/button";
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from "@workspace/ui/components/table";
 import { ChevronDown } from "lucide-react";
 import { sql } from "drizzle-orm";
 import { result } from "@/lib/db/schema";
@@ -28,15 +32,18 @@ export default async function Page({
     .orderBy(
       sql`${result.personId}`,
       // sql`${result.best} DESC`
-    )
+    );
 
   return (
     <main className="flex-grow container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Clasificaciones Estatales Mexicanas</h1>
+      <h1 className="text-3xl font-bold mb-6">
+        Clasificaciones Estatales Mexicanas
+      </h1>
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <p className="text-lg mb-4 sm:mb-0">
-          Ver a los mejores speedcubers de cada estado mexicano en varios eventos de la WCA.
+          Ver a los mejores speedcubers de cada estado mexicano en varios
+          eventos de la WCA.
         </p>
         <div className="w-full sm:w-auto">
           {/* <Select value={selectedEvent} onValueChange={setSelectedEvent}>
@@ -69,7 +76,9 @@ export default async function Page({
               <TableCell className="font-medium">{index + 1}</TableCell>
               <TableCell>{ranking.personName}</TableCell>
               {/* <TableCell>{ranking.state}</TableCell> */}
-              <TableCell className="text-right">{formatTime(ranking.best)}</TableCell>
+              <TableCell className="text-right">
+                {formatTime(ranking.best)}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

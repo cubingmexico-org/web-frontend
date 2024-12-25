@@ -5,8 +5,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@repo/ui/table";
-import { Skeleton } from "@repo/ui/skeleton";
+} from "@workspace/ui/components/table";
+import { Skeleton } from "@workspace/ui/components/skeleton";
 
 export default function Loading(): JSX.Element {
   return (

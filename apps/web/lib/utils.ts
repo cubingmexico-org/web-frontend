@@ -17,9 +17,18 @@ export function formatCompetitionDateSpanish(competition: {
   endMonth: number;
 }): string {
   const spanishMonthNames = [
-    "enero", "febrero", "marzo", "abril", "mayo",
-    "junio", "julio", "agosto", "septiembre", "octubre",
-    "noviembre", "diciembre"
+    "enero",
+    "febrero",
+    "marzo",
+    "abril",
+    "mayo",
+    "junio",
+    "julio",
+    "agosto",
+    "septiembre",
+    "octubre",
+    "noviembre",
+    "diciembre",
   ];
 
   const startDay = competition.day;

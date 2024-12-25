@@ -1,9 +1,8 @@
-import "../globals.css";
-import "@repo/ui/styles.css";
+import "@workspace/ui/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
-import { Toaster } from "@repo/ui/toaster";
+import { Toaster } from "@workspace/ui/components/toaster";
 import type { Locale } from "@/i18n-config";
 import { getDictionary } from "@/get-dictionary";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -33,12 +32,7 @@ export default function RootLayout({
   return (
     <html lang={params.lang}>
       <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          disableTransitionOnChange
-          enableSystem
-        >
+        <ThemeProvider>
           {children}
           <Analytics />
           <Toaster />

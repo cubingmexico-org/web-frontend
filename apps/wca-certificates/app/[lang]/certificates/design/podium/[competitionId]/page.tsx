@@ -1,4 +1,4 @@
-import { Badge } from "@repo/ui/badge";
+import { Badge } from "@workspace/ui/components/badge";
 import { redirect } from "next/navigation";
 import DocumentSettings from "@/components/podium/document-settings";
 import "@cubing/icons";

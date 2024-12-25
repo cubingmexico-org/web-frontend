@@ -8,7 +8,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@repo/ui/table";
+} from "@workspace/ui/components/table";
 import { ArrowLeft } from "lucide-react";
 import { fetchCompetitorTable } from "@/app/actions";
 

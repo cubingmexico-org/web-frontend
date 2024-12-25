@@ -1,7 +1,12 @@
 import Image from "next/image";
 import { ArrowRight, Trophy, Users, Clock } from "lucide-react";
-import { Button } from "@repo/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/card";
+import { Button } from "@workspace/ui/components/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card";
 
 export default function Page(): JSX.Element {
   return (
@@ -15,7 +20,9 @@ export default function Page(): JSX.Element {
               Rankings y Récords Estatales Mexicanos
             </h1>
             <p className="mb-8 leading-relaxed">
-              Descubre a los mejores speedcubers en México, sigue los récords estatales y mantente actualizado con los últimos eventos y logros de la WCA.
+              Descubre a los mejores speedcubers en México, sigue los récords
+              estatales y mantente actualizado con los últimos eventos y logros
+              de la WCA.
             </p>
             <div className="flex justify-center">
               <Button className="!inline-flex !text-white !bg-green-500 !border-0 !py-2 !px-6 focus:!outline-none hover:!bg-green-600 !rounded !text-lg">
@@ -48,7 +55,8 @@ export default function Page(): JSX.Element {
               </CardHeader>
               <CardContent>
                 <p className="leading-relaxed text-base">
-                  Ve a los mejores speedcubers de cada estado mexicano en varios eventos de la WCA.
+                  Ve a los mejores speedcubers de cada estado mexicano en varios
+                  eventos de la WCA.
                 </p>
               </CardContent>
             </Card>
@@ -61,7 +69,9 @@ export default function Page(): JSX.Element {
               </CardHeader>
               <CardContent>
                 <p className="leading-relaxed text-base">
-                  Mantente al tanto de los tiempos más rápidos y los mejores promedios establecidos por cuberos mexicanos en competiciones oficiales de la WCA.
+                  Mantente al tanto de los tiempos más rápidos y los mejores
+                  promedios establecidos por cuberos mexicanos en competiciones
+                  oficiales de la WCA.
                 </p>
               </CardContent>
             </Card>
@@ -74,7 +84,8 @@ export default function Page(): JSX.Element {
               </CardHeader>
               <CardContent>
                 <p className="leading-relaxed text-base">
-                  Encuentra información sobre las próximas competiciones de la WCA en México y regístrate para participar.
+                  Encuentra información sobre las próximas competiciones de la
+                  WCA en México y regístrate para participar.
                 </p>
               </CardContent>
             </Card>

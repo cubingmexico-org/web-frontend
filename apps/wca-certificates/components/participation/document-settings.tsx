@@ -1,20 +1,18 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-condition -- . */
 /* eslint-disable @typescript-eslint/no-explicit-any -- . */
-/* eslint-disable @typescript-eslint/no-unsafe-return -- . */
-/* eslint-disable no-nested-ternary -- . */
 /* eslint-disable react-hooks/exhaustive-deps -- . */
-/* eslint-disable @typescript-eslint/restrict-template-expressions -- . */
-/* eslint-disable @typescript-eslint/no-base-to-string -- . */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
-/* eslint-disable @typescript-eslint/no-shadow -- . */
-/* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
+
 "use client";
 
 import React, { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import type { JSONContent } from "@tiptap/react";
-import { Label } from "@repo/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs";
+import { Label } from "@workspace/ui/components/label";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@workspace/ui/components/tabs";
 import * as pdfMake from "pdfmake/build/pdfmake";
 import type {
   Margins,

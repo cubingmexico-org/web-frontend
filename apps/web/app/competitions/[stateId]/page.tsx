@@ -1,10 +1,19 @@
-/* eslint-disable @typescript-eslint/no-shadow -- . */
-/* eslint-disable @typescript-eslint/await-thenable -- . */
-
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@repo/ui/table";
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from "@workspace/ui/components/table";
 import { sql } from "drizzle-orm";
-import { Badge } from "@repo/ui/badge";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@repo/ui/tabs";
+import { Badge } from "@workspace/ui/components/badge";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@workspace/ui/components/tabs";
 import { competition, state, event } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 import { formatCompetitionDateSpanish } from "@/lib/utils";
@@ -28,12 +37,10 @@ export default async function Page({
     .orderBy(
       sql`${competition.year} DESC`,
       sql`${competition.month} DESC`,
-      sql`${competition.day} DESC`
+      sql`${competition.day} DESC`,
     );
 
-  const states = await db
-    .select()
-    .from(state);
+  const states = await db.select().from(state);
 
   const events = await db
     .select()
@@ -50,7 +57,8 @@ export default async function Page({
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <p className="text-lg mb-4 sm:mb-0">
-          Ver a los mejores speedcubers de cada estado mexicano en varios eventos de la WCA.
+          Ver a los mejores speedcubers de cada estado mexicano en varios
+          eventos de la WCA.
         </p>
         <div className="w-full sm:w-auto">
           <StateSelect initialSelectedStateId={stateId} states={states} />
@@ -75,10 +83,13 @@ export default async function Page({
             <TableBody>
               {competitions.map((comp, index) => {
                 const competitionEvents = comp.eventSpecs?.split(" ");
-                const orderedCompetitionEvents = competitionEvents?.map(eventId => events.find(event => event.id === eventId))
-                  .filter(event => event !== undefined)
+                const orderedCompetitionEvents = competitionEvents
+                  ?.map((eventId) =>
+                    events.find((event) => event.id === eventId),
+                  )
+                  .filter((event) => event !== undefined)
                   .sort((a, b) => a.rank - b.rank)
-                  .map(event => event.id);
+                  .map((event) => event.id);
 
                 return (
                   <TableRow key={comp.id}>
@@ -87,13 +98,16 @@ export default async function Page({
                     <TableCell>
                       <div className="flex gap-1">
                         {orderedCompetitionEvents?.map((event) => (
-                          <span className={`cubing-icon event-${event}`} key={event} />
+                          <span
+                            className={`cubing-icon event-${event}`}
+                            key={event}
+                          />
                         ))}
                       </div>
                     </TableCell>
                     <TableCell>{formatCompetitionDateSpanish(comp)}</TableCell>
                   </TableRow>
-                )
+                );
               })}
             </TableBody>
           </Table>
@@ -111,10 +125,13 @@ export default async function Page({
             <TableBody>
               {competitions.map((comp, index) => {
                 const competitionEvents = comp.eventSpecs?.split(" ");
-                const orderedCompetitionEvents = competitionEvents?.map(eventId => events.find(event => event.id === eventId))
-                  .filter(event => event !== undefined)
+                const orderedCompetitionEvents = competitionEvents
+                  ?.map((eventId) =>
+                    events.find((event) => event.id === eventId),
+                  )
+                  .filter((event) => event !== undefined)
                   .sort((a, b) => a.rank - b.rank)
-                  .map(event => event.id);
+                  .map((event) => event.id);
 
                 return (
                   <TableRow key={comp.id}>
@@ -123,19 +140,21 @@ export default async function Page({
                     <TableCell>
                       <div className="flex gap-1">
                         {orderedCompetitionEvents?.map((event) => (
-                          <span className={`cubing-icon event-${event}`} key={event} />
+                          <span
+                            className={`cubing-icon event-${event}`}
+                            key={event}
+                          />
                         ))}
                       </div>
                     </TableCell>
                     <TableCell>{formatCompetitionDateSpanish(comp)}</TableCell>
                   </TableRow>
-                )
+                );
               })}
             </TableBody>
           </Table>
         </TabsContent>
       </Tabs>
-
     </main>
   );
 }

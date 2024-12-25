@@ -1,5 +1,3 @@
-/* eslint-disable react/no-array-index-key -- . */
-
 import { Medal, User } from "lucide-react";
 import {
   Card,
@@ -8,8 +6,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@repo/ui/card";
-import { buttonVariants } from "@repo/ui/button";
+} from "@workspace/ui/components/card";
+import { buttonVariants } from "@workspace/ui/components/button";
 import Link from "next/link";
 import { Icons } from "@repo/ui/icons";
 import type { Competition } from "@/types/competitions";

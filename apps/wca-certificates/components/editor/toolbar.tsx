@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
-/* eslint-disable @typescript-eslint/no-misused-promises -- . */
-/* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
 "use client";
 
 import React from "react";
@@ -26,10 +23,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@repo/ui/select";
-import { Button } from "@repo/ui/button";
-import { Toggle } from "@repo/ui/toggle";
-import { Input } from "@repo/ui/input";
+} from "@workspace/ui/components/select";
+import { Button } from "@workspace/ui/components/button";
+import { Toggle } from "@workspace/ui/components/toggle";
+import { Input } from "@workspace/ui/components/input";
 import { fontFamilies, fontSizes } from "@/lib/fonts";
 import type { getDictionary } from "@/get-dictionary";
 import { ComboboxFont } from "./combobox-font";

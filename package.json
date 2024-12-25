@@ -1,22 +1,22 @@
 {
+  "name": "cubingmexico-monorepo",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "type-check": "turbo type-check",
-    "clean": "turbo clean",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-    "eslint": "^8.57.0",
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
     "prettier": "^3.2.5",
-    "prettier-plugin-tailwindcss": "^0.5.11",
-    "@repo/typescript-config": "workspace:*",
-    "turbo": "latest"
+    "turbo": "^2.3.0",
+    "typescript": "5.5.4"
   },
-  "packageManager": "pnpm@8.9.0",
+  "packageManager": "pnpm@9.12.3",
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }

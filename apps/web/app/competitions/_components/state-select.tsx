@@ -7,7 +7,7 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@repo/ui/select";
+} from "@workspace/ui/components/select";
 import type { State } from "@/lib/db/schema";
 
 interface StateSelectProps {

@@ -20,7 +20,7 @@ import type {
   PageSize,
   TDocumentDefinitions,
 } from "pdfmake/interfaces";
-import { useMediaQuery } from "@repo/ui/use-media-query";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import type { Competition, ParticipantData } from "@/types/wca-live";
 import {
   processPersons,

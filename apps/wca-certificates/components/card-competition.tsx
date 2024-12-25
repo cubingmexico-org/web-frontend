@@ -9,7 +9,7 @@ import {
 } from "@workspace/ui/components/card";
 import { buttonVariants } from "@workspace/ui/components/button";
 import Link from "next/link";
-import { Icons } from "@repo/ui/icons";
+import { Icons } from "@workspace/ui/components/icons";
 import type { Competition } from "@/types/competitions";
 import type { getDictionary } from "@/get-dictionary";
 

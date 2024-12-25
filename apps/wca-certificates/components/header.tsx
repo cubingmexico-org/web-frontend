@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Icons } from "@repo/ui/icons";
+import { Icons } from "@workspace/ui/components/icons";
 import type { getDictionary } from "@/get-dictionary";
 import UserButton from "./user-button";
 

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Icons } from "@repo/ui/icons";
+import { Icons } from "@workspace/ui/components/icons";
 import { auth } from "@/auth";
 import { SignIn } from "@/components/auth-components";
 import { getDictionary } from "@/get-dictionary";

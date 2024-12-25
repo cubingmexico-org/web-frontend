@@ -1,5 +1,5 @@
 import { Button } from "@workspace/ui/components/button";
-import { Icons } from "@repo/ui/icons";
+import { Icons } from "@workspace/ui/components/icons";
 import type { getDictionary } from "@/get-dictionary";
 import { signIn, signOut } from "auth";
 

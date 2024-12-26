@@ -1,7 +1,4 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain -- . */
-/* eslint-disable @typescript-eslint/no-non-null-assertion -- . */
-/* eslint-disable no-console -- . */
-/* eslint-disable no-await-in-loop -- . */
 
 import { NextResponse } from "next/server";
 import JSZip from "jszip";
@@ -44,7 +41,7 @@ export async function GET(): Promise<NextResponse> {
     for (const fileName of Object.keys(zipContents.files)) {
       if (fileName === "WCA_export_Competitions.tsv") {
         console.log("Processing file:", fileName);
-        const fileContent = await zipContents.files[fileName].async("text");
+        const fileContent = await zipContents.files[fileName]!.async("text");
         const cleanedContent = fileContent.replace(/"/g, "");
         const parsedData = parse(cleanedContent, {
           header: true,
@@ -102,7 +99,7 @@ export async function GET(): Promise<NextResponse> {
 
       if (fileName === "WCA_export_Events.tsv") {
         console.log("Processing file:", fileName);
-        const fileContent = await zipContents.files[fileName].async("text");
+        const fileContent = await zipContents.files[fileName]!.async("text");
         const parsedData = parse(fileContent, {
           header: true,
           delimiter: "\t",
@@ -125,7 +122,7 @@ export async function GET(): Promise<NextResponse> {
 
       if (fileName === "WCA_export_Persons.tsv") {
         console.log("Processing file:", fileName);
-        const fileContent = await zipContents.files[fileName].async("text");
+        const fileContent = await zipContents.files[fileName]!.async("text");
         const parsedData = parse(fileContent, {
           header: true,
           delimiter: "\t",
@@ -158,7 +155,7 @@ export async function GET(): Promise<NextResponse> {
 
       if (fileName === "WCA_export_RanksAverage.tsv") {
         console.log("Processing file:", fileName);
-        const fileContent = await zipContents.files[fileName].async("text");
+        const fileContent = await zipContents.files[fileName]!.async("text");
         const parsedData = parse(fileContent, {
           header: true,
           delimiter: "\t",
@@ -188,7 +185,7 @@ export async function GET(): Promise<NextResponse> {
 
       if (fileName === "WCA_export_RanksSingle.tsv") {
         console.log("Processing file:", fileName);
-        const fileContent = await zipContents.files[fileName].async("text");
+        const fileContent = await zipContents.files[fileName]!.async("text");
         const parsedData = parse(fileContent, {
           header: true,
           delimiter: "\t",
@@ -219,7 +216,7 @@ export async function GET(): Promise<NextResponse> {
       if (fileName === "WCA_export_Results.tsv") {
         console.log("Processing file:", fileName);
         const fileContent =
-          await zipContents.files[fileName].async("nodebuffer");
+          await zipContents.files[fileName]!.async("nodebuffer");
 
         await db.delete(result);
 

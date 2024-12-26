@@ -13,16 +13,13 @@ import { result } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 import { formatTime } from "@/lib/utils";
 
-interface PageProps {
-  params: {
-    eventId: string;
-    type: string;
-  };
-}
+type Params = Promise<{ eventId: string; type: string }>;
 
 export default async function Page({
   params,
-}: PageProps): Promise<JSX.Element> {
+}: {
+  params: Params;
+}): Promise<JSX.Element> {
   const { eventId } = await params;
 
   const rankings = await db

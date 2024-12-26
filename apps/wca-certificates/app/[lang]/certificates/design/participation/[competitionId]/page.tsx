@@ -12,17 +12,15 @@ import { generateFakeResultsForEvent } from "@/lib/utils";
 import type { Locale } from "@/i18n-config";
 import { getDictionary } from "@/get-dictionary";
 
-interface PageProps {
-  params: {
-    lang: Locale;
-    competitionId: string;
-  };
-}
+type Params = Promise<{ lang: Locale; competitionId: string }>;
 
 export default async function Page({
   params,
-}: PageProps): Promise<JSX.Element> {
-  const dictionary = await getDictionary(params.lang);
+}: {
+  params: Params;
+}): Promise<JSX.Element> {
+  const { lang, competitionId } = await params;
+  const dictionary = await getDictionary(lang);
 
   const session = await auth();
 
@@ -32,9 +30,7 @@ export default async function Page({
 
   const competitions = await fetchCompetitions(session.token || "");
 
-  if (
-    !competitions.some((competition) => competition.id === params.competitionId)
-  ) {
+  if (!competitions.some((competition) => competition.id === competitionId)) {
     return (
       <div className="container mx-auto py-10">
         <h1 className="text-3xl mb-4">
@@ -44,11 +40,11 @@ export default async function Page({
     );
   }
 
-  const competition = await fetchCompetition(params.competitionId);
+  const competition = await fetchCompetition(competitionId);
   competition.events = competition.events.map((event) =>
     generateFakeResultsForEvent(event),
   );
-  const city = await retrieveLocation(params.competitionId);
+  const city = await retrieveLocation(competitionId);
 
   return (
     <div className="container flex flex-col gap-2 mx-auto py-10">

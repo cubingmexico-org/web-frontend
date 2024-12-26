@@ -49,7 +49,7 @@ export function DataTablePagination<TData>({
   return (
     <div className="flex w-full flex-col-reverse items-center justify-between gap-4 overflow-auto p-1 sm:flex-row sm:gap-8">
       <div className="flex-1 whitespace-nowrap text-sm text-muted-foreground">
-        {`${table.getFilteredSelectedRowModel().rows.length} ${dictionary.rowsSelected.split("{0}")[1].split("{1}")[0]} ${table.getFilteredRowModel().rows.length} ${dictionary.rowsSelected.split("{1}")[1]}`}
+        {`${table.getFilteredSelectedRowModel().rows.length} ${dictionary.rowsSelected.split("{0}")[1]?.split("{1}")[0]} ${table.getFilteredRowModel().rows.length} ${dictionary.rowsSelected.split("{1}")[1]}`}
       </div>
       <div className="!flex !flex-col-reverse !items-center !gap-4 sm:!flex-row sm:!gap-6 lg:!gap-8">
         <div className="flex items-center space-x-2">

@@ -41,8 +41,8 @@ export function DataTable<TData extends Event, TValue>({
     columns,
     getRowId: (row) => row.id,
     enableRowSelection: (row) =>
-      row.original.rounds[row.original.rounds.length - 1].results.length > 0 &&
-      row.original.rounds[row.original.rounds.length - 1].results.every(
+      row.original.rounds[row.original.rounds.length - 1]!.results.length > 0 &&
+      row.original.rounds[row.original.rounds.length - 1]!.results.every(
         (result: Result) => result.ranking !== null,
       ),
     getCoreRowModel: getCoreRowModel(),

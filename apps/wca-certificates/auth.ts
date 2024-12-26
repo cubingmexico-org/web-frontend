@@ -1,7 +1,3 @@
-/* eslint-disable no-implicit-coercion -- . */
-/* eslint-disable @typescript-eslint/require-await -- . */
-/* eslint-disable no-unneeded-ternary -- . */
-
 import NextAuth from "next-auth";
 import "next-auth/jwt";
 import type { NextAuthConfig } from "next-auth";
@@ -69,7 +65,7 @@ export const config = {
     },
   },
   debug: process.env.NODE_ENV !== "production" ? true : false,
-} satisfies NextAuthConfig;
+} as NextAuthConfig;
 
 export const { handlers, auth, signIn, signOut } = NextAuth(config);
 

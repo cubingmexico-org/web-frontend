@@ -19,15 +19,13 @@ import { db } from "@/lib/db";
 import { formatCompetitionDateSpanish } from "@/lib/utils";
 import { StateSelect } from "../_components/state-select";
 
-interface PageProps {
-  params: {
-    stateId: string;
-  };
-}
+type Params = Promise<{ stateId: string }>;
 
 export default async function Page({
   params,
-}: PageProps): Promise<JSX.Element> {
+}: {
+  params: Params;
+}): Promise<JSX.Element> {
   const { stateId } = await params;
 
   const competitions = await db

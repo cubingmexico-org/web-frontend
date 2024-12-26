@@ -3,7 +3,7 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { CheckCircle, AlertCircle } from "lucide-react";
 import { Checkbox } from "@workspace/ui/components/checkbox";
-import { DataTableColumnHeader } from "@repo/ui/data-table-column-header";
+import { DataTableColumnHeader } from "@/components/data-table-column-header";
 import type { ParticipantData } from "@/types/wca-live";
 
 export const columnsEs: ColumnDef<ParticipantData>[] = [

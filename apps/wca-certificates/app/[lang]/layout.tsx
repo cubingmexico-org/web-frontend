@@ -9,15 +9,18 @@ import { ThemeProvider } from "@/components/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
+type Params = Promise<{ lang: Locale }>;
+
 interface RootLayoutProps {
   children: React.ReactNode;
-  params: { lang: Locale };
+  params: Params;
 }
 
 export async function generateMetadata({
   params,
 }: RootLayoutProps): Promise<Metadata> {
-  const dictionary = await getDictionary(params.lang);
+  const { lang } = await params;
+  const dictionary = await getDictionary(lang);
 
   return {
     title: dictionary.metadata.title,
@@ -25,12 +28,13 @@ export async function generateMetadata({
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
   params,
-}: RootLayoutProps): JSX.Element {
+}: RootLayoutProps): Promise<JSX.Element> {
+  const { lang } = await params;
   return (
-    <html lang={params.lang}>
+    <html lang={lang}>
       <body className={inter.className}>
         <ThemeProvider>
           {children}

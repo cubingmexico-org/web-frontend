@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment -- . */
 /* eslint-disable @typescript-eslint/no-explicit-any -- . */
 
 import type { Options } from "node-geocoder";
@@ -18,9 +17,10 @@ export async function getStateFromCoordinates(
   try {
     const res = await geocoder.reverse({ lat: latitude, lon: longitude });
     if (res.length > 0) {
-      return res[0].state ?? "Ciudad de México";
+      return res[0]?.state ?? "Ciudad de México";
     }
     return null;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     return null;
   }

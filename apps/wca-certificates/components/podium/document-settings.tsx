@@ -94,7 +94,7 @@ export default function DocumentSettings({
       reader.onload = (e) => {
         setBackground(e.target?.result as string);
       };
-      reader.readAsDataURL(files[0]);
+      reader.readAsDataURL(files[0]!);
     } else {
       setBackground(undefined);
     }
@@ -106,9 +106,9 @@ export default function DocumentSettings({
     selectedEvents.map((event: Event) => {
       const results = getEventData(event);
 
-      results.map((result, index: number) => {
+      results?.map((result, index: number) => {
         tempPdfData.push({
-          name: result.personName,
+          name: result.personName!,
           place: index + 1,
           event: event.id,
           result: result.result,

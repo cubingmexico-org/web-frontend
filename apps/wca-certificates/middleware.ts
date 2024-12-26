@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
-/* eslint-disable @typescript-eslint/no-floating-promises -- . */
-/* eslint-disable @typescript-eslint/no-unsafe-argument -- . */
 /* eslint-disable @typescript-eslint/no-explicit-any -- . */
 
 import { NextResponse } from "next/server";

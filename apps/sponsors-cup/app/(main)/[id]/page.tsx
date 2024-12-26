@@ -12,9 +12,13 @@ import {
 import { ArrowLeft } from "lucide-react";
 import { fetchCompetitorTable } from "@/app/actions";
 
-type Params = Promise<{ id: string }>
+type Params = Promise<{ id: string }>;
 
-export default async function Page({ params }: { params: Params }): Promise<JSX.Element> {
+export default async function Page({
+  params,
+}: {
+  params: Params;
+}): Promise<JSX.Element> {
   const { id } = await params;
   const data = await fetchCompetitorTable(id);
 

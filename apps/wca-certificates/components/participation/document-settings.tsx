@@ -89,7 +89,7 @@ export default function DocumentSettings({
       reader.onload = (e) => {
         setBackground(e.target?.result as string);
       };
-      reader.readAsDataURL(files[0]);
+      reader.readAsDataURL(files[0]!);
     } else {
       setBackground(undefined);
     }
@@ -229,7 +229,7 @@ export default function DocumentSettings({
                                     (content) => content.type === "mention",
                                   )
                                 ) {
-                                  switch (cell.content[0].attrs?.id) {
+                                  switch (cell.content[0]?.attrs?.id) {
                                     case "Evento (tabla)":
                                     case "Event (table)":
                                       event = renderDocumentContent(

@@ -7,16 +7,15 @@ import { SignIn } from "@/components/auth-components";
 import { getDictionary } from "@/get-dictionary";
 import type { Locale } from "@/i18n-config";
 
-interface PageProps {
-  params: {
-    lang: Locale;
-  };
-}
+type Params = Promise<{ lang: Locale }>;
 
 export default async function Page({
   params,
-}: PageProps): Promise<JSX.Element> {
-  const dictionary = await getDictionary(params.lang);
+}: {
+  params: Params;
+}): Promise<JSX.Element> {
+  const { lang } = await params;
+  const dictionary = await getDictionary(lang);
 
   const session = await auth();
 

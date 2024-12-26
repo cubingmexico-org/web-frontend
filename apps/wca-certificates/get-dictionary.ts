@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type -- . */
-/* eslint-disable import/no-unresolved -- . */
-/* eslint-disable @typescript-eslint/no-unnecessary-condition -- . */
-
 import "server-only";
 import type { Locale } from "./i18n-config";
 

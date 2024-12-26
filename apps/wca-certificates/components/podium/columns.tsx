@@ -50,7 +50,7 @@ export const columnsEs: ColumnDef<Event>[] = [
         <p className="flex items-center">
           {rounds.length > 0 && (
             <>
-              {rounds[rounds.length - 1].results.length > 0 &&
+              {rounds[rounds.length - 1]!.results.length > 0 &&
               rounds[rounds.length - 1]?.results.every(
                 (result) => result.ranking !== null,
               ) ? (
@@ -117,8 +117,8 @@ export const columnsEn: ColumnDef<Event>[] = [
         <p className="flex items-center">
           {rounds.length > 0 && (
             <>
-              {rounds[rounds.length - 1].results.length > 0 &&
-              rounds[rounds.length - 1].results.every(
+              {rounds[rounds.length - 1]!.results.length > 0 &&
+              rounds[rounds.length - 1]?.results.every(
                 (result) => result.ranking !== null,
               ) ? (
                 <>

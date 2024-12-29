@@ -9,8 +9,8 @@ import {
 } from "@workspace/ui/components/table";
 import { ChevronDown } from "lucide-react";
 import { sql } from "drizzle-orm";
-import { result } from "@/lib/db/schema";
-import { db } from "@/lib/db";
+import { result } from "@/db/schema";
+import { db } from "@/db";
 import { formatTime } from "@/lib/utils";
 
 type Params = Promise<{ eventId: string; type: string }>;

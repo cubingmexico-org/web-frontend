@@ -3,7 +3,7 @@
 import { NextResponse } from "next/server";
 import JSZip from "jszip";
 import { parse } from "papaparse";
-import { db } from "@/lib/db";
+import { db } from "@/db";
 import type {
   Competition,
   Event,
@@ -11,7 +11,7 @@ import type {
   RankAverage,
   RankSingle,
   Result,
-} from "@/lib/db/schema";
+} from "@/db/schema";
 import {
   competition,
   event,
@@ -20,7 +20,7 @@ import {
   rankSingle,
   result,
   state,
-} from "@/lib/db/schema";
+} from "@/db/schema";
 import { getStateFromCoordinates } from "@/lib/geocoder";
 
 export const maxDuration = 300;

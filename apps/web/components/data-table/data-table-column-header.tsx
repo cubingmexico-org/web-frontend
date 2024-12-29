@@ -98,7 +98,7 @@ export function DataTableColumnHeader<TData, TValue>({
                   className="mr-2 size-3.5 text-muted-foreground/70"
                   aria-hidden="true"
                 />
-                Hide
+                Esconder
               </span>
             </SelectItem>
           )}

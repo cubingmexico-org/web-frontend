@@ -1,67 +1,56 @@
-import { sql } from "drizzle-orm";
-import { competition, state, event } from "@/lib/db/schema";
-import { db } from "@/lib/db";
-import { Competitions } from "./_components/competitions";
+import * as React from "react"
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
+import { CompetitionsTable } from "./_components/competitions-table";
+import {
+  getCompetitions,
+  getStatesCounts,
+  getEvents,
+} from "./_lib/queries"
+import { SearchParams } from "@/types";
+import { getValidFilters } from "@/lib/data-table";
+import { searchParamsCache } from "./_lib/validations";
 
-export default async function Page(): Promise<JSX.Element> {
-  const competitions = await db
-    .select({
-      id: competition.id,
-      name: competition.name,
-      state: state.name,
-      cityName: competition.cityName,
-      eventSpecs: competition.eventSpecs,
-      day: competition.day,
-      month: competition.month,
-      year: competition.year,
-      endDay: competition.endDay,
-      endMonth: competition.endMonth,
-    })
-    .from(competition)
-    .innerJoin(state, sql`${competition.stateId} = ${state.id}`)
-    .where(sql`${competition.countryId} = 'Mexico'`)
-    .orderBy(
-      sql`${competition.year} DESC`,
-      sql`${competition.month} DESC`,
-      sql`${competition.day} DESC`,
-    );
+interface PageProps {
+  searchParams: Promise<SearchParams>
+}
 
-  const upcomingCompetitions = competitions
-    .filter((comp) => {
-      const today = new Date();
-      const compDate = new Date(comp.year, comp.month - 1, comp.day);
-      return compDate >= today;
-    })
-    .reverse();
+export default async function Page(props: PageProps) {
+  const searchParams = await props.searchParams
+  const search = searchParamsCache.parse(searchParams)
 
-  const currentCompetitions = competitions.filter((comp) => {
-    const today = new Date();
-    const compStartDate = new Date(comp.year, comp.month - 1, comp.day);
-    const compEndDate = new Date(comp.year, comp.endMonth - 1, comp.endDay);
-    return compStartDate <= today && compEndDate >= today;
-  });
+  const validFilters = getValidFilters(search.filters)
 
-  const pastCompetitions = competitions.filter((comp) => {
-    const today = new Date();
-    const compDate = new Date(comp.year, comp.month - 1, comp.day);
-    return compDate < today;
-  });
-
-  const states = await db.select().from(state);
-
-  const events = await db
-    .select()
-    .from(event)
-    .where(sql`${event.rank} < 200`)
-    .orderBy(event.rank);
+  const promises = Promise.all([
+    getCompetitions({
+      ...search,
+      filters: validFilters,
+    }),
+    getEvents(),
+    getStatesCounts(),
+  ])
 
   return (
-    <Competitions
-      currentCompetitions={currentCompetitions}
-      events={events}
-      pastCompetitions={pastCompetitions}
-      states={states}
-      upcomingCompetitions={upcomingCompetitions}
-    />
+    <main className="flex-grow container mx-auto px-4 py-8">
+      <div className="flex items-center gap-2 mb-6">
+        <h1 className="text-3xl font-bold">
+          Competencias oficiales de la WCA en México
+        </h1>
+      </div>
+      <div className="grid gap-6">
+        <React.Suspense
+          fallback={
+            <DataTableSkeleton
+              columnCount={6}
+              searchableColumnCount={1}
+              filterableColumnCount={2}
+              cellWidths={["10rem", "40rem", "12rem", "12rem", "8rem", "8rem"]}
+              shrinkZero
+            />
+          }
+        >
+          <CompetitionsTable promises={promises} />
+        </React.Suspense>
+      </div>
+    </main>
   );
 }

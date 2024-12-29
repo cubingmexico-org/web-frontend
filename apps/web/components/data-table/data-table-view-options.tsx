@@ -42,7 +42,7 @@ export function DataTableViewOptions<TData>({
           className="ml-auto hidden h-8 gap-2 focus:outline-none focus:ring-1 focus:ring-ring focus-visible:ring-0 lg:flex"
         >
           <Settings2 className="size-4" />
-          View
+          Ver
           <ChevronsUpDown className="ml-auto size-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -52,9 +52,9 @@ export function DataTableViewOptions<TData>({
         onCloseAutoFocus={() => triggerRef.current?.focus()}
       >
         <Command>
-          <CommandInput placeholder="Search columns..." />
+          <CommandInput placeholder="Buscar columnas..." />
           <CommandList>
-            <CommandEmpty>No columns found.</CommandEmpty>
+            <CommandEmpty>No se encontraron columnas.</CommandEmpty>
             <CommandGroup>
               {table
                 .getAllColumns()

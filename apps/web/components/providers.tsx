@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { TooltipProvider } from "@workspace/ui/components/tooltip";
+import { NuqsAdapter } from "nuqs/adapters/next/app"
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -12,7 +14,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
       disableTransitionOnChange
       enableColorScheme
     >
-      {children}
+      <TooltipProvider>
+        <NuqsAdapter>
+          {children}
+        </NuqsAdapter>
+      </TooltipProvider>
     </NextThemesProvider>
   );
 }

@@ -25,7 +25,7 @@ import {
   ToggleGroupItem,
 } from "@workspace/ui/components/toggle-group";
 import { Badge } from "@workspace/ui/components/badge";
-import type { Event, State } from "@/lib/db/schema";
+import type { Event, State } from "@/db/schema";
 import { formatCompetitionDateSpanish } from "@/lib/utils";
 import { StateSelect } from "./state-select";
 import Link from "next/link";

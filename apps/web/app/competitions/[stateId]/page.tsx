@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
-import { competition, state, event } from "@/lib/db/schema";
-import { db } from "@/lib/db";
+import { competition, state, event } from "@/db/schema";
+import { db } from "@/db";
 import { Competitions } from "./_components/competitions";
 
 type Params = Promise<{ stateId: string }>;

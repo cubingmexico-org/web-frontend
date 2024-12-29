@@ -8,7 +8,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@workspace/ui/components/select";
-import type { State } from "@/lib/db/schema";
+import type { State } from "@/db/schema";
 
 interface StateSelectProps {
   states: State[];

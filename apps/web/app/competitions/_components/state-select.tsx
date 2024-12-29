@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   Select,
   SelectTrigger,
@@ -12,18 +12,17 @@ import type { State } from "@/lib/db/schema";
 
 interface StateSelectProps {
   states: State[];
-  initialSelectedStateId?: string;
 }
 
 export function StateSelect({
   states,
-  initialSelectedStateId = "all",
 }: StateSelectProps): JSX.Element {
   const router = useRouter();
+  const params = useParams<{ stateId: string }>()
 
   return (
     <Select
-      defaultValue={initialSelectedStateId}
+      defaultValue={params.stateId || "all"}
       onValueChange={(stateId) => {
         if (stateId === "all") {
           router.push("/competitions");

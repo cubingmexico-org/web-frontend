@@ -25,23 +25,11 @@ import {
   ToggleGroupItem,
 } from "@workspace/ui/components/toggle-group";
 import { Badge } from "@workspace/ui/components/badge";
-import type { Event, State } from "@/lib/db/schema";
+import type { Competition, Event, State } from "@/lib/db/schema";
 import { formatCompetitionDateSpanish } from "@/lib/utils";
-import { StateSelect } from "./state-select";
+import { StateSelect } from "../../_components/state-select";
 import Link from "next/link";
-
-interface Competition {
-  id: string;
-  name: string;
-  state: string;
-  cityName: string;
-  eventSpecs: string | null;
-  day: number;
-  month: number;
-  year: number;
-  endDay: number;
-  endMonth: number;
-}
+import { useParams } from "next/navigation";
 
 interface CompetitionsProps {
   upcomingCompetitions: Competition[];
@@ -58,8 +46,10 @@ export function Competitions({
   events,
   states,
 }: CompetitionsProps): JSX.Element {
+  const params = useParams<{ stateId: string }>()
   const [activeTab, setActiveTab] = useState<string>("upcoming");
   const [viewMode, setViewMode] = useState<string>("table");
+  const state = states.find((state) => state.id === params.stateId);
 
   return (
     <main className="flex-grow container mx-auto px-4 py-8">
@@ -129,7 +119,7 @@ export function Competitions({
 
       {activeTab === "upcoming" && (
         upcomingCompetitions.length === 0 ? (
-          <p>No hay competencias próximas en México.</p>
+          <p>No hay competencias próximas en {state?.name}.</p>
         ) : (
           <>
             {viewMode === "table" ? (
@@ -140,7 +130,6 @@ export function Competitions({
                     <TableHead>Nombre</TableHead>
                     <TableHead>Categorías</TableHead>
                     <TableHead>Fechas</TableHead>
-                    <TableHead>Estado</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -171,7 +160,6 @@ export function Competitions({
                         <TableCell>
                           {formatCompetitionDateSpanish(competition)}
                         </TableCell>
-                        <TableCell>{competition.state}</TableCell>
                       </TableRow>
                     );
                   })}
@@ -216,7 +204,7 @@ export function Competitions({
                       </CardHeader>
                       <CardContent>
                         <p>
-                          Únete a nosotros en esta competencia de la WCA en {competition.state}.
+                          Únete a nosotros en esta competencia de la WCA en {state?.name}.
                         </p>
                       </CardContent>
                       <CardFooter>
@@ -238,7 +226,7 @@ export function Competitions({
 
       {activeTab === "past" && (
         pastCompetitions.length === 0 ? (
-          <p>No hay competencias pasadas en México.</p>
+          <p>No hay competencias pasadas en {state?.name}.</p>
         ) : (
           <>
             {viewMode === "table" ? (
@@ -249,7 +237,6 @@ export function Competitions({
                     <TableHead>Nombre</TableHead>
                     <TableHead>Categorías</TableHead>
                     <TableHead>Fechas</TableHead>
-                    <TableHead>Estado</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -280,7 +267,6 @@ export function Competitions({
                         <TableCell>
                           {formatCompetitionDateSpanish(competition)}
                         </TableCell>
-                        <TableCell>{competition.state}</TableCell>
                       </TableRow>
                     );
                   })}

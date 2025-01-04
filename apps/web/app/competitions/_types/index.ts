@@ -4,9 +4,6 @@ export interface Competition {
   state: string;
   cityName: string;
   eventSpecs: string | null;
-  day: number;
-  month: number;
-  year: number;
-  endDay: number;
-  endMonth: number;
+  startDate: Date;
+  endDate: Date;
 }

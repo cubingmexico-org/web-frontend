@@ -1,24 +1,27 @@
-import * as React from "react"
+import * as React from "react";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
 import { CompetitionsTable } from "./_components/competitions-table";
 import {
   getCompetitions,
-  getStatesCounts,
+  getStateCounts,
   getEvents,
-} from "./_lib/queries"
+  getEventCounts,
+} from "./_lib/queries";
 import { SearchParams } from "@/types";
 import { getValidFilters } from "@/lib/data-table";
 import { searchParamsCache } from "./_lib/validations";
+import { DateRangePicker } from "@/components/date-range-picker";
+import { Skeleton } from "@workspace/ui/components/skeleton";
 
 interface PageProps {
-  searchParams: Promise<SearchParams>
+  searchParams: Promise<SearchParams>;
 }
 
 export default async function Page(props: PageProps) {
-  const searchParams = await props.searchParams
-  const search = searchParamsCache.parse(searchParams)
+  const searchParams = await props.searchParams;
+  const search = searchParamsCache.parse(searchParams);
 
-  const validFilters = getValidFilters(search.filters)
+  const validFilters = getValidFilters(search.filters);
 
   const promises = Promise.all([
     getCompetitions({
@@ -26,8 +29,9 @@ export default async function Page(props: PageProps) {
       filters: validFilters,
     }),
     getEvents(),
-    getStatesCounts(),
-  ])
+    getStateCounts(),
+    getEventCounts(),
+  ]);
 
   return (
     <main className="flex-grow container mx-auto px-4 py-8">
@@ -37,6 +41,14 @@ export default async function Page(props: PageProps) {
         </h1>
       </div>
       <div className="grid gap-6">
+        <React.Suspense fallback={<Skeleton className="h-7 w-52" />}>
+          <DateRangePicker
+            triggerSize="sm"
+            triggerClassName="ml-auto w-56 sm:w-60"
+            align="end"
+            shallow={false}
+          />
+        </React.Suspense>
         <React.Suspense
           fallback={
             <DataTableSkeleton

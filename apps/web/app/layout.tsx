@@ -7,9 +7,10 @@ import { Footer } from "@/components/footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://cubingmexico.net'),
-  title: 'Cubing México',
-  description: 'Cubing México es un stio web que recopila rankings y récords estatales mexicanos basado en los resultados de la WCA.',
+  metadataBase: new URL("https://cubingmexico.net"),
+  title: "Cubing México",
+  description:
+    "Cubing México es un stio web que recopila rankings y récords estatales mexicanos basado en los resultados de la WCA.",
 };
 
 export const viewport = {

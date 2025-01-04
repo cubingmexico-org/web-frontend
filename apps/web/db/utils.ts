@@ -2,7 +2,7 @@
  * @see https://gist.github.com/rphlmr/0d1722a794ed5a16da0fdf6652902b15
  */
 
-import { type QueryBuilderOpts } from "@/types"
+import { type QueryBuilderOpts } from "@/types";
 import {
   and,
   is,
@@ -14,11 +14,11 @@ import {
   type SelectedFields,
   type SQL,
   type Table,
-} from "drizzle-orm"
-import { pgTableCreator, PgTimestampString } from "drizzle-orm/pg-core"
-import { type SelectResultFields } from "drizzle-orm/query-builders/select.types"
+} from "drizzle-orm";
+import { pgTableCreator, PgTimestampString } from "drizzle-orm/pg-core";
+import { type SelectResultFields } from "drizzle-orm/query-builders/select.types";
 
-import { databasePrefix } from "@/lib/constants"
+import { databasePrefix } from "@/lib/constants";
 
 /**
  * This lets us use the multi-project schema feature of Drizzle ORM. So the same
@@ -26,7 +26,7 @@ import { databasePrefix } from "@/lib/constants"
  *
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
-export const pgTable = pgTableCreator((name) => `${databasePrefix}_${name}`)
+export const pgTable = pgTableCreator((name) => `${databasePrefix}_${name}`);
 
 /**
  * Takes the first item from an array.
@@ -35,7 +35,7 @@ export const pgTable = pgTableCreator((name) => `${databasePrefix}_${name}`)
  * @returns The first item from the array.
  */
 export function takeFirst<TData>(items: TData[]) {
-  return items.at(0)
+  return items.at(0);
 }
 
 /**
@@ -45,7 +45,7 @@ export function takeFirst<TData>(items: TData[]) {
  * @returns The first item from the array or null.
  */
 export function takeFirstOrNull<TData>(items: TData[]) {
-  return takeFirst(items) ?? null
+  return takeFirst(items) ?? null;
 }
 
 /**
@@ -56,13 +56,13 @@ export function takeFirstOrNull<TData>(items: TData[]) {
  * @throws An error if the array is empty.
  */
 export function takeFirstOrThrow<TData>(items: TData[]) {
-  const first = takeFirst(items)
+  const first = takeFirst(items);
 
   if (!first) {
-    throw new Error("First item not found")
+    throw new Error("First item not found");
   }
 
-  return first
+  return first;
 }
 
 /**
@@ -74,9 +74,9 @@ export function takeFirstOrThrow<TData>(items: TData[]) {
  */
 export function coalesce<TData>(
   value: SQL.Aliased<TData> | SQL<TData>,
-  defaultValue: SQL<TData>
+  defaultValue: SQL<TData>,
 ) {
-  return sql<TData>`coalesce(${value}, ${defaultValue})`
+  return sql<TData>`coalesce(${value}, ${defaultValue})`;
 }
 
 /**
@@ -86,28 +86,28 @@ export function coalesce<TData>(
  * @returns A sql json_build_object statement.
  */
 export function jsonBuildObject<TFields extends SelectedFields<Column, Table>>(
-  shape: TFields
+  shape: TFields,
 ) {
-  const chunks: SQL[] = []
+  const chunks: SQL[] = [];
 
   Object.entries(shape).forEach(([key, value]) => {
     if (chunks.length > 0) {
-      chunks.push(sql.raw(`,`))
+      chunks.push(sql.raw(`,`));
     }
 
-    chunks.push(sql.raw(`'${key}',`))
+    chunks.push(sql.raw(`'${key}',`));
 
     // json_build_object formats to ISO 8601 ...
     if (is(value, PgTimestampString)) {
-      chunks.push(sql`timezone('UTC', ${value})`)
+      chunks.push(sql`timezone('UTC', ${value})`);
     } else {
-      chunks.push(sql`${value}`)
+      chunks.push(sql`${value}`);
     }
-  })
+  });
 
   return sql<
     SelectResultFields<TFields>
-  >`json_build_object(${sql.join(chunks)})`
+  >`json_build_object(${sql.join(chunks)})`;
 }
 
 /**
@@ -119,20 +119,20 @@ export function jsonBuildObject<TFields extends SelectedFields<Column, Table>>(
  */
 export function jsonAgg<Column extends AnyColumn>(
   column: Column,
-  opts?: QueryBuilderOpts
+  opts?: QueryBuilderOpts,
 ) {
-  const orderBy = opts?.orderBy ? sql` order by ${opts.orderBy}` : sql``
+  const orderBy = opts?.orderBy ? sql` order by ${opts.orderBy}` : sql``;
 
   const aggregateFunction = opts?.distinct
     ? sql`json_agg(distinct ${sql`${column}`} ${orderBy})`
-    : sql`json_agg(${sql`${column}`} ${orderBy})`
+    : sql`json_agg(${sql`${column}`} ${orderBy})`;
 
-  const where = opts?.nullish ? sql`true` : sql`${column} is not null`
+  const where = opts?.nullish ? sql`true` : sql`${column} is not null`;
 
   return coalesce<GetColumnData<Column, "raw">[]>(
     sql`${aggregateFunction} filter (where ${where})`,
-    sql`'[]'::json`
-  )
+    sql`'[]'::json`,
+  );
 }
 
 /**
@@ -150,16 +150,16 @@ export function jsonAggBuildObject<
     ? sql`true`
     : sql`${sql.join(
         Object.values(shape).map((value) => sql`${value} is not null`),
-        sql` and `
-      )}`
+        sql` and `,
+      )}`;
 
-  const orderBy = opts?.orderBy ? sql` order by ${opts.orderBy}` : sql``
-  const where = opts?.where ? and(opts.where, nullishWhere) : nullishWhere
+  const orderBy = opts?.orderBy ? sql` order by ${opts.orderBy}` : sql``;
+  const where = opts?.where ? and(opts.where, nullishWhere) : nullishWhere;
 
   return coalesce<SelectResultFields<TFields>[]>(
     sql`json_agg(${jsonBuildObject(shape)}${orderBy}) filter (where ${where})`,
-    sql`'[]'::json`
-  )
+    sql`'[]'::json`,
+  );
 }
 
 /**
@@ -172,15 +172,15 @@ export function jsonAggBuildObject<
 
 export function arrayAgg<Column extends AnyColumn>(
   column: Column,
-  opts?: QueryBuilderOpts
+  opts?: QueryBuilderOpts,
 ) {
-  const orderBy = opts?.orderBy ? sql` order by ${opts.orderBy}` : sql``
+  const orderBy = opts?.orderBy ? sql` order by ${opts.orderBy}` : sql``;
 
   const aggregateFunction = opts?.distinct
     ? sql`array_agg(distinct ${sql`${column}`} ${orderBy})`
-    : sql`array_agg(${sql`${column}`} ${orderBy})`
+    : sql`array_agg(${sql`${column}`} ${orderBy})`;
 
-  return sql`coalesce(nullif(${aggregateFunction}, '{}'), array[]::${column.dataType}[])`
+  return sql`coalesce(nullif(${aggregateFunction}, '{}'), array[]::${column.dataType}[])`;
 }
 
 /**
@@ -198,23 +198,23 @@ export function arrayAggBuildObject<
       sql.raw(`'${key}'`),
       value,
     ]),
-    sql`, `
-  )})`
+    sql`, `,
+  )})`;
 
-  const distinctClause = options?.distinct ? sql`distinct ` : sql``
+  const distinctClause = options?.distinct ? sql`distinct ` : sql``;
   const orderByClause = options?.orderBy
     ? sql` order by ${options.orderBy}`
-    : sql``
+    : sql``;
   const whereClause = options?.where
     ? sql` filter (where ${options.where})`
-    : sql``
+    : sql``;
 
   return sql<SelectResultFields<TFields>[]>`
     coalesce(
       array_agg(${distinctClause}${jsonbBuildObject}${orderByClause})${whereClause},
       array[]::jsonb[]
     )
-  `
+  `;
 }
 
 /**
@@ -226,17 +226,17 @@ export function arrayAggBuildObject<
  */
 export function caseWhen<TColumn extends Column>(
   cases: { when: SQL | undefined; then: Column }[],
-  elseValue: TColumn
+  elseValue: TColumn,
 ) {
-  const chunks: SQL[] = []
+  const chunks: SQL[] = [];
 
   cases.forEach(({ when, then }) => {
-    chunks.push(sql`when ${when} then ${then}`)
-  })
+    chunks.push(sql`when ${when} then ${then}`);
+  });
 
-  chunks.push(sql`else ${elseValue}`)
+  chunks.push(sql`else ${elseValue}`);
 
-  return sql<TColumn["_"]["dataType"]>`case ${sql.join(chunks)} end`
+  return sql<TColumn["_"]["dataType"]>`case ${sql.join(chunks)} end`;
 }
 
 /**
@@ -248,13 +248,13 @@ export function caseWhen<TColumn extends Column>(
  */
 export function compose<TColumn extends Column>(
   columns: TColumn[],
-  separator = ""
+  separator = "",
 ) {
-  const chunks = columns.map((column) => sql`${column}::text`)
+  const chunks = columns.map((column) => sql`${column}::text`);
 
   return sql<
     TColumn["_"]["dataType"]
-  >`(${sql.join(chunks, sql` || ${separator} || `)})`
+  >`(${sql.join(chunks, sql` || ${separator} || `)})`;
 }
 
 /**
@@ -272,7 +272,7 @@ export function isEmpty<TColumn extends AnyColumn>(column: TColumn) {
       when ${column}::text = '{}' then true
       else false
     end
-  `
+  `;
 }
 
 /**
@@ -282,5 +282,5 @@ export function isEmpty<TColumn extends AnyColumn>(column: TColumn) {
  * @returns A SQL expression that evaluates to true if the value is not empty, false otherwise.
  */
 export function isNotEmpty<TColumn extends AnyColumn>(column: TColumn) {
-  return not(isEmpty(column))
+  return not(isEmpty(column));
 }

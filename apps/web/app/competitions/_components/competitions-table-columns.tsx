@@ -1,13 +1,15 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import type { Event } from "@/db/schema"
-import { type ColumnDef } from "@tanstack/react-table"
-import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
-import type { Competition } from "../_types"
+import * as React from "react";
+import type { Event } from "@/db/schema";
+import { type ColumnDef } from "@tanstack/react-table";
+import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
+import type { Competition } from "../_types";
+import { formatDate } from "@/lib/utils";
+import Link from "next/link";
 
 interface GetColumnsProps {
-  events: Event[]
+  events: Event[];
 }
 
 export function getColumns({
@@ -15,12 +17,19 @@ export function getColumns({
 }: GetColumnsProps): ColumnDef<Competition>[] {
   return [
     {
-      accessorKey: "id",
+      accessorKey: "startDate",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="#" />
+        <DataTableColumnHeader column={column} title="Fecha" className="ml-2" />
       ),
-      cell: ({ row }) => <div className="w-20">{row.index + 1}</div>,
-      enableSorting: false,
+      cell: ({ row }) => {
+        return (
+          <div className="flex space-x-2 ml-2">
+            <span>
+              {formatDate(row.getValue("startDate"), row.original.endDate)}
+            </span>
+          </div>
+        );
+      },
       enableHiding: false,
     },
     {
@@ -31,11 +40,16 @@ export function getColumns({
       cell: ({ row }) => {
         return (
           <div className="flex space-x-2">
-            <span className="max-w-[31.25rem] truncate font-medium">
+            <Link
+              className="max-w-[31.25rem] truncate font-medium hover:underline"
+              href={`https://www.worldcubeassociation.org/competitions/${row.original.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {row.getValue("name")}
-            </span>
+            </Link>
           </div>
-        )
+        );
       },
       enableHiding: false,
     },
@@ -45,24 +59,21 @@ export function getColumns({
         <DataTableColumnHeader column={column} title="Eventos" />
       ),
       cell: ({ row }) => {
-        const competitionEvents = (row.getValue("eventSpecs") as string).split(" ");
+        const competitionEvents = (row.getValue("eventSpecs") as string).split(
+          " ",
+        );
         const orderedCompetitionEvents = competitionEvents
-          ?.map((eventId) =>
-            events.find((event) => event.id === eventId),
-          )
+          ?.map((eventId) => events.find((event) => event.id === eventId))
           .filter((event) => event !== undefined)
           .sort((a, b) => a.rank - b.rank)
           .map((event) => event.id);
         return (
           <div className="flex space-x-2">
             {orderedCompetitionEvents?.map((event) => (
-              <span
-                className={`cubing-icon event-${event}`}
-                key={event}
-              />
+              <span className={`cubing-icon event-${event}`} key={event} />
             ))}
           </div>
-        )
+        );
       },
       enableHiding: false,
     },
@@ -78,9 +89,9 @@ export function getColumns({
               {row.getValue("state")}
             </span>
           </div>
-        )
+        );
       },
       enableHiding: false,
     },
-  ]
+  ];
 }

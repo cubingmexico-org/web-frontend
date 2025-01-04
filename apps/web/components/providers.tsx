@@ -3,7 +3,7 @@
 import * as React from "react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { TooltipProvider } from "@workspace/ui/components/tooltip";
-import { NuqsAdapter } from "nuqs/adapters/next/app"
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -15,9 +15,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       enableColorScheme
     >
       <TooltipProvider>
-        <NuqsAdapter>
-          {children}
-        </NuqsAdapter>
+        <NuqsAdapter>{children}</NuqsAdapter>
       </TooltipProvider>
     </NextThemesProvider>
   );

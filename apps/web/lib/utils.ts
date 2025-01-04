@@ -9,62 +9,53 @@ export function formatTime(centiseconds: number): string {
   return `${minutes}:${remainingSeconds}`;
 }
 
-export function formatCompetitionDateSpanish(competition: {
-  day: number;
-  month: number;
-  year: number;
-  endDay: number;
-  endMonth: number;
-}): string {
-  const spanishMonthNames = [
-    "enero",
-    "febrero",
-    "marzo",
-    "abril",
-    "mayo",
-    "junio",
-    "julio",
-    "agosto",
-    "septiembre",
-    "octubre",
-    "noviembre",
-    "diciembre",
-  ];
-
-  const startDay = competition.day;
-  const startMonth = competition.month;
-  const endDay = competition.endDay;
-  const endMonth = competition.endMonth;
-
-  let formattedDate: string;
-
-  if (endDay && endMonth && (startDay !== endDay || startMonth !== endMonth)) {
-    if (startMonth === endMonth) {
-      if (endDay - startDay === 1) {
-        formattedDate = `${startDay} y ${endDay} de ${spanishMonthNames[startMonth - 1]} de ${competition.year}`;
-      } else {
-        formattedDate = `${startDay} al ${endDay} de ${spanishMonthNames[startMonth - 1]} de ${competition.year}`;
-      }
-    } else {
-      formattedDate = `${startDay} de ${spanishMonthNames[startMonth - 1]} al ${endDay} de ${spanishMonthNames[endMonth - 1]} de ${competition.year}`;
-    }
-  } else {
-    formattedDate = `${startDay} de ${spanishMonthNames[startMonth - 1]} de ${competition.year}`;
-  }
-
-  return formattedDate;
-}
-
 export function formatDate(
-  date: Date | string | number,
-  opts: Intl.DateTimeFormatOptions = {}
+  startDate: Date | string | number,
+  endDate: Date | string | number,
+  opts: Intl.DateTimeFormatOptions = {},
 ) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: opts.month ?? "long",
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  const formatter = new Intl.DateTimeFormat("es-MX", {
+    month: opts.month ?? "short",
     day: opts.day ?? "numeric",
     year: opts.year ?? "numeric",
     ...opts,
-  }).format(new Date(date))
+  });
+
+  if (start.getTime() === end.getTime()) {
+    return formatter.format(start);
+  }
+
+  const sameMonth =
+    start.getMonth() === end.getMonth() &&
+    start.getFullYear() === end.getFullYear();
+  const dayFormatter = new Intl.DateTimeFormat("es-MX", { day: "numeric" });
+  const monthYearFormatter = new Intl.DateTimeFormat("es-MX", {
+    month: "short",
+    year: "numeric",
+  });
+
+  if (sameMonth) {
+    const startDay = dayFormatter.format(start);
+    const endDay = dayFormatter.format(end);
+    const monthYear = monthYearFormatter.format(start);
+    return `${startDay} - ${endDay} ${monthYear}`;
+  } else {
+    const startDayMonth = new Intl.DateTimeFormat("es-MX", {
+      day: "numeric",
+      month: "short",
+    }).format(start);
+    const endDayMonth = new Intl.DateTimeFormat("es-MX", {
+      day: "numeric",
+      month: "short",
+    }).format(end);
+    const year = new Intl.DateTimeFormat("es-MX", { year: "numeric" }).format(
+      end,
+    );
+    return `${startDayMonth} - ${endDayMonth} ${year}`;
+  }
 }
 
 export function toSentenceCase(str: string) {
@@ -74,7 +65,7 @@ export function toSentenceCase(str: string) {
     .toLowerCase()
     .replace(/^\w/, (c) => c.toUpperCase())
     .replace(/\s+/g, " ")
-    .trim()
+    .trim();
 }
 
 /**
@@ -83,16 +74,16 @@ export function toSentenceCase(str: string) {
 export function composeEventHandlers<E>(
   originalEventHandler?: (event: E) => void,
   ourEventHandler?: (event: E) => void,
-  { checkForDefaultPrevented = true } = {}
+  { checkForDefaultPrevented = true } = {},
 ) {
   return function handleEvent(event: E) {
-    originalEventHandler?.(event)
+    originalEventHandler?.(event);
 
     if (
       checkForDefaultPrevented === false ||
       !(event as unknown as Event).defaultPrevented
     ) {
-      return ourEventHandler?.(event)
+      return ourEventHandler?.(event);
     }
-  }
+  };
 }

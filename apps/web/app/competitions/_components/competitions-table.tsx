@@ -1,44 +1,42 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import type {
-  DataTableFilterField,
-} from "@/types"
-import { useDataTable } from "@/hooks/use-data-table"
-import { DataTable } from "@/components/data-table/data-table"
-import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
+import * as React from "react";
+import type { DataTableFilterField } from "@/types";
+import { useDataTable } from "@/hooks/use-data-table";
+import { DataTable } from "@/components/data-table/data-table";
+import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import type {
   getCompetitions,
-  getStatesCounts,
+  getStateCounts,
   getEvents,
-} from "../_lib/queries"
-import { getColumns } from "./competitions-table-columns"
-import type { Competition } from "../_types"
+  getEventCounts,
+} from "../_lib/queries";
+import { getColumns } from "./competitions-table-columns";
+import type { Competition } from "../_types";
 
 interface CompetitionsTableProps {
   promises: Promise<
     [
       Awaited<ReturnType<typeof getCompetitions>>,
       Awaited<ReturnType<typeof getEvents>>,
-      Awaited<ReturnType<typeof getStatesCounts>>,
+      Awaited<ReturnType<typeof getStateCounts>>,
+      Awaited<ReturnType<typeof getEventCounts>>,
     ]
-  >
+  >;
 }
 
 export function CompetitionsTable({ promises }: CompetitionsTableProps) {
-
-  const [{ data, pageCount }, events, statesCounts] =
-    React.use(promises)
-
-    console.log(statesCounts)
+  const [{ data, pageCount }, events, stateCounts, eventCounts] =
+    React.use(promises);
 
   const columns = React.useMemo(
-    () => getColumns({
-      events,
-    }),
+    () =>
+      getColumns({
+        events,
+      }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  )
+    [],
+  );
 
   /**
    * This component can render either a faceted filter or a search filter based on the `options` prop.
@@ -55,18 +53,27 @@ export function CompetitionsTable({ promises }: CompetitionsTableProps) {
     {
       id: "name",
       label: "Nombre",
-      placeholder: "Filtrar nombre...",
+      placeholder: "Buscar por nombre...",
     },
     {
       id: "state",
       label: "Estado",
-      options: Object.keys(statesCounts).map((name) => ({
+      options: Object.keys(stateCounts).map((name) => ({
         label: name,
         value: name,
-        count: statesCounts[name],
+        count: stateCounts[name],
       })),
     },
-  ]
+    // {
+    //   id: "eventSpecs",
+    //   label: "Eventos",
+    //   options: Object.keys(eventCounts).map((name) => ({
+    //     label: name,
+    //     value: name,
+    //     count: eventCounts[name],
+    //   })),
+    // },
+  ];
 
   const { table } = useDataTable({
     data,
@@ -74,19 +81,17 @@ export function CompetitionsTable({ promises }: CompetitionsTableProps) {
     pageCount,
     filterFields,
     initialState: {
-      sorting: [{ id: "year", desc: true }],
+      sorting: [{ id: "startDate", desc: true }],
       columnPinning: { right: ["actions"] },
     },
     getRowId: (originalRow) => originalRow.id,
     shallow: false,
     clearOnDefault: true,
-  })
+  });
 
   return (
-    <DataTable
-      table={table}
-    >
+    <DataTable table={table}>
       <DataTableToolbar table={table} filterFields={filterFields} />
     </DataTable>
-  )
+  );
 }

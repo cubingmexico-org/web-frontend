@@ -5,7 +5,6 @@ import JSZip from "jszip";
 import { parse } from "papaparse";
 import { db } from "@/db";
 import type {
-  Competition,
   Event,
   Person,
   RankAverage,
@@ -23,9 +22,9 @@ import {
 } from "@/db/schema";
 import { getStateFromCoordinates } from "@/lib/geocoder";
 
-export const maxDuration = 300;
+export const maxDuration = 500;
 
-export async function GET(): Promise<NextResponse> {
+export async function POST(): Promise<NextResponse> {
   try {
     const response = await fetch(
       "https://www.worldcubeassociation.org/export/results/WCA_export.tsv.zip",
@@ -48,53 +47,52 @@ export async function GET(): Promise<NextResponse> {
           delimiter: "\t",
           skipEmptyLines: "greedy",
           transform: (value) => (value === "NULL" ? null : value),
-        }).data as Competition[];
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        }).data as any[];
 
-        const states = await db.select().from(state);
+        await db.transaction(async (tx) => {
+          const states = await tx.select().from(state);
+          for (const row of parsedData) {
+            let stateId: string | null = null;
 
-        for (const row of parsedData) {
-          let stateId: string | null = null;
-
-          if (row.countryId === "Mexico") {
-            const stateName = await getStateFromCoordinates(
-              row.latitude! / 1000000,
-              row.longitude! / 1000000,
-            );
-            if (stateName === null) {
-              stateId = null;
-            } else {
-              stateId = states.find((s) => s.name === stateName)?.id!;
+            if (row.countryId === "Mexico") {
+              const stateName = await getStateFromCoordinates(
+                row.latitude! / 1000000,
+                row.longitude! / 1000000,
+              );
+              if (stateName === null) {
+                stateId = null;
+              } else {
+                stateId = states.find((s) => s.name === stateName)?.id!;
+              }
             }
-          }
 
-          await db
-            .insert(competition)
-            .values({
-              id: row.id,
-              name: row.name,
-              cityName: row.cityName,
-              countryId: row.countryId,
-              information: row.information,
-              year: row.year,
-              month: row.month,
-              day: row.day,
-              endMonth: row.endMonth,
-              endDay: row.endDay,
-              cancelled: row.cancelled,
-              eventSpecs: row.eventSpecs,
-              wcaDelegate: row.wcaDelegate,
-              organiser: row.organiser,
-              venue: row.venue,
-              venueAddress: row.venueAddress,
-              venueDetails: row.venueDetails,
-              external_website: row.external_website,
-              cellName: row.cellName,
-              latitude: row.latitude,
-              longitude: row.longitude,
-              stateId,
-            })
-            .onConflictDoNothing();
-        }
+            await tx
+              .insert(competition)
+              .values({
+                id: row.id,
+                name: row.name,
+                cityName: row.cityName,
+                countryId: row.countryId,
+                information: row.information,
+                startDate: new Date(row.year, row.month - 1, row.day),
+                endDate: new Date(row.year, row.endMonth - 1, row.endDay),
+                cancelled: row.cancelled,
+                eventSpecs: row.eventSpecs,
+                wcaDelegate: row.wcaDelegate,
+                organiser: row.organiser,
+                venue: row.venue,
+                venueAddress: row.venueAddress,
+                venueDetails: row.venueDetails,
+                external_website: row.external_website,
+                cellName: row.cellName,
+                latitude: row.latitude,
+                longitude: row.longitude,
+                stateId,
+              })
+              .onConflictDoNothing();
+          }
+        });
       }
 
       if (fileName === "WCA_export_Events.tsv") {
@@ -106,18 +104,20 @@ export async function GET(): Promise<NextResponse> {
           skipEmptyLines: "greedy",
         }).data as Event[];
 
-        for (const row of parsedData) {
-          await db
-            .insert(event)
-            .values({
-              id: row.id,
-              format: row.format,
-              name: row.name,
-              rank: row.rank,
-              cellName: row.cellName,
-            })
-            .onConflictDoNothing();
-        }
+        await db.transaction(async (tx) => {
+          for (const row of parsedData) {
+            await tx
+              .insert(event)
+              .values({
+                id: row.id,
+                format: row.format,
+                name: row.name,
+                rank: row.rank,
+                cellName: row.cellName,
+              })
+              .onConflictDoNothing();
+          }
+        });
       }
 
       if (fileName === "WCA_export_Persons.tsv") {
@@ -134,16 +134,18 @@ export async function GET(): Promise<NextResponse> {
           (row) => row.countryId === "Mexico",
         );
 
-        for (const row of cleanedData) {
-          await db
-            .insert(person)
-            .values({
-              id: row.id,
-              name: row.name,
-              gender: row.gender,
-            })
-            .onConflictDoNothing();
-        }
+        await db.transaction(async (tx) => {
+          for (const row of cleanedData) {
+            await tx
+              .insert(person)
+              .values({
+                id: row.id,
+                name: row.name,
+                gender: row.gender,
+              })
+              .onConflictDoNothing();
+          }
+        });
       }
 
       const persons = await db
@@ -166,21 +168,23 @@ export async function GET(): Promise<NextResponse> {
           personIds.includes(record.personId),
         );
 
-        await db.delete(rankAverage);
+        await db.transaction(async (tx) => {
+          await tx.delete(rankAverage);
 
-        for (const row of filteredData) {
-          await db
-            .insert(rankAverage)
-            .values({
-              personId: row.personId,
-              eventId: row.eventId,
-              best: row.best,
-              worldRank: row.worldRank,
-              continentRank: row.continentRank,
-              countryRank: row.countryRank,
-            })
-            .onConflictDoNothing();
-        }
+          for (const row of filteredData) {
+            await tx
+              .insert(rankAverage)
+              .values({
+                personId: row.personId,
+                eventId: row.eventId,
+                best: row.best,
+                worldRank: row.worldRank,
+                continentRank: row.continentRank,
+                countryRank: row.countryRank,
+              })
+              .onConflictDoNothing();
+          }
+        });
       }
 
       if (fileName === "WCA_export_RanksSingle.tsv") {
@@ -196,21 +200,23 @@ export async function GET(): Promise<NextResponse> {
           personIds.includes(record.personId),
         );
 
-        await db.delete(rankSingle);
+        await db.transaction(async (tx) => {
+          await tx.delete(rankSingle);
 
-        for (const row of filteredData) {
-          await db
-            .insert(rankSingle)
-            .values({
-              personId: row.personId,
-              eventId: row.eventId,
-              best: row.best,
-              worldRank: row.worldRank,
-              continentRank: row.continentRank,
-              countryRank: row.countryRank,
-            })
-            .onConflictDoNothing();
-        }
+          for (const row of filteredData) {
+            await tx
+              .insert(rankSingle)
+              .values({
+                personId: row.personId,
+                eventId: row.eventId,
+                best: row.best,
+                worldRank: row.worldRank,
+                continentRank: row.continentRank,
+                countryRank: row.countryRank,
+              })
+              .onConflictDoNothing();
+          }
+        });
       }
 
       if (fileName === "WCA_export_Results.tsv") {
@@ -218,66 +224,68 @@ export async function GET(): Promise<NextResponse> {
         const fileContent =
           await zipContents.files[fileName]!.async("nodebuffer");
 
-        await db.delete(result);
+        await db.transaction(async (tx) => {
+          await tx.delete(result);
 
-        const totalChunks = Math.ceil(fileContent.length / 10000000);
-        let headers: string | undefined;
+          const totalChunks = Math.ceil(fileContent.length / 10000000);
+          let headers: string | undefined;
 
-        for (let i = 0; i < totalChunks; i++) {
-          const chunk = fileContent
-            .slice(i * 10000000, (i + 1) * 10000000)
-            .toString();
+          for (let i = 0; i < totalChunks; i++) {
+            const chunk = fileContent
+              .slice(i * 10000000, (i + 1) * 10000000)
+              .toString();
 
-          if (i === 0) {
-            // Extract headers from the first chunk
-            const parsedFirstChunk = parse(chunk, {
+            if (i === 0) {
+              // Extract headers from the first chunk
+              const parsedFirstChunk = parse(chunk, {
+                header: true,
+                delimiter: "\t",
+                skipEmptyLines: "greedy",
+                transform: (value) => (value === "NULL" ? null : value),
+              });
+              headers = parsedFirstChunk.meta.fields?.join("\t");
+            }
+
+            // Prepend headers to each chunk
+            const chunkWithHeaders = `${headers}\n${chunk}`;
+
+            const parsedData = parse(chunkWithHeaders, {
               header: true,
               delimiter: "\t",
               skipEmptyLines: "greedy",
               transform: (value) => (value === "NULL" ? null : value),
-            });
-            headers = parsedFirstChunk.meta.fields?.join("\t");
+            }).data as Result[];
+
+            const filteredData = parsedData.filter(
+              (row) => row.personCountryId === "Mexico",
+            );
+
+            for (const row of filteredData) {
+              await tx
+                .insert(result)
+                .values({
+                  competitionId: row.competitionId,
+                  eventId: row.eventId,
+                  roundTypeId: row.roundTypeId,
+                  pos: row.pos,
+                  best: row.best,
+                  average: row.average,
+                  personName: row.personName,
+                  personId: row.personId,
+                  personCountryId: row.personCountryId,
+                  formatId: row.formatId,
+                  value1: row.value1,
+                  value2: row.value2,
+                  value3: row.value3,
+                  value4: row.value4,
+                  value5: row.value5,
+                  regionalSingleRecord: row.regionalSingleRecord,
+                  regionalAverageRecord: row.regionalAverageRecord,
+                })
+                .onConflictDoNothing();
+            }
           }
-
-          // Prepend headers to each chunk
-          const chunkWithHeaders = `${headers}\n${chunk}`;
-
-          const parsedData = parse(chunkWithHeaders, {
-            header: true,
-            delimiter: "\t",
-            skipEmptyLines: "greedy",
-            transform: (value) => (value === "NULL" ? null : value),
-          }).data as Result[];
-
-          const filteredData = parsedData.filter(
-            (row) => row.personCountryId === "Mexico",
-          );
-
-          for (const row of filteredData) {
-            await db
-              .insert(result)
-              .values({
-                competitionId: row.competitionId,
-                eventId: row.eventId,
-                roundTypeId: row.roundTypeId,
-                pos: row.pos,
-                best: row.best,
-                average: row.average,
-                personName: row.personName,
-                personId: row.personId,
-                personCountryId: row.personCountryId,
-                formatId: row.formatId,
-                value1: row.value1,
-                value2: row.value2,
-                value3: row.value3,
-                value4: row.value4,
-                value5: row.value5,
-                regionalSingleRecord: row.regionalSingleRecord,
-                regionalAverageRecord: row.regionalAverageRecord,
-              })
-              .onConflictDoNothing();
-          }
-        }
+        });
       }
     }
 

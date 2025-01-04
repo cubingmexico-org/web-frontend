@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import type { Table } from "@tanstack/react-table"
-import { Check, ChevronsUpDown, Settings2 } from "lucide-react"
+import * as React from "react";
+import type { Table } from "@tanstack/react-table";
+import { Check, ChevronsUpDown, Settings2 } from "lucide-react";
 
-import { toSentenceCase } from "@/lib/utils"
-import { Button } from "@workspace/ui/components/button"
+import { toSentenceCase } from "@/lib/utils";
+import { Button } from "@workspace/ui/components/button";
 import {
   Command,
   CommandEmpty,
@@ -13,22 +13,22 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@workspace/ui/components/command"
+} from "@workspace/ui/components/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@workspace/ui/components/popover"
-import { cn } from "@workspace/ui/lib/utils"
+} from "@workspace/ui/components/popover";
+import { cn } from "@workspace/ui/lib/utils";
 
 interface DataTableViewOptionsProps<TData> {
-  table: Table<TData>
+  table: Table<TData>;
 }
 
 export function DataTableViewOptions<TData>({
   table,
 }: DataTableViewOptionsProps<TData>) {
-  const triggerRef = React.useRef<HTMLButtonElement>(null)
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
 
   return (
     <Popover modal>
@@ -61,7 +61,7 @@ export function DataTableViewOptions<TData>({
                 .filter(
                   (column) =>
                     typeof column.accessorFn !== "undefined" &&
-                    column.getCanHide()
+                    column.getCanHide(),
                 )
                 .map((column) => {
                   return (
@@ -77,16 +77,16 @@ export function DataTableViewOptions<TData>({
                       <Check
                         className={cn(
                           "ml-auto size-4 shrink-0",
-                          column.getIsVisible() ? "opacity-100" : "opacity-0"
+                          column.getIsVisible() ? "opacity-100" : "opacity-0",
                         )}
                       />
                     </CommandItem>
-                  )
+                  );
                 })}
             </CommandGroup>
           </CommandList>
         </Command>
       </PopoverContent>
     </Popover>
-  )
+  );
 }

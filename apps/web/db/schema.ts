@@ -6,6 +6,7 @@ import {
   smallint,
   integer,
   primaryKey,
+  timestamp,
 } from "drizzle-orm/pg-core";
 
 // WCA
@@ -16,11 +17,8 @@ export const competition = pgTable("competitions", {
   cityName: varchar("cityName", { length: 50 }).notNull(),
   countryId: varchar("countryId", { length: 50 }).notNull(),
   information: text("information"),
-  year: smallint("year").notNull().default(0),
-  month: smallint("month").notNull().default(0),
-  day: smallint("day").notNull().default(0),
-  endMonth: smallint("endMonth").notNull().default(0),
-  endDay: smallint("endDay").notNull().default(0),
+  startDate: timestamp("startDate").notNull(),
+  endDate: timestamp("endDate").notNull(),
   cancelled: integer("cancelled").notNull().default(0),
   eventSpecs: text("eventSpecs"),
   wcaDelegate: text("wcaDelegate"),

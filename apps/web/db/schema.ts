@@ -20,7 +20,7 @@ export const competition = pgTable("competitions", {
   startDate: timestamp("startDate").notNull(),
   endDate: timestamp("endDate").notNull(),
   cancelled: integer("cancelled").notNull().default(0),
-  eventSpecs: text("eventSpecs"),
+  // eventSpecs: text("eventSpecs"),
   wcaDelegate: text("wcaDelegate"),
   organiser: text("organiser"),
   venue: varchar("venue", { length: 240 }).notNull(),
@@ -45,6 +45,15 @@ export const event = pgTable("events", {
 });
 
 export type Event = InferSelectModel<typeof event>;
+
+export const competitionEvent = pgTable("competition_events", {
+  competitionId: varchar("competitionId", { length: 32 }).references(
+    () => competition.id,
+  ),
+  eventId: varchar("eventId", { length: 6 }).references(() => event.id),
+});
+
+export type CompetitionEvent = InferSelectModel<typeof competitionEvent>;
 
 export const person = pgTable("persons", {
   id: varchar("id", { length: 10 }).primaryKey(),

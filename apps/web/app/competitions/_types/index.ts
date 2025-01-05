@@ -1,9 +1,9 @@
 export interface Competition {
   id: string;
   name: string;
-  state: string;
+  state: string | null;
   cityName: string;
-  eventSpecs: string | null;
+  events: unknown;
   startDate: Date;
   endDate: Date;
 }

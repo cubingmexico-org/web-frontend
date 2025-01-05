@@ -13,6 +13,7 @@ import type {
 } from "@/db/schema";
 import {
   competition,
+  competitionEvent,
   event,
   person,
   rankAverage,
@@ -78,7 +79,7 @@ export async function POST(): Promise<NextResponse> {
                 startDate: new Date(row.year, row.month - 1, row.day),
                 endDate: new Date(row.year, row.endMonth - 1, row.endDay),
                 cancelled: row.cancelled,
-                eventSpecs: row.eventSpecs,
+                // eventSpecs: row.eventSpecs,
                 wcaDelegate: row.wcaDelegate,
                 organiser: row.organiser,
                 venue: row.venue,
@@ -91,6 +92,16 @@ export async function POST(): Promise<NextResponse> {
                 stateId,
               })
               .onConflictDoNothing();
+
+            for (const eventSpec of row.eventSpecs.split(" ")) {
+              await tx
+                .insert(competitionEvent)
+                .values({
+                  competitionId: row.id,
+                  eventId: eventSpec,
+                })
+                .onConflictDoNothing();
+            }
           }
         });
       }

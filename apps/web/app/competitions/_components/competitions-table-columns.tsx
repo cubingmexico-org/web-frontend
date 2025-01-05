@@ -1,20 +1,13 @@
 "use client";
 
 import * as React from "react";
-import type { Event } from "@/db/schema";
 import { type ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 import type { Competition } from "../_types";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 
-interface GetColumnsProps {
-  events: Event[];
-}
-
-export function getColumns({
-  events,
-}: GetColumnsProps): ColumnDef<Competition>[] {
+export function getColumns(): ColumnDef<Competition>[] {
   return [
     {
       accessorKey: "startDate",
@@ -54,23 +47,16 @@ export function getColumns({
       enableHiding: false,
     },
     {
-      accessorKey: "eventSpecs",
+      accessorKey: "events",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Eventos" />
       ),
       cell: ({ row }) => {
-        const competitionEvents = (row.getValue("eventSpecs") as string).split(
-          " ",
-        );
-        const orderedCompetitionEvents = competitionEvents
-          ?.map((eventId) => events.find((event) => event.id === eventId))
-          .filter((event) => event !== undefined)
-          .sort((a, b) => a.rank - b.rank)
-          .map((event) => event.id);
+        const eventIds = row.getValue("events") as string[];
         return (
           <div className="flex space-x-2">
-            {orderedCompetitionEvents?.map((event) => (
-              <span className={`cubing-icon event-${event}`} key={event} />
+            {eventIds.map((eventId) => (
+              <span key={eventId} className={`cubing-icon event-${eventId}`} />
             ))}
           </div>
         );

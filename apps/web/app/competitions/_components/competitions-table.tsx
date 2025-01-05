@@ -8,17 +8,16 @@ import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import type {
   getCompetitions,
   getStateCounts,
-  getEvents,
   getEventCounts,
 } from "../_lib/queries";
 import { getColumns } from "./competitions-table-columns";
 import type { Competition } from "../_types";
+import { getEventsIcon } from "../_lib/utils";
 
 interface CompetitionsTableProps {
   promises: Promise<
     [
       Awaited<ReturnType<typeof getCompetitions>>,
-      Awaited<ReturnType<typeof getEvents>>,
       Awaited<ReturnType<typeof getStateCounts>>,
       Awaited<ReturnType<typeof getEventCounts>>,
     ]
@@ -26,17 +25,9 @@ interface CompetitionsTableProps {
 }
 
 export function CompetitionsTable({ promises }: CompetitionsTableProps) {
-  const [{ data, pageCount }, events, stateCounts, eventCounts] =
-    React.use(promises);
+  const [{ data, pageCount }, stateCounts, eventCounts] = React.use(promises);
 
-  const columns = React.useMemo(
-    () =>
-      getColumns({
-        events,
-      }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
+  const columns = React.useMemo(() => getColumns(), []);
 
   /**
    * This component can render either a faceted filter or a search filter based on the `options` prop.
@@ -64,15 +55,16 @@ export function CompetitionsTable({ promises }: CompetitionsTableProps) {
         count: stateCounts[name],
       })),
     },
-    // {
-    //   id: "eventSpecs",
-    //   label: "Eventos",
-    //   options: Object.keys(eventCounts).map((name) => ({
-    //     label: name,
-    //     value: name,
-    //     count: eventCounts[name],
-    //   })),
-    // },
+    {
+      id: "events",
+      label: "Eventos",
+      options: Object.keys(eventCounts).map((name) => ({
+        label: name,
+        value: name,
+        icon: getEventsIcon(name),
+        count: eventCounts[name],
+      })),
+    },
   ];
 
   const { table } = useDataTable({

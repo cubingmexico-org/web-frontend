@@ -1,7 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import "server-only";
 import { db } from "@/db";
-import { competition, state, event, State, Event } from "@/db/schema";
+import {
+  competition,
+  state,
+  event,
+  State,
+  Event,
+  competitionEvent,
+} from "@/db/schema";
 import {
   and,
   asc,
@@ -30,7 +37,7 @@ export async function getCompetitions(input: GetCompetitionsSchema) {
           input.name ? ilike(competition.name, `%${input.name}%`) : undefined,
           input.state.length > 0 ? inArray(state.name, input.state) : undefined,
           input.events.length > 0
-            ? sql`${input.events} && string_to_array(${competition.eventSpecs}, ' ')`
+            ? inArray(event.name, input.events)
             : undefined,
           fromDate ? gte(competition.startDate, fromDate) : undefined,
           toDate ? lte(competition.endDate, toDate) : undefined,
@@ -51,27 +58,44 @@ export async function getCompetitions(input: GetCompetitionsSchema) {
               id: competition.id,
               name: competition.name,
               state: state.name,
-              cityName: competition.cityName,
-              eventSpecs: competition.eventSpecs,
               startDate: competition.startDate,
               endDate: competition.endDate,
+              events: sql`array_agg(${event.id} ORDER BY ${event.rank})`.as(
+                "events",
+              ),
             })
             .from(competition)
-            .innerJoin(state, sql`${competition.stateId} = ${state.id}`)
+            .leftJoin(state, sql`${competition.stateId} = ${state.id}`)
+            .leftJoin(
+              competitionEvent,
+              sql`${competition.id} = ${competitionEvent.competitionId}`,
+            )
+            .leftJoin(event, sql`${competitionEvent.eventId} = ${event.id}`)
             .limit(input.perPage)
             .offset(offset)
             .where(where)
+            .groupBy(
+              competition.id,
+              state.name,
+              competition.startDate,
+              competition.endDate,
+            )
             .orderBy(...orderBy);
 
-          const total = await tx
+          const total = (await tx
             .select({
-              count: count(),
+              count: sql`COUNT(DISTINCT ${competition.id})`.as("count"),
             })
             .from(competition)
-            .innerJoin(state, sql`${competition.stateId} = ${state.id}`)
+            .leftJoin(state, sql`${competition.stateId} = ${state.id}`)
+            .leftJoin(
+              competitionEvent,
+              sql`${competition.id} = ${competitionEvent.competitionId}`,
+            )
+            .leftJoin(event, sql`${competitionEvent.eventId} = ${event.id}`)
             .where(where)
             .execute()
-            .then((res) => res[0]?.count ?? 0);
+            .then((res) => res[0]?.count ?? 0)) as number;
 
           return {
             data,
@@ -151,20 +175,37 @@ export async function getEventCounts() {
   return unstable_cache(
     async () => {
       try {
-        const res = await db
+        return await db
           .select({
             event: event.name,
             count: count(),
           })
-          .from(competition)
+          .from(competitionEvent)
+          .innerJoin(event, sql`${competitionEvent.eventId} = ${event.id}`)
           .innerJoin(
-            event,
-            sql`string_to_array(${competition.eventSpecs}, ' ') @> ARRAY[${event.name}]::text[]`,
+            competition,
+            sql`${competitionEvent.competitionId} = ${competition.id}`,
           )
-          .groupBy(event.name);
-        return res;
+          .where(
+            and(
+              sql`${competition.countryId} = 'Mexico'`,
+              sql`${event.rank} < 200`,
+            ),
+          )
+          .groupBy(event.name, event.rank)
+          .having(gt(count(), 0))
+          .orderBy(event.rank) // Changed to order by event.rank
+          .then((res) =>
+            res.reduce(
+              (acc, { event, count }) => {
+                acc[event] = count;
+                return acc;
+              },
+              {} as Record<Event["name"], number>,
+            ),
+          );
       } catch (err) {
-        console.log(err);
+        console.error(err);
         return {} as Record<Event["name"], number>;
       }
     },

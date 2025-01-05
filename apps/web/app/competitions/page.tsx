@@ -4,7 +4,6 @@ import { CompetitionsTable } from "./_components/competitions-table";
 import {
   getCompetitions,
   getStateCounts,
-  getEvents,
   getEventCounts,
 } from "./_lib/queries";
 import { SearchParams } from "@/types";
@@ -28,7 +27,6 @@ export default async function Page(props: PageProps) {
       ...search,
       filters: validFilters,
     }),
-    getEvents(),
     getStateCounts(),
     getEventCounts(),
   ]);

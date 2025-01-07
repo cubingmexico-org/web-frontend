@@ -8,6 +8,8 @@ import {
   State,
   Event,
   competitionEvent,
+  rankSingle,
+  person,
 } from "@/db/schema";
 import {
   and,
@@ -22,77 +24,55 @@ import {
   lte,
 } from "drizzle-orm";
 import { unstable_cache } from "@/lib/unstable-cache";
-import { type GetCompetitionsSchema } from "./validations";
+import { type GetRankSinglesSchema } from "./validations";
 
-export async function getCompetitions(input: GetCompetitionsSchema) {
+export async function getRankSingles(input: GetRankSinglesSchema) {
   return await unstable_cache(
     async () => {
       try {
         const offset = (input.page - 1) * input.perPage;
-        const fromDate = input.from ? new Date(input.from) : undefined;
-        const toDate = input.to ? new Date(input.to) : undefined;
 
         const where = and(
-          sql`${competition.countryId} = 'Mexico'`,
-          input.name ? ilike(competition.name, `%${input.name}%`) : undefined,
-          input.state.length > 0 ? inArray(state.name, input.state) : undefined,
-          input.events.length > 0
-            ? inArray(event.name, input.events)
-            : undefined,
-          fromDate ? gte(competition.startDate, fromDate) : undefined,
-          toDate ? lte(competition.endDate, toDate) : undefined,
+          sql`${rankSingle.eventId} = '333'`,
+          input.name ? ilike(person.name, `%${input.name}%`) : undefined,
         );
 
         const orderBy =
           input.sort.length > 0
             ? input.sort.map((item) =>
                 item.desc
-                  ? desc(competition[item.id])
-                  : asc(competition[item.id]),
+                  ? desc(rankSingle[item.id])
+                  : asc(rankSingle[item.id]),
               )
-            : [asc(competition.startDate)];
+            : [asc(rankSingle.countryRank)];
 
         const { data, total } = await db.transaction(async (tx) => {
           const data = await tx
             .select({
-              id: competition.id,
-              name: competition.name,
-              state: state.name,
-              startDate: competition.startDate,
-              endDate: competition.endDate,
-              events: sql`array_agg(${event.id} ORDER BY ${event.rank})`.as(
-                "events",
-              ),
+              personId: rankSingle.personId,
+              countryRank: rankSingle.countryRank,
+              name: person.name,
+              best: rankSingle.best,
             })
-            .from(competition)
-            .leftJoin(state, sql`${competition.stateId} = ${state.id}`)
-            .leftJoin(
-              competitionEvent,
-              sql`${competition.id} = ${competitionEvent.competitionId}`,
+            .from(rankSingle)
+            .innerJoin(
+              person,
+              sql`${rankSingle.personId} = ${person.id}`,
             )
-            .leftJoin(event, sql`${competitionEvent.eventId} = ${event.id}`)
             .limit(input.perPage)
             .offset(offset)
             .where(where)
-            .groupBy(
-              competition.id,
-              state.name,
-              competition.startDate,
-              competition.endDate,
-            )
             .orderBy(...orderBy);
 
           const total = (await tx
             .select({
-              count: sql`COUNT(DISTINCT ${competition.id})`.as("count"),
+              count: count(),
             })
-            .from(competition)
-            .leftJoin(state, sql`${competition.stateId} = ${state.id}`)
-            .leftJoin(
-              competitionEvent,
-              sql`${competition.id} = ${competitionEvent.competitionId}`,
+            .from(rankSingle)
+            .innerJoin(
+              person,
+              sql`${rankSingle.personId} = ${person.id}`,
             )
-            .leftJoin(event, sql`${competitionEvent.eventId} = ${event.id}`)
             .where(where)
             .execute()
             .then((res) => res[0]?.count ?? 0)) as number;
@@ -106,6 +86,7 @@ export async function getCompetitions(input: GetCompetitionsSchema) {
         const pageCount = Math.ceil(total / input.perPage);
         return { data, pageCount };
       } catch (err) {
+        console.error(err);
         return { data: [], pageCount: 0 };
       }
     },

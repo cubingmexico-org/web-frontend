@@ -6,7 +6,9 @@ import { useDataTable } from "@/hooks/use-data-table";
 import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import type {
+  getGenderCounts,
   getRankSingles,
+  getStateCounts,
 } from "../_lib/queries";
 import { getColumns } from "./rankings-table-columns";
 import { RankSingle } from "../_types";
@@ -15,12 +17,14 @@ interface RankSinglesTableProps {
   promises: Promise<
     [
       Awaited<ReturnType<typeof getRankSingles>>,
+      Awaited<ReturnType<typeof getStateCounts>>,
+      Awaited<ReturnType<typeof getGenderCounts>>,
     ]
   >;
 }
 
 export function RankSinglesTable({ promises }: RankSinglesTableProps) {
-  const [{ data, pageCount }] = React.use(promises);
+  const [{ data, pageCount }, stateCounts, genderCounts] = React.use(promises);
 
   const columns = React.useMemo(() => getColumns(), []);
 
@@ -41,6 +45,24 @@ export function RankSinglesTable({ promises }: RankSinglesTableProps) {
       label: "Nombre",
       placeholder: "Buscar por nombre...",
     },
+    {
+      id: "state",
+      label: "Estado",
+      options: Object.keys(stateCounts).map((name) => ({
+        label: name,
+        value: name,
+        count: stateCounts[name],
+      })),
+    },
+    {
+      id: "gender",
+      label: "Género",
+      options: Object.keys(genderCounts).map((name) => ({
+        label: name === "m" ? "Masculino" : name === "f" ? "Femenino" : "Otro",
+        value: name,
+        count: genderCounts[name],
+      })),
+    },
   ];
 
   const { table } = useDataTable({
@@ -51,6 +73,9 @@ export function RankSinglesTable({ promises }: RankSinglesTableProps) {
     initialState: {
       sorting: [{ id: "countryRank", desc: false }],
       columnPinning: { right: ["actions"] },
+      columnVisibility: {
+        gender: false,
+      },
     },
     getRowId: (originalRow) => originalRow.personId,
     shallow: false,

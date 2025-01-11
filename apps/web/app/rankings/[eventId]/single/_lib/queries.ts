@@ -1,40 +1,26 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import "server-only";
 import { db } from "@/db";
-import {
-  competition,
-  state,
-  event,
-  State,
-  Event,
-  competitionEvent,
-  rankSingle,
-  person,
-} from "@/db/schema";
-import {
-  and,
-  asc,
-  count,
-  desc,
-  ilike,
-  sql,
-  gt,
-  inArray,
-  gte,
-  lte,
-} from "drizzle-orm";
+import { state, State, Event, rankSingle, person } from "@/db/schema";
+import { and, asc, count, desc, ilike, sql, gt, inArray } from "drizzle-orm";
 import { unstable_cache } from "@/lib/unstable-cache";
 import { type GetRankSinglesSchema } from "./validations";
 
-export async function getRankSingles(input: GetRankSinglesSchema) {
+export async function getRankSingles(
+  input: GetRankSinglesSchema,
+  eventId: Event["id"],
+) {
   return await unstable_cache(
     async () => {
       try {
         const offset = (input.page - 1) * input.perPage;
 
         const where = and(
-          sql`${rankSingle.eventId} = '333'`,
+          sql`${rankSingle.eventId} = ${eventId}`,
           input.name ? ilike(person.name, `%${input.name}%`) : undefined,
+          input.state.length > 0 ? inArray(state.name, input.state) : undefined,
+          input.gender.length > 0
+            ? inArray(person.gender, input.gender)
+            : undefined,
         );
 
         const orderBy =
@@ -53,12 +39,12 @@ export async function getRankSingles(input: GetRankSinglesSchema) {
               countryRank: rankSingle.countryRank,
               name: person.name,
               best: rankSingle.best,
+              state: state.name,
+              gender: person.gender,
             })
             .from(rankSingle)
-            .innerJoin(
-              person,
-              sql`${rankSingle.personId} = ${person.id}`,
-            )
+            .innerJoin(person, sql`${rankSingle.personId} = ${person.id}`)
+            .leftJoin(state, sql`${person.stateId} = ${state.id}`)
             .limit(input.perPage)
             .offset(offset)
             .where(where)
@@ -69,10 +55,8 @@ export async function getRankSingles(input: GetRankSinglesSchema) {
               count: count(),
             })
             .from(rankSingle)
-            .innerJoin(
-              person,
-              sql`${rankSingle.personId} = ${person.id}`,
-            )
+            .innerJoin(person, sql`${rankSingle.personId} = ${person.id}`)
+            .leftJoin(state, sql`${person.stateId} = ${state.id}`)
             .where(where)
             .execute()
             .then((res) => res[0]?.count ?? 0)) as number;
@@ -93,12 +77,12 @@ export async function getRankSingles(input: GetRankSinglesSchema) {
     [JSON.stringify(input)],
     {
       revalidate: 3600,
-      tags: ["competitions"],
+      tags: ["rankssingle"],
     },
   )();
 }
 
-export async function getStateCounts() {
+export async function getStateCounts(eventId: Event["id"]) {
   return unstable_cache(
     async () => {
       try {
@@ -107,14 +91,17 @@ export async function getStateCounts() {
             state: state.name,
             count: count(),
           })
-          .from(competition)
-          .innerJoin(state, sql`${competition.stateId} = ${state.id}`)
+          .from(rankSingle)
+          .innerJoin(person, sql`${rankSingle.personId} = ${person.id}`)
+          .leftJoin(state, sql`${person.stateId} = ${state.id}`)
+          .where(sql`${rankSingle.eventId} = ${eventId}`)
           .groupBy(state.name)
           .having(gt(count(), 0))
           .orderBy(state.name)
           .then((res) =>
             res.reduce(
               (acc, { state, count }) => {
+                if (!state) return acc;
                 acc[state] = count;
                 return acc;
               },
@@ -122,6 +109,7 @@ export async function getStateCounts() {
             ),
           );
       } catch (err) {
+        console.error(err);
         return {} as Record<State["name"], number>;
       }
     },
@@ -132,45 +120,37 @@ export async function getStateCounts() {
   )();
 }
 
-export async function getEventCounts() {
+export async function getGenderCounts(eventId: Event["id"]) {
   return unstable_cache(
     async () => {
       try {
         return await db
           .select({
-            event: event.name,
+            gender: person.gender,
             count: count(),
           })
-          .from(competitionEvent)
-          .innerJoin(event, sql`${competitionEvent.eventId} = ${event.id}`)
-          .innerJoin(
-            competition,
-            sql`${competitionEvent.competitionId} = ${competition.id}`,
-          )
-          .where(
-            and(
-              sql`${competition.countryId} = 'Mexico'`,
-              sql`${event.rank} < 200`,
-            ),
-          )
-          .groupBy(event.name, event.rank)
+          .from(rankSingle)
+          .innerJoin(person, sql`${rankSingle.personId} = ${person.id}`)
+          .where(sql`${rankSingle.eventId} = ${eventId}`)
+          .groupBy(person.gender)
           .having(gt(count(), 0))
-          .orderBy(event.rank) // Changed to order by event.rank
+          .orderBy(person.gender)
           .then((res) =>
             res.reduce(
-              (acc, { event, count }) => {
-                acc[event] = count;
+              (acc, { gender, count }) => {
+                if (!gender) return acc;
+                acc[gender] = count;
                 return acc;
               },
-              {} as Record<Event["name"], number>,
+              {} as Record<string, number>,
             ),
           );
       } catch (err) {
         console.error(err);
-        return {} as Record<Event["name"], number>;
+        return {} as Record<string, number>;
       }
     },
-    ["event-counts"],
+    ["state-counts"],
     {
       revalidate: 3600,
     },

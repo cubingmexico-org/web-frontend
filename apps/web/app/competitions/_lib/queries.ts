@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import "server-only";
 import { db } from "@/db";
 import {
@@ -106,6 +105,7 @@ export async function getCompetitions(input: GetCompetitionsSchema) {
         const pageCount = Math.ceil(total / input.perPage);
         return { data, pageCount };
       } catch (err) {
+        console.error(err);
         return { data: [], pageCount: 0 };
       }
     },
@@ -141,6 +141,7 @@ export async function getStateCounts() {
             ),
           );
       } catch (err) {
+        console.error(err);
         return {} as Record<State["name"], number>;
       }
     },

@@ -1,19 +1,22 @@
 import {
   createSearchParamsCache,
+  parseAsArrayOf,
   parseAsInteger,
   parseAsString,
   parseAsStringEnum,
 } from "nuqs/server";
 import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers";
-import type { RankSingle } from "@/db/schema";
+import { type RankAverage } from "@/db/schema";
 
 export const searchParamsCache = createSearchParamsCache({
   page: parseAsInteger.withDefault(1),
   perPage: parseAsInteger.withDefault(10),
-  sort: getSortingStateParser<RankSingle>().withDefault([
+  sort: getSortingStateParser<RankAverage>().withDefault([
     { id: "countryRank", desc: false },
   ]),
   name: parseAsString.withDefault(""),
+  state: parseAsArrayOf(parseAsString).withDefault([]),
+  gender: parseAsArrayOf(parseAsString).withDefault([]),
   from: parseAsString.withDefault(""),
   to: parseAsString.withDefault(""),
   // advanced filter
@@ -21,6 +24,6 @@ export const searchParamsCache = createSearchParamsCache({
   joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
 });
 
-export type GetRankSinglesSchema = Awaited<
+export type GetRankAveragesSchema = Awaited<
   ReturnType<typeof searchParamsCache.parse>
 >;

@@ -9,6 +9,25 @@ export function formatTime(centiseconds: number): string {
   return `${minutes}:${remainingSeconds}`;
 }
 
+export function formatTime333mbf(value: number): string {
+    const valueStr = value.toString();
+    const DD = valueStr.slice(0, 2);
+    const TTTTT = valueStr.slice(2, 7);
+    const MM = valueStr.slice(7);
+
+    const difference = 99 - parseInt(DD);
+    const missed = parseInt(MM);
+    const solved = difference + missed;
+    const attempted = solved + missed;
+
+    const TTTTTNum = parseInt(TTTTT);
+    const minutes = Math.floor(TTTTTNum / 60);
+    const seconds = TTTTTNum % 60;
+    const time = `${solved}/${attempted} ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+    return time;
+}
+
 export function formatDate(
   startDate: Date | string | number,
   endDate: Date | string | number,

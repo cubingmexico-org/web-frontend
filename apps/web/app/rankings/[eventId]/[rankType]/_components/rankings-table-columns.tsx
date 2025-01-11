@@ -3,11 +3,12 @@
 import * as React from "react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
-import { formatTime } from "@/lib/utils";
-import { RankAverage } from "../_types";
+import { formatTime, formatTime333mbf } from "@/lib/utils";
+import { RankSingle } from "../_types";
+import type { Event } from "@/db/schema";
 import { cn } from "@workspace/ui/lib/utils";
 
-export function getColumns(): ColumnDef<RankAverage>[] {
+export function getColumns(eventId: Event["id"]): ColumnDef<RankSingle>[] {
   return [
     {
       accessorKey: "countryRank",
@@ -38,7 +39,7 @@ export function getColumns(): ColumnDef<RankAverage>[] {
       cell: ({ row }) => {
         return (
           <div className="flex space-x-2">
-            {formatTime(row.getValue("best"))}
+            {eventId === "333mbf" ? formatTime333mbf(row.getValue("best")) : formatTime(row.getValue("best"))}
           </div>
         );
       },

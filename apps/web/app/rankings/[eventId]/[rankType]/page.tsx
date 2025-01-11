@@ -1,10 +1,13 @@
 import * as React from "react";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import { RankAveragesTable } from "./_components/rankings-table";
+import { RankAveragesTable, RankSinglesTable } from "./_components/rankings-table";
 import {
-  getGenderCounts,
+  getRankSinglesGenderCounts,
+  getRankSingles,
+  getRankSinglesStateCounts,
   getRankAverages,
-  getStateCounts,
+  getRankAveragesStateCounts,
+  getRankAveragesGenderCounts,
 } from "./_lib/queries";
 import { SearchParams } from "@/types";
 import { getValidFilters } from "@/lib/data-table";
@@ -14,18 +17,29 @@ import { getEvents } from "@/db/queries";
 import { RankTypeSelector } from "./_components/rank-type-selector";
 
 interface PageProps {
-  params: Promise<{ eventId: string }>;
+  params: Promise<{ eventId: string, rankType: "single" | "average" }>;
   searchParams: Promise<SearchParams>;
 }
 
 export default async function Page(props: PageProps) {
   const searchParams = await props.searchParams;
   const eventId = (await props.params).eventId;
+  const rankType = (await props.params).rankType;
   const search = searchParamsCache.parse(searchParams);
 
   const validFilters = getValidFilters(search.filters);
 
-  const promises = Promise.all([
+  const promises = rankType === "single" ? Promise.all([
+    getRankSingles(
+      {
+        ...search,
+        filters: validFilters,
+      },
+      eventId,
+    ),
+    getRankSinglesStateCounts(eventId),
+    getRankSinglesGenderCounts(eventId),
+  ]) : Promise.all([
     getRankAverages(
       {
         ...search,
@@ -33,16 +47,16 @@ export default async function Page(props: PageProps) {
       },
       eventId,
     ),
-    getStateCounts(eventId),
-    getGenderCounts(eventId),
+    getRankAveragesStateCounts(eventId),
+    getRankAveragesGenderCounts(eventId),
   ]);
 
   const events = await getEvents();
 
   return (
     <main className="flex-grow container mx-auto px-4 py-8">
-      <EventSelector events={events} selectedEventId={eventId} />
-      <RankTypeSelector selectedEventId={eventId} />
+      <EventSelector events={events} selectedEventId={eventId} selectedRankType={rankType} />
+      <RankTypeSelector selectedEventId={eventId} selectedRankType={rankType} />
       <div className="grid gap-6">
         <React.Suspense
           fallback={
@@ -55,7 +69,11 @@ export default async function Page(props: PageProps) {
             />
           }
         >
-          <RankAveragesTable promises={promises} />
+          {rankType === "single" ? (
+            <RankSinglesTable promises={promises} eventId={eventId} />
+          ) : (
+            <RankAveragesTable promises={promises} eventId={eventId} />
+          )}
         </React.Suspense>
       </div>
     </main>

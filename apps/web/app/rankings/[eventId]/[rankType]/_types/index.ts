@@ -1,4 +1,4 @@
-export interface RankAverage {
+interface Rank {
   personId: string;
   countryRank: number;
   name: string;
@@ -6,3 +6,6 @@ export interface RankAverage {
   state: string;
   gender: string;
 }
+
+export type RankSingle = Rank;
+export type RankAverage = Rank;

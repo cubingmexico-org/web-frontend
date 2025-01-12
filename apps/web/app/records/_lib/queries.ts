@@ -3,8 +3,7 @@ import { db } from "@/db";
 import { event, state, person, rankSingle, rankAverage } from "@/db/schema";
 import { and, notInArray, sql } from "drizzle-orm";
 import { unstable_cache } from "@/lib/unstable-cache";
-
-const EXCLUDED_EVENT_IDS = ["333ft", "333mbo", "magic", "mmagic"];
+import { EXCLUDED_EVENTS } from "@/lib/constants";
 
 export async function getRecords() {
   return await unstable_cache(
@@ -12,72 +11,76 @@ export async function getRecords() {
       try {
         const singleWhere = and(
           sql`${rankSingle.countryRank} = 1`,
-          notInArray(event.id, EXCLUDED_EVENT_IDS),
+          notInArray(event.id, EXCLUDED_EVENTS),
         );
 
         const averageWhere = and(
           sql`${rankAverage.countryRank} = 1`,
-          notInArray(event.id, EXCLUDED_EVENT_IDS),
+          notInArray(event.id, EXCLUDED_EVENTS),
         );
 
-        const singleRecords = await db
-          .select({
-            personId: rankSingle.personId,
-            best: rankSingle.best,
-            eventId: rankSingle.eventId,
-            eventName: event.name,
-            name: person.name,
-            gender: person.gender,
-            state: state.name,
-          })
-          .from(rankSingle)
-          .innerJoin(event, sql`${rankSingle.eventId} = ${event.id}`)
-          .innerJoin(person, sql`${rankSingle.personId} = ${person.id}`)
-          .leftJoin(state, sql`${person.stateId} = ${state.id}`)
-          .where(singleWhere)
-          .orderBy(sql`${event.rank}`);
+        const combinedRecords = await db.transaction(async (tx) => {
+          const singleRecords = await tx
+            .select({
+              personId: rankSingle.personId,
+              best: rankSingle.best,
+              eventId: rankSingle.eventId,
+              eventName: event.name,
+              name: person.name,
+              gender: person.gender,
+              state: state.name,
+            })
+            .from(rankSingle)
+            .innerJoin(event, sql`${rankSingle.eventId} = ${event.id}`)
+            .innerJoin(person, sql`${rankSingle.personId} = ${person.id}`)
+            .leftJoin(state, sql`${person.stateId} = ${state.id}`)
+            .where(singleWhere)
+            .orderBy(sql`${event.rank}`);
 
-        const averageRecords = await db
-          .select({
-            personId: rankAverage.personId,
-            best: rankAverage.best,
-            eventId: rankAverage.eventId,
-            eventName: event.name,
-            name: person.name,
-            gender: person.gender,
-            state: state.name,
-          })
-          .from(rankAverage)
-          .innerJoin(event, sql`${rankAverage.eventId} = ${event.id}`)
-          .innerJoin(person, sql`${rankAverage.personId} = ${person.id}`)
-          .leftJoin(state, sql`${person.stateId} = ${state.id}`)
-          .where(averageWhere)
-          .orderBy(sql`${event.rank}`);
+          const averageRecords = await tx
+            .select({
+              personId: rankAverage.personId,
+              best: rankAverage.best,
+              eventId: rankAverage.eventId,
+              eventName: event.name,
+              name: person.name,
+              gender: person.gender,
+              state: state.name,
+            })
+            .from(rankAverage)
+            .innerJoin(event, sql`${rankAverage.eventId} = ${event.id}`)
+            .innerJoin(person, sql`${rankAverage.personId} = ${person.id}`)
+            .leftJoin(state, sql`${person.stateId} = ${state.id}`)
+            .where(averageWhere)
+            .orderBy(sql`${event.rank}`);
 
-        const combinedRecords = singleRecords.map((singleRecord) => {
-          const averageRecord = averageRecords.find(
-            (avg) => avg.eventId === singleRecord.eventId,
-          );
-          return {
-            eventName: singleRecord.eventName,
-            eventId: singleRecord.eventId,
-            single: {
-              best: singleRecord.best,
-              name: singleRecord.name,
-              personId: singleRecord.personId,
-              gender: singleRecord.gender,
-              state: singleRecord.state,
-            },
-            average: averageRecord
-              ? {
+          const combinedRecords = singleRecords.map((singleRecord) => {
+            const averageRecord = averageRecords.find(
+              (avg) => avg.eventId === singleRecord.eventId,
+            );
+            return {
+              eventName: singleRecord.eventName,
+              eventId: singleRecord.eventId,
+              single: {
+                best: singleRecord.best,
+                name: singleRecord.name,
+                personId: singleRecord.personId,
+                gender: singleRecord.gender,
+                state: singleRecord.state,
+              },
+              average: averageRecord
+                ? {
                   best: averageRecord.best,
                   name: averageRecord.name,
                   personId: averageRecord.personId,
                   gender: averageRecord.gender,
                   state: averageRecord.state,
                 }
-              : null,
-          };
+                : null,
+            };
+          });
+
+          return combinedRecords;
         });
 
         return combinedRecords;

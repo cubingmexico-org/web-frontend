@@ -24,6 +24,8 @@ export default async function Page(props: PageProps) {
 
   const search = searchParamsCache.parse(searchParams);
 
+  console.log("search:", search);
+
   const records = await getRecords();
 
   const states = await getStates();
@@ -32,7 +34,7 @@ export default async function Page(props: PageProps) {
     <main className="flex-grow container mx-auto px-4 py-8">
       <div className="flex flex-col gap-4">
         <h1 className="text-3xl font-bold">Récords nacionales</h1>
-        <StateSelector states={states} selectedState={search.state} />
+        <StateSelector states={states} />
         <GenderSelector />
       </div>
       <Table>

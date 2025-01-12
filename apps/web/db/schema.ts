@@ -136,7 +136,7 @@ export const result = pgTable(
     personId: varchar("personId", { length: 10 })
       .notNull()
       .references(() => person.id),
-    personCountryId: varchar("personCountryId", { length: 50 }),
+    // personCountryId: varchar("personCountryId", { length: 50 }),
     formatId: varchar("formatId", { length: 1 }).notNull(),
     value1: integer("value1").notNull().default(0),
     value2: integer("value2").notNull().default(0),

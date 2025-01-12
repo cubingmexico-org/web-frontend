@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
-
 import { Button } from "@workspace/ui/components/button";
 import {
   Command,
@@ -19,14 +18,26 @@ import {
 } from "@workspace/ui/components/popover";
 import { cn } from "@workspace/ui/lib/utils";
 import { State } from "@/db/schema";
+import { parseAsString, useQueryStates } from "nuqs";
 
 interface StateSelecorProps {
-  selectedState: string;
   states: State[];
 }
 
-export function StateSelector({ selectedState, states }: StateSelecorProps) {
+export function StateSelector({ states }: StateSelecorProps) {
   const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const [queryState, setQueryState] = useQueryStates(
+    {
+      state: parseAsString.withDefault(""),
+    },
+    {
+      clearOnDefault: true,
+    },
+  );
+
+  const handleToggle = (value: string) => {
+    setQueryState({ state: queryState.state === value ? "" : value });
+  };
 
   return (
     <Popover modal>
@@ -39,7 +50,7 @@ export function StateSelector({ selectedState, states }: StateSelecorProps) {
           size="sm"
           className="ml-auto hidden h-8 gap-2 focus:outline-none focus:ring-1 focus:ring-ring focus-visible:ring-0 lg:flex"
         >
-          Seleccionar estado
+          {queryState.state.length ? queryState.state : "Seleccionar estado"}
           <ChevronsUpDown className="ml-auto shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -56,13 +67,13 @@ export function StateSelector({ selectedState, states }: StateSelecorProps) {
               {states.map((state) => (
                 <CommandItem
                   key={state.id}
-                  onSelect={() => console.log("Selected state:", state.name)}
+                  onSelect={() => handleToggle(state.name)}
                 >
                   <span className="truncate">{state.name}</span>
                   <Check
                     className={cn(
                       "ml-auto size-4 shrink-0",
-                      selectedState === state.name
+                      queryState.state === state.name
                         ? "opacity-100"
                         : "opacity-0",
                     )}

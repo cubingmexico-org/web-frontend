@@ -265,7 +265,7 @@ export async function POST(): Promise<NextResponse> {
               delimiter: "\t",
               skipEmptyLines: "greedy",
               transform: (value) => (value === "NULL" ? null : value),
-            }).data as Result[];
+            }).data as (Result & { personCountryId: string })[];
 
             const filteredData = parsedData.filter(
               (row) => row.personCountryId === "Mexico",
@@ -283,7 +283,7 @@ export async function POST(): Promise<NextResponse> {
                   average: row.average,
                   personName: row.personName,
                   personId: row.personId,
-                  personCountryId: row.personCountryId,
+                  // personCountryId: row.personCountryId,
                   formatId: row.formatId,
                   value1: row.value1,
                   value2: row.value2,

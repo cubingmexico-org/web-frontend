@@ -1,9 +1,19 @@
 import "server-only";
 import { db } from "@/db";
-import { state, State, Event, rankSingle, person, rankAverage } from "@/db/schema";
+import {
+  state,
+  State,
+  Event,
+  rankSingle,
+  person,
+  rankAverage,
+} from "@/db/schema";
 import { and, asc, count, desc, ilike, sql, gt, inArray } from "drizzle-orm";
 import { unstable_cache } from "@/lib/unstable-cache";
-import { GetRankAveragesSchema, type GetRankSinglesSchema } from "./validations";
+import {
+  GetRankAveragesSchema,
+  type GetRankSinglesSchema,
+} from "./validations";
 
 export async function getRankSingles(
   input: GetRankSinglesSchema,

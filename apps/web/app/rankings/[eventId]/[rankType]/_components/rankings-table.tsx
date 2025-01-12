@@ -14,8 +14,7 @@ import type {
   getRankAveragesGenderCounts,
 } from "../_lib/queries";
 import { getColumns } from "./rankings-table-columns";
-import { RankAverage, RankSingle } from "../_types";
-import type { Event } from "@/db/schema";
+import type { RankAverage, RankSingle } from "../_types";
 
 interface RankSinglesTableProps {
   promises: Promise<
@@ -25,13 +24,12 @@ interface RankSinglesTableProps {
       Awaited<ReturnType<typeof getRankSinglesGenderCounts>>,
     ]
   >;
-  eventId: Event["id"];
 }
 
-export function RankSinglesTable({ promises, eventId }: RankSinglesTableProps) {
+export function RankSinglesTable({ promises }: RankSinglesTableProps) {
   const [{ data, pageCount }, stateCounts, genderCounts] = React.use(promises);
 
-  const columns = React.useMemo(() => getColumns(eventId), [eventId]);
+  const columns = React.useMemo(() => getColumns(), []);
 
   /**
    * This component can render either a faceted filter or a search filter based on the `options` prop.
@@ -102,13 +100,12 @@ interface RankAveragesTableProps {
       Awaited<ReturnType<typeof getRankAveragesGenderCounts>>,
     ]
   >;
-  eventId: Event["id"];
 }
 
-export function RankAveragesTable({ promises, eventId }: RankAveragesTableProps) {
+export function RankAveragesTable({ promises }: RankAveragesTableProps) {
   const [{ data, pageCount }, stateCounts, genderCounts] = React.use(promises);
 
-  const columns = React.useMemo(() => getColumns(eventId), [eventId]);
+  const columns = React.useMemo(() => getColumns(), []);
 
   /**
    * This component can render either a faceted filter or a search filter based on the `options` prop.
@@ -170,4 +167,3 @@ export function RankAveragesTable({ promises, eventId }: RankAveragesTableProps)
     </DataTable>
   );
 }
-

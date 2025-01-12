@@ -5,10 +5,10 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 import { formatTime, formatTime333mbf } from "@/lib/utils";
 import { RankSingle } from "../_types";
-import type { Event } from "@/db/schema";
 import { cn } from "@workspace/ui/lib/utils";
+import { usePathname } from "next/navigation";
 
-export function getColumns(eventId: Event["id"]): ColumnDef<RankSingle>[] {
+export function getColumns(): ColumnDef<RankSingle>[] {
   return [
     {
       accessorKey: "countryRank",
@@ -37,9 +37,32 @@ export function getColumns(eventId: Event["id"]): ColumnDef<RankSingle>[] {
         <DataTableColumnHeader column={column} title="Resultado" />
       ),
       cell: ({ row }) => {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const pathname = usePathname();
+        const eventId = pathname.split("/")[2];
+        const rankType = pathname.split("/")[3];
+
+        if (eventId === "333fm") {
+          return (
+            <div className="flex space-x-2">
+              {rankType === "single"
+                ? row.getValue("best")
+                : Number(row.getValue("best")) / 100}
+            </div>
+          );
+        }
+
+        if (eventId === "333mbf") {
+          return (
+            <div className="flex space-x-2">
+              {formatTime333mbf(row.getValue("best"))}
+            </div>
+          );
+        }
+
         return (
           <div className="flex space-x-2">
-            {eventId === "333mbf" ? formatTime333mbf(row.getValue("best")) : formatTime(row.getValue("best"))}
+            {formatTime(row.getValue("best"))}
           </div>
         );
       },

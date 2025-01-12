@@ -75,10 +75,10 @@ export async function getRankSingles(
         return { data: [], pageCount: 0 };
       }
     },
-    [JSON.stringify(input)],
+    [JSON.stringify(input), eventId],
     {
       revalidate: 3600,
-      tags: ["rankssingle"],
+      tags: ["ranksSingle"],
     },
   )();
 }
@@ -114,7 +114,7 @@ export async function getRankSinglesStateCounts(eventId: Event["id"]) {
         return {} as Record<State["name"], number>;
       }
     },
-    ["state-counts"],
+    ["singleStateCounts", eventId],
     {
       revalidate: 3600,
     },
@@ -151,7 +151,7 @@ export async function getRankSinglesGenderCounts(eventId: Event["id"]) {
         return {} as Record<string, number>;
       }
     },
-    ["state-counts"],
+    ["singleGenderCounts", eventId],
     {
       revalidate: 3600,
     },
@@ -168,6 +168,7 @@ export async function getRankAverages(
         const offset = (input.page - 1) * input.perPage;
 
         const where = and(
+          sql`${rankAverage.countryRank} != 0`,
           sql`${rankAverage.eventId} = ${eventId}`,
           input.name ? ilike(person.name, `%${input.name}%`) : undefined,
           input.state.length > 0 ? inArray(state.name, input.state) : undefined,
@@ -227,10 +228,10 @@ export async function getRankAverages(
         return { data: [], pageCount: 0 };
       }
     },
-    [JSON.stringify(input)],
+    [JSON.stringify(input), eventId],
     {
       revalidate: 3600,
-      tags: ["rankssingle"],
+      tags: ["ranksAverage"],
     },
   )();
 }
@@ -266,7 +267,7 @@ export async function getRankAveragesStateCounts(eventId: Event["id"]) {
         return {} as Record<State["name"], number>;
       }
     },
-    ["state-counts"],
+    ["averageStateCounts", eventId],
     {
       revalidate: 3600,
     },
@@ -303,7 +304,7 @@ export async function getRankAveragesGenderCounts(eventId: Event["id"]) {
         return {} as Record<string, number>;
       }
     },
-    ["state-counts"],
+    ["averageGenderCounts", eventId],
     {
       revalidate: 3600,
     },

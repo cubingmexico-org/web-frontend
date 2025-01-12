@@ -17,7 +17,6 @@ import { getValidFilters } from "@/lib/data-table";
 import { searchParamsCache } from "./_lib/validations";
 import { EventSelector } from "./_components/event-selector";
 import { getEvents } from "@/db/queries";
-import { RankTypeSelector } from "./_components/rank-type-selector";
 import { redirect } from "next/navigation";
 
 interface PageProps {
@@ -68,11 +67,11 @@ export default async function Page(props: PageProps) {
   return (
     <main className="flex-grow container mx-auto px-4 py-8">
       <EventSelector
+        className="mb-6"
         events={events}
         selectedEventId={eventId}
         selectedRankType={rankType}
       />
-      <RankTypeSelector selectedEventId={eventId} selectedRankType={rankType} />
       <div className="grid gap-6">
         <React.Suspense
           fallback={

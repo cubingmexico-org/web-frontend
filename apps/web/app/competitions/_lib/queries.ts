@@ -3,9 +3,9 @@ import { db } from "@/db";
 import {
   competition,
   state,
+  type State,
   event,
-  State,
-  Event,
+  type Event,
   competitionEvent,
 } from "@/db/schema";
 import {

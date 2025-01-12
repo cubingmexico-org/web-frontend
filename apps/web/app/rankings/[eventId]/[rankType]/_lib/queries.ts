@@ -2,10 +2,10 @@ import "server-only";
 import { db } from "@/db";
 import {
   state,
-  State,
-  Event,
-  rankSingle,
+  type State,
+  type Event,
   person,
+  rankSingle,
   rankAverage,
 } from "@/db/schema";
 import { and, asc, count, desc, ilike, sql, gt, inArray } from "drizzle-orm";
@@ -88,7 +88,7 @@ export async function getRankSingles(
     [JSON.stringify(input), eventId],
     {
       revalidate: 3600,
-      tags: ["ranksSingle"],
+      tags: ["ranks-single"],
     },
   )();
 }
@@ -124,7 +124,7 @@ export async function getRankSinglesStateCounts(eventId: Event["id"]) {
         return {} as Record<State["name"], number>;
       }
     },
-    ["singleStateCounts", eventId],
+    ["single-state-counts", eventId],
     {
       revalidate: 3600,
     },
@@ -161,7 +161,7 @@ export async function getRankSinglesGenderCounts(eventId: Event["id"]) {
         return {} as Record<string, number>;
       }
     },
-    ["singleGenderCounts", eventId],
+    ["single-gender-counts", eventId],
     {
       revalidate: 3600,
     },
@@ -241,7 +241,7 @@ export async function getRankAverages(
     [JSON.stringify(input), eventId],
     {
       revalidate: 3600,
-      tags: ["ranksAverage"],
+      tags: ["ranks-average"],
     },
   )();
 }
@@ -277,7 +277,7 @@ export async function getRankAveragesStateCounts(eventId: Event["id"]) {
         return {} as Record<State["name"], number>;
       }
     },
-    ["averageStateCounts", eventId],
+    ["average-state-counts", eventId],
     {
       revalidate: 3600,
     },
@@ -314,7 +314,7 @@ export async function getRankAveragesGenderCounts(eventId: Event["id"]) {
         return {} as Record<string, number>;
       }
     },
-    ["averageGenderCounts", eventId],
+    ["average-gender-counts", eventId],
     {
       revalidate: 3600,
     },

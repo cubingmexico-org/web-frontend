@@ -1,6 +1,6 @@
 import "server-only";
 import { db } from "@/db";
-import { event, type Event } from "@/db/schema";
+import { event, state } from "@/db/schema";
 import { unstable_cache } from "@/lib/unstable-cache";
 import { sql } from "drizzle-orm";
 
@@ -19,10 +19,33 @@ export async function getEvents() {
           .then((res) => res);
       } catch (err) {
         console.error(err);
-        return [] as Event[];
+        return [];
       }
     },
     ["events"],
+    {
+      revalidate: 3600,
+    },
+  )();
+}
+
+export async function getStates() {
+  return unstable_cache(
+    async () => {
+      try {
+        return await db
+          .select({
+            id: state.id,
+            name: state.name,
+          })
+          .from(state)
+          .then((res) => res);
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    },
+    ["states"],
     {
       revalidate: 3600,
     },

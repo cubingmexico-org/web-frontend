@@ -3,7 +3,7 @@ import { Icons } from "@workspace/ui/components/icons";
 
 export function Header() {
   return (
-    <header className="bg-green-900 text-white body-font">
+    <header className="bg-primary text-white body-font">
       <div className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
         <Icons.CubingMexico className="size-16" />
         <Link
@@ -13,22 +13,25 @@ export function Header() {
           <span className="ml-3 text-2xl">Cubing México</span>
         </Link>
         <nav className="md:ml-auto flex flex-wrap items-center text-base justify-center">
-          <Link className="mr-5 hover:text-green-900" href="/competitions">
+          <Link
+            className="mr-5 hover:text-muted-foreground"
+            href="/competitions"
+          >
             Competencias
           </Link>
           <Link
-            className="mr-5 hover:text-green-900"
+            className="mr-5 hover:text-muted-foreground"
             href="/rankings/333/single"
           >
             Rankings
           </Link>
-          <Link className="mr-5 hover:text-green-900" href="/records">
+          <Link className="mr-5 hover:text-muted-foreground" href="/records">
             Récords
           </Link>
-          <Link className="mr-5 hover:text-green-900" href="/events">
+          <Link className="mr-5 hover:text-muted-foreground" href="/events">
             Eventos
           </Link>
-          <Link className="mr-5 hover:text-green-900" href="/about">
+          <Link className="mr-5 hover:text-muted-foreground" href="/about">
             Acerca de
           </Link>
         </nav>

@@ -48,8 +48,29 @@ export async function POST(): Promise<NextResponse> {
           delimiter: "\t",
           skipEmptyLines: "greedy",
           transform: (value) => (value === "NULL" ? null : value),
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        }).data as any[];
+        }).data as {
+          id: string;
+          name: string;
+          cityName: string;
+          countryId: string;
+          information: string;
+          year: number;
+          month: number;
+          day: number;
+          endMonth: number;
+          endDay: number;
+          cancelled: number;
+          eventSpecs: string;
+          wcaDelegate: string;
+          organiser: string;
+          venue: string;
+          venueAddress: string;
+          venueDetails: string;
+          external_website: string;
+          cellName: string;
+          latitude: number;
+          longitude: number;
+        }[];
 
         await db.transaction(async (tx) => {
           const states = await tx.select().from(state);

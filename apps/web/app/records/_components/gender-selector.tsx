@@ -23,15 +23,19 @@ export function GenderSelector({ className, ...props }: GenderSelectorProps) {
     },
   );
 
+  const memoizedGender = React.useMemo(() => {
+    return queryState.gender;
+  }, [queryState]);
+
   const handleToggle = (value: string) => {
-    setQueryState({ gender: queryState.gender === value ? "" : value });
+    setQueryState({ gender: memoizedGender === value ? "" : value });
   };
 
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
       <span className="font-bold">Género</span>
       <div className="flex flex-wrap gap-2 text-muted-foreground">
-        <ToggleGroup type="single" value={queryState.gender}>
+        <ToggleGroup type="single" value={memoizedGender}>
           <ToggleGroupItem
             value="m"
             aria-label="Masculino"

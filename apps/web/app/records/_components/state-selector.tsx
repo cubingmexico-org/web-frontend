@@ -36,8 +36,12 @@ export function StateSelector({ states }: StateSelecorProps) {
     },
   );
 
+  const memoizedState = React.useMemo(() => {
+    return queryState.state;
+  }, [queryState]);
+
   const handleToggle = (value: string) => {
-    setQueryState({ state: queryState.state === value ? "" : value });
+    setQueryState({ state: memoizedState === value ? "" : value });
   };
 
   return (
@@ -51,7 +55,7 @@ export function StateSelector({ states }: StateSelecorProps) {
           size="sm"
           className="ml-auto hidden h-8 gap-2 focus:outline-none focus:ring-1 focus:ring-ring focus-visible:ring-0 lg:flex"
         >
-          {queryState.state.length ? queryState.state : "Seleccionar estado"}
+          {memoizedState.length ? memoizedState : "Seleccionar estado"}
           <ChevronsUpDown className="ml-auto shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -74,7 +78,7 @@ export function StateSelector({ states }: StateSelecorProps) {
                   <Check
                     className={cn(
                       "ml-auto size-4 shrink-0",
-                      queryState.state === state.name
+                      memoizedState === state.name
                         ? "opacity-100"
                         : "opacity-0",
                     )}

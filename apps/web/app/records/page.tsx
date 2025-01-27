@@ -31,9 +31,12 @@ export default async function Page(props: PageProps) {
     <main className="flex-grow container mx-auto px-4 py-8">
       <div className="flex flex-col gap-4">
         <h1 className="text-3xl font-bold">
-          {search.state ? `Récords estatales de ${search.state}` : `Récords nacionales`}
-          {" "}
-          {search.gender ? `(${search.gender === 'm' ? 'Masculinos' : 'Femeniles'})` : undefined}
+          {search.state
+            ? `Récords estatales de ${search.state}`
+            : `Récords nacionales`}{" "}
+          {search.gender
+            ? `(${search.gender === "m" ? "Masculinos" : "Femeniles"})`
+            : undefined}
         </h1>
         <StateSelector states={states} />
         <GenderSelector />
@@ -59,7 +62,9 @@ export default async function Page(props: PageProps) {
             <TableRow key={index}>
               <TableCell className="min-w-40">{record.single.name}</TableCell>
               {search.state ? (
-                <TableCell className="text-center">{record.single.countryRank}</TableCell>
+                <TableCell className="text-center">
+                  {record.single.countryRank}
+                </TableCell>
               ) : null}
               <TableCell className="text-right">
                 {record.eventId === "333mbf"
@@ -82,7 +87,9 @@ export default async function Page(props: PageProps) {
                 ) : null}
               </TableCell>
               {search.state ? (
-                <TableCell className="text-center">{record.average?.countryRank}</TableCell>
+                <TableCell className="text-center">
+                  {record.average?.countryRank}
+                </TableCell>
               ) : null}
               <TableCell className="min-w-40 text-right">
                 {record.average?.name}

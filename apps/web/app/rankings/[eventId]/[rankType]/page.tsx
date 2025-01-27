@@ -35,8 +35,6 @@ export default async function Page(props: PageProps) {
 
   const search = searchParamsCache.parse(searchParams);
 
-  console.log("search", search);
-
   const validFilters = getValidFilters(search.filters);
 
   const promises =

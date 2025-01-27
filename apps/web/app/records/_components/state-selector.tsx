@@ -32,6 +32,7 @@ export function StateSelector({ states }: StateSelecorProps) {
     },
     {
       clearOnDefault: true,
+      shallow: false,
     },
   );
 

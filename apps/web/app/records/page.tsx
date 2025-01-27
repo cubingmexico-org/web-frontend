@@ -1,4 +1,10 @@
 import * as React from "react";
+import { getRecords } from "./_lib/queries";
+import { SearchParams } from "@/types";
+import { searchParamsCache } from "./_lib/validations";
+import { getStates } from "@/db/queries";
+import { StateSelector } from "./_components/state-selector";
+import { GenderSelector } from "./_components/gender-selector";
 import {
   Table,
   TableBody,
@@ -7,13 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
-import { getRecords } from "./_lib/queries";
-import { SearchParams } from "@/types";
-import { formatTime, formatTime333mbf } from "@/lib/utils";
-import { searchParamsCache } from "./_lib/validations";
-import { GenderSelector } from "./_components/gender-selector";
-import { StateSelector } from "./_components/state-selector";
-import { getStates } from "@/db/queries";
+import { formatTime333mbf, formatTime } from "@/lib/utils";
 
 interface PageProps {
   searchParams: Promise<SearchParams>;
@@ -24,16 +24,17 @@ export default async function Page(props: PageProps) {
 
   const search = searchParamsCache.parse(searchParams);
 
-  console.log("search:", search);
-
-  const records = await getRecords();
-
+  const records = await getRecords(search);
   const states = await getStates();
 
   return (
     <main className="flex-grow container mx-auto px-4 py-8">
       <div className="flex flex-col gap-4">
-        <h1 className="text-3xl font-bold">Récords nacionales</h1>
+        <h1 className="text-3xl font-bold">
+          {search.state ? `Récords estatales de ${search.state}` : `Récords nacionales`}
+          {" "}
+          {search.gender ? `(${search.gender === 'm' ? 'Masculinos' : 'Femeniles'})` : undefined}
+        </h1>
         <StateSelector states={states} />
         <GenderSelector />
       </div>
@@ -41,9 +42,15 @@ export default async function Page(props: PageProps) {
         <TableHeader>
           <TableRow>
             <TableHead>Nombre</TableHead>
+            {search.state ? (
+              <TableHead className="text-center">NR</TableHead>
+            ) : null}
             <TableHead className="text-right">Single</TableHead>
             <TableHead className="text-center">Evento</TableHead>
             <TableHead>Average</TableHead>
+            {search.state ? (
+              <TableHead className="text-center">NR</TableHead>
+            ) : null}
             <TableHead className="text-right">Nombre</TableHead>
           </TableRow>
         </TableHeader>
@@ -51,6 +58,9 @@ export default async function Page(props: PageProps) {
           {records.map((record, index) => (
             <TableRow key={index}>
               <TableCell className="min-w-40">{record.single.name}</TableCell>
+              {search.state ? (
+                <TableCell className="text-center">{record.single.countryRank}</TableCell>
+              ) : null}
               <TableCell className="text-right">
                 {record.eventId === "333mbf"
                   ? formatTime333mbf(record.single.best)
@@ -71,6 +81,9 @@ export default async function Page(props: PageProps) {
                   )
                 ) : null}
               </TableCell>
+              {search.state ? (
+                <TableCell className="text-center">{record.average?.countryRank}</TableCell>
+              ) : null}
               <TableCell className="min-w-40 text-right">
                 {record.average?.name}
               </TableCell>

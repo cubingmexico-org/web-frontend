@@ -19,22 +19,31 @@ export function GenderSelector({ className, ...props }: GenderSelectorProps) {
     },
     {
       clearOnDefault: true,
+      shallow: false,
     },
   );
 
   const handleToggle = (value: string) => {
     setQueryState({ gender: queryState.gender === value ? "" : value });
   };
-  
+
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
       <span className="font-bold">Género</span>
       <div className="flex flex-wrap gap-2 text-muted-foreground">
         <ToggleGroup type="single" value={queryState.gender}>
-          <ToggleGroupItem value="m" aria-label="Masculino" onClick={() => handleToggle("m")}>
+          <ToggleGroupItem
+            value="m"
+            aria-label="Masculino"
+            onClick={() => handleToggle("m")}
+          >
             Masculino
           </ToggleGroupItem>
-          <ToggleGroupItem value="f" aria-label="Femenino" onClick={() => handleToggle("f")}>
+          <ToggleGroupItem
+            value="f"
+            aria-label="Femenino"
+            onClick={() => handleToggle("f")}
+          >
             Femenino
           </ToggleGroupItem>
         </ToggleGroup>

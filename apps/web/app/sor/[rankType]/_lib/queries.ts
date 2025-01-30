@@ -1,17 +1,7 @@
 import "server-only";
 import { db } from "@/db";
 import { state, type State, type Event, person, rankSingle } from "@/db/schema";
-import {
-  and,
-  count,
-  ilike,
-  gt,
-  inArray,
-  notInArray,
-  ne,
-  eq,
-  sql,
-} from "drizzle-orm";
+import { and, count, ilike, gt, eq, sql } from "drizzle-orm";
 import { unstable_cache } from "@/lib/unstable-cache";
 import { type GetSORSinglesSchema } from "./validations";
 import { EXCLUDED_EVENTS } from "@/lib/constants";
@@ -22,38 +12,35 @@ export async function getSORSingles(input: GetSORSinglesSchema) {
       try {
         const offset = (input.page - 1) * input.perPage;
 
-        const where = and(
-          input.name ? ilike(person.name, `%${input.name}%`) : undefined,
-        );
-
         const { data, total } = await db.transaction(async (tx) => {
           const query = sql`
-            WITH "allEvents" AS (
-              SELECT DISTINCT "eventId" FROM "ranksSingle"
-              WHERE "eventId" NOT IN (${sql.join(EXCLUDED_EVENTS, sql`, `)})
-            ),
-            "allPeople" AS (
-              SELECT DISTINCT id, name FROM persons
-            ),
-            "peopleEvents" AS (
-              SELECT "allPeople".id, "allPeople".name, "allEvents"."eventId"
-              FROM "allPeople" CROSS JOIN "allEvents"
-            )
-            SELECT
-              pe.id,
-              pe.name,
-              json_agg(json_build_object('eventId', pe."eventId", 'countryRank', COALESCE(rs."countryRank", wr."worstRank"))) AS events,
-              SUM(COALESCE(rs."countryRank", wr."worstRank")) AS "sumOfRanks"
-            FROM "peopleEvents" pe
-            LEFT JOIN "ranksSingle" rs 
-              ON pe.id = rs."personId" AND pe."eventId" = rs."eventId"
-            LEFT JOIN (SELECT "eventId", MAX("countryRank") + 1 as "worstRank" FROM public."ranksSingle" GROUP BY "eventId") AS wr 
-              ON wr."eventId" = pe."eventId"
-            GROUP BY pe.id, pe.name
-            ORDER BY SUM(COALESCE(rs."countryRank", wr."worstRank"))
-            LIMIT ${input.perPage}
-            OFFSET ${offset}
-          `;
+          WITH "allEvents" AS (
+            SELECT DISTINCT "eventId" FROM "ranksSingle"
+            WHERE "eventId" NOT IN (${sql.join(EXCLUDED_EVENTS, sql`, `)})
+          ),
+          "allPeople" AS (
+            SELECT DISTINCT id, name FROM persons
+          ),
+          "peopleEvents" AS (
+            SELECT "allPeople".id, "allPeople".name, "allEvents"."eventId"
+            FROM "allPeople" CROSS JOIN "allEvents"
+          )
+          SELECT
+            pe.id,
+            pe.name,
+            json_agg(json_build_object('eventId', pe."eventId", 'countryRank', COALESCE(rs."countryRank", wr."worstRank"))) AS events,
+            SUM(COALESCE(rs."countryRank", wr."worstRank")) AS "sumOfRanks"
+          FROM "peopleEvents" pe
+          LEFT JOIN "ranksSingle" rs 
+            ON pe.id = rs."personId" AND pe."eventId" = rs."eventId"
+          LEFT JOIN (SELECT "eventId", MAX("countryRank") + 1 as "worstRank" FROM public."ranksSingle" GROUP BY "eventId") AS wr 
+            ON wr."eventId" = pe."eventId"
+          ${input.name ? sql`WHERE unaccent(pe.name) ILIKE unaccent(${"%" + input.name + "%"})` : sql``}
+          GROUP BY pe.id, pe.name
+          ORDER BY SUM(COALESCE(rs."countryRank", wr."worstRank"))
+          LIMIT ${input.perPage}
+          OFFSET ${offset}
+        `;
 
           const rawData = await tx.execute(query);
 
@@ -64,7 +51,11 @@ export async function getSORSingles(input: GetSORSinglesSchema) {
               count: count(),
             })
             .from(person)
-            // .where(where)
+            .where(
+              and(
+                input.name ? ilike(person.name, `%${input.name}%`) : undefined,
+              ),
+            )
             .execute()
             .then((res) => res[0]?.count ?? 0)) as number;
 

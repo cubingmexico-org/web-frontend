@@ -74,7 +74,13 @@ export async function POST(): Promise<NextResponse> {
 
         await db.transaction(async (tx) => {
           const states = await tx.select().from(state);
-          for (const row of parsedData) {
+          const existingCompetitions = await tx
+            .select({ id: competition.id })
+            .from(competition);
+          const newCompetitions = parsedData.filter(
+            (row) => !existingCompetitions.some((c) => c.id === row.id),
+          );
+          for (const row of newCompetitions) {
             let stateId: string | null = null;
 
             if (row.countryId === "Mexico") {

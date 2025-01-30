@@ -1,7 +1,7 @@
 import "server-only";
 import { db } from "@/db";
 import { event, state, person, rankSingle, rankAverage } from "@/db/schema";
-import { and, min, notInArray, or, sql } from "drizzle-orm";
+import { and, eq, min, ne, notInArray, or, sql } from "drizzle-orm";
 import { unstable_cache } from "@/lib/unstable-cache";
 import { EXCLUDED_EVENTS } from "@/lib/constants";
 import { GetRecordsSchema } from "./validations";
@@ -16,16 +16,14 @@ export async function getRecords(input: GetRecordsSchema) {
             countryRank: min(rankSingle.countryRank),
           })
           .from(rankSingle)
-          .innerJoin(event, sql`${rankSingle.eventId} = ${event.id}`)
-          .innerJoin(person, sql`${rankSingle.personId} = ${person.id}`)
-          .leftJoin(state, sql`${person.stateId} = ${state.id}`)
+          .innerJoin(event, eq(rankSingle.eventId, event.id))
+          .innerJoin(person, eq(rankSingle.personId, person.id))
+          .leftJoin(state, eq(person.stateId, state.id))
           .where(
             and(
-              sql`${rankSingle.countryRank} != ${0}`,
-              input.state ? sql`${state.name} = ${input.state}` : undefined,
-              input.gender
-                ? sql`${person.gender} = ${input.gender}`
-                : undefined,
+              ne(rankSingle.countryRank, 0),
+              input.state ? eq(state.name, input.state) : undefined,
+              input.gender ? eq(person.gender, input.gender) : undefined,
               notInArray(rankSingle.eventId, EXCLUDED_EVENTS),
             ),
           )
@@ -37,16 +35,14 @@ export async function getRecords(input: GetRecordsSchema) {
             countryRank: min(rankAverage.countryRank),
           })
           .from(rankAverage)
-          .innerJoin(event, sql`${rankAverage.eventId} = ${event.id}`)
-          .innerJoin(person, sql`${rankAverage.personId} = ${person.id}`)
-          .leftJoin(state, sql`${person.stateId} = ${state.id}`)
+          .innerJoin(event, eq(rankAverage.eventId, event.id))
+          .innerJoin(person, eq(rankAverage.personId, person.id))
+          .leftJoin(state, eq(person.stateId, state.id))
           .where(
             and(
-              sql`${rankAverage.countryRank} != ${0}`,
-              input.state ? sql`${state.name} = ${input.state}` : undefined,
-              input.gender
-                ? sql`${person.gender} = ${input.gender}`
-                : undefined,
+              ne(rankAverage.countryRank, 0),
+              input.state ? eq(state.name, input.state) : undefined,
+              input.gender ? eq(person.gender, input.gender) : undefined,
               notInArray(rankAverage.eventId, EXCLUDED_EVENTS),
             ),
           )
@@ -61,8 +57,8 @@ export async function getRecords(input: GetRecordsSchema) {
                 ),
               )
             : undefined,
-          input.state ? sql`${state.name} = ${input.state}` : undefined,
-          input.gender ? sql`${person.gender} = ${input.gender}` : undefined,
+          input.state ? eq(state.name, input.state) : undefined,
+          input.gender ? eq(person.gender, input.gender) : undefined,
           notInArray(event.id, EXCLUDED_EVENTS),
         );
 
@@ -75,8 +71,8 @@ export async function getRecords(input: GetRecordsSchema) {
                 ),
               )
             : undefined,
-          input.state ? sql`${state.name} = ${input.state}` : undefined,
-          input.gender ? sql`${person.gender} = ${input.gender}` : undefined,
+          input.state ? eq(state.name, input.state) : undefined,
+          input.gender ? eq(person.gender, input.gender) : undefined,
           notInArray(event.id, EXCLUDED_EVENTS),
         );
 
@@ -93,11 +89,11 @@ export async function getRecords(input: GetRecordsSchema) {
               state: state.name,
             })
             .from(rankSingle)
-            .innerJoin(event, sql`${rankSingle.eventId} = ${event.id}`)
-            .innerJoin(person, sql`${rankSingle.personId} = ${person.id}`)
-            .leftJoin(state, sql`${person.stateId} = ${state.id}`)
+            .innerJoin(event, eq(rankSingle.eventId, event.id))
+            .innerJoin(person, eq(rankSingle.personId, person.id))
+            .leftJoin(state, eq(person.stateId, state.id))
             .where(singleWhere)
-            .orderBy(sql`${event.rank}`);
+            .orderBy(event.rank);
 
           const averageRecords = await tx
             .select({
@@ -111,11 +107,11 @@ export async function getRecords(input: GetRecordsSchema) {
               state: state.name,
             })
             .from(rankAverage)
-            .innerJoin(event, sql`${rankAverage.eventId} = ${event.id}`)
-            .innerJoin(person, sql`${rankAverage.personId} = ${person.id}`)
-            .leftJoin(state, sql`${person.stateId} = ${state.id}`)
+            .innerJoin(event, eq(rankAverage.eventId, event.id))
+            .innerJoin(person, eq(rankAverage.personId, person.id))
+            .leftJoin(state, eq(person.stateId, state.id))
             .where(averageWhere)
-            .orderBy(sql`${event.rank}`);
+            .orderBy(event.rank);
 
           const combinedRecords = singleRecords.map((singleRecord) => {
             const averageRecord = averageRecords.find(

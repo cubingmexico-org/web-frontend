@@ -2,7 +2,7 @@ import "server-only";
 import { db } from "@/db";
 import { event, state } from "@/db/schema";
 import { unstable_cache } from "@/lib/unstable-cache";
-import { sql } from "drizzle-orm";
+import { lt } from "drizzle-orm";
 
 export async function getEvents() {
   return unstable_cache(
@@ -14,7 +14,7 @@ export async function getEvents() {
             name: event.name,
           })
           .from(event)
-          .where(sql`${event.rank} < 200`)
+          .where(lt(event.rank, 200))
           .orderBy(event.rank)
           .then((res) => res);
       } catch (err) {

@@ -19,6 +19,8 @@ import {
   inArray,
   gte,
   lte,
+  eq,
+  lt,
 } from "drizzle-orm";
 import { unstable_cache } from "@/lib/unstable-cache";
 import { type GetCompetitionsSchema } from "./validations";
@@ -32,7 +34,7 @@ export async function getCompetitions(input: GetCompetitionsSchema) {
         const toDate = input.to ? new Date(input.to) : undefined;
 
         const where = and(
-          sql`${competition.countryId} = 'Mexico'`,
+          eq(competition.countryId, "Mexico"),
           input.name ? ilike(competition.name, `%${input.name}%`) : undefined,
           input.state.length > 0 ? inArray(state.name, input.state) : undefined,
           input.events.length > 0
@@ -64,12 +66,12 @@ export async function getCompetitions(input: GetCompetitionsSchema) {
               ),
             })
             .from(competition)
-            .leftJoin(state, sql`${competition.stateId} = ${state.id}`)
+            .leftJoin(state, eq(competition.stateId, state.id))
             .leftJoin(
               competitionEvent,
-              sql`${competition.id} = ${competitionEvent.competitionId}`,
+              eq(competition.id, competitionEvent.competitionId),
             )
-            .leftJoin(event, sql`${competitionEvent.eventId} = ${event.id}`)
+            .leftJoin(event, eq(competitionEvent.eventId, event.id))
             .limit(input.perPage)
             .offset(offset)
             .where(where)
@@ -86,12 +88,12 @@ export async function getCompetitions(input: GetCompetitionsSchema) {
               count: sql`COUNT(DISTINCT ${competition.id})`.as("count"),
             })
             .from(competition)
-            .leftJoin(state, sql`${competition.stateId} = ${state.id}`)
+            .leftJoin(state, eq(competition.stateId, state.id))
             .leftJoin(
               competitionEvent,
-              sql`${competition.id} = ${competitionEvent.competitionId}`,
+              eq(competition.id, competitionEvent.competitionId),
             )
-            .leftJoin(event, sql`${competitionEvent.eventId} = ${event.id}`)
+            .leftJoin(event, eq(competitionEvent.eventId, event.id))
             .where(where)
             .execute()
             .then((res) => res[0]?.count ?? 0)) as number;
@@ -127,7 +129,7 @@ export async function getStateCounts() {
             count: count(),
           })
           .from(competition)
-          .innerJoin(state, sql`${competition.stateId} = ${state.id}`)
+          .innerJoin(state, eq(competition.stateId, state.id))
           .groupBy(state.name)
           .having(gt(count(), 0))
           .orderBy(state.name)
@@ -162,17 +164,12 @@ export async function getEventCounts() {
             count: count(),
           })
           .from(competitionEvent)
-          .innerJoin(event, sql`${competitionEvent.eventId} = ${event.id}`)
+          .innerJoin(event, eq(competitionEvent.eventId, event.id))
           .innerJoin(
             competition,
-            sql`${competitionEvent.competitionId} = ${competition.id}`,
+            eq(competitionEvent.competitionId, competition.id),
           )
-          .where(
-            and(
-              sql`${competition.countryId} = 'Mexico'`,
-              sql`${event.rank} < 200`,
-            ),
-          )
+          .where(and(eq(competition.countryId, "Mexico"), lt(event.rank, 200)))
           .groupBy(event.name, event.rank)
           .having(gt(count(), 0))
           .orderBy(event.rank) // Changed to order by event.rank

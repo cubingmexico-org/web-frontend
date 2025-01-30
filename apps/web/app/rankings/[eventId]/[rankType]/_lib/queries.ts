@@ -8,11 +8,11 @@ import {
   rankSingle,
   rankAverage,
 } from "@/db/schema";
-import { and, asc, count, desc, ilike, sql, gt, inArray } from "drizzle-orm";
+import { and, asc, count, desc, ilike, gt, inArray, ne, eq } from "drizzle-orm";
 import { unstable_cache } from "@/lib/unstable-cache";
-import {
+import type {
   GetRankAveragesSchema,
-  type GetRankSinglesSchema,
+  GetRankSinglesSchema,
 } from "./validations";
 
 export async function getRankSingles(
@@ -25,8 +25,8 @@ export async function getRankSingles(
         const offset = (input.page - 1) * input.perPage;
 
         const where = and(
-          sql`${rankSingle.countryRank} != 0`,
-          sql`${rankSingle.eventId} = ${eventId}`,
+          ne(rankSingle.countryRank, 0),
+          eq(rankSingle.eventId, eventId),
           input.name ? ilike(person.name, `%${input.name}%`) : undefined,
           input.state.length > 0 ? inArray(state.name, input.state) : undefined,
           input.gender.length > 0
@@ -54,8 +54,8 @@ export async function getRankSingles(
               gender: person.gender,
             })
             .from(rankSingle)
-            .innerJoin(person, sql`${rankSingle.personId} = ${person.id}`)
-            .leftJoin(state, sql`${person.stateId} = ${state.id}`)
+            .innerJoin(person, eq(rankSingle.personId, person.id))
+            .leftJoin(state, eq(person.stateId, state.id))
             .limit(input.perPage)
             .offset(offset)
             .where(where)
@@ -66,8 +66,8 @@ export async function getRankSingles(
               count: count(),
             })
             .from(rankSingle)
-            .innerJoin(person, sql`${rankSingle.personId} = ${person.id}`)
-            .leftJoin(state, sql`${person.stateId} = ${state.id}`)
+            .innerJoin(person, eq(rankSingle.personId, person.id))
+            .leftJoin(state, eq(person.stateId, state.id))
             .where(where)
             .execute()
             .then((res) => res[0]?.count ?? 0)) as number;
@@ -103,9 +103,9 @@ export async function getRankSinglesStateCounts(eventId: Event["id"]) {
             count: count(),
           })
           .from(rankSingle)
-          .innerJoin(person, sql`${rankSingle.personId} = ${person.id}`)
-          .leftJoin(state, sql`${person.stateId} = ${state.id}`)
-          .where(sql`${rankSingle.eventId} = ${eventId}`)
+          .innerJoin(person, eq(rankSingle.personId, person.id))
+          .leftJoin(state, eq(person.stateId, state.id))
+          .where(eq(rankSingle.eventId, eventId))
           .groupBy(state.name)
           .having(gt(count(), 0))
           .orderBy(state.name)
@@ -141,8 +141,8 @@ export async function getRankSinglesGenderCounts(eventId: Event["id"]) {
             count: count(),
           })
           .from(rankSingle)
-          .innerJoin(person, sql`${rankSingle.personId} = ${person.id}`)
-          .where(sql`${rankSingle.eventId} = ${eventId}`)
+          .innerJoin(person, eq(rankSingle.personId, person.id))
+          .where(eq(rankSingle.eventId, eventId))
           .groupBy(person.gender)
           .having(gt(count(), 0))
           .orderBy(person.gender)
@@ -178,8 +178,8 @@ export async function getRankAverages(
         const offset = (input.page - 1) * input.perPage;
 
         const where = and(
-          sql`${rankAverage.countryRank} != 0`,
-          sql`${rankAverage.eventId} = ${eventId}`,
+          ne(rankAverage.countryRank, 0),
+          eq(rankAverage.eventId, eventId),
           input.name ? ilike(person.name, `%${input.name}%`) : undefined,
           input.state.length > 0 ? inArray(state.name, input.state) : undefined,
           input.gender.length > 0
@@ -207,8 +207,8 @@ export async function getRankAverages(
               gender: person.gender,
             })
             .from(rankAverage)
-            .innerJoin(person, sql`${rankAverage.personId} = ${person.id}`)
-            .leftJoin(state, sql`${person.stateId} = ${state.id}`)
+            .innerJoin(person, eq(rankAverage.personId, person.id))
+            .leftJoin(state, eq(person.stateId, state.id))
             .limit(input.perPage)
             .offset(offset)
             .where(where)
@@ -219,8 +219,8 @@ export async function getRankAverages(
               count: count(),
             })
             .from(rankAverage)
-            .innerJoin(person, sql`${rankAverage.personId} = ${person.id}`)
-            .leftJoin(state, sql`${person.stateId} = ${state.id}`)
+            .innerJoin(person, eq(rankAverage.personId, person.id))
+            .leftJoin(state, eq(person.stateId, state.id))
             .where(where)
             .execute()
             .then((res) => res[0]?.count ?? 0)) as number;
@@ -256,9 +256,9 @@ export async function getRankAveragesStateCounts(eventId: Event["id"]) {
             count: count(),
           })
           .from(rankAverage)
-          .innerJoin(person, sql`${rankAverage.personId} = ${person.id}`)
-          .leftJoin(state, sql`${person.stateId} = ${state.id}`)
-          .where(sql`${rankAverage.eventId} = ${eventId}`)
+          .innerJoin(person, eq(rankAverage.personId, person.id))
+          .leftJoin(state, eq(person.stateId, state.id))
+          .where(eq(rankAverage.eventId, eventId))
           .groupBy(state.name)
           .having(gt(count(), 0))
           .orderBy(state.name)
@@ -294,8 +294,8 @@ export async function getRankAveragesGenderCounts(eventId: Event["id"]) {
             count: count(),
           })
           .from(rankAverage)
-          .innerJoin(person, sql`${rankAverage.personId} = ${person.id}`)
-          .where(sql`${rankAverage.eventId} = ${eventId}`)
+          .innerJoin(person, eq(rankAverage.personId, person.id))
+          .leftJoin(state, eq(person.stateId, state.id))
           .groupBy(person.gender)
           .having(gt(count(), 0))
           .orderBy(person.gender)

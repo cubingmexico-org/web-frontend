@@ -4,27 +4,24 @@ import * as React from "react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 import { cn } from "@workspace/ui/lib/utils";
+import type { SumOfRanks } from "@/db/schema";
 
-interface SOR {
-  name: string;
-  sumOfRanks: number;
-  events: {
-    eventId: string;
-    countryRank: number;
-  }[];
+interface Event {
+  eventId: string;
+  countryRank: number;
+  completed: boolean;
 }
 
-export function getColumns(): ColumnDef<SOR>[] {
+export function getColumns(): ColumnDef<SumOfRanks>[] {
   return [
     {
-      accessorKey: "index",
+      accessorKey: "regionRank",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="#" className="ml-2" />
       ),
       cell: ({ row }) => {
-        return <div className="ml-2 w-2">{row.index + 1}</div>;
+        return <div className="ml-2 w-2">{row.getValue("regionRank")}</div>;
       },
-      enableSorting: false,
       enableHiding: false,
     },
     {
@@ -41,13 +38,13 @@ export function getColumns(): ColumnDef<SOR>[] {
       enableHiding: false,
     },
     {
-      accessorKey: "sumOfRanks",
+      accessorKey: "overall",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Total" />
       ),
       cell: ({ row }) => (
         <div className="flex space-x-2 justify-center font-semibold">
-          {row.getValue("sumOfRanks")}
+          {row.getValue("overall")}
         </div>
       ),
       enableSorting: false,
@@ -61,10 +58,7 @@ export function getColumns(): ColumnDef<SOR>[] {
         </div>
       ),
       cell: ({ row }) => {
-        const events = row.original.events as {
-          eventId: string;
-          countryRank: number;
-        }[];
+        const events = row.original.events as Event[];
         const event = events.find((event) => event.eventId === "333");
         return (
           <div
@@ -73,6 +67,7 @@ export function getColumns(): ColumnDef<SOR>[] {
               event?.countryRank !== undefined &&
                 event.countryRank <= 10 &&
                 "text-green-500 font-semibold",
+              !event?.completed && "text-red-500 font-semibold",
             )}
           >
             {event?.countryRank ?? "N/A"}
@@ -90,10 +85,7 @@ export function getColumns(): ColumnDef<SOR>[] {
         </div>
       ),
       cell: ({ row }) => {
-        const events = row.original.events as {
-          eventId: string;
-          countryRank: number;
-        }[];
+        const events = row.original.events as Event[];
         const event = events.find((event) => event.eventId === "222");
         return (
           <div
@@ -102,6 +94,7 @@ export function getColumns(): ColumnDef<SOR>[] {
               event?.countryRank !== undefined &&
                 event.countryRank <= 10 &&
                 "text-green-500 font-semibold",
+              !event?.completed && "text-red-500 font-semibold",
             )}
           >
             {event?.countryRank ?? "N/A"}
@@ -119,10 +112,7 @@ export function getColumns(): ColumnDef<SOR>[] {
         </div>
       ),
       cell: ({ row }) => {
-        const events = row.original.events as {
-          eventId: string;
-          countryRank: number;
-        }[];
+        const events = row.original.events as Event[];
         const event = events.find((event) => event.eventId === "444");
         return (
           <div
@@ -131,6 +121,7 @@ export function getColumns(): ColumnDef<SOR>[] {
               event?.countryRank !== undefined &&
                 event.countryRank <= 10 &&
                 "text-green-500 font-semibold",
+              !event?.completed && "text-red-500 font-semibold",
             )}
           >
             {event?.countryRank ?? "N/A"}
@@ -148,10 +139,7 @@ export function getColumns(): ColumnDef<SOR>[] {
         </div>
       ),
       cell: ({ row }) => {
-        const events = row.original.events as {
-          eventId: string;
-          countryRank: number;
-        }[];
+        const events = row.original.events as Event[];
         const event = events.find((event) => event.eventId === "555");
         return (
           <div
@@ -160,6 +148,7 @@ export function getColumns(): ColumnDef<SOR>[] {
               event?.countryRank !== undefined &&
                 event.countryRank <= 10 &&
                 "text-green-500 font-semibold",
+              !event?.completed && "text-red-500 font-semibold",
             )}
           >
             {event?.countryRank ?? "N/A"}
@@ -177,10 +166,7 @@ export function getColumns(): ColumnDef<SOR>[] {
         </div>
       ),
       cell: ({ row }) => {
-        const events = row.original.events as {
-          eventId: string;
-          countryRank: number;
-        }[];
+        const events = row.original.events as Event[];
         const event = events.find((event) => event.eventId === "666");
         return (
           <div
@@ -189,6 +175,7 @@ export function getColumns(): ColumnDef<SOR>[] {
               event?.countryRank !== undefined &&
                 event.countryRank <= 10 &&
                 "text-green-500 font-semibold",
+              !event?.completed && "text-red-500 font-semibold",
             )}
           >
             {event?.countryRank ?? "N/A"}
@@ -206,10 +193,7 @@ export function getColumns(): ColumnDef<SOR>[] {
         </div>
       ),
       cell: ({ row }) => {
-        const events = row.original.events as {
-          eventId: string;
-          countryRank: number;
-        }[];
+        const events = row.original.events as Event[];
         const event = events.find((event) => event.eventId === "777");
         return (
           <div
@@ -218,6 +202,7 @@ export function getColumns(): ColumnDef<SOR>[] {
               event?.countryRank !== undefined &&
                 event.countryRank <= 10 &&
                 "text-green-500 font-semibold",
+              !event?.completed && "text-red-500 font-semibold",
             )}
           >
             {event?.countryRank ?? "N/A"}
@@ -235,10 +220,7 @@ export function getColumns(): ColumnDef<SOR>[] {
         </div>
       ),
       cell: ({ row }) => {
-        const events = row.original.events as {
-          eventId: string;
-          countryRank: number;
-        }[];
+        const events = row.original.events as Event[];
         const event = events.find((event) => event.eventId === "333bf");
         return (
           <div
@@ -247,6 +229,7 @@ export function getColumns(): ColumnDef<SOR>[] {
               event?.countryRank !== undefined &&
                 event.countryRank <= 10 &&
                 "text-green-500 font-semibold",
+              !event?.completed && "text-red-500 font-semibold",
             )}
           >
             {event?.countryRank ?? "N/A"}
@@ -264,10 +247,7 @@ export function getColumns(): ColumnDef<SOR>[] {
         </div>
       ),
       cell: ({ row }) => {
-        const events = row.original.events as {
-          eventId: string;
-          countryRank: number;
-        }[];
+        const events = row.original.events as Event[];
         const event = events.find((event) => event.eventId === "333fm");
         return (
           <div
@@ -276,6 +256,7 @@ export function getColumns(): ColumnDef<SOR>[] {
               event?.countryRank !== undefined &&
                 event.countryRank <= 10 &&
                 "text-green-500 font-semibold",
+              !event?.completed && "text-red-500 font-semibold",
             )}
           >
             {event?.countryRank ?? "N/A"}
@@ -293,10 +274,7 @@ export function getColumns(): ColumnDef<SOR>[] {
         </div>
       ),
       cell: ({ row }) => {
-        const events = row.original.events as {
-          eventId: string;
-          countryRank: number;
-        }[];
+        const events = row.original.events as Event[];
         const event = events.find((event) => event.eventId === "333oh");
         return (
           <div
@@ -305,6 +283,7 @@ export function getColumns(): ColumnDef<SOR>[] {
               event?.countryRank !== undefined &&
                 event.countryRank <= 10 &&
                 "text-green-500 font-semibold",
+              !event?.completed && "text-red-500 font-semibold",
             )}
           >
             {event?.countryRank ?? "N/A"}
@@ -322,10 +301,7 @@ export function getColumns(): ColumnDef<SOR>[] {
         </div>
       ),
       cell: ({ row }) => {
-        const events = row.original.events as {
-          eventId: string;
-          countryRank: number;
-        }[];
+        const events = row.original.events as Event[];
         const event = events.find((event) => event.eventId === "clock");
         return (
           <div
@@ -334,6 +310,7 @@ export function getColumns(): ColumnDef<SOR>[] {
               event?.countryRank !== undefined &&
                 event.countryRank <= 10 &&
                 "text-green-500 font-semibold",
+              !event?.completed && "text-red-500 font-semibold",
             )}
           >
             {event?.countryRank ?? "N/A"}
@@ -351,10 +328,7 @@ export function getColumns(): ColumnDef<SOR>[] {
         </div>
       ),
       cell: ({ row }) => {
-        const events = row.original.events as {
-          eventId: string;
-          countryRank: number;
-        }[];
+        const events = row.original.events as Event[];
         const event = events.find((event) => event.eventId === "minx");
         return (
           <div
@@ -363,6 +337,7 @@ export function getColumns(): ColumnDef<SOR>[] {
               event?.countryRank !== undefined &&
                 event.countryRank <= 10 &&
                 "text-green-500 font-semibold",
+              !event?.completed && "text-red-500 font-semibold",
             )}
           >
             {event?.countryRank ?? "N/A"}
@@ -380,10 +355,7 @@ export function getColumns(): ColumnDef<SOR>[] {
         </div>
       ),
       cell: ({ row }) => {
-        const events = row.original.events as {
-          eventId: string;
-          countryRank: number;
-        }[];
+        const events = row.original.events as Event[];
         const event = events.find((event) => event.eventId === "pyram");
         return (
           <div
@@ -392,6 +364,7 @@ export function getColumns(): ColumnDef<SOR>[] {
               event?.countryRank !== undefined &&
                 event.countryRank <= 10 &&
                 "text-green-500 font-semibold",
+              !event?.completed && "text-red-500 font-semibold",
             )}
           >
             {event?.countryRank ?? "N/A"}
@@ -409,10 +382,7 @@ export function getColumns(): ColumnDef<SOR>[] {
         </div>
       ),
       cell: ({ row }) => {
-        const events = row.original.events as {
-          eventId: string;
-          countryRank: number;
-        }[];
+        const events = row.original.events as Event[];
         const event = events.find((event) => event.eventId === "skewb");
         return (
           <div
@@ -421,6 +391,7 @@ export function getColumns(): ColumnDef<SOR>[] {
               event?.countryRank !== undefined &&
                 event.countryRank <= 10 &&
                 "text-green-500 font-semibold",
+              !event?.completed && "text-red-500 font-semibold",
             )}
           >
             {event?.countryRank ?? "N/A"}
@@ -438,10 +409,7 @@ export function getColumns(): ColumnDef<SOR>[] {
         </div>
       ),
       cell: ({ row }) => {
-        const events = row.original.events as {
-          eventId: string;
-          countryRank: number;
-        }[];
+        const events = row.original.events as Event[];
         const event = events.find((event) => event.eventId === "sq1");
         return (
           <div
@@ -450,6 +418,7 @@ export function getColumns(): ColumnDef<SOR>[] {
               event?.countryRank !== undefined &&
                 event.countryRank <= 10 &&
                 "text-green-500 font-semibold",
+              !event?.completed && "text-red-500 font-semibold",
             )}
           >
             {event?.countryRank ?? "N/A"}
@@ -467,10 +436,7 @@ export function getColumns(): ColumnDef<SOR>[] {
         </div>
       ),
       cell: ({ row }) => {
-        const events = row.original.events as {
-          eventId: string;
-          countryRank: number;
-        }[];
+        const events = row.original.events as Event[];
         const event = events.find((event) => event.eventId === "444bf");
         return (
           <div
@@ -479,6 +445,7 @@ export function getColumns(): ColumnDef<SOR>[] {
               event?.countryRank !== undefined &&
                 event.countryRank <= 10 &&
                 "text-green-500 font-semibold",
+              !event?.completed && "text-red-500 font-semibold",
             )}
           >
             {event?.countryRank ?? "N/A"}
@@ -496,10 +463,7 @@ export function getColumns(): ColumnDef<SOR>[] {
         </div>
       ),
       cell: ({ row }) => {
-        const events = row.original.events as {
-          eventId: string;
-          countryRank: number;
-        }[];
+        const events = row.original.events as Event[];
         const event = events.find((event) => event.eventId === "555bf");
         return (
           <div
@@ -508,6 +472,7 @@ export function getColumns(): ColumnDef<SOR>[] {
               event?.countryRank !== undefined &&
                 event.countryRank <= 10 &&
                 "text-green-500 font-semibold",
+              !event?.completed && "text-red-500 font-semibold",
             )}
           >
             {event?.countryRank ?? "N/A"}
@@ -525,10 +490,7 @@ export function getColumns(): ColumnDef<SOR>[] {
         </div>
       ),
       cell: ({ row }) => {
-        const events = row.original.events as {
-          eventId: string;
-          countryRank: number;
-        }[];
+        const events = row.original.events as Event[];
         const event = events.find((event) => event.eventId === "333mbf");
         return (
           <div
@@ -537,6 +499,7 @@ export function getColumns(): ColumnDef<SOR>[] {
               event?.countryRank !== undefined &&
                 event.countryRank <= 10 &&
                 "text-green-500 font-semibold",
+              !event?.completed && "text-red-500 font-semibold",
             )}
           >
             {event?.countryRank ?? "N/A"}
@@ -546,29 +509,9 @@ export function getColumns(): ColumnDef<SOR>[] {
       enableSorting: false,
       enableHiding: false,
     },
-    // {
-    //   accessorKey: "state",
-    //   header: ({ column }) => (
-    //     <DataTableColumnHeader column={column} title="Estado" />
-    //   ),
-    //   cell: ({ row }) => {
-    //     return (
-    //       <div className="flex space-x-2">
-    //         <span
-    //           className={cn(
-    //             row.getValue("state") === null
-    //               ? "text-muted-foreground"
-    //               : "font-medium",
-    //           )}
-    //         >
-    //           {row.getValue("state") ?? "N/A"}
-    //         </span>
-    //       </div>
-    //     );
-    //   },
-    //   enableSorting: false,
-    //   enableHiding: false,
-    // },
+    {
+      accessorKey: "state",
+    },
     {
       accessorKey: "gender",
     },

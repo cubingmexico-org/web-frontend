@@ -6,8 +6,7 @@ import { useDataTable } from "@/hooks/use-data-table";
 import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import type { getSORSingles } from "../_lib/queries";
-import { getColumns } from "./rankings-table-columns";
-import type { RankSingle } from "../_types";
+import { getColumns } from "./sor-table-columns";
 
 interface SORSinglesTableProps {
   promises: Promise<[Awaited<ReturnType<typeof getSORSingles>>]>;
@@ -29,7 +28,15 @@ export function SORSinglesTable({ promises }: SORSinglesTableProps) {
    * @prop {React.ReactNode} [icon] - An optional icon to display next to the label.
    * @prop {boolean} [withCount] - An optional boolean to display the count of the filter option.
    */
-  const filterFields: DataTableFilterField<RankSingle>[] = [
+  const filterFields: DataTableFilterField<{
+    regionRank: number | null;
+    personId: string;
+    name: string | null;
+    overall: number | null;
+    events: unknown;
+    state: string | null;
+    gender: string | null;
+  }>[] = [
     {
       id: "name",
       label: "Nombre",
@@ -43,10 +50,11 @@ export function SORSinglesTable({ promises }: SORSinglesTableProps) {
     pageCount,
     filterFields,
     initialState: {
-      sorting: [{ id: "countryRank", desc: false }],
+      sorting: [{ id: "regionRank", desc: false }],
       columnPinning: { right: ["actions"] },
       columnVisibility: {
         gender: false,
+        state: false,
       },
     },
     getRowId: (originalRow) => originalRow.personId,

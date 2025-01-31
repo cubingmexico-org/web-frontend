@@ -1,10 +1,9 @@
 import "server-only";
 import { db } from "@/db";
-import { state, type State, type Event, person, rankSingle } from "@/db/schema";
-import { and, count, ilike, gt, eq, sql } from "drizzle-orm";
+import { state, type State, type Event, person, sumOfRanks } from "@/db/schema";
+import { and, count, ilike, gt, eq, desc, asc } from "drizzle-orm";
 import { unstable_cache } from "@/lib/unstable-cache";
 import { type GetSORSinglesSchema } from "./validations";
-import { EXCLUDED_EVENTS } from "@/lib/constants";
 
 export async function getSORSingles(input: GetSORSinglesSchema) {
   return await unstable_cache(
@@ -12,50 +11,49 @@ export async function getSORSingles(input: GetSORSinglesSchema) {
       try {
         const offset = (input.page - 1) * input.perPage;
 
+        const where = and(
+          eq(sumOfRanks.resultType, "single"),
+          input.name ? ilike(person.name, `%${input.name}%`) : undefined,
+          input.state ? eq(state.name, input.state) : undefined,
+          input.gender ? eq(person.gender, input.gender) : undefined,
+        );
+
+        const orderBy =
+          input.sort.length > 0
+            ? input.sort.map((item) =>
+                item.desc
+                  ? desc(sumOfRanks[item.id])
+                  : asc(sumOfRanks[item.id]),
+              )
+            : [asc(sumOfRanks.overall)];
+
         const { data, total } = await db.transaction(async (tx) => {
-          const query = sql`
-          WITH "allEvents" AS (
-            SELECT DISTINCT "eventId" FROM "ranksSingle"
-            WHERE "eventId" NOT IN (${sql.join(EXCLUDED_EVENTS, sql`, `)})
-          ),
-          "allPeople" AS (
-            SELECT DISTINCT id, name FROM persons
-          ),
-          "peopleEvents" AS (
-            SELECT "allPeople".id, "allPeople".name, "allEvents"."eventId"
-            FROM "allPeople" CROSS JOIN "allEvents"
-          )
-          SELECT
-            pe.id,
-            pe.name,
-            json_agg(json_build_object('eventId', pe."eventId", 'countryRank', COALESCE(rs."countryRank", wr."worstRank"))) AS events,
-            SUM(COALESCE(rs."countryRank", wr."worstRank")) AS "sumOfRanks"
-          FROM "peopleEvents" pe
-          LEFT JOIN "ranksSingle" rs 
-            ON pe.id = rs."personId" AND pe."eventId" = rs."eventId"
-          LEFT JOIN (SELECT "eventId", MAX("countryRank") + 1 as "worstRank" FROM public."ranksSingle" GROUP BY "eventId") AS wr 
-            ON wr."eventId" = pe."eventId"
-          ${input.name ? sql`WHERE unaccent(pe.name) ILIKE unaccent(${"%" + input.name + "%"})` : sql``}
-          GROUP BY pe.id, pe.name
-          ORDER BY SUM(COALESCE(rs."countryRank", wr."worstRank"))
-          LIMIT ${input.perPage}
-          OFFSET ${offset}
-        `;
-
-          const rawData = await tx.execute(query);
-
-          const data = rawData.rows;
+          const data = await tx
+            .select({
+              regionRank: sumOfRanks.regionRank,
+              personId: sumOfRanks.personId,
+              name: person.name,
+              overall: sumOfRanks.overall,
+              events: sumOfRanks.events,
+              state: state.name,
+              gender: person.gender,
+            })
+            .from(sumOfRanks)
+            .innerJoin(person, eq(sumOfRanks.personId, person.id))
+            .leftJoin(state, eq(person.stateId, state.id))
+            .limit(input.perPage)
+            .offset(offset)
+            .where(where)
+            .orderBy(...orderBy);
 
           const total = (await tx
             .select({
               count: count(),
             })
-            .from(person)
-            .where(
-              and(
-                input.name ? ilike(person.name, `%${input.name}%`) : undefined,
-              ),
-            )
+            .from(sumOfRanks)
+            .innerJoin(person, eq(sumOfRanks.personId, person.id))
+            .leftJoin(state, eq(person.stateId, state.id))
+            .where(where)
             .execute()
             .then((res) => res[0]?.count ?? 0)) as number;
 
@@ -89,10 +87,9 @@ export async function getRankSinglesStateCounts(eventId: Event["id"]) {
             state: state.name,
             count: count(),
           })
-          .from(rankSingle)
-          .innerJoin(person, eq(rankSingle.personId, person.id))
+          .from(sumOfRanks)
+          .innerJoin(person, eq(sumOfRanks.personId, person.id))
           .leftJoin(state, eq(person.stateId, state.id))
-          .where(eq(rankSingle.eventId, eventId))
           .groupBy(state.name)
           .having(gt(count(), 0))
           .orderBy(state.name)
@@ -111,7 +108,7 @@ export async function getRankSinglesStateCounts(eventId: Event["id"]) {
         return {} as Record<State["name"], number>;
       }
     },
-    ["single-state-counts", eventId],
+    ["sor-single-state-counts", eventId],
     {
       revalidate: 3600,
     },
@@ -127,9 +124,8 @@ export async function getRankSinglesGenderCounts(eventId: Event["id"]) {
             gender: person.gender,
             count: count(),
           })
-          .from(rankSingle)
-          .innerJoin(person, eq(rankSingle.personId, person.id))
-          .where(eq(rankSingle.eventId, eventId))
+          .from(sumOfRanks)
+          .innerJoin(person, eq(sumOfRanks.personId, person.id))
           .groupBy(person.gender)
           .having(gt(count(), 0))
           .orderBy(person.gender)
@@ -148,7 +144,7 @@ export async function getRankSinglesGenderCounts(eventId: Event["id"]) {
         return {} as Record<string, number>;
       }
     },
-    ["single-gender-counts", eventId],
+    ["sor-single-gender-counts", eventId],
     {
       revalidate: 3600,
     },

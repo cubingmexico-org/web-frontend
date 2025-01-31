@@ -1,21 +1,26 @@
 import "server-only";
 import { db } from "@/db";
-import { state, type State, type Event, person, sumOfRanks } from "@/db/schema";
-import { and, count, ilike, gt, eq, desc, asc } from "drizzle-orm";
+import { type State, state, person, sumOfRanks } from "@/db/schema";
+import { and, count, ilike, gt, eq, desc, asc, inArray } from "drizzle-orm";
 import { unstable_cache } from "@/lib/unstable-cache";
 import { type GetSORSinglesSchema } from "./validations";
 
-export async function getSORSingles(input: GetSORSinglesSchema) {
+export async function getSOR(
+  input: GetSORSinglesSchema,
+  rankType: "single" | "average",
+) {
   return await unstable_cache(
     async () => {
       try {
         const offset = (input.page - 1) * input.perPage;
 
         const where = and(
-          eq(sumOfRanks.resultType, "single"),
+          eq(sumOfRanks.resultType, rankType),
           input.name ? ilike(person.name, `%${input.name}%`) : undefined,
-          input.state ? eq(state.name, input.state) : undefined,
-          input.gender ? eq(person.gender, input.gender) : undefined,
+          input.state.length > 0 ? inArray(state.name, input.state) : undefined,
+          input.gender.length > 0
+            ? inArray(person.gender, input.gender)
+            : undefined,
         );
 
         const orderBy =
@@ -70,15 +75,15 @@ export async function getSORSingles(input: GetSORSinglesSchema) {
         return { data: [], pageCount: 0 };
       }
     },
-    [JSON.stringify(input)],
+    [JSON.stringify(input), rankType],
     {
       revalidate: 3600,
-      tags: ["sor-single"],
+      tags: ["sor"],
     },
   )();
 }
 
-export async function getRankSinglesStateCounts(eventId: Event["id"]) {
+export async function getSORStateCounts(rankType: "single" | "average") {
   return unstable_cache(
     async () => {
       try {
@@ -90,6 +95,7 @@ export async function getRankSinglesStateCounts(eventId: Event["id"]) {
           .from(sumOfRanks)
           .innerJoin(person, eq(sumOfRanks.personId, person.id))
           .leftJoin(state, eq(person.stateId, state.id))
+          .where(eq(sumOfRanks.resultType, rankType))
           .groupBy(state.name)
           .having(gt(count(), 0))
           .orderBy(state.name)
@@ -108,14 +114,14 @@ export async function getRankSinglesStateCounts(eventId: Event["id"]) {
         return {} as Record<State["name"], number>;
       }
     },
-    ["sor-single-state-counts", eventId],
+    ["sor-state-counts", rankType],
     {
       revalidate: 3600,
     },
   )();
 }
 
-export async function getRankSinglesGenderCounts(eventId: Event["id"]) {
+export async function getSORGenderCounts(rankType: "single" | "average") {
   return unstable_cache(
     async () => {
       try {
@@ -126,6 +132,7 @@ export async function getRankSinglesGenderCounts(eventId: Event["id"]) {
           })
           .from(sumOfRanks)
           .innerJoin(person, eq(sumOfRanks.personId, person.id))
+          .where(eq(sumOfRanks.resultType, rankType))
           .groupBy(person.gender)
           .having(gt(count(), 0))
           .orderBy(person.gender)
@@ -144,7 +151,7 @@ export async function getRankSinglesGenderCounts(eventId: Event["id"]) {
         return {} as Record<string, number>;
       }
     },
-    ["sor-single-gender-counts", eventId],
+    ["sor-gender-counts", rankType],
     {
       revalidate: 3600,
     },

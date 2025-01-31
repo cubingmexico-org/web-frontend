@@ -1,13 +1,11 @@
 import * as React from "react";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import { SORSinglesTable } from "./_components/sor-table";
-import { getSORSingles } from "./_lib/queries";
+import { SORTable } from "./_components/sor-table";
+import { getSOR, getSORGenderCounts, getSORStateCounts } from "./_lib/queries";
 import { SearchParams } from "@/types";
 import { getValidFilters } from "@/lib/data-table";
 import { searchParamsCache } from "./_lib/validations";
-import { StateSelector } from "./_components/state-selector";
-import { GenderSelector } from "./_components/gender-selector";
-import { getStates } from "@/db/queries";
+import { RankTypeSelector } from "./_components/rank-type-selector";
 
 interface PageProps {
   params: Promise<{ rankType: "single" | "average" }>;
@@ -22,34 +20,27 @@ export default async function Page(props: PageProps) {
 
   const validFilters = getValidFilters(search.filters);
 
-  const promises =
-    rankType === "single"
-      ? Promise.all([
-          getSORSingles({
-            ...search,
-            filters: validFilters,
-          }),
-        ])
-      : Promise.all([
-          getSORSingles({
-            ...search,
-            filters: validFilters,
-          }),
-        ]);
-
-  const states = await getStates();
+  const promises = Promise.all([
+    getSOR(
+      {
+        ...search,
+        filters: validFilters,
+      },
+      rankType,
+    ),
+    getSORStateCounts(rankType),
+    getSORGenderCounts(rankType),
+  ]);
 
   return (
     <main className="flex-grow container mx-auto px-4 py-8">
       <div className="flex flex-col gap-4">
         <h1 className="text-3xl font-bold">
-          {search.state ? `Sum of Ranks de ${search.state} ` : `Sum of Ranks`}{" "}
-          {search.gender
-            ? `(${search.gender === "m" ? "Masculinos" : "Femeniles"})`
-            : undefined}
+          {search.state
+            ? `Sum of Ranks de ${search.state} (${rankType === "single" ? "Single" : "Average"})`
+            : `Sum of Ranks (${rankType === "single" ? "Single" : "Average"})`}
         </h1>
-        <StateSelector states={states} />
-        <GenderSelector />
+        <RankTypeSelector selectedRankType={rankType} />
       </div>
       <div className="grid gap-6">
         <React.Suspense
@@ -63,11 +54,7 @@ export default async function Page(props: PageProps) {
             />
           }
         >
-          {rankType === "single" ? (
-            <SORSinglesTable promises={promises} />
-          ) : (
-            <SORSinglesTable promises={promises} />
-          )}
+          <SORTable promises={promises} />
         </React.Suspense>
       </div>
     </main>

@@ -1,10 +1,9 @@
-interface Rank {
+export interface SumOfRanks {
+  regionRank: number | null;
   personId: string;
-  countryRank: number;
   name: string | null;
+  overall: number | null;
+  events: unknown;
   state: string | null;
   gender: string | null;
 }
-
-export type RankSingle = Rank;
-export type RankAverage = Rank;

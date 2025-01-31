@@ -4,7 +4,7 @@ import * as React from "react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 import { cn } from "@workspace/ui/lib/utils";
-import type { SumOfRanks } from "@/db/schema";
+import { SumOfRanks } from "../_types";
 
 interface Event {
   eventId: string;

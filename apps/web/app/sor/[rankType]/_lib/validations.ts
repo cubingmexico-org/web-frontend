@@ -1,5 +1,6 @@
 import {
   createSearchParamsCache,
+  parseAsArrayOf,
   parseAsInteger,
   parseAsString,
   parseAsStringEnum,
@@ -14,8 +15,8 @@ export const searchParamsCache = createSearchParamsCache({
     { id: "regionRank", desc: false },
   ]),
   name: parseAsString.withDefault(""),
-  state: parseAsString.withDefault(""),
-  gender: parseAsString.withDefault(""),
+  state: parseAsArrayOf(parseAsString).withDefault([]),
+  gender: parseAsArrayOf(parseAsString).withDefault([]),
   from: parseAsString.withDefault(""),
   to: parseAsString.withDefault(""),
   // advanced filter

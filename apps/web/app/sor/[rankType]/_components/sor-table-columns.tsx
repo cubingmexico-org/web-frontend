@@ -12,8 +12,10 @@ interface Event {
   completed: boolean;
 }
 
-export function getColumns(): ColumnDef<SumOfRanks>[] {
-  return [
+export function getColumns(
+  rankType: "single" | "average",
+): ColumnDef<SumOfRanks>[] {
+  const columns: ColumnDef<SumOfRanks>[] = [
     {
       accessorKey: "regionRank",
       header: ({ column }) => (
@@ -483,6 +485,15 @@ export function getColumns(): ColumnDef<SumOfRanks>[] {
       enableHiding: false,
     },
     {
+      accessorKey: "state",
+    },
+    {
+      accessorKey: "gender",
+    },
+  ];
+
+  if (rankType === "single") {
+    columns.push({
       accessorKey: "events_333mbf",
       header: () => (
         <div className="flex items-center justify-center">
@@ -508,12 +519,8 @@ export function getColumns(): ColumnDef<SumOfRanks>[] {
       },
       enableSorting: false,
       enableHiding: false,
-    },
-    {
-      accessorKey: "state",
-    },
-    {
-      accessorKey: "gender",
-    },
-  ];
+    });
+  }
+
+  return columns;
 }

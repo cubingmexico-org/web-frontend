@@ -54,7 +54,7 @@ export default async function Page(props: PageProps) {
             />
           }
         >
-          <SORTable promises={promises} />
+          <SORTable promises={promises} rankType={rankType} />
         </React.Suspense>
       </div>
     </main>

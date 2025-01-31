@@ -21,12 +21,14 @@ interface SORTableProps {
       Awaited<ReturnType<typeof getSORGenderCounts>>,
     ]
   >;
+  rankType: "single" | "average";
 }
 
-export function SORTable({ promises }: SORTableProps) {
+export function SORTable({ promises, rankType }: SORTableProps) {
   const [{ data, pageCount }, stateCounts, genderCounts] = React.use(promises);
 
-  const columns = React.useMemo(() => getColumns(), []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const columns = React.useMemo(() => getColumns(rankType), []);
 
   /**
    * This component can render either a faceted filter or a search filter based on the `options` prop.

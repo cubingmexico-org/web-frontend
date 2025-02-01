@@ -4,7 +4,7 @@ import { SearchParams } from "@/types";
 import { searchParamsCache } from "./_lib/validations";
 import { getStates } from "@/db/queries";
 import { StateSelector } from "./_components/state-selector";
-import { GenderSelector } from "./_components/gender-selector";
+// import { GenderSelector } from "./_components/gender-selector";
 import {
   Table,
   TableBody,
@@ -39,7 +39,7 @@ export default async function Page(props: PageProps) {
             : undefined}
         </h1>
         <StateSelector states={states} />
-        <GenderSelector />
+        {/* <GenderSelector /> */}
       </div>
       <Table>
         <TableHeader>

@@ -10,6 +10,16 @@ import { usePathname } from "next/navigation";
 
 export function getColumns(): ColumnDef<RankSingle>[] {
   return [
+    // {
+    //   accessorKey: "stateRank",
+    //   header: ({ column }) => (
+    //     <DataTableColumnHeader column={column} title="SR" className="ml-2" />
+    //   ),
+    //   cell: ({ row }) => {
+    //     return <div className="ml-2 w-2">{row.getValue("stateRank")}</div>;
+    //   },
+    //   enableHiding: false,
+    // },
     {
       accessorKey: "countryRank",
       header: ({ column }) => (

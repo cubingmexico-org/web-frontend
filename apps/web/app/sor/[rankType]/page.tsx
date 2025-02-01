@@ -36,9 +36,7 @@ export default async function Page(props: PageProps) {
     <main className="flex-grow container mx-auto px-4 py-8">
       <div className="flex flex-col gap-4">
         <h1 className="text-3xl font-bold">
-          {search.state
-            ? `Sum of Ranks de ${search.state} (${rankType === "single" ? "Single" : "Average"})`
-            : `Sum of Ranks (${rankType === "single" ? "Single" : "Average"})`}
+          {`Sum of Ranks (${rankType === "single" ? "Single" : "Average"})`}
         </h1>
         <RankTypeSelector selectedRankType={rankType} />
       </div>

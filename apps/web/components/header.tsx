@@ -28,8 +28,8 @@ export function Header() {
           <Link className="mr-5 hover:text-muted-foreground" href="/records">
             Récords
           </Link>
-          <Link className="mr-5 hover:text-muted-foreground" href="/events">
-            Eventos
+          <Link className="mr-5 hover:text-muted-foreground" href="/sor/single">
+            SOR
           </Link>
           <Link className="mr-5 hover:text-muted-foreground" href="/about">
             Acerca de

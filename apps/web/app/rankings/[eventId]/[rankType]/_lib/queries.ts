@@ -47,6 +47,7 @@ export async function getRankSingles(
           const data = await tx
             .select({
               personId: rankSingle.personId,
+              stateRank: rankSingle.stateRank,
               countryRank: rankSingle.countryRank,
               name: person.name,
               best: rankSingle.best,
@@ -200,6 +201,7 @@ export async function getRankAverages(
           const data = await tx
             .select({
               personId: rankAverage.personId,
+              stateRank: rankAverage.stateRank,
               countryRank: rankAverage.countryRank,
               name: person.name,
               best: rankAverage.best,

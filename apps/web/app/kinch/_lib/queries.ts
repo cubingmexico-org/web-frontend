@@ -1,7 +1,7 @@
 import "server-only";
 import { db } from "@/db";
-import { state, person, kinchRanks } from "@/db/schema";
-import { and, count, ilike, eq, desc, asc, inArray } from "drizzle-orm";
+import { state, person, kinchRanks, type State } from "@/db/schema";
+import { and, count, ilike, gt, eq, desc, asc, inArray } from "drizzle-orm";
 import { unstable_cache } from "@/lib/unstable-cache";
 import { type GetKinchSinglesSchema } from "./validations";
 
@@ -75,6 +75,79 @@ export async function getKinch(input: GetKinchSinglesSchema) {
     {
       revalidate: 3600,
       tags: ["sor"],
+    },
+  )();
+}
+
+export async function getKinchStateCounts() {
+  return unstable_cache(
+    async () => {
+      try {
+        return await db
+          .select({
+            state: state.name,
+            count: count(),
+          })
+          .from(kinchRanks)
+          .innerJoin(person, eq(kinchRanks.personId, person.id))
+          .leftJoin(state, eq(person.stateId, state.id))
+          .groupBy(state.name)
+          .having(gt(count(), 0))
+          .orderBy(state.name)
+          .then((res) =>
+            res.reduce(
+              (acc, { state, count }) => {
+                if (!state) return acc;
+                acc[state] = count;
+                return acc;
+              },
+              {} as Record<State["name"], number>,
+            ),
+          );
+      } catch (err) {
+        console.error(err);
+        return {} as Record<State["name"], number>;
+      }
+    },
+    ["kinch-state-counts"],
+    {
+      revalidate: 3600,
+    },
+  )();
+}
+
+export async function getKinchGenderCounts() {
+  return unstable_cache(
+    async () => {
+      try {
+        return await db
+          .select({
+            gender: person.gender,
+            count: count(),
+          })
+          .from(kinchRanks)
+          .innerJoin(person, eq(kinchRanks.personId, person.id))
+          .groupBy(person.gender)
+          .having(gt(count(), 0))
+          .orderBy(person.gender)
+          .then((res) =>
+            res.reduce(
+              (acc, { gender, count }) => {
+                if (!gender) return acc;
+                acc[gender] = count;
+                return acc;
+              },
+              {} as Record<string, number>,
+            ),
+          );
+      } catch (err) {
+        console.error(err);
+        return {} as Record<string, number>;
+      }
+    },
+    ["kinch-gender-counts"],
+    {
+      revalidate: 3600,
     },
   )();
 }

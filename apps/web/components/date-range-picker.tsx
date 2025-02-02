@@ -62,7 +62,7 @@ interface DateRangePickerProps
 
 export function DateRangePicker({
   defaultDateRange,
-  placeholder = "Pick a date",
+  placeholder = "Escoge una fecha",
   triggerVariant = "outline",
   triggerSize = "default",
   triggerClassName,
@@ -113,11 +113,11 @@ export function DateRangePicker({
             {date?.from ? (
               date.to ? (
                 <>
-                  {format(date.from, "LLL dd, y")} -{" "}
-                  {format(date.to, "LLL dd, y")}
+                  {format(date.from, "dd LLL, y")} -{" "}
+                  {format(date.to, "dd LLL, y")}
                 </>
               ) : (
-                format(date.from, "LLL dd, y")
+                format(date.from, "dd LLL, y")
               )
             ) : (
               <span>{placeholder}</span>

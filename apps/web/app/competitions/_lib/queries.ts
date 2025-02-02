@@ -40,6 +40,18 @@ export async function getCompetitions(input: GetCompetitionsSchema) {
           input.events.length > 0
             ? inArray(event.name, input.events)
             : undefined,
+          input.status.length > 0
+            ? inArray(
+                sql`
+            CASE
+              WHEN ${competition.startDate} > NOW() THEN 'upcoming'
+              WHEN ${competition.endDate} + INTERVAL '1 day' < NOW() THEN 'past'
+              ELSE 'in_progress'
+            END
+          `,
+                input.status,
+              )
+            : undefined,
           fromDate ? gte(competition.startDate, fromDate) : undefined,
           toDate ? lte(competition.endDate, toDate) : undefined,
         );
@@ -64,6 +76,13 @@ export async function getCompetitions(input: GetCompetitionsSchema) {
               events: sql`array_agg(${event.id} ORDER BY ${event.rank})`.as(
                 "events",
               ),
+              status: sql`
+                CASE
+                  WHEN ${competition.startDate} > NOW() THEN 'upcoming'
+                  WHEN ${competition.endDate} + INTERVAL '1 day' < NOW() THEN 'past'
+                  ELSE 'in_progress'
+                END
+              `.as("status"),
             })
             .from(competition)
             .leftJoin(state, eq(competition.stateId, state.id))
@@ -188,6 +207,47 @@ export async function getEventCounts() {
       }
     },
     ["event-counts"],
+    {
+      revalidate: 3600,
+    },
+  )();
+}
+
+export async function getStatusCounts() {
+  return unstable_cache(
+    async () => {
+      try {
+        return await db
+          .select({
+            status: sql`
+              CASE
+                WHEN ${competition.startDate} > NOW() THEN 'upcoming'
+                WHEN ${competition.endDate} + INTERVAL '1 day' < NOW() THEN 'past'
+                ELSE 'in_progress'
+              END
+            `.as("status"),
+            count: count(),
+          })
+          .from(competition)
+          .where(eq(competition.countryId, "Mexico"))
+          .groupBy(sql`status`)
+          .having(gt(count(), 0))
+          .orderBy(sql`status`)
+          .then((res) =>
+            res.reduce(
+              (acc, { status, count }) => {
+                acc[status as "past" | "in_progress" | "upcoming"] = count;
+                return acc;
+              },
+              {} as Record<"past" | "in_progress" | "upcoming", number>,
+            ),
+          );
+      } catch (err) {
+        console.error(err);
+        return {} as Record<"past" | "in_progress" | "upcoming", number>;
+      }
+    },
+    ["status-counts"],
     {
       revalidate: 3600,
     },

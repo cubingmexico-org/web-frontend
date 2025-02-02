@@ -5,4 +5,5 @@ export interface Competition {
   events: unknown;
   startDate: Date;
   endDate: Date;
+  status: unknown;
 }

@@ -1,5 +1,11 @@
 import type { Event } from "@/db/schema";
-import { createLucideIcon, LucideProps } from "lucide-react";
+import {
+  createLucideIcon,
+  LucideProps,
+  Timer,
+  TimerOff,
+  TimerReset,
+} from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 
 /**
@@ -34,4 +40,29 @@ export function getEventsIcon(events: Event["id"]) {
   >;
 
   return eventsIcon[events];
+}
+
+export function formatStatusName(str: "past" | "in_progress" | "upcoming") {
+  const enumValues = {
+    past: "Pasadas",
+    in_progress: "En progreso",
+    upcoming: "Próximas",
+  };
+
+  return enumValues[str as keyof typeof enumValues];
+}
+
+/**
+ * Returns the appropriate status icon based on the provided status.
+ * @param status - The status of the task.
+ * @returns A React component representing the status icon.
+ */
+export function getStatusIcon(status: "past" | "in_progress" | "upcoming") {
+  const statusIcons = {
+    in_progress: Timer,
+    past: TimerOff,
+    upcoming: TimerReset,
+  };
+
+  return statusIcons[status];
 }

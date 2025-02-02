@@ -5,16 +5,22 @@ import type { DataTableFilterField } from "@/types";
 import { useDataTable } from "@/hooks/use-data-table";
 import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
-import type { getKinch, getKinchGenderCounts, getKinchStateCounts } from "../_lib/queries";
+import type {
+  getKinch,
+  getKinchGenderCounts,
+  getKinchStateCounts,
+} from "../_lib/queries";
 import { getColumns } from "./kinch-table-columns";
 import type { KinchRanks } from "../_types";
 
 interface KinchTableProps {
-  promises: Promise<[
-    Awaited<ReturnType<typeof getKinch>>,
-    Awaited<ReturnType<typeof getKinchStateCounts>>,
-    Awaited<ReturnType<typeof getKinchGenderCounts>>,
-  ]>;
+  promises: Promise<
+    [
+      Awaited<ReturnType<typeof getKinch>>,
+      Awaited<ReturnType<typeof getKinchStateCounts>>,
+      Awaited<ReturnType<typeof getKinchGenderCounts>>,
+    ]
+  >;
 }
 
 export function KinchTable({ promises }: KinchTableProps) {

@@ -49,11 +49,12 @@ export const event = pgTable("events", {
 export type Event = InferSelectModel<typeof event>;
 
 export const competitionEvent = pgTable("competition_events", {
-  competitionId: varchar("competitionId", { length: 32 }).references(
-    () => competition.id, { onDelete: "cascade" },
-  ).notNull(),
-  eventId: varchar("eventId", { length: 6 }).references(() => event.id, { onDelete: "cascade" },
-  ).notNull(),
+  competitionId: varchar("competitionId", { length: 32 })
+    .references(() => competition.id, { onDelete: "cascade" })
+    .notNull(),
+  eventId: varchar("eventId", { length: 6 })
+    .references(() => event.id, { onDelete: "cascade" })
+    .notNull(),
 });
 
 export type CompetitionEvent = InferSelectModel<typeof competitionEvent>;

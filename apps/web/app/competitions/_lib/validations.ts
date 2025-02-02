@@ -17,6 +17,7 @@ export const searchParamsCache = createSearchParamsCache({
   name: parseAsString.withDefault(""),
   state: parseAsArrayOf(parseAsString).withDefault([]),
   events: parseAsArrayOf(parseAsString).withDefault([]),
+  status: parseAsArrayOf(parseAsString).withDefault([]),
   from: parseAsString.withDefault(""),
   to: parseAsString.withDefault(""),
   // advanced filter

@@ -4,7 +4,7 @@ import { CompetitionsTable } from "./_components/competitions-table";
 import {
   getCompetitions,
   getStateCounts,
-  getEventCounts,
+  getStatusCounts,
 } from "./_lib/queries";
 import { SearchParams } from "@/types";
 import { getValidFilters } from "@/lib/data-table";
@@ -28,7 +28,7 @@ export default async function Page(props: PageProps) {
       filters: validFilters,
     }),
     getStateCounts(),
-    getEventCounts(),
+    getStatusCounts(),
   ]);
 
   return (

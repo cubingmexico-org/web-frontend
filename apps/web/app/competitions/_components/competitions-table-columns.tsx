@@ -6,6 +6,7 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 import type { Competition } from "../_types";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
+import { Badge } from "@workspace/ui/components/badge";
 
 export function getColumns(): ColumnDef<Competition>[] {
   return [
@@ -31,8 +32,27 @@ export function getColumns(): ColumnDef<Competition>[] {
         <DataTableColumnHeader column={column} title="Nombre" />
       ),
       cell: ({ row }) => {
+        const enumValues = {
+          past: "Pasada",
+          in_progress: "En progreso",
+          upcoming: "Próxima",
+        };
+        const label =
+          enumValues[row.original.status as keyof typeof enumValues];
+
         return (
           <div className="flex space-x-2">
+            <Badge
+              variant={
+                row.original.status === "upcoming"
+                  ? "default"
+                  : row.original.status === "in_progress"
+                    ? "outline"
+                    : "secondary"
+              }
+            >
+              {label}
+            </Badge>
             <Link
               className="max-w-[31.25rem] truncate font-medium hover:underline"
               href={`https://www.worldcubeassociation.org/competitions/${row.original.id}`}
@@ -44,7 +64,6 @@ export function getColumns(): ColumnDef<Competition>[] {
           </div>
         );
       },
-      enableSorting: false,
       enableHiding: false,
     },
     {
@@ -81,6 +100,9 @@ export function getColumns(): ColumnDef<Competition>[] {
       },
       enableSorting: false,
       enableHiding: false,
+    },
+    {
+      accessorKey: "status",
     },
   ];
 }

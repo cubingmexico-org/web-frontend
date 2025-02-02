@@ -8,24 +8,25 @@ import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import type {
   getCompetitions,
   getStateCounts,
-  getEventCounts,
+  getStatusCounts,
 } from "../_lib/queries";
 import { getColumns } from "./competitions-table-columns";
 import type { Competition } from "../_types";
-import { getEventsIcon } from "../_lib/utils";
+import { formatStatusName, getStatusIcon } from "../_lib/utils";
+// import { getEventsIcon } from "../_lib/utils";
 
 interface CompetitionsTableProps {
   promises: Promise<
     [
       Awaited<ReturnType<typeof getCompetitions>>,
       Awaited<ReturnType<typeof getStateCounts>>,
-      Awaited<ReturnType<typeof getEventCounts>>,
+      Awaited<ReturnType<typeof getStatusCounts>>,
     ]
   >;
 }
 
 export function CompetitionsTable({ promises }: CompetitionsTableProps) {
-  const [{ data, pageCount }, stateCounts, eventCounts] = React.use(promises);
+  const [{ data, pageCount }, stateCounts, statusCounts] = React.use(promises);
 
   const columns = React.useMemo(() => getColumns(), []);
 
@@ -56,14 +57,17 @@ export function CompetitionsTable({ promises }: CompetitionsTableProps) {
       })),
     },
     {
-      id: "events",
-      label: "Eventos",
-      options: Object.keys(eventCounts).map((name) => ({
-        label: name,
-        value: name,
-        icon: getEventsIcon(name),
-        count: eventCounts[name],
-      })),
+      id: "status",
+      label: "Estatus",
+      options: Object.keys(statusCounts).map((name) => {
+        const statusName = name as "past" | "in_progress" | "upcoming";
+        return {
+          label: formatStatusName(statusName),
+          value: statusName,
+          icon: getStatusIcon(statusName),
+          count: statusCounts[statusName],
+        };
+      }),
     },
   ];
 
@@ -75,6 +79,9 @@ export function CompetitionsTable({ promises }: CompetitionsTableProps) {
     initialState: {
       sorting: [{ id: "startDate", desc: true }],
       columnPinning: { right: ["actions"] },
+      columnVisibility: {
+        status: false,
+      },
     },
     getRowId: (originalRow) => originalRow.id,
     shallow: false,

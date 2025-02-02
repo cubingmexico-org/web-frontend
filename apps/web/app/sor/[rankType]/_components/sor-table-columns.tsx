@@ -17,12 +17,12 @@ export function getColumns(
 ): ColumnDef<SumOfRanks>[] {
   const columns: ColumnDef<SumOfRanks>[] = [
     {
-      accessorKey: "regionRank",
+      accessorKey: "rank",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="#" className="ml-2" />
       ),
       cell: ({ row }) => {
-        return <div className="ml-2 w-2">{row.getValue("regionRank")}</div>;
+        return <div className="ml-2 w-2">{row.getValue("rank")}</div>;
       },
       enableHiding: false,
     },

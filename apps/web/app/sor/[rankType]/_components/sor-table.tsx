@@ -73,7 +73,7 @@ export function SORTable({ promises, rankType }: SORTableProps) {
     pageCount,
     filterFields,
     initialState: {
-      sorting: [{ id: "regionRank", desc: false }],
+      sorting: [{ id: "rank", desc: false }],
       columnPinning: { right: ["actions"] },
       columnVisibility: {
         gender: false,

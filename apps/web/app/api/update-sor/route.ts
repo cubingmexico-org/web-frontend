@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { EXCLUDED_EVENTS } from "@/lib/constants";
 import { sumOfRanks } from "@/db/schema";
 
@@ -71,47 +71,41 @@ export async function POST(): Promise<NextResponse> {
     `;
 
     await db.transaction(async (tx) => {
+      await tx.delete(sumOfRanks).where(eq(sumOfRanks.resultType, "single"));
+
       const data = await tx.execute(singleQuery);
 
       const persons = data.rows as {
         id: string;
-        name: string;
         events: { eventId: string; countryRank: number; completed: boolean }[];
         overall: number;
       }[];
 
       persons.forEach(async (person, index) => {
         await tx.insert(sumOfRanks).values({
-          regionRank: index + 1,
+          rank: index + 1,
           personId: person.id,
           resultType: "single",
           overall: person.overall,
           events: person.events,
         });
-        // .onConflictDoUpdate({
-        //   target: [sumOfRanks.personId, sumOfRanks.resultType],
-        //   set: {
-        //     regionRank: index + 1,
-        //     overall: person.overall,
-        //     events: person.events,
-        //   },
-        // });
       });
     });
 
     await db.transaction(async (tx) => {
+      await tx.delete(sumOfRanks).where(eq(sumOfRanks.resultType, "average"));
+
       const data = await tx.execute(averageQuery);
 
       const persons = data.rows as {
         id: string;
-        name: string;
         events: { eventId: string; countryRank: number; completed: boolean }[];
         overall: number;
       }[];
 
       persons.forEach(async (person, index) => {
         await tx.insert(sumOfRanks).values({
-          regionRank: index + 1,
+          rank: index + 1,
           personId: person.id,
           resultType: "average",
           overall: person.overall,

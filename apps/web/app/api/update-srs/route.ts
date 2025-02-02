@@ -7,7 +7,10 @@ import { EXCLUDED_EVENTS } from "@/lib/constants";
 export async function POST(): Promise<NextResponse> {
   try {
     const states = await db.select().from(state);
-    const events = await db.select().from(event).where(notInArray(event.id, EXCLUDED_EVENTS));
+    const events = await db
+      .select()
+      .from(event)
+      .where(notInArray(event.id, EXCLUDED_EVENTS));
 
     await db.update(rankSingle).set({ stateRank: null });
     await db.update(rankAverage).set({ stateRank: null });
@@ -86,14 +89,24 @@ export async function POST(): Promise<NextResponse> {
         await tx
           .update(rankSingle)
           .set({ stateRank: update.stateRank })
-          .where(and(eq(rankSingle.personId, update.personId), eq(rankSingle.eventId, update.eventId)));
+          .where(
+            and(
+              eq(rankSingle.personId, update.personId),
+              eq(rankSingle.eventId, update.eventId),
+            ),
+          );
       }
 
       for (const update of averageUpdates) {
         await tx
           .update(rankAverage)
           .set({ stateRank: update.stateRank })
-          .where(and(eq(rankAverage.personId, update.personId), eq(rankAverage.eventId, update.eventId)));
+          .where(
+            and(
+              eq(rankAverage.personId, update.personId),
+              eq(rankAverage.eventId, update.eventId),
+            ),
+          );
       }
     });
 

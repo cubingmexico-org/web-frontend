@@ -1,59 +1,116 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { and, eq, min, ne, notInArray, or, sql } from "drizzle-orm";
-import { person, rankSingle, state } from "@/db/schema";
+import { sql } from "drizzle-orm";
 import { EXCLUDED_EVENTS } from "@/lib/constants";
+import { kinchRanks } from "@/db/schema";
+
+const SINGLE_EVENTS = ["333fm", "333bf", "333mbf", "444bf", "555bf"];
 
 export async function POST(): Promise<NextResponse> {
-  const input = {
-    state: "Nayarit",
-    gender: undefined,
-  }
-
   try {
-    const subquerySingleWhere = await db
-          .select({
-            eventId: rankSingle.eventId,
-            countryRank: min(rankSingle.countryRank),
-          })
-          .from(rankSingle)
-          .innerJoin(person, eq(rankSingle.personId, person.id))
-          .leftJoin(state, eq(person.stateId, state.id))
-          .where(
-            and(
-              ne(rankSingle.countryRank, 0),
-              input.state ? eq(state.name, input.state) : undefined,
-              input.gender ? eq(person.gender, input.gender) : undefined,
-              notInArray(rankSingle.eventId, EXCLUDED_EVENTS),
-            ),
+    const query = sql`
+      WITH PersonalRecords AS (
+        SELECT
+          "personId",
+          "eventId",
+          MIN(best) AS personal_best,
+          'average' AS type
+        FROM "ranksAverage"
+        WHERE "eventId" NOT IN (${sql.join(EXCLUDED_EVENTS, sql`, `)})
+        GROUP BY "personId", "eventId"
+        UNION ALL
+        SELECT
+          "personId",
+          "eventId",
+          MIN(best) AS personal_best,
+          'single' AS type
+        FROM "ranksSingle"
+        WHERE "eventId" IN (${sql.join(SINGLE_EVENTS, sql`, `)})
+        GROUP BY "personId", "eventId"
+      ),
+      NationalRecords AS (
+        SELECT
+          "eventId",
+          MIN(best) AS national_best,
+          'average' AS type
+        FROM "ranksAverage"
+        WHERE "countryRank" = 1 AND "eventId" NOT IN (${sql.join(EXCLUDED_EVENTS, sql`, `)})
+        GROUP BY "eventId"
+        UNION ALL
+        SELECT
+          "eventId",
+          MIN(best) AS national_best,
+          'single' AS type
+        FROM "ranksSingle"
+        WHERE "countryRank" = 1 AND "eventId" IN (${sql.join(SINGLE_EVENTS, sql`, `)})
+        GROUP BY "eventId"
+      ),
+      Persons AS (
+        SELECT DISTINCT "personId" FROM "ranksSingle"
+      ),
+      Events AS (
+        SELECT id FROM "events" WHERE id NOT IN (${sql.join(EXCLUDED_EVENTS, sql`, `)})
+      ),
+      Ratios AS (
+        SELECT  
+          p."personId",
+          e.id AS "eventId",
+          MAX(
+            CASE 
+              WHEN e.id = '333mbf' THEN
+                CASE 
+                  WHEN COALESCE(pr.personal_best, 0) != 0 THEN 
+                    ((99 - CAST(SUBSTRING(CAST(pr.personal_best AS TEXT), 1, 2) AS FLOAT) + 
+                    (1 - (CAST(SUBSTRING(CAST(pr.personal_best AS TEXT), 3, 5) AS FLOAT) / 3600))) / 
+                      ((99 - CAST(SUBSTRING(CAST(nr.national_best AS TEXT), 1, 2) AS FLOAT)) + 
+                      (1 - (CAST(SUBSTRING(CAST(nr.national_best AS TEXT), 3, 5) AS FLOAT) / 3600)))) * 100
+                  ELSE 0
+                END
+              WHEN COALESCE(pr.personal_best, 0) != 0 THEN 
+                (nr.national_best / COALESCE(pr.personal_best, 0)::FLOAT) * 100
+              ELSE 0
+            END
+          ) AS best_ratio
+        FROM Persons p
+        CROSS JOIN Events e
+        LEFT JOIN PersonalRecords pr ON p."personId" = pr."personId" AND e.id = pr."eventId"
+        LEFT JOIN NationalRecords nr ON e.id = nr."eventId" AND pr.type = nr.type
+        GROUP BY p."personId", e.id
+      )
+      SELECT 
+        r."personId" as id,
+        json_agg(
+          json_build_object(
+            'eventId', r."eventId",
+            'ratio', r.best_ratio
           )
-          .groupBy(rankSingle.eventId);
+        ) AS events,
+        AVG(r.best_ratio) AS overall
+      FROM Ratios r
+      GROUP BY r."personId"
+      ORDER BY overall DESC;
+    `;
 
-    const singleWhere = and(
-      subquerySingleWhere.length > 0
-        ? or(
-            ...subquerySingleWhere.map(
-              (row) =>
-                sql`${rankSingle.eventId} = ${row.eventId} AND ${rankSingle.countryRank} = ${row.countryRank}`,
-            ),
-          )
-        : undefined,
-      input.state ? eq(state.name, input.state) : undefined,
-      input.gender ? eq(person.gender, input.gender) : undefined,
-      notInArray(rankSingle.eventId, EXCLUDED_EVENTS),
-    );
+    await db.transaction(async (tx) => {
+      await tx.delete(kinchRanks);
 
-    const singleRecords = await db
-            .select({
-              best: rankSingle.best,
-              eventId: rankSingle.eventId,
-            })
-            .from(rankSingle)
-            .innerJoin(person, eq(rankSingle.personId, person.id))
-            .leftJoin(state, eq(person.stateId, state.id))
-            .where(singleWhere)
+      const data = await tx.execute(query);
 
-      console.log(singleRecords);
+      const persons = data.rows as {
+        id: string;
+        events: { eventId: string; ratio: number }[];
+        overall: number;
+      }[];
+
+      persons.forEach(async (person, index) => {
+        await tx.insert(kinchRanks).values({
+          rank: index + 1,
+          personId: person.id,
+          overall: person.overall,
+          events: person.events,
+        });
+      });
+    });
 
     return NextResponse.json({
       success: true,

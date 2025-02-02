@@ -35,7 +35,7 @@ export async function getSOR(
         const { data, total } = await db.transaction(async (tx) => {
           const data = await tx
             .select({
-              regionRank: sumOfRanks.regionRank,
+              rank: sumOfRanks.rank,
               personId: sumOfRanks.personId,
               name: person.name,
               overall: sumOfRanks.overall,

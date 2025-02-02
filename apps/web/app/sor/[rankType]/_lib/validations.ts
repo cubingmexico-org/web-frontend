@@ -12,7 +12,7 @@ export const searchParamsCache = createSearchParamsCache({
   page: parseAsInteger.withDefault(1),
   perPage: parseAsInteger.withDefault(10),
   sort: getSortingStateParser<SumOfRanks>().withDefault([
-    { id: "regionRank", desc: false },
+    { id: "rank", desc: false },
   ]),
   name: parseAsString.withDefault(""),
   state: parseAsArrayOf(parseAsString).withDefault([]),

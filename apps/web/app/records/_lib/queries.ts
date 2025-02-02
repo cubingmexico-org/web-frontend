@@ -10,16 +10,19 @@ export async function getRecords(input: GetRecordsSchema) {
   return await unstable_cache(
     async () => {
       try {
-
         const singleWhere = and(
-          input.state ? eq(rankSingle.stateRank, 1) : eq(rankSingle.countryRank, 1),
+          input.state
+            ? eq(rankSingle.stateRank, 1)
+            : eq(rankSingle.countryRank, 1),
           input.state ? eq(state.name, input.state) : undefined,
           // input.gender ? eq(person.gender, input.gender) : undefined,
           notInArray(event.id, EXCLUDED_EVENTS),
         );
 
         const averageWhere = and(
-          input.state ? eq(rankAverage.stateRank, 1) : eq(rankAverage.countryRank, 1),
+          input.state
+            ? eq(rankAverage.stateRank, 1)
+            : eq(rankAverage.countryRank, 1),
           input.state ? eq(state.name, input.state) : undefined,
           // input.gender ? eq(person.gender, input.gender) : undefined,
           notInArray(event.id, EXCLUDED_EVENTS),

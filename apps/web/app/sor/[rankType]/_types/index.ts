@@ -1,5 +1,5 @@
 export interface SumOfRanks {
-  regionRank: number | null;
+  rank: number | null;
   personId: string;
   name: string | null;
   overall: number | null;

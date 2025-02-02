@@ -8,6 +8,7 @@ import {
   primaryKey,
   timestamp,
   json,
+  doublePrecision,
 } from "drizzle-orm/pg-core";
 
 // WCA
@@ -205,12 +206,12 @@ export const sponsor = pgTable("sponsors", {
 export const sumOfRanks = pgTable(
   "sumOfRanks",
   {
-    regionRank: integer("regionRank"),
+    rank: integer("rank").notNull(),
     personId: varchar("personId", { length: 10 })
       .notNull()
       .references(() => person.id),
     resultType: varchar("resultType", { length: 7 }).notNull(),
-    overall: integer("overall"),
+    overall: integer("overall").notNull(),
     events: json("events").notNull(),
   },
   (table) => {
@@ -223,3 +224,24 @@ export const sumOfRanks = pgTable(
 );
 
 export type SumOfRanks = InferSelectModel<typeof sumOfRanks>;
+
+export const kinchRanks = pgTable(
+  "kinchRanks",
+  {
+    rank: integer("rank").notNull(),
+    personId: varchar("personId", { length: 10 })
+      .notNull()
+      .references(() => person.id),
+    overall: doublePrecision("overall").notNull(),
+    events: json("events").notNull(),
+  },
+  (table) => {
+    return [
+      {
+        pk: primaryKey({ columns: [table.personId] }),
+      },
+    ];
+  },
+);
+
+export type KinchRanks = InferSelectModel<typeof kinchRanks>;

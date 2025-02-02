@@ -44,6 +44,7 @@ export function getColumns(): ColumnDef<Competition>[] {
           </div>
         );
       },
+      enableSorting: false,
       enableHiding: false,
     },
     {
@@ -61,6 +62,7 @@ export function getColumns(): ColumnDef<Competition>[] {
           </div>
         );
       },
+      enableSorting: false,
       enableHiding: false,
     },
     {
@@ -77,6 +79,7 @@ export function getColumns(): ColumnDef<Competition>[] {
           </div>
         );
       },
+      enableSorting: false,
       enableHiding: false,
     },
   ];

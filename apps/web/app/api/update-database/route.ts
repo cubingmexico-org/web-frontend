@@ -308,7 +308,6 @@ export async function POST(): Promise<NextResponse> {
                   pos: row.pos,
                   best: row.best,
                   average: row.average,
-                  personName: row.personName,
                   personId: row.personId,
                   // personCountryId: row.personCountryId,
                   formatId: row.formatId,
@@ -327,6 +326,7 @@ export async function POST(): Promise<NextResponse> {
       }
     }
 
+    console.log("Database updated successfully");
     return NextResponse.json({
       success: true,
       message: "Database updated successfully",

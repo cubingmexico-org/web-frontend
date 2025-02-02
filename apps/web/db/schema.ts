@@ -50,9 +50,10 @@ export type Event = InferSelectModel<typeof event>;
 
 export const competitionEvent = pgTable("competition_events", {
   competitionId: varchar("competitionId", { length: 32 }).references(
-    () => competition.id,
-  ),
-  eventId: varchar("eventId", { length: 6 }).references(() => event.id),
+    () => competition.id, { onDelete: "cascade" },
+  ).notNull(),
+  eventId: varchar("eventId", { length: 6 }).references(() => event.id, { onDelete: "cascade" },
+  ).notNull(),
 });
 
 export type CompetitionEvent = InferSelectModel<typeof competitionEvent>;
@@ -72,7 +73,7 @@ export const rankAverage = pgTable(
   {
     personId: varchar("personId", { length: 10 })
       .notNull()
-      .references(() => person.id),
+      .references(() => person.id, { onDelete: "cascade" }),
     eventId: varchar("eventId", { length: 6 })
       .notNull()
       .references(() => event.id),
@@ -99,7 +100,7 @@ export const rankSingle = pgTable(
   {
     personId: varchar("personId", { length: 10 })
       .notNull()
-      .references(() => person.id),
+      .references(() => person.id, { onDelete: "cascade" }),
     eventId: varchar("eventId", { length: 6 })
       .notNull()
       .references(() => event.id),
@@ -134,10 +135,9 @@ export const result = pgTable(
     pos: smallint("pos").default(0),
     best: integer("best").notNull().default(0),
     average: integer("average").notNull().default(0),
-    personName: varchar("personName", { length: 80 }),
     personId: varchar("personId", { length: 10 })
       .notNull()
-      .references(() => person.id),
+      .references(() => person.id, { onDelete: "cascade" }),
     // personCountryId: varchar("personCountryId", { length: 50 }),
     formatId: varchar("formatId", { length: 1 }).notNull(),
     value1: integer("value1").notNull().default(0),

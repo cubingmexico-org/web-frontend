@@ -31,6 +31,9 @@ export function Header() {
           <Link className="mr-5 hover:text-muted-foreground" href="/sor/single">
             SOR
           </Link>
+          <Link className="mr-5 hover:text-muted-foreground" href="/kinch">
+            Kinch
+          </Link>
           <Link className="mr-5 hover:text-muted-foreground" href="/about">
             Acerca de
           </Link>

@@ -11,6 +11,7 @@ import { getValidFilters } from "@/lib/data-table";
 import { searchParamsCache } from "./_lib/validations";
 import { DateRangePicker } from "@/components/date-range-picker";
 import { Skeleton } from "@workspace/ui/components/skeleton";
+import { Map } from "./_components/map";
 
 interface PageProps {
   searchParams: Promise<SearchParams>;
@@ -60,6 +61,9 @@ export default async function Page(props: PageProps) {
         >
           <CompetitionsTable promises={promises} />
         </React.Suspense>
+      </div>
+      <div className="bg-white-700 mx-auto my-5 w-[98%] h-[480px]">
+        <Map posix={[23.9345, -102.5528]} />
       </div>
     </main>
   );

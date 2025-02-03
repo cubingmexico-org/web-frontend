@@ -33,7 +33,6 @@ export function getColumns(): ColumnDef<KinchRanks>[] {
           <div className="flex space-x-2 w-72">{row.getValue("name")}</div>
         );
       },
-      enableSorting: false,
       enableHiding: false,
     },
     {
@@ -46,7 +45,6 @@ export function getColumns(): ColumnDef<KinchRanks>[] {
           {(row.getValue("overall") as number).toFixed(2)}
         </div>
       ),
-      enableSorting: false,
       enableHiding: false,
     },
     {

@@ -6,7 +6,7 @@ import {
   parseAsStringEnum,
 } from "nuqs/server";
 import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers";
-import type { Competition } from "@/db/schema";
+import type { Competition } from "../_types";
 
 export const searchParamsCache = createSearchParamsCache({
   page: parseAsInteger.withDefault(1),

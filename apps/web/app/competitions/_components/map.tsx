@@ -1,30 +1,30 @@
-"use client"
+"use client";
 
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { LatLngExpression, LatLngTuple } from 'leaflet';
+import { LatLngExpression, LatLngTuple } from "leaflet";
 
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
 
 interface MapProps {
-  posix: LatLngExpression | LatLngTuple,
-  zoom?: number,
+  posix: LatLngExpression | LatLngTuple;
+  zoom?: number;
   locations: {
     id: string;
     name: string;
     state: string | null;
     latitutude: number | null;
     longitude: number | null;
-  }[]
+  }[];
 }
 
 const defaults = {
   zoom: 5,
-}
+};
 
 export function Map(Map: MapProps) {
-  const { zoom = defaults.zoom, posix, locations } = Map
+  const { zoom = defaults.zoom, posix, locations } = Map;
 
   return (
     <MapContainer
@@ -40,7 +40,10 @@ export function Map(Map: MapProps) {
       {locations.map(({ id, name, state, latitutude, longitude }) => (
         <Marker
           key={id}
-          position={[latitutude && latitutude/1000000 || 0, longitude && longitude/1000000 || 0]}
+          position={[
+            (latitutude && latitutude / 1000000) || 0,
+            (longitude && longitude / 1000000) || 0,
+          ]}
         >
           <Popup>
             <b>{name}</b>
@@ -50,5 +53,5 @@ export function Map(Map: MapProps) {
         </Marker>
       ))}
     </MapContainer>
-  )
+  );
 }

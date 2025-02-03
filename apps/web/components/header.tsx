@@ -28,6 +28,9 @@ export function Header() {
           <Link className="mr-5 hover:text-muted-foreground" href="/records">
             Récords
           </Link>
+          <Link className="mr-5 hover:text-muted-foreground" href="/persons">
+            Personas
+          </Link>
           <Link className="mr-5 hover:text-muted-foreground" href="/sor/single">
             SOR
           </Link>

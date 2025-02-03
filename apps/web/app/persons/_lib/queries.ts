@@ -1,21 +1,28 @@
 import "server-only";
 import { db } from "@/db";
-import { type State, state, person, sumOfRanks } from "@/db/schema";
-import { and, count, ilike, gt, eq, desc, asc, inArray } from "drizzle-orm";
+import { state, person, type State, result, competition } from "@/db/schema";
+import {
+  and,
+  count,
+  ilike,
+  gt,
+  eq,
+  desc,
+  asc,
+  inArray,
+  countDistinct,
+  sql,
+} from "drizzle-orm";
 import { unstable_cache } from "@/lib/unstable-cache";
-import { type GetSORSinglesSchema } from "./validations";
+import { type GetPersonSinglesSchema } from "./validations";
 
-export async function getSOR(
-  input: GetSORSinglesSchema,
-  rankType: "single" | "average",
-) {
+export async function getPersons(input: GetPersonSinglesSchema) {
   return await unstable_cache(
     async () => {
       try {
         const offset = (input.page - 1) * input.perPage;
 
         const where = and(
-          eq(sumOfRanks.resultType, rankType),
           input.name ? ilike(person.name, `%${input.name}%`) : undefined,
           input.state.length > 0 ? inArray(state.name, input.state) : undefined,
           input.gender.length > 0
@@ -27,49 +34,72 @@ export async function getSOR(
           input.sort.length > 0
             ? input.sort.map((item) => {
                 switch (item.id) {
-                  case "name":
-                    return item.desc ? desc(person.name) : asc(person.name);
                   case "state":
                     return item.desc ? desc(state.name) : asc(state.name);
-                  case "gender":
-                    return item.desc ? desc(person.gender) : asc(person.gender);
+                  case "competitions":
+                    return item.desc
+                      ? desc(countDistinct(result.competitionId))
+                      : asc(countDistinct(result.competitionId));
+                  case "states":
+                    return item.desc
+                      ? desc(countDistinct(competition.stateId))
+                      : asc(countDistinct(competition.stateId));
+                  case "podiums":
+                    return item.desc
+                      ? desc(
+                          sql`count(CASE WHEN ${result.roundTypeId} IN ('f', 'c') AND ${result.pos} IN (1, 2, 3) AND ${result.best} > 0 THEN 1 END)`,
+                        )
+                      : asc(
+                          sql`count(CASE WHEN ${result.roundTypeId} IN ('f', 'c') AND ${result.pos} IN (1, 2, 3) AND ${result.best} > 0 THEN 1 END)`,
+                        );
                   default:
                     return item.desc
-                      ? desc(sumOfRanks[item.id])
-                      : asc(sumOfRanks[item.id]);
+                      ? desc(person[item.id])
+                      : asc(person[item.id]);
                 }
               })
-            : [asc(sumOfRanks.overall)];
+            : [asc(person.name)];
 
         const { data, total } = await db.transaction(async (tx) => {
           const data = await tx
             .select({
-              rank: sumOfRanks.rank,
-              personId: sumOfRanks.personId,
+              id: person.id,
               name: person.name,
-              overall: sumOfRanks.overall,
-              events: sumOfRanks.events,
-              state: state.name,
               gender: person.gender,
+              state: state.name,
+              competitions: countDistinct(result.competitionId),
+              states: countDistinct(competition.stateId),
+              podiums: count(
+                sql`CASE 
+                      WHEN ${result.roundTypeId} IN ('f', 'c') 
+                      AND ${result.pos} IN (1, 2, 3) 
+                      AND ${result.best} > 0 
+                      THEN 1 
+                    END`,
+              ),
             })
-            .from(sumOfRanks)
-            .innerJoin(person, eq(sumOfRanks.personId, person.id))
+            .from(person)
             .leftJoin(state, eq(person.stateId, state.id))
+            .innerJoin(result, eq(person.id, result.personId))
+            .innerJoin(competition, eq(result.competitionId, competition.id))
             .limit(input.perPage)
             .offset(offset)
             .where(where)
+            .groupBy(person.id, state.name)
             .orderBy(...orderBy);
 
           const total = (await tx
             .select({
               count: count(),
             })
-            .from(sumOfRanks)
-            .innerJoin(person, eq(sumOfRanks.personId, person.id))
+            .from(person)
             .leftJoin(state, eq(person.stateId, state.id))
+            .innerJoin(result, eq(person.id, result.personId))
+            .innerJoin(competition, eq(result.competitionId, competition.id))
             .where(where)
+            .groupBy(person.id, state.name)
             .execute()
-            .then((res) => res[0]?.count ?? 0)) as number;
+            .then((res) => res.length)) as number;
 
           return {
             data,
@@ -84,15 +114,15 @@ export async function getSOR(
         return { data: [], pageCount: 0 };
       }
     },
-    [JSON.stringify(input), rankType],
+    [JSON.stringify(input)],
     {
       revalidate: 3600,
-      tags: ["sor"],
+      tags: ["persons"],
     },
   )();
 }
 
-export async function getSORStateCounts(rankType: "single" | "average") {
+export async function getPersonsStateCounts() {
   return unstable_cache(
     async () => {
       try {
@@ -101,10 +131,8 @@ export async function getSORStateCounts(rankType: "single" | "average") {
             state: state.name,
             count: count(),
           })
-          .from(sumOfRanks)
-          .innerJoin(person, eq(sumOfRanks.personId, person.id))
+          .from(person)
           .leftJoin(state, eq(person.stateId, state.id))
-          .where(eq(sumOfRanks.resultType, rankType))
           .groupBy(state.name)
           .having(gt(count(), 0))
           .orderBy(state.name)
@@ -123,14 +151,14 @@ export async function getSORStateCounts(rankType: "single" | "average") {
         return {} as Record<State["name"], number>;
       }
     },
-    ["sor-state-counts", rankType],
+    ["persons-state-counts"],
     {
       revalidate: 3600,
     },
   )();
 }
 
-export async function getSORGenderCounts(rankType: "single" | "average") {
+export async function getPersonsGenderCounts() {
   return unstable_cache(
     async () => {
       try {
@@ -139,9 +167,7 @@ export async function getSORGenderCounts(rankType: "single" | "average") {
             gender: person.gender,
             count: count(),
           })
-          .from(sumOfRanks)
-          .innerJoin(person, eq(sumOfRanks.personId, person.id))
-          .where(eq(sumOfRanks.resultType, rankType))
+          .from(person)
           .groupBy(person.gender)
           .having(gt(count(), 0))
           .orderBy(person.gender)
@@ -160,7 +186,7 @@ export async function getSORGenderCounts(rankType: "single" | "average") {
         return {} as Record<string, number>;
       }
     },
-    ["sor-gender-counts", rankType],
+    ["persons-gender-counts"],
     {
       revalidate: 3600,
     },

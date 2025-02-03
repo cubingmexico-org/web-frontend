@@ -21,11 +21,20 @@ export async function getKinch(input: GetKinchSinglesSchema) {
 
         const orderBy =
           input.sort.length > 0
-            ? input.sort.map((item) =>
-                item.desc
-                  ? desc(kinchRanks[item.id])
-                  : asc(kinchRanks[item.id]),
-              )
+            ? input.sort.map((item) => {
+                switch (item.id) {
+                  case "name":
+                    return item.desc ? desc(person.name) : asc(person.name);
+                  case "state":
+                    return item.desc ? desc(state.name) : asc(state.name);
+                  case "gender":
+                    return item.desc ? desc(person.gender) : asc(person.gender);
+                  default:
+                    return item.desc
+                      ? desc(kinchRanks[item.id])
+                      : asc(kinchRanks[item.id]);
+                }
+              })
             : [asc(kinchRanks.overall)];
 
         const { data, total } = await db.transaction(async (tx) => {
@@ -74,7 +83,7 @@ export async function getKinch(input: GetKinchSinglesSchema) {
     [JSON.stringify(input)],
     {
       revalidate: 3600,
-      tags: ["sor"],
+      tags: ["kinch"],
     },
   )();
 }

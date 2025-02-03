@@ -36,7 +36,6 @@ export function getColumns(
           <div className="flex space-x-2 w-72">{row.getValue("name")}</div>
         );
       },
-      enableSorting: false,
       enableHiding: false,
     },
     {
@@ -49,7 +48,6 @@ export function getColumns(
           {row.getValue("overall")}
         </div>
       ),
-      enableSorting: false,
       enableHiding: false,
     },
     {

@@ -36,11 +36,20 @@ export async function getRankSingles(
 
         const orderBy =
           input.sort.length > 0
-            ? input.sort.map((item) =>
-                item.desc
-                  ? desc(rankSingle[item.id])
-                  : asc(rankSingle[item.id]),
-              )
+            ? input.sort.map((item) => {
+                switch (item.id) {
+                  case "state":
+                    return item.desc ? desc(state.name) : asc(state.name);
+                  case "name":
+                    return item.desc ? desc(person.name) : asc(person.name);
+                  case "gender":
+                    return item.desc ? desc(person.gender) : asc(person.gender);
+                  default:
+                    return item.desc
+                      ? desc(rankSingle[item.id])
+                      : asc(rankSingle[item.id]);
+                }
+              })
             : [asc(rankSingle.countryRank)];
 
         const { data, total } = await db.transaction(async (tx) => {
@@ -190,11 +199,20 @@ export async function getRankAverages(
 
         const orderBy =
           input.sort.length > 0
-            ? input.sort.map((item) =>
-                item.desc
-                  ? desc(rankAverage[item.id])
-                  : asc(rankAverage[item.id]),
-              )
+            ? input.sort.map((item) => {
+                switch (item.id) {
+                  case "state":
+                    return item.desc ? desc(state.name) : asc(state.name);
+                  case "name":
+                    return item.desc ? desc(person.name) : asc(person.name);
+                  case "gender":
+                    return item.desc ? desc(person.gender) : asc(person.gender);
+                  default:
+                    return item.desc
+                      ? desc(rankSingle[item.id])
+                      : asc(rankSingle[item.id]);
+                }
+              })
             : [asc(rankAverage.countryRank)];
 
         const { data, total } = await db.transaction(async (tx) => {

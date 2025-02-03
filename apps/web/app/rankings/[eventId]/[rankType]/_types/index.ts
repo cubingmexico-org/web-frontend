@@ -1,4 +1,4 @@
-interface Rank {
+export interface Rank {
   personId: string;
   countryRank: number;
   best: number;

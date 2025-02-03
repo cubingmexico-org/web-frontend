@@ -10,16 +10,6 @@ import { usePathname } from "next/navigation";
 
 export function getColumns(): ColumnDef<RankSingle>[] {
   return [
-    // {
-    //   accessorKey: "stateRank",
-    //   header: ({ column }) => (
-    //     <DataTableColumnHeader column={column} title="SR" className="ml-2" />
-    //   ),
-    //   cell: ({ row }) => {
-    //     return <div className="ml-2 w-2">{row.getValue("stateRank")}</div>;
-    //   },
-    //   enableHiding: false,
-    // },
     {
       accessorKey: "countryRank",
       header: ({ column }) => (
@@ -36,9 +26,10 @@ export function getColumns(): ColumnDef<RankSingle>[] {
         <DataTableColumnHeader column={column} title="Nombre" />
       ),
       cell: ({ row }) => {
-        return <div className="flex space-x-2">{row.getValue("name")}</div>;
+        return (
+          <div className="flex space-x-2 w-72">{row.getValue("name")}</div>
+        );
       },
-      enableSorting: false,
       enableHiding: false,
     },
     {
@@ -76,7 +67,6 @@ export function getColumns(): ColumnDef<RankSingle>[] {
           </div>
         );
       },
-      enableSorting: false,
       enableHiding: false,
     },
     {
@@ -99,7 +89,6 @@ export function getColumns(): ColumnDef<RankSingle>[] {
           </div>
         );
       },
-      enableSorting: false,
       enableHiding: false,
     },
     {

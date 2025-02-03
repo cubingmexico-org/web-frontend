@@ -6,7 +6,7 @@ import {
   parseAsStringEnum,
 } from "nuqs/server";
 import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers";
-import { type SumOfRanks } from "@/db/schema";
+import type { SumOfRanks } from "../_types";
 
 export const searchParamsCache = createSearchParamsCache({
   page: parseAsInteger.withDefault(1),
@@ -17,8 +17,6 @@ export const searchParamsCache = createSearchParamsCache({
   name: parseAsString.withDefault(""),
   state: parseAsArrayOf(parseAsString).withDefault([]),
   gender: parseAsArrayOf(parseAsString).withDefault([]),
-  from: parseAsString.withDefault(""),
-  to: parseAsString.withDefault(""),
   // advanced filter
   filters: getFiltersStateParser().withDefault([]),
   joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),

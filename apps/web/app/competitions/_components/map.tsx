@@ -10,6 +10,13 @@ import "leaflet-defaulticon-compatibility";
 interface MapProps {
   posix: LatLngExpression | LatLngTuple,
   zoom?: number,
+  locations: {
+    id: string;
+    name: string;
+    state: string | null;
+    latitutude: number | null;
+    longitude: number | null;
+  }[]
 }
 
 const defaults = {
@@ -17,7 +24,7 @@ const defaults = {
 }
 
 export function Map(Map: MapProps) {
-  const { zoom = defaults.zoom, posix } = Map
+  const { zoom = defaults.zoom, posix, locations } = Map
 
   return (
     <MapContainer
@@ -30,9 +37,18 @@ export function Map(Map: MapProps) {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Marker position={posix} draggable={false}>
-        <Popup>Hey ! I study here</Popup>
-      </Marker>
+      {locations.map(({ id, name, state, latitutude, longitude }) => (
+        <Marker
+          key={id}
+          position={[latitutude && latitutude/1000000 || 0, longitude && longitude/1000000 || 0]}
+        >
+          <Popup>
+            <b>{name}</b>
+            {state && <br />}
+            {state}
+          </Popup>
+        </Marker>
+      ))}
     </MapContainer>
   )
 }

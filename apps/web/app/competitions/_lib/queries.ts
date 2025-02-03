@@ -42,15 +42,15 @@ export async function getCompetitions(input: GetCompetitionsSchema) {
             : undefined,
           input.status.length > 0
             ? inArray(
-                sql`
+              sql`
             CASE
               WHEN ${competition.startDate} > NOW() THEN 'upcoming'
               WHEN ${competition.endDate} + INTERVAL '1 day' < NOW() THEN 'past'
               ELSE 'in_progress'
             END
           `,
-                input.status,
-              )
+              input.status,
+            )
             : undefined,
           fromDate ? gte(competition.startDate, fromDate) : undefined,
           toDate ? lte(competition.endDate, toDate) : undefined,
@@ -59,10 +59,10 @@ export async function getCompetitions(input: GetCompetitionsSchema) {
         const orderBy =
           input.sort.length > 0
             ? input.sort.map((item) =>
-                item.desc
-                  ? desc(competition[item.id])
-                  : asc(competition[item.id]),
-              )
+              item.desc
+                ? desc(competition[item.id])
+                : asc(competition[item.id]),
+            )
             : [asc(competition.startDate)];
 
         const { data, total } = await db.transaction(async (tx) => {
@@ -250,6 +250,68 @@ export async function getStatusCounts() {
     ["status-counts"],
     {
       revalidate: 3600,
+    },
+  )();
+}
+
+export async function getCompetitionLocations(input: GetCompetitionsSchema) {
+  return await unstable_cache(
+    async () => {
+      try {
+        const fromDate = input.from ? new Date(input.from) : undefined;
+        const toDate = input.to ? new Date(input.to) : undefined;
+
+        const where = and(
+          eq(competition.countryId, "Mexico"),
+          input.name ? ilike(competition.name, `%${input.name}%`) : undefined,
+          input.state.length > 0 ? inArray(state.name, input.state) : undefined,
+          input.events.length > 0
+            ? inArray(event.name, input.events)
+            : undefined,
+          input.status.length > 0
+            ? inArray(
+              sql`
+            CASE
+              WHEN ${competition.startDate} > NOW() THEN 'upcoming'
+              WHEN ${competition.endDate} + INTERVAL '1 day' < NOW() THEN 'past'
+              ELSE 'in_progress'
+            END
+          `,
+              input.status,
+            )
+            : undefined,
+          fromDate ? gte(competition.startDate, fromDate) : undefined,
+          toDate ? lte(competition.endDate, toDate) : undefined,
+        );
+
+        const data = await db
+          .select({
+            id: competition.id,
+            name: competition.name,
+            state: state.name,
+            latitutude: competition.latitude,
+            longitude: competition.longitude,
+          })
+          .from(competition)
+          .leftJoin(state, eq(competition.stateId, state.id))
+          .where(where)
+          .groupBy(
+            competition.id,
+            state.name,
+            competition.latitude,
+            competition.longitude,
+          )
+
+        return data;
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    },
+    [JSON.stringify(input)],
+    {
+      revalidate: 3600,
+      tags: ["competitions"],
     },
   )();
 }

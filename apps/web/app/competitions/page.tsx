@@ -2,6 +2,7 @@ import * as React from "react";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
 import { CompetitionsTable } from "./_components/competitions-table";
 import {
+  getCompetitionLocations,
   getCompetitions,
   getStateCounts,
   getStatusCounts,
@@ -31,6 +32,11 @@ export default async function Page(props: PageProps) {
     getStateCounts(),
     getStatusCounts(),
   ]);
+
+  const locations = await getCompetitionLocations({
+    ...search,
+    filters: validFilters,
+  });
 
   return (
     <main className="flex-grow container mx-auto px-4 py-8">
@@ -63,7 +69,7 @@ export default async function Page(props: PageProps) {
         </React.Suspense>
       </div>
       <div className="bg-white-700 mx-auto my-5 w-[98%] h-[480px]">
-        <Map posix={[23.9345, -102.5528]} />
+        <Map posix={[23.9345, -102.5528]} locations={locations} />
       </div>
     </main>
   );

@@ -13,7 +13,10 @@ import type {
 } from "@/db/schema";
 import {
   competition,
+  competitionDelegate,
   competitionEvent,
+  competitionOrganiser,
+  delegate,
   event,
   person,
   rankAverage,
@@ -74,6 +77,7 @@ export async function POST(): Promise<NextResponse> {
 
         await db.transaction(async (tx) => {
           const states = await tx.select().from(state);
+          const delegates = await tx.select().from(delegate);
           const existingCompetitions = await tx
             .select({ id: competition.id })
             .from(competition);
@@ -107,8 +111,8 @@ export async function POST(): Promise<NextResponse> {
                 endDate: new Date(row.year, row.endMonth - 1, row.endDay),
                 cancelled: row.cancelled,
                 // eventSpecs: row.eventSpecs,
-                wcaDelegate: row.wcaDelegate,
-                organiser: row.organiser,
+                // wcaDelegate: row.wcaDelegate,
+                // organiser: row.organiser,
                 venue: row.venue,
                 venueAddress: row.venueAddress,
                 venueDetails: row.venueDetails,
@@ -120,14 +124,54 @@ export async function POST(): Promise<NextResponse> {
               })
               .onConflictDoNothing();
 
-            for (const eventSpec of row.eventSpecs.split(" ")) {
-              await tx
-                .insert(competitionEvent)
-                .values({
-                  competitionId: row.id,
-                  eventId: eventSpec,
-                })
-                .onConflictDoNothing();
+            if (row.countryId === "Mexico") {
+              for (const eventSpec of row.eventSpecs.split(" ")) {
+                await tx
+                  .insert(competitionEvent)
+                  .values({
+                    competitionId: row.id,
+                    eventId: eventSpec,
+                  })
+                  .onConflictDoNothing();
+              }
+
+              const organiserPattern = /\{([^}]+)\}\{mailto:([^}]+)\}/g;
+              let organiserMatch;
+
+              while (
+                (organiserMatch = organiserPattern.exec(row.organiser)) !== null
+              ) {
+                const organiserEmail = organiserMatch[2]!;
+                await tx
+                  .insert(competitionOrganiser)
+                  .values({
+                    competitionId: row.id,
+                    organiserId: organiserEmail,
+                  })
+                  .onConflictDoNothing();
+              }
+
+              const delegatePattern = /\{([^}]+)\}\{mailto:([^}]+)\}/g;
+              let delegateMatch;
+
+              while (
+                (delegateMatch = delegatePattern.exec(row.wcaDelegate)) !== null
+              ) {
+                const delegateEmail = delegateMatch[2]!;
+                const delegateExists = delegates.some(
+                  (d) => d.id === delegateEmail,
+                );
+
+                if (delegateExists) {
+                  await tx
+                    .insert(competitionDelegate)
+                    .values({
+                      competitionId: row.id,
+                      delegateId: delegateEmail,
+                    })
+                    .onConflictDoNothing();
+                }
+              }
             }
           }
         });

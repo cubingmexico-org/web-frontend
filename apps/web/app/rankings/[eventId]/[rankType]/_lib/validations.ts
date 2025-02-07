@@ -7,6 +7,8 @@ import {
 } from "nuqs/server";
 import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers";
 import type { Rank } from "../_types";
+import * as z from "zod";
+import { person } from "@/db/schema";
 
 export const searchParamsCache = createSearchParamsCache({
   page: parseAsInteger.withDefault(1),
@@ -16,7 +18,7 @@ export const searchParamsCache = createSearchParamsCache({
   ]),
   name: parseAsString.withDefault(""),
   state: parseAsArrayOf(parseAsString).withDefault([]),
-  gender: parseAsArrayOf(parseAsString).withDefault([]),
+  gender: parseAsArrayOf(z.enum(person.gender.enumValues)).withDefault([]),
   // advanced filter
   filters: getFiltersStateParser().withDefault([]),
   joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),

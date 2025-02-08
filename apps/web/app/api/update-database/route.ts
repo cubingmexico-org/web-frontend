@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import JSZip from "jszip";
 import { parse } from "papaparse";
 import { db } from "@/db";
+import { eq } from "drizzle-orm";
 import type {
   Event,
   Person,
@@ -18,6 +19,7 @@ import {
   competitionOrganiser,
   delegate,
   event,
+  organiser,
   person,
   rankAverage,
   rankSingle,
@@ -78,6 +80,7 @@ export async function POST(): Promise<NextResponse> {
         await db.transaction(async (tx) => {
           const states = await tx.select().from(state);
           const delegates = await tx.select().from(delegate);
+          const organisers = await tx.select().from(delegate);
           const existingCompetitions = await tx
             .select({ id: competition.id })
             .from(competition);
@@ -141,7 +144,24 @@ export async function POST(): Promise<NextResponse> {
               while (
                 (organiserMatch = organiserPattern.exec(row.organiser)) !== null
               ) {
+                const organiserName = organiserMatch[1]!;
                 const organiserEmail = organiserMatch[2]!;
+                const organiserExists = organisers.some(
+                  (d) => d.id === organiserEmail,
+                );
+                const org = await tx.select({ id: person.id }).from(person).where(eq(person.name, organiserName));
+
+                if (!organiserExists && org.length) {
+                  await tx
+                    .insert(organiser)
+                    .values({
+                      id: organiserEmail,
+                      personId: org[0]?.id!,
+                      status: "active",
+                    })
+                    .onConflictDoNothing();
+                }
+
                 await tx
                   .insert(competitionOrganiser)
                   .values({
@@ -157,20 +177,32 @@ export async function POST(): Promise<NextResponse> {
               while (
                 (delegateMatch = delegatePattern.exec(row.wcaDelegate)) !== null
               ) {
+                const delegateName = delegateMatch[1]!;
                 const delegateEmail = delegateMatch[2]!;
                 const delegateExists = delegates.some(
                   (d) => d.id === delegateEmail,
                 );
+                const del = await tx.select({ id: person.id }).from(person).where(eq(person.name, delegateName));
 
-                if (delegateExists) {
+                if (!delegateExists && del.length) {
                   await tx
-                    .insert(competitionDelegate)
+                    .insert(delegate)
                     .values({
-                      competitionId: row.id,
-                      delegateId: delegateEmail,
+                      id: delegateEmail,
+                      personId: del[0]?.id!,
+                      status: "active",
                     })
                     .onConflictDoNothing();
                 }
+
+                await tx
+                  .insert(competitionDelegate)
+                  .values({
+                    competitionId: row.id,
+                    delegateId: delegateEmail,
+                  })
+                  .onConflictDoNothing();
+              
               }
             }
           }

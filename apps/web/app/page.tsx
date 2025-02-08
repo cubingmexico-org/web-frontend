@@ -11,10 +11,10 @@ import {
 export default function Page(): JSX.Element {
   return (
     <main className="flex-grow">
-      <section className="text-gray-600 body-font">
+      <section className="text-muted-foreground body-font">
         <div className="container mx-auto flex px-5 py-24 md:flex-row flex-col items-center">
           <div className="lg:flex-grow md:w-1/2 lg:pr-24 md:pr-16 flex flex-col md:items-start md:text-left mb-16 md:mb-0 items-center text-center">
-            <h1 className="title-font sm:text-4xl text-3xl mb-4 font-medium text-gray-900">
+            <h1 className="title-font sm:text-4xl text-3xl mb-4 font-medium text-primary">
               Cubing México
               <br className="hidden lg:inline-block" />
               Rankings y Récords Estatales Mexicanos
@@ -25,15 +25,15 @@ export default function Page(): JSX.Element {
               de la WCA.
             </p>
             <div className="flex justify-center">
-              <Button className="!inline-flex !text-white !bg-green-500 !border-0 !py-2 !px-6 focus:!outline-none hover:!bg-green-600 !rounded !text-lg">
+              <Button>
                 Explorar Rankings
-                <ArrowRight className="ml-2" />
+                <ArrowRight />
               </Button>
             </div>
           </div>
           <div className="lg:max-w-lg lg:w-full md:w-1/2 w-5/6">
             <Image
-              alt="Cubo de Rubik"
+              alt="Competidores de speedcubing"
               className="object-cover object-center rounded"
               height={900}
               src="/competidores.jpg"
@@ -43,12 +43,12 @@ export default function Page(): JSX.Element {
         </div>
       </section>
 
-      <section className="text-gray-600 body-font">
+      <section className="text-muted-foreground body-font">
         <div className="container px-5 py-24 mx-auto">
-          <div className="flex flex-wrap -m-4">
-            <Card className="!p-4 md:!w-1/3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+            <Card className="!p-4">
               <CardHeader>
-                <CardTitle className="!text-lg !text-gray-900 !font-medium !title-font !mb-4">
+                <CardTitle className="!text-lg !text-primary !font-medium !title-font !mb-4">
                   Rankings Estatales
                 </CardTitle>
                 <Trophy className="w-12 h-12 inline-block mb-4" />
@@ -60,9 +60,9 @@ export default function Page(): JSX.Element {
                 </p>
               </CardContent>
             </Card>
-            <Card className="!p-4 md:!w-1/3">
+            <Card className="!p-4">
               <CardHeader>
-                <CardTitle className="!text-lg !text-gray-900 !font-medium !title-font !mb-4">
+                <CardTitle className="!text-lg !text-primary !font-medium !title-font !mb-4">
                   Récords Nacionales
                 </CardTitle>
                 <Clock className="w-12 h-12 inline-block mb-4" />
@@ -75,9 +75,9 @@ export default function Page(): JSX.Element {
                 </p>
               </CardContent>
             </Card>
-            <Card className="!p-4 md:!w-1/3">
+            <Card className="!p-4">
               <CardHeader>
-                <CardTitle className="!text-lg !text-gray-900 !font-medium !title-font !mb-4">
+                <CardTitle className="!text-lg !text-primary !font-medium !title-font !mb-4">
                   Próximos Eventos
                 </CardTitle>
                 <Users className="w-12 h-12 inline-block mb-4" />

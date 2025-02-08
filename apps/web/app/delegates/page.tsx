@@ -33,9 +33,7 @@ export default async function Page(props: PageProps) {
 
   return (
     <main className="flex-grow container mx-auto px-4 py-8">
-      <div className="flex flex-col gap-4">
-        <h1 className="text-3xl font-bold">Delegados</h1>
-      </div>
+      <h1 className="text-3xl font-bold mb-6">Delegados</h1>
       <div className="grid gap-6">
         <React.Suspense
           fallback={

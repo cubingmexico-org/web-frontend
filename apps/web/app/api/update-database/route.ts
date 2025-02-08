@@ -149,17 +149,31 @@ export async function POST(): Promise<NextResponse> {
                 const organiserExists = organisers.some(
                   (d) => d.id === organiserEmail,
                 );
-                const org = await tx.select({ id: person.id }).from(person).where(eq(person.name, organiserName));
+                const org = await tx
+                  .select({ id: person.id })
+                  .from(person)
+                  .where(eq(person.name, organiserName));
 
-                if (!organiserExists && org.length) {
-                  await tx
-                    .insert(organiser)
-                    .values({
-                      id: organiserEmail,
-                      personId: org[0]?.id!,
-                      status: "active",
-                    })
-                    .onConflictDoNothing();
+                if (!organiserExists) {
+                  if (org.length) {
+                    await tx
+                      .insert(organiser)
+                      .values({
+                        id: organiserEmail,
+                        personId: org[0]?.id!,
+                        status: "active",
+                      })
+                      .onConflictDoNothing();
+                  } else {
+                    await tx
+                      .insert(organiser)
+                      .values({
+                        id: organiserEmail,
+                        personId: null,
+                        status: "active",
+                      })
+                      .onConflictDoNothing();
+                  }
                 }
 
                 await tx
@@ -182,7 +196,10 @@ export async function POST(): Promise<NextResponse> {
                 const delegateExists = delegates.some(
                   (d) => d.id === delegateEmail,
                 );
-                const del = await tx.select({ id: person.id }).from(person).where(eq(person.name, delegateName));
+                const del = await tx
+                  .select({ id: person.id })
+                  .from(person)
+                  .where(eq(person.name, delegateName));
 
                 if (!delegateExists && del.length) {
                   await tx
@@ -195,14 +212,15 @@ export async function POST(): Promise<NextResponse> {
                     .onConflictDoNothing();
                 }
 
-                await tx
-                  .insert(competitionDelegate)
-                  .values({
-                    competitionId: row.id,
-                    delegateId: delegateEmail,
-                  })
-                  .onConflictDoNothing();
-              
+                if (delegateExists || del.length) {
+                  await tx
+                    .insert(competitionDelegate)
+                    .values({
+                      competitionId: row.id,
+                      delegateId: delegateEmail,
+                    })
+                    .onConflictDoNothing();
+                }
               }
             }
           }

@@ -28,7 +28,7 @@ import {
 } from "@/db/schema";
 import { getStateFromCoordinates } from "@/lib/geocoder";
 
-export const maxDuration = 500;
+export const maxDuration = 60;
 
 export async function POST(): Promise<NextResponse> {
   try {

@@ -8,8 +8,12 @@ import {
 } from "@workspace/ui/components/dropdown-menu";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
+import { SignIn, SignOut } from "./auth-components";
+import { User } from "next-auth";
 
-export function Header() {
+export function Header({
+  user
+}: { user?: User }) {
   return (
     <header className="bg-primary text-primary-foreground body-font">
       <div className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
@@ -23,7 +27,7 @@ export function Header() {
         <nav className="md:ml-auto flex flex-wrap items-center text-base justify-center">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="mr-5 hover:bg-primary hover:text-muted-foreground text-base">
+              <Button className="mr-2 hover:bg-primary hover:text-muted-foreground text-base">
                 Competencias <ChevronDown />
               </Button>
             </DropdownMenuTrigger>
@@ -42,7 +46,7 @@ export function Header() {
           </DropdownMenu>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="mr-5 hover:bg-primary hover:text-muted-foreground text-base">
+              <Button className="mr-2 hover:bg-primary hover:text-muted-foreground text-base">
                 Resultados <ChevronDown />
               </Button>
             </DropdownMenuTrigger>
@@ -71,7 +75,7 @@ export function Header() {
           </DropdownMenu>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="mr-5 hover:bg-primary hover:text-muted-foreground text-base">
+              <Button className="mr-2 hover:bg-primary hover:text-muted-foreground text-base">
                 Personas <ChevronDown />
               </Button>
             </DropdownMenuTrigger>
@@ -93,12 +97,12 @@ export function Header() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Link className="mr-5 hover:text-muted-foreground" href="/teams">
+          <Link className="mr-2 hover:text-muted-foreground" href="/teams">
             Teams estatales
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="mr-5 hover:bg-primary hover:text-muted-foreground text-base">
+              <Button className="mr-2 hover:bg-primary hover:text-muted-foreground text-base">
                 Acerca de <ChevronDown />
               </Button>
             </DropdownMenuTrigger>
@@ -125,6 +129,25 @@ export function Header() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="mr-2 hover:bg-primary hover:text-muted-foreground text-base">
+                  {user.name} <ChevronDown />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem>
+                  <Link href="/profile" className="w-full">
+                    Perfil
+                  </Link>
+                </DropdownMenuItem>
+                <SignOut />
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <SignIn className="mr-2 hover:bg-primary hover:text-muted-foreground text-base" provider="wca" />
+          )}
         </nav>
       </div>
     </header>

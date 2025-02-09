@@ -2,9 +2,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "@workspace/ui/globals.css";
 import "@cubing/icons";
 import { Providers } from "@/components/providers";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/react"
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://cubingmexico.net"),
@@ -33,17 +32,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning>
       <body
         className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}
       >
         <Providers>
-          <div className="flex flex-col min-h-screen">
-            <Header />
-            {children}
-            <Footer />
-          </div>
+          {children}
         </Providers>
+        <Analytics />
       </body>
     </html>
   );

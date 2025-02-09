@@ -8,7 +8,8 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card";
 
-export default function Page(): JSX.Element {
+export default function Page() {
+
   return (
     <main className="flex-grow">
       <section className="text-muted-foreground body-font">

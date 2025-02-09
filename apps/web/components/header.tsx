@@ -11,9 +11,7 @@ import { Button } from "@workspace/ui/components/button";
 import { SignIn, SignOut } from "./auth-components";
 import { User } from "next-auth";
 
-export function Header({
-  user
-}: { user?: User }) {
+export function Header({ user }: { user?: User }) {
   return (
     <header className="bg-primary text-primary-foreground body-font">
       <div className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
@@ -146,7 +144,10 @@ export function Header({
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <SignIn className="mr-2 hover:bg-primary hover:text-muted-foreground text-base" provider="wca" />
+            <SignIn
+              className="mr-2 hover:bg-primary hover:text-muted-foreground text-base"
+              provider="wca"
+            />
           )}
         </nav>
       </div>

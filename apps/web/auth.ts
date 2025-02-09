@@ -1,6 +1,4 @@
 import NextAuth from "next-auth";
-import { DrizzleAdapter } from "@auth/drizzle-adapter"
-import { db } from "./db/schema";
 
 interface WCAProfile {
   me: {
@@ -17,7 +15,7 @@ interface WCAProfile {
       name: string;
       continentId: string;
       iso2: string;
-    },
+    };
     delegate_status: string | null;
     // teams: any[];
     avatar: {
@@ -36,15 +34,15 @@ interface WCAProfile {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: DrizzleAdapter(db),
   providers: [
     {
       id: "wca",
-      name: "WCA",
+      name: "World Cube Association",
       type: "oauth",
+      issuer: "https://www.worldcubeassociation.org",
       authorization: {
         url: "https://www.worldcubeassociation.org/oauth/authorize",
-        params: { scope: "public manage_competitions" },
+        params: { scope: "openid public manage_competitions" },
       },
       token: "https://www.worldcubeassociation.org/oauth/token",
       userinfo: "https://www.worldcubeassociation.org/api/v0/me",
@@ -52,13 +50,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return {
           id: profile.me.wca_id,
           name: profile.me.name,
-          email: null,
-          image: profile.me.avatar.url
+          email: undefined,
+          image: profile.me.avatar.thumb_url ?? undefined,
         };
       },
       clientId: process.env.WCA_CLIENT_ID,
       clientSecret: process.env.WCA_CLIENT_SECRET,
     },
   ],
-  debug: process.env.NODE_ENV !== "production",
-});
+  // debug: process.env.NODE_ENV !== "production",
+  callbacks: {
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+      }
+      return session;
+    },
+    async jwt({ token, user, profile }) {
+
+      if (profile) {
+        token.id = (profile?.me as { wca_id: string }).wca_id;
+      } else if (user) {
+        token.id = user.id;
+      }
+
+      return token;
+    },
+  }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+}) as any;

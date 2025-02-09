@@ -37,9 +37,7 @@ export function SignOut({
       className="w-full"
     >
       <DropdownMenuItem {...props}>
-        <button>
-          Cerrar sesión
-        </button>
+        <button>Cerrar sesión</button>
       </DropdownMenuItem>
     </form>
   );

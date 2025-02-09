@@ -7,6 +7,11 @@ import {
   DropdownMenuItem,
 } from "@workspace/ui/components/dropdown-menu";
 import { ChevronDown } from "lucide-react";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@workspace/ui/components/avatar";
 import { Button } from "@workspace/ui/components/button";
 import { SignIn, SignOut } from "./auth-components";
 import { User } from "next-auth";
@@ -129,15 +134,21 @@ export function Header({ user }: { user?: User }) {
           </DropdownMenu>
           {user ? (
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button className="mr-2 hover:bg-primary hover:text-muted-foreground text-base">
-                  {user.name} <ChevronDown />
-                </Button>
+              <DropdownMenuTrigger className="rounded-full">
+                <Avatar>
+                  <AvatarImage src={user.image ?? undefined} />
+                  <AvatarFallback>U</AvatarFallback>
+                </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem>
                   <Link href="/profile" className="w-full">
                     Perfil
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link href={`/persons/${user.id}`} className="w-full">
+                    Mis resultados
                   </Link>
                 </DropdownMenuItem>
                 <SignOut />

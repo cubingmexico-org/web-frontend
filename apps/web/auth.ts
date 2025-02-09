@@ -60,14 +60,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   // debug: process.env.NODE_ENV !== "production",
   callbacks: {
-    async session({ session, token }) {
+    session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
       }
       return session;
     },
-    async jwt({ token, user, profile }) {
-
+    jwt({ token, user, profile }) {
       if (profile) {
         token.id = (profile?.me as { wca_id: string }).wca_id;
       } else if (user) {
@@ -76,6 +75,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       return token;
     },
-  }
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-}) as any;
+    authorized: () => {
+      return true;
+    },
+  },
+});

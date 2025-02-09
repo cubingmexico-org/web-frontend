@@ -21,14 +21,6 @@ export function Footer() {
             @cubingmexico
           </a>
         </p>
-        <span className="inline-flex sm:ml-auto sm:mt-0 mt-4 justify-center sm:justify-start">
-          <Link className="text-muted-foreground mr-5" href="/privacy">
-            Política de Privacidad
-          </Link>
-          <Link className="text-muted-foreground" href="/terms">
-            Términos de Servicio
-          </Link>
-        </span>
       </div>
     </footer>
   );

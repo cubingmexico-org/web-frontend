@@ -98,6 +98,11 @@ export function Header({ user }: { user?: User }) {
                   Delegados
                 </Link>
               </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link href="/bronze-members" className="w-full">
+                  Miembros Bronce
+                </Link>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           <Link className="mr-2 hover:text-muted-foreground" href="/teams">

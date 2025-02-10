@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 
 import { db } from "@/db";
-import { eq } from "drizzle-orm";
-import { person, rankAverage, rankSingle, state } from "@/db/schema";
+import { and, countDistinct, eq, gt, inArray } from "drizzle-orm";
+import { person, rankAverage, rankSingle, result, state } from "@/db/schema";
 import {
   Table,
   TableHeader,
@@ -21,6 +21,7 @@ import {
   TooltipContent,
 } from "@workspace/ui/components/tooltip";
 import { cn } from "@workspace/ui/lib/utils";
+import { Badge } from "@workspace/ui/components/badge";
 
 export default async function Page({
   params,
@@ -141,11 +142,39 @@ export default async function Page({
       };
     });
 
+  const bronze = await db
+    .select({
+      id: person.id,
+      name: person.name,
+      gender: person.gender,
+      state: state.name,
+    })
+    .from(person)
+    .innerJoin(result, eq(person.id, result.personId))
+    .leftJoin(state, eq(person.stateId, state.id))
+    .where(
+      and(
+        eq(person.id, id),
+        inArray(
+          result.eventId,
+          events.map((event) => event.id),
+        ),
+        gt(result.best, 0),
+      ),
+    )
+    .groupBy(person.id, person.name, person.gender, state.name)
+    .having(eq(countDistinct(result.eventId), events.length));
+
   return (
     <main className="flex-grow container mx-auto px-4 py-8">
       <h1 className="text-center font-semibold text-2xl mb-6">
         {data.person.name}
       </h1>
+      {bronze.length > 0 && (
+        <div className="w-full flex justify-center mb-2">
+          <Badge>Miembro Bronce</Badge>
+        </div>
+      )}
       <div className="w-full flex justify-center mb-6">
         <Image
           src={data.person.avatar.url}

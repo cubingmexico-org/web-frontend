@@ -24,7 +24,7 @@ export async function getEvents() {
     },
     ["events"],
     {
-      revalidate: 3600,
+      revalidate: false,
     },
   )();
 }

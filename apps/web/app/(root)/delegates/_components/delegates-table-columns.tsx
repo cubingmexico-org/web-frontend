@@ -5,6 +5,7 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 import { Person } from "../_types";
 import { Badge } from "@workspace/ui/components/badge";
+import Link from "next/link";
 
 export function getColumns(): ColumnDef<Person>[] {
   return [
@@ -35,7 +36,12 @@ export function getColumns(): ColumnDef<Person>[] {
             <Badge variant={status === "active" ? "default" : "outline"}>
               {status === "active" ? "Activo" : "Inactivo"}
             </Badge>
-            <span>{row.getValue("name")}</span>
+            <Link
+              className="hover:underline text-accent-foreground"
+              href={`/persons/${row.original.id}`}
+            >
+              {row.getValue("name")}
+            </Link>
           </div>
         );
       },

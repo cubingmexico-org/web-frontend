@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 
 import { db } from "@/db";
-import { and, countDistinct, eq, gt, inArray } from "drizzle-orm";
+import { and, countDistinct, eq, gt, inArray, sql } from "drizzle-orm";
 import {
   competition,
   delegate,
@@ -31,6 +31,8 @@ import {
 } from "@workspace/ui/components/tooltip";
 import { cn } from "@workspace/ui/lib/utils";
 import { Badge } from "@workspace/ui/components/badge";
+import { Map } from "./_components/map";
+import type { GeoJSONProps } from "react-leaflet";
 
 export default async function Page({
   params,
@@ -108,7 +110,10 @@ export default async function Page({
   const { persons, SRcount, records, isBronze, isDelegate, isOrganiser } =
     await db.transaction(async (tx) => {
       const persons = await tx
-        .select({ state: state.name, statesCount: countDistinct(competition.stateId) })
+        .select({
+          state: state.name,
+          statesNames: sql`array_agg(DISTINCT ${competition.stateId})`,
+        })
         .from(person)
         .leftJoin(state, eq(person.stateId, state.id))
         .leftJoin(result, eq(person.id, result.personId))
@@ -203,6 +208,27 @@ export default async function Page({
       };
     });
 
+  const states = await fetch(process.env.URL + "/states.geojson");
+
+  const statesData = (await states.json()) as {
+    type: string;
+    features: {
+      type: string;
+      properties: {
+        id: string;
+        name: string;
+      };
+      geometry: {
+        type: string;
+        coordinates: number[][][][];
+      };
+    }[];
+  };
+
+  const filteredStatesData = statesData.features.filter((feature) =>
+    (persons[0]?.statesNames as string[]).includes(feature.properties.id),
+  ) as unknown as GeoJSONProps["data"];
+
   return (
     <main className="flex-grow container mx-auto px-4 py-8">
       <h1 className="text-center font-semibold text-2xl mb-4">
@@ -249,7 +275,6 @@ export default async function Page({
             <TableHead className="text-center">WCA ID</TableHead>
             <TableHead className="text-center">Sexo</TableHead>
             <TableHead className="text-center">Competencias</TableHead>
-            <TableHead className="text-center">Estados visitados</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -269,11 +294,6 @@ export default async function Page({
             </TableCell>
             <TableCell className="text-center">
               {data.competition_count}
-            </TableCell>
-            <TableCell className="text-center">
-              {persons[0]?.statesCount ?? (
-                <span className="text-muted-foreground font-thin">N/A</span>
-              )}
             </TableCell>
           </TableRow>
         </TableBody>
@@ -310,7 +330,7 @@ export default async function Page({
                 className={cn(
                   "text-center",
                   record?.record?.single.state_rank === 1 &&
-                  "font-semibold text-blue-700",
+                    "font-semibold text-blue-700",
                 )}
               >
                 {record?.record?.single.state_rank ??
@@ -322,7 +342,7 @@ export default async function Page({
                 className={cn(
                   "text-center",
                   record?.record?.single.country_rank === 1 &&
-                  "font-semibold text-blue-700",
+                    "font-semibold text-blue-700",
                 )}
               >
                 {record?.record?.single.country_rank}
@@ -331,7 +351,7 @@ export default async function Page({
                 className={cn(
                   "text-center",
                   record?.record?.single.continent_rank === 1 &&
-                  "font-semibold text-blue-700",
+                    "font-semibold text-blue-700",
                 )}
               >
                 {record?.record?.single.continent_rank}
@@ -340,7 +360,7 @@ export default async function Page({
                 className={cn(
                   "text-center",
                   record?.record?.single.world_rank === 1 &&
-                  "font-semibold text-blue-700",
+                    "font-semibold text-blue-700",
                 )}
               >
                 {record?.record?.single.world_rank}
@@ -361,7 +381,7 @@ export default async function Page({
                 className={cn(
                   "text-center",
                   record?.record?.average.world_rank === 1 &&
-                  "font-semibold text-blue-700",
+                    "font-semibold text-blue-700",
                 )}
               >
                 {record?.record?.average?.world_rank}
@@ -370,7 +390,7 @@ export default async function Page({
                 className={cn(
                   "text-center",
                   record?.record?.average.continent_rank === 1 &&
-                  "font-semibold text-blue-700",
+                    "font-semibold text-blue-700",
                 )}
               >
                 {record?.record?.average?.continent_rank}
@@ -379,7 +399,7 @@ export default async function Page({
                 className={cn(
                   "text-center",
                   record?.record?.average.country_rank === 1 &&
-                  "font-semibold text-blue-700",
+                    "font-semibold text-blue-700",
                 )}
               >
                 {record?.record?.average?.country_rank}
@@ -388,7 +408,7 @@ export default async function Page({
                 className={cn(
                   "text-center",
                   record?.record?.average.state_rank === 1 &&
-                  "font-semibold text-blue-700",
+                    "font-semibold text-blue-700",
                 )}
               >
                 {record?.record?.average.state_rank ??
@@ -464,9 +484,17 @@ export default async function Page({
           </Table>
         </div>
       </div>
-      {/* <div>
-        <h3>Mapa</h3>
-      </div> */}
+      <h2 className="flex items-center justify-center gap-2 text-lg font-semibold my-4">
+        <span>Estados visitados</span>
+        <Badge>
+          {(persons[0]?.statesNames as string[])[0] === null
+            ? 0
+            : (persons[0]?.statesNames as string[]).length}
+        </Badge>
+      </h2>
+      <div className="bg-white-700 mx-auto my-5 w-[98%] h-[480px]">
+        <Map posix={[23.9345, -102.5528]} statesData={filteredStatesData} />
+      </div>
     </main>
   );
 }

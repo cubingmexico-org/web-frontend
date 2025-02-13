@@ -1,7 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
-  "globalEnv": ["CRON_SECRET", "WCA_CLIENT_ID", "WCA_CLIENT_SECRET", "NODE_ENV", "DATABASE_URL"],
+  "globalEnv": ["URL", "CRON_SECRET", "WCA_CLIENT_ID", "WCA_CLIENT_SECRET", "NODE_ENV", "DATABASE_URL"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

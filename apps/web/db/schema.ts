@@ -9,6 +9,7 @@ import {
   timestamp,
   json,
   doublePrecision,
+  boolean,
 } from "drizzle-orm/pg-core";
 
 // WCA
@@ -243,19 +244,59 @@ export const state = pgTable("states", {
 export type State = InferSelectModel<typeof state>;
 
 export const team = pgTable("teams", {
-  id: varchar("id", { length: 3 }).primaryKey(),
   name: varchar("name", { length: 50 }).notNull(),
   description: text("description"),
-  logo: varchar("logo", { length: 191 }),
+  image: varchar("image", { length: 191 }),
+  coverImage: varchar("coverImage", { length: 191 }),
   stateId: varchar("stateId", { length: 3 })
     .notNull()
-    .references(() => state.id, { onDelete: "cascade" }),
-  facebook: varchar("facebook", { length: 191 }),
-  instagram: varchar("instagram", { length: 191 }),
-  tiktok: varchar("tiktok", { length: 191 }),
-  phoneNumber: varchar("phoneNumber", { length: 15 }),
-  email: varchar("email", { length: 191 }),
+    .references(() => state.id, { onDelete: "cascade" })
+    .primaryKey(),
+  founded: timestamp("founded"),
+  socialLinks: json("socialLinks").$type<{
+    email?: string;
+    whatsapp?: string;
+    facebook?: string;
+    instagram?: string;
+    twitter?: string;
+    tiktok?: string;
+  }>(),
+  isActive: boolean("isActive").notNull().default(true),
 });
+
+export type Team = InferSelectModel<typeof team>;
+
+export const teamMember = pgTable("team_members", {
+  personId: varchar("personId", { length: 10 })
+    .notNull()
+    .references(() => person.id, {
+      onDelete: "cascade",
+    })
+    .primaryKey(),
+  role: varchar("role", {
+    length: 50,
+    enum: ["leader", "member"],
+  })
+    .notNull()
+    .default("member"),
+  specialties: json("specialties").$type<string[]>(),
+  achievements: json("achievements").$type<string[]>(),
+  isActive: boolean("isActive").notNull().default(true),
+});
+
+export type TeamMember = InferSelectModel<typeof teamMember>;
+
+export const teamAchievement = pgTable("team_achievements", {
+  stateId: varchar("stateId", { length: 3 })
+    .notNull()
+    .references(() => state.id, { onDelete: "cascade" })
+    .primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  date: timestamp("date").notNull(),
+});
+
+export type TeamAchievement = InferSelectModel<typeof teamAchievement>;
 
 export const sponsor = pgTable("sponsors", {
   id: varchar("id", { length: 3 }).primaryKey(),
@@ -269,6 +310,8 @@ export const sponsor = pgTable("sponsors", {
   email: varchar("email", { length: 191 }),
   active: integer("active").notNull().default(0),
 });
+
+export type Sponsor = InferSelectModel<typeof sponsor>;
 
 export const sumOfRanks = pgTable(
   "sumOfRanks",

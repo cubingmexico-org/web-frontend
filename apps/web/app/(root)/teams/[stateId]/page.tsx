@@ -524,9 +524,9 @@ export default async function Page({
                       <div className="flex items-center">
                         <Medal className="w-5 h-5 mr-3 text-yellow-500" />
                         <div>
-                          <div className="font-semibold">Total Podiums</div>
+                          <div className="font-semibold">Total de podios</div>
                           <div className="text-sm text-muted-foreground">
-                            Across all competitions
+                            A lo largo de la historia
                           </div>
                         </div>
                       </div>
@@ -536,9 +536,9 @@ export default async function Page({
                       <div className="flex items-center">
                         <Trophy className="w-5 h-5 mr-3 text-yellow-500" />
                         <div>
-                          <div className="font-semibold">National Records</div>
+                          <div className="font-semibold">Récords nacionales</div>
                           <div className="text-sm text-muted-foreground">
-                            Current records held
+                            Récords nacionales actuales
                           </div>
                         </div>
                       </div>
@@ -549,10 +549,10 @@ export default async function Page({
                         <Users className="w-5 h-5 mr-3" />
                         <div>
                           <div className="font-semibold">
-                            Competitions Attended
+                            Competencias asistidas
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            Total events participation
+                            Total de competencias asistidas
                           </div>
                         </div>
                       </div>
@@ -564,11 +564,11 @@ export default async function Page({
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Member Statistics</CardTitle>
+                  <CardTitle>Estadísticas de miembros</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Detailed member statistics coming soon...
+                    Próximamente...
                   </p>
                 </CardContent>
               </Card>

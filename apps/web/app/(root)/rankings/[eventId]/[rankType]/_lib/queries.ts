@@ -209,8 +209,8 @@ export async function getRankAverages(
                     return item.desc ? desc(person.gender) : asc(person.gender);
                   default:
                     return item.desc
-                      ? desc(rankSingle[item.id])
-                      : asc(rankSingle[item.id]);
+                      ? desc(rankAverage[item.id])
+                      : asc(rankAverage[item.id]);
                 }
               })
             : [asc(rankAverage.countryRank)];

@@ -33,11 +33,22 @@ import {
   Settings,
   Facebook,
   Phone,
+  ChartNoAxesCombined,
+  Plus,
 } from "lucide-react";
 import Image from "next/image";
 import { db } from "@/db";
-import { person, state, team, teamMember } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import {
+  competition,
+  person,
+  rankAverage,
+  rankSingle,
+  result,
+  state,
+  team,
+  teamMember,
+} from "@/db/schema";
+import { and, eq, gt, inArray, or } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import {
   Avatar,
@@ -48,6 +59,7 @@ import { Badge } from "@workspace/ui/components/badge";
 import Link from "next/link";
 import { cn } from "@workspace/ui/lib/utils";
 import { auth } from "@/auth";
+import ReactMarkdown from "react-markdown";
 
 export default async function Page({
   params,
@@ -55,24 +67,98 @@ export default async function Page({
   params: Promise<{ stateId: string }>;
 }) {
   const stateId = (await params).stateId;
-  // const [activeTab, setActiveTab] = useState("overview")
-
   const session = await auth();
 
-  const teamsData = await db
-    .select({
-      name: team.name,
-      description: team.description,
-      image: team.image,
-      coverImage: team.coverImage,
-      state: state.name,
-      founded: team.founded,
-      socialLinks: team.socialLinks,
-      isActive: team.isActive,
-    })
-    .from(team)
-    .innerJoin(state, eq(team.stateId, state.id))
-    .where(eq(team.stateId, stateId));
+  const {
+    teamsData,
+    members,
+    competitions,
+    totalPodiums,
+    totalSingleNationalRecords,
+    totalAverageNationalRecords
+  } = await db.transaction(async (tx) => {
+    const teamsData = await tx
+      .select({
+        name: team.name,
+        description: team.description,
+        image: team.image,
+        coverImage: team.coverImage,
+        state: state.name,
+        founded: team.founded,
+        socialLinks: team.socialLinks,
+        isActive: team.isActive,
+      })
+      .from(team)
+      .innerJoin(state, eq(team.stateId, state.id))
+      .where(eq(team.stateId, stateId));
+
+    const members = await tx
+      .select({
+        id: person.id,
+        name: person.name,
+        gender: person.gender,
+        role: teamMember.role,
+        specialties: teamMember.specialties,
+      })
+      .from(person)
+      .leftJoin(teamMember, eq(person.id, teamMember.personId))
+      .where(eq(person.stateId, stateId));
+
+    const competitions = await tx
+      .select({
+        id: competition.id,
+        name: competition.name,
+        cityName: competition.cityName,
+        venue: competition.venue,
+        startDate: competition.startDate,
+        endDate: competition.endDate,
+        latitude: competition.latitude,
+        longitude: competition.longitude,
+      })
+      .from(competition)
+      .where(eq(competition.stateId, stateId))
+      .orderBy(competition.startDate);
+
+    const totalPodiums = await tx
+      .select({
+        pos: result.pos,
+      })
+      .from(result)
+      .innerJoin(person, eq(result.personId, person.id))
+      .where(
+        and(
+          eq(person.stateId, stateId),
+          or(eq(result.roundTypeId, "f"), eq(result.roundTypeId, "c")),
+          inArray(result.pos, [1, 2, 3]),
+          gt(result.best, 0),
+        ),
+      );
+
+    const totalSingleNationalRecords = await tx
+      .select({
+        eventId: rankSingle.eventId,
+      })
+      .from(rankSingle)
+      .innerJoin(person, eq(rankSingle.personId, person.id))
+      .where(and(eq(person.stateId, stateId), eq(rankSingle.countryRank, 1)));
+
+    const totalAverageNationalRecords = await tx
+      .select({
+        eventId: rankAverage.eventId,
+      })
+      .from(rankAverage)
+      .innerJoin(person, eq(rankAverage.personId, person.id))
+      .where(and(eq(person.stateId, stateId), eq(rankAverage.countryRank, 1)));
+
+    return {
+      teamsData,
+      members,
+      competitions,
+      totalPodiums,
+      totalSingleNationalRecords,
+      totalAverageNationalRecords,
+    }
+  });
 
   if (teamsData.length === 0) {
     return notFound();
@@ -80,17 +166,13 @@ export default async function Page({
 
   const teamData = teamsData[0];
 
-  const members = await db
-    .select({
-      id: person.id,
-      name: person.name,
-      gender: person.gender,
-      role: teamMember.role,
-      specialties: teamMember.specialties,
-    })
-    .from(person)
-    .leftJoin(teamMember, eq(person.id, teamMember.personId))
-    .where(eq(person.stateId, stateId));
+  const upcomingCompetitions = competitions.filter(
+    (competition) => competition.startDate >= new Date(),
+  );
+
+  const pastCompetitions = competitions
+    .filter((competition) => competition.endDate < new Date())
+    .reverse();
 
   const isAdmin = members.some(
     (member) => member.id === session?.user?.id && member.role === "leader",
@@ -98,6 +180,15 @@ export default async function Page({
   const isNotMember = !members.some(
     (member) => member.id === session?.user?.id,
   );
+
+  const totalNationalRecords =
+    totalSingleNationalRecords.length + totalAverageNationalRecords.length;
+
+  const foundedYear = teamData?.founded
+    ? new Date(teamData.founded).getFullYear()
+    : new Date().getFullYear();
+  const currentYear = new Date().getFullYear();
+  const activeYears = currentYear - foundedYear;
 
   return (
     <main className="flex-grow">
@@ -168,7 +259,7 @@ export default async function Page({
         <Tabs
           defaultValue="overview"
           className="w-full"
-          // onValueChange={setActiveTab}
+        // onValueChange={setActiveTab}
         >
           <TabsList className="w-full justify-start mb-8">
             <TabsTrigger value="overview">Resumen</TabsTrigger>
@@ -253,6 +344,9 @@ export default async function Page({
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
+                      <p className="text-muted-foreground">
+                        No hay logros recientes todavía
+                      </p>
                       {/* {teamData.achievements.slice(0, 3).map((achievement, index) => (
                         <div key={index} className="flex items-start gap-4">
                           <Trophy className="w-5 h-5 text-yellow-500 mt-1" />
@@ -274,6 +368,9 @@ export default async function Page({
                   </CardHeader>
                   <CardContent>
                     <div className="grid gap-6">
+                      <p className="text-muted-foreground">
+                        No hay miembros destacados todavía
+                      </p>
                       {/* {teamData.members.slice(0, 3).map((member) => (
                         <div key={member.id} className="flex items-start gap-4">
                           <Image
@@ -320,28 +417,67 @@ export default async function Page({
                           <Medal className="w-4 h-4 mr-2 text-yellow-500" />
                           Total de podios
                         </div>
-                        {/* <span className="font-semibold">{teamData.statistics.totalPodiums}</span> */}
+                        <span className="font-semibold">
+                          {totalPodiums.length}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <div className="flex items-center">
                           <Trophy className="w-4 h-4 mr-2 text-yellow-500" />
                           Récords nacionales
                         </div>
-                        {/* <span className="font-semibold">{teamData.statistics.nationalRecords}</span> */}
+                        <span className="font-semibold">
+                          {totalNationalRecords}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <div className="flex items-center">
                           <Users className="w-4 h-4 mr-2" />
                           Competencias
                         </div>
-                        {/* <span className="font-semibold">{teamData.statistics.competitionsAttended}</span> */}
+                        <span className="font-semibold">
+                          {competitions.length}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <div className="flex items-center">
                           <Clock className="w-4 h-4 mr-2" />
                           Años activo
                         </div>
-                        {/* <span className="font-semibold">{teamData.statistics.activeYears}</span> */}
+                        <span className="font-semibold">{activeYears}</span>
+                      </div>
+                      <div className="border-t pt-3 mt-3">
+                        <div className="text-sm font-medium mb-2">View More:</div>
+                        <div className="flex flex-col space-y-2">
+                          <Link
+                            href={`/rankings/333/single?state=${encodeURIComponent(teamData?.state ?? "")}`}
+                            className="text-sm flex items-center text-blue-600 hover:underline"
+                          >
+                            <Users className="w-4 h-4 mr-2" />
+                            Rankings de {teamData?.state}
+                          </Link>
+                          <Link
+                            href={`/records?state=${encodeURIComponent(teamData?.state ?? "")}`}
+                            className="text-sm flex items-center text-blue-600 hover:underline"
+                          >
+                            <Trophy className="w-4 h-4 mr-2" />
+                            Récords de {teamData?.state}
+                          </Link>
+                          <Link
+                            href={`/sor/single?state=${encodeURIComponent(teamData?.state ?? "")}`}
+                            className="text-sm flex items-center text-blue-600 hover:underline"
+                          >
+                            <Plus className="w-4 h-4 mr-2" />
+                            Sum of Ranks de {teamData?.state}
+                          </Link>
+                          <Link
+                            href={`/kinch?state=${encodeURIComponent(teamData?.state ?? "")}`}
+                            className="text-sm flex items-center text-blue-600 hover:underline"
+                          >
+                            <ChartNoAxesCombined className="w-4 h-4 mr-2" />
+                            Kinch Ranks de {teamData?.state}
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
@@ -354,25 +490,48 @@ export default async function Page({
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {/* {teamData.upcomingEvents.map((event, index) => (
+                      {upcomingCompetitions.length === 0 ? (
+                        <p className="text-muted-foreground">
+                          No hay competencias próximas
+                        </p>
+                      ) : null}
+                      {upcomingCompetitions.map((competition, index) => (
                         <div key={index} className="space-y-2">
-                          <h3 className="font-semibold">{event.name}</h3>
+                          <h3 className="font-semibold">{competition.name}</h3>
                           <div className="text-sm text-muted-foreground">
                             <div className="flex items-center">
                               <Calendar className="w-4 h-4 mr-2" />
-                              {event.date}
+                              {competition.startDate.toLocaleDateString(
+                                "es-ES",
+                                {
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                },
+                              )}{" "}
                             </div>
                             <div className="flex items-center mt-1">
                               <MapPin className="w-4 h-4 mr-2" />
-                              {event.location}
-                            </div>
-                            <div className="flex items-center mt-1">
-                              <Users className="w-4 h-4 mr-2" />
-                              {event.participating} members participating
+                              <ReactMarkdown
+                                components={{
+                                  a: ({ children, href }) => (
+                                    <Link
+                                      className="hover:underline"
+                                      href={href ?? ""}
+                                      target="_blank"
+                                    >
+                                      {children}
+                                    </Link>
+                                  ),
+                                }}
+                              >
+                                {competition.venue}
+                              </ReactMarkdown>
+                              , {competition.cityName}
                             </div>
                           </div>
                         </div>
-                      ))} */}
+                      ))}
                     </div>
                   </CardContent>
                 </Card>
@@ -451,6 +610,9 @@ export default async function Page({
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
+                  <p className="text-muted-foreground">
+                    No hay logros registrados todavía
+                  </p>
                   {/* {teamData.achievements.map((achievement, index) => (
                     <div key={index} className="flex items-start gap-4 p-4 rounded-lg border">
                       <Trophy className="w-6 h-6 text-yellow-500" />
@@ -474,29 +636,62 @@ export default async function Page({
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
-                    {/* {teamData.upcomingEvents.map((event, index) => (
-                      <div key={index} className="flex items-start gap-4 p-4 rounded-lg border">
+                    {upcomingCompetitions.length === 0 ? (
+                      <p className="text-muted-foreground">
+                        No hay competencias próximas
+                      </p>
+                    ) : null}
+                    {upcomingCompetitions.map((competition, index) => (
+                      <div
+                        key={index}
+                        className="flex items-start gap-4 p-4 rounded-lg border"
+                      >
                         <Calendar className="w-6 h-6" />
                         <div className="flex-grow">
-                          <h3 className="font-semibold">{event.name}</h3>
+                          <h3 className="font-semibold">{competition.name}</h3>
                           <div className="text-sm text-muted-foreground mt-2">
                             <div className="flex items-center">
                               <Calendar className="w-4 h-4 mr-2" />
-                              {event.date}
+                              {competition.startDate.toLocaleDateString(
+                                "es-ES",
+                                {
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                },
+                              )}{" "}
                             </div>
                             <div className="flex items-center mt-1">
                               <MapPin className="w-4 h-4 mr-2" />
-                              {event.location}
-                            </div>
-                            <div className="flex items-center mt-1">
-                              <Users className="w-4 h-4 mr-2" />
-                              {event.participating} members participating
+                              <span className="line-clamp-1">
+                                <ReactMarkdown
+                                  components={{
+                                    a: ({ children, href }) => (
+                                      <Link
+                                        className="hover:underline"
+                                        href={href ?? ""}
+                                        target="_blank"
+                                      >
+                                        {children}
+                                      </Link>
+                                    ),
+                                  }}
+                                >
+                                  {competition.venue}
+                                </ReactMarkdown>
+                                , {competition.cityName}
+                              </span>
                             </div>
                           </div>
                         </div>
-                        <Button>View Details</Button>
+                        <Link
+                          href={`https://www.worldcubeassociation.org/competitions/${competition.id}`}
+                          className={buttonVariants({ variant: "default" })}
+                        >
+                          Ver detalles
+                        </Link>
                       </div>
-                    ))} */}
+                    ))}
                   </div>
                 </CardContent>
               </Card>
@@ -506,7 +701,64 @@ export default async function Page({
                   <CardTitle>Competencias pasadas</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">Próximamente...</p>
+                  <div className="space-y-6">
+                    {pastCompetitions.length === 0 ? (
+                      <p className="text-muted-foreground">
+                        No hay competencias pasadas
+                      </p>
+                    ) : null}
+                    {pastCompetitions.map((competition, index) => (
+                      <div
+                        key={index}
+                        className="flex items-start gap-4 p-4 rounded-lg border"
+                      >
+                        <Calendar className="w-6 h-6" />
+                        <div className="flex-grow">
+                          <h3 className="font-semibold">{competition.name}</h3>
+                          <div className="text-sm text-muted-foreground mt-2">
+                            <div className="flex items-center">
+                              <Calendar className="w-4 h-4 mr-2" />
+                              {competition.startDate.toLocaleDateString(
+                                "es-ES",
+                                {
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                },
+                              )}{" "}
+                            </div>
+                            <div className="flex items-center mt-1">
+                              <MapPin className="w-4 h-4 mr-2" />
+                              <span className="line-clamp-1">
+                                <ReactMarkdown
+                                  components={{
+                                    a: ({ children, href }) => (
+                                      <Link
+                                        className="hover:underline"
+                                        href={href ?? ""}
+                                        target="_blank"
+                                      >
+                                        {children}
+                                      </Link>
+                                    ),
+                                  }}
+                                >
+                                  {competition.venue}
+                                </ReactMarkdown>
+                                , {competition.cityName}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <Link
+                          href={`https://www.worldcubeassociation.org/competitions/${competition.id}`}
+                          className={buttonVariants({ variant: "default" })}
+                        >
+                          Ver detalles
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -530,33 +782,35 @@ export default async function Page({
                           </div>
                         </div>
                       </div>
-                      {/* <div className="text-2xl font-bold">{teamData.statistics.totalPodiums}</div> */}
+                      <div className="text-2xl font-bold">{totalPodiums.length}</div>
                     </div>
                     <div className="flex justify-between items-center p-4 rounded-lg border">
                       <div className="flex items-center">
                         <Trophy className="w-5 h-5 mr-3 text-yellow-500" />
                         <div>
-                          <div className="font-semibold">Récords nacionales</div>
+                          <div className="font-semibold">
+                            Récords nacionales
+                          </div>
                           <div className="text-sm text-muted-foreground">
                             Récords nacionales actuales
                           </div>
                         </div>
                       </div>
-                      {/* <div className="text-2xl font-bold">{teamData.statistics.nationalRecords}</div> */}
+                      <div className="text-2xl font-bold">{totalNationalRecords}</div>
                     </div>
                     <div className="flex justify-between items-center p-4 rounded-lg border">
                       <div className="flex items-center">
                         <Users className="w-5 h-5 mr-3" />
                         <div>
                           <div className="font-semibold">
-                            Competencias asistidas
+                            Competencias organizadas
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            Total de competencias asistidas
+                            Total de competencias en {teamData?.state}
                           </div>
                         </div>
                       </div>
-                      {/* <div className="text-2xl font-bold">{teamData.statistics.competitionsAttended}</div> */}
+                      <div className="text-2xl font-bold">{competitions.length}</div>
                     </div>
                   </div>
                 </CardContent>
@@ -567,9 +821,7 @@ export default async function Page({
                   <CardTitle>Estadísticas de miembros</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">
-                    Próximamente...
-                  </p>
+                  <p className="text-muted-foreground">Próximamente...</p>
                 </CardContent>
               </Card>
             </div>

@@ -25,6 +25,6 @@ export const searchParamsCache = createSearchParamsCache({
   joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
 });
 
-export type GetPersonSinglesSchema = Awaited<
+export type GetDelegatesSchema = Awaited<
   ReturnType<typeof searchParamsCache.parse>
 >;

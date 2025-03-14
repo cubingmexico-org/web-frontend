@@ -69,7 +69,7 @@ export type CompetitionEvent = InferSelectModel<typeof competitionEvent>;
 export const person = pgTable("persons", {
   id: varchar("id", { length: 10 }).primaryKey(),
   name: varchar("name", { length: 80 }),
-  gender: varchar("gender", { length: 1 }),
+  gender: varchar("gender", { length: 1, enum: ["m", "f", "o"] }),
   // Cubing México
   stateId: varchar("stateId", { length: 3 }).references(() => state.id, {
     onDelete: "cascade",

@@ -1,3 +1,5 @@
+/* eslint-disable no-constant-condition */
+
 import { Button, buttonVariants } from "@workspace/ui/components/button";
 import {
   Card,
@@ -11,14 +13,6 @@ import {
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@workspace/ui/components/table";
 import {
   Users,
   Trophy,
@@ -46,36 +40,40 @@ import {
   result,
   state,
   team,
-  teamMember,
 } from "@/db/schema";
-import { and, eq, gt, inArray, or } from "drizzle-orm";
+import { and, count, eq, gt, inArray, or } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import {
   Avatar,
   AvatarImage,
   AvatarFallback,
 } from "@workspace/ui/components/avatar";
-import { Badge } from "@workspace/ui/components/badge";
 import Link from "next/link";
-import { cn } from "@workspace/ui/lib/utils";
 import { auth } from "@/auth";
 import ReactMarkdown from "react-markdown";
+import React from "react";
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
+import { MembersTable } from "./_components/members-table";
+import { getMembers, getMembersGenderCounts } from "./_lib/queries";
+import { getValidFilters } from "@/lib/data-table";
+import { SearchParams } from "@/types";
+import { searchParamsCache } from "./_lib/validations";
 
-export default async function Page({
-  params,
-}: {
+export default async function Page(props: {
   params: Promise<{ stateId: string }>;
+  searchParams: Promise<SearchParams>;
 }) {
-  const stateId = (await params).stateId;
+  const stateId = (await props.params).stateId;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const session = await auth();
 
   const {
     teamsData,
-    members,
+    totalMembers,
     competitions,
     totalPodiums,
     totalSingleNationalRecords,
-    totalAverageNationalRecords
+    totalAverageNationalRecords,
   } = await db.transaction(async (tx) => {
     const teamsData = await tx
       .select({
@@ -92,17 +90,14 @@ export default async function Page({
       .innerJoin(state, eq(team.stateId, state.id))
       .where(eq(team.stateId, stateId));
 
-    const members = await tx
+    const totalMembers = (await tx
       .select({
-        id: person.id,
-        name: person.name,
-        gender: person.gender,
-        role: teamMember.role,
-        specialties: teamMember.specialties,
+        count: count(),
       })
       .from(person)
-      .leftJoin(teamMember, eq(person.id, teamMember.personId))
-      .where(eq(person.stateId, stateId));
+      .where(eq(person.stateId, stateId))
+      .execute()
+      .then((res) => res[0]?.count ?? 0)) as number;
 
     const competitions = await tx
       .select({
@@ -152,12 +147,12 @@ export default async function Page({
 
     return {
       teamsData,
-      members,
+      totalMembers,
       competitions,
       totalPodiums,
       totalSingleNationalRecords,
       totalAverageNationalRecords,
-    }
+    };
   });
 
   if (teamsData.length === 0) {
@@ -166,6 +161,22 @@ export default async function Page({
 
   const teamData = teamsData[0];
 
+  const searchParams = await props.searchParams;
+  const search = searchParamsCache.parse(searchParams);
+
+  const validFilters = getValidFilters(search.filters);
+
+  const promises = Promise.all([
+    getMembers(
+      {
+        ...search,
+        filters: validFilters,
+      },
+      stateId,
+    ),
+    getMembersGenderCounts(stateId),
+  ]);
+
   const upcomingCompetitions = competitions.filter(
     (competition) => competition.startDate >= new Date(),
   );
@@ -173,13 +184,6 @@ export default async function Page({
   const pastCompetitions = competitions
     .filter((competition) => competition.endDate < new Date())
     .reverse();
-
-  const isAdmin = members.some(
-    (member) => member.id === session?.user?.id && member.role === "leader",
-  );
-  const isNotMember = !members.some(
-    (member) => member.id === session?.user?.id,
-  );
 
   const totalNationalRecords =
     totalSingleNationalRecords.length + totalAverageNationalRecords.length;
@@ -223,7 +227,7 @@ export default async function Page({
                 </div>
                 <div className="flex items-center">
                   <Users className="w-4 h-4 mr-1" />
-                  {members.length} miembros
+                  {totalMembers} miembros
                 </div>
                 {teamData?.founded ? (
                   <div className="flex items-center">
@@ -237,13 +241,13 @@ export default async function Page({
               </div>
             </div>
             <div className="ml-auto flex gap-2">
-              {isNotMember ? (
+              {false ? (
                 <Button>
                   <UserPlus />
                   Unirse al Team
                 </Button>
               ) : null}
-              {isAdmin ? (
+              {false ? (
                 <Button variant="outline" className="bg-white/10">
                   <Settings />
                   Administrar Team
@@ -259,7 +263,7 @@ export default async function Page({
         <Tabs
           defaultValue="overview"
           className="w-full"
-        // onValueChange={setActiveTab}
+          // onValueChange={setActiveTab}
         >
           <TabsList className="w-full justify-start mb-8">
             <TabsTrigger value="overview">Resumen</TabsTrigger>
@@ -447,7 +451,7 @@ export default async function Page({
                         <span className="font-semibold">{activeYears}</span>
                       </div>
                       <div className="border-t pt-3 mt-3">
-                        <div className="text-sm font-medium mb-2">View More:</div>
+                        <div className="text-sm font-medium mb-2">Ver más:</div>
                         <div className="flex flex-col space-y-2">
                           <Link
                             href={`/rankings/333/single?state=${encodeURIComponent(teamData?.state ?? "")}`}
@@ -545,60 +549,19 @@ export default async function Page({
                 <CardTitle>Miembros</CardTitle>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Miembro</TableHead>
-                      <TableHead>Rol</TableHead>
-                      <TableHead>Especialidades</TableHead>
-                      <TableHead>Acciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {members.map((member) => (
-                      <TableRow key={member.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            <Avatar className="h-8 w-8">
-                              <AvatarImage
-                                src={undefined}
-                                alt={member.name ?? undefined}
-                              />
-                              <AvatarFallback>
-                                {member.name?.[0]}
-                              </AvatarFallback>
-                            </Avatar>
-                            <span>{member.name}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {member.role === "leader" ? "Líder" : "Miembro"}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-1">
-                            {member.specialties?.map((specialty, index) => (
-                              <Badge key={index} variant="secondary">
-                                <span
-                                  className={`cubing-icon event-${specialty}`}
-                                />
-                              </Badge>
-                            ))}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Link
-                            href={`/persons/${member.id}`}
-                            className={cn(
-                              buttonVariants({ variant: "ghost", size: "sm" }),
-                            )}
-                          >
-                            Ver perfil
-                          </Link>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <React.Suspense
+                  fallback={
+                    <DataTableSkeleton
+                      columnCount={3}
+                      searchableColumnCount={1}
+                      filterableColumnCount={1}
+                      cellWidths={["10rem", "40rem", "40rem"]}
+                      shrinkZero
+                    />
+                  }
+                >
+                  <MembersTable promises={promises} />
+                </React.Suspense>
               </CardContent>
             </Card>
           </TabsContent>
@@ -782,7 +745,9 @@ export default async function Page({
                           </div>
                         </div>
                       </div>
-                      <div className="text-2xl font-bold">{totalPodiums.length}</div>
+                      <div className="text-2xl font-bold">
+                        {totalPodiums.length}
+                      </div>
                     </div>
                     <div className="flex justify-between items-center p-4 rounded-lg border">
                       <div className="flex items-center">
@@ -796,7 +761,9 @@ export default async function Page({
                           </div>
                         </div>
                       </div>
-                      <div className="text-2xl font-bold">{totalNationalRecords}</div>
+                      <div className="text-2xl font-bold">
+                        {totalNationalRecords}
+                      </div>
                     </div>
                     <div className="flex justify-between items-center p-4 rounded-lg border">
                       <div className="flex items-center">
@@ -810,7 +777,9 @@ export default async function Page({
                           </div>
                         </div>
                       </div>
-                      <div className="text-2xl font-bold">{competitions.length}</div>
+                      <div className="text-2xl font-bold">
+                        {competitions.length}
+                      </div>
                     </div>
                   </div>
                 </CardContent>

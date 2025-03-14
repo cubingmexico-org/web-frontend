@@ -19,9 +19,9 @@ import {
   countDistinct,
 } from "drizzle-orm";
 import { unstable_cache } from "@/lib/unstable-cache";
-import { type GetPersonSinglesSchema } from "./validations";
+import { type GetOrganisersSchema } from "./validations";
 
-export async function getPersons(input: GetPersonSinglesSchema) {
+export async function getPersons(input: GetOrganisersSchema) {
   return await unstable_cache(
     async () => {
       try {

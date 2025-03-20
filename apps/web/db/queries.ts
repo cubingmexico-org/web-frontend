@@ -1,8 +1,8 @@
 import "server-only";
 import { db } from "@/db";
-import { event, state } from "@/db/schema";
+import { event, State, state, Team, team } from "@/db/schema";
 import { unstable_cache } from "@/lib/unstable-cache";
-import { lt } from "drizzle-orm";
+import { eq, lt } from "drizzle-orm";
 
 export async function getEvents() {
   return unstable_cache(
@@ -51,3 +51,29 @@ export async function getStates() {
     },
   )();
 }
+
+export async function saveTeam({
+  stateId,
+  name,
+  description,
+  socialLinks,
+}: {
+  stateId: State["id"];
+  name: Team["name"];
+  description: Team["description"];
+  socialLinks: Team["socialLinks"];
+}) {
+  try {
+    return await db.update(team)
+    .set({
+      name,
+      description,
+      socialLinks,
+    })
+    .where(eq(team.stateId, stateId));
+  } catch (error) {
+    console.error('Failed to save team in database');
+    throw error;
+  }
+}
+

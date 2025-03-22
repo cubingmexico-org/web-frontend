@@ -64,16 +64,16 @@ export async function saveTeam({
   socialLinks: Team["socialLinks"];
 }) {
   try {
-    return await db.update(team)
-    .set({
-      name,
-      description,
-      socialLinks,
-    })
-    .where(eq(team.stateId, stateId));
+    return await db
+      .update(team)
+      .set({
+        name,
+        description,
+        socialLinks,
+      })
+      .where(eq(team.stateId, stateId));
   } catch (error) {
-    console.error('Failed to save team in database');
+    console.error("Failed to save team in database");
     throw error;
   }
 }
-

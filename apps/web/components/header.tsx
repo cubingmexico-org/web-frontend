@@ -94,14 +94,14 @@ export function Header({ user }: { user?: User }) {
                         Kinch Ranks
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem disabled>
-                      <Link href="/kinch/teams" className="w-full">
-                        Kinch Ranks (Teams)
-                      </Link>
-                    </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Link href="/kinch/MEX" className="w-full">
                         Kinch Ranks estatales
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link href="/kinch/teams" className="w-full">
+                        Kinch Ranks (Teams)
                       </Link>
                     </DropdownMenuItem>
                   </DropdownMenuSubContent>

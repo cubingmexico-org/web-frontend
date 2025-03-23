@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { EXCLUDED_EVENTS } from "@/lib/constants";
+import { EXCLUDED_EVENTS, SINGLE_EVENTS } from "@/lib/constants";
 import { SearchParams } from "@/types";
 import {
   Table,
@@ -14,8 +14,6 @@ import { sql } from "drizzle-orm";
 import Link from "next/link";
 import { StateSelector } from "./_components/state-selector";
 import { getStates } from "@/db/queries";
-
-const SINGLE_EVENTS = ["333fm", "333bf", "333mbf", "444bf", "555bf"];
 
 export default async function Page(props: {
   params: Promise<{ stateId: string }>;

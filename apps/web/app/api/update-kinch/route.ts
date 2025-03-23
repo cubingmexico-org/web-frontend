@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { sql } from "drizzle-orm";
-import { EXCLUDED_EVENTS } from "@/lib/constants";
+import { EXCLUDED_EVENTS, SINGLE_EVENTS } from "@/lib/constants";
 import { kinchRanks } from "@/db/schema";
-
-const SINGLE_EVENTS = ["333fm", "333bf", "333mbf", "444bf", "555bf"];
 
 export async function POST(): Promise<NextResponse> {
   try {

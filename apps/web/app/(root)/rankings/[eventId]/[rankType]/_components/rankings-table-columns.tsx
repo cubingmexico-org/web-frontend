@@ -7,6 +7,7 @@ import { formatTime, formatTime333mbf } from "@/lib/utils";
 import { RankSingle } from "../_types";
 import { cn } from "@workspace/ui/lib/utils";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 export function getColumns(): ColumnDef<RankSingle>[] {
   return [
@@ -26,8 +27,13 @@ export function getColumns(): ColumnDef<RankSingle>[] {
         <DataTableColumnHeader column={column} title="Nombre" />
       ),
       cell: ({ row }) => {
+        const personId = row.original.personId;
         return (
-          <div className="flex space-x-2 w-72">{row.getValue("name")}</div>
+          <div className="flex space-x-2 w-72">
+            <Link className="hover:underline" href={`/persons/${personId}`}>
+              {row.getValue("name")}
+            </Link>
+          </div>
         );
       },
       enableHiding: false,

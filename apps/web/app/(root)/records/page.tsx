@@ -14,6 +14,7 @@ import {
   TableRow,
 } from "@workspace/ui/components/table";
 import { formatTime333mbf, formatTime } from "@/lib/utils";
+import Link from "next/link";
 
 interface PageProps {
   searchParams: Promise<SearchParams>;
@@ -60,7 +61,14 @@ export default async function Page(props: PageProps) {
         <TableBody>
           {records.map((record, index) => (
             <TableRow key={index}>
-              <TableCell className="min-w-40">{record.single.name}</TableCell>
+              <TableCell className="min-w-40">
+                <Link
+                  className="hover:underline"
+                  href={`/persons/${record.single.personId}`}
+                >
+                  {record.single.name}
+                </Link>
+              </TableCell>
               {search.state ? (
                 <TableCell className="text-center">
                   {record.single.countryRank}
@@ -92,7 +100,12 @@ export default async function Page(props: PageProps) {
                 </TableCell>
               ) : null}
               <TableCell className="min-w-40 text-right">
-                {record.average?.name}
+                <Link
+                  className="hover:underline"
+                  href={`/persons/${record.average?.personId}`}
+                >
+                  {record.average?.name}
+                </Link>
               </TableCell>
             </TableRow>
           ))}

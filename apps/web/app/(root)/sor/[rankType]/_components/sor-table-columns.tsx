@@ -5,6 +5,7 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 import { cn } from "@workspace/ui/lib/utils";
 import { SumOfRanks } from "../_types";
+import Link from "next/link";
 
 interface Event {
   eventId: string;
@@ -32,8 +33,13 @@ export function getColumns(
         <DataTableColumnHeader column={column} title="Nombre" />
       ),
       cell: ({ row }) => {
+        const personId = row.original.personId;
         return (
-          <div className="flex space-x-2 w-72">{row.getValue("name")}</div>
+          <div className="flex space-x-2 w-72">
+            <Link className="hover:underline" href={`/persons/${personId}`}>
+              {row.getValue("name")}
+            </Link>
+          </div>
         );
       },
       enableHiding: false,

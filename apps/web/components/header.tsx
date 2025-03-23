@@ -5,6 +5,10 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
 } from "@workspace/ui/components/dropdown-menu";
 import { ChevronDown } from "lucide-react";
 import {
@@ -64,16 +68,45 @@ export function Header({ user }: { user?: User }) {
                   Récords
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link href="/sor/single" className="w-full">
-                  Sum of Ranks
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link href="/kinch" className="w-full">
-                  Kinch Ranks
-                </Link>
-              </DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>Sum of Ranks</DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuItem>
+                      <Link href="/sor/single" className="w-full">
+                        Sum of Ranks
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link href="/sor/single/teams" className="w-full">
+                        Sum of Ranks (Teams)
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>Kinch Ranks</DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuItem>
+                      <Link href="/kinch" className="w-full">
+                        Kinch Ranks
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem disabled>
+                      <Link href="/kinch/teams" className="w-full">
+                        Kinch Ranks (Teams)
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem disabled>
+                      <Link href="/kinch/NAY" className="w-full">
+                        Kinch Ranks estatales
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
             </DropdownMenuContent>
           </DropdownMenu>
           <DropdownMenu>

@@ -1,7 +1,7 @@
-import Link from "next/link"
-import { Header } from "@/components/header"
-import { Button } from "@workspace/ui/components/button"
-import { Home, RotateCcw } from "lucide-react"
+import Link from "next/link";
+import { Header } from "@/components/header";
+import { Button } from "@workspace/ui/components/button";
+import { Home, RotateCcw } from "lucide-react";
 
 export default function NotFound() {
   return (
@@ -35,13 +35,20 @@ export default function NotFound() {
             <h1 className="text-6xl md:text-8xl font-bold mt-4">404</h1>
           </div>
 
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">¡Página no encontrada!</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">
+            ¡Página no encontrada!
+          </h2>
           <p className="text-lg text-gray-600 mb-8">
-            Parece que este cubo está sin resolver. La página que estás buscando no existe o ha sido movida.
+            Parece que este cubo está sin resolver. La página que estás buscando
+            no existe o ha sido movida.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="bg-green-500 hover:bg-green-600">
+            <Button
+              asChild
+              size="lg"
+              className="bg-green-500 hover:bg-green-600"
+            >
               <Link href="/">
                 <Home />
                 Volver al inicio
@@ -57,6 +64,5 @@ export default function NotFound() {
         </div>
       </main>
     </div>
-  )
+  );
 }
-

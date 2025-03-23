@@ -16,6 +16,21 @@ import {
   TooltipContent,
 } from "@workspace/ui/components/tooltip";
 import { notFound } from "next/navigation";
+import { RankTypeSelector } from "./_components/rank-type-selector";
+import Link from "next/link";
+
+interface TeamData {
+  stateId: string;
+  name: string;
+  overall: number;
+  events: {
+    eventId: string;
+    bestRank: number;
+    personId: string | null;
+    personName: string | null;
+    completed: boolean;
+  }[];
+}
 
 interface PageProps {
   params: Promise<{ rankType: "single" | "average" }>;
@@ -39,6 +54,7 @@ export default async function Page(props: PageProps) {
         "bestPersonEvent" AS (
           SELECT DISTINCT ON (p."stateId", e."eventId")
             t."name",
+            t."stateId",
             e."eventId",
             ev."rank" AS "eventRank",
             p.id AS "personId",
@@ -62,6 +78,7 @@ export default async function Page(props: PageProps) {
         )
         SELECT
           bpe."name",
+          bpe."stateId",
           json_agg(
             json_build_object(
               'eventId', bpe."eventId",
@@ -75,29 +92,20 @@ export default async function Page(props: PageProps) {
           ) AS events,
           SUM(bpe."bestRank") AS overall
         FROM "bestPersonEvent" bpe
-        GROUP BY bpe."name"
+        GROUP BY bpe."name", bpe."stateId"
         ORDER BY SUM(bpe."bestRank")
       `,
     );
-  
-    const teams = data.rows as {
-      name: string;
-      overall: number;
-      events: {
-        eventId: string;
-        bestRank: number;
-        personId: string | null;
-        personName: string | null;
-        completed: boolean;
-      }[];
-    }[];
-  
+
+    const teams = data.rows as unknown as TeamData[];
+
     return (
       <main className="flex-grow container mx-auto px-4 py-8">
-        <div className="mb-6">
+        <div className="flex flex-col gap-4 mb-6">
           <h1 className="text-3xl font-bold">
             Sum of Ranks de Teams (Average)
           </h1>
+          <RankTypeSelector selectedRankType={rankType} />
         </div>
         <Table>
           <TableHeader>
@@ -156,8 +164,15 @@ export default async function Page(props: PageProps) {
           </TableHeader>
           <TableBody>
             {teams.map((team) => (
-              <TableRow key={team.name}>
-                <TableCell>{team.name}</TableCell>
+              <TableRow key={team.stateId}>
+                <TableCell>
+                  <Link
+                    className="hover:underline"
+                    href={`/teams/${team.stateId}`}
+                  >
+                    {team.name}
+                  </Link>
+                </TableCell>
                 <TableCell className="font-semibold">{team.overall}</TableCell>
                 {team.events.map((event) => (
                   <TableCell
@@ -195,6 +210,7 @@ export default async function Page(props: PageProps) {
       "bestPersonEvent" AS (
         SELECT DISTINCT ON (p."stateId", e."eventId")
           t."name",
+          t."stateId",
           e."eventId",
           ev."rank" AS "eventRank",
           p.id AS "personId",
@@ -218,6 +234,7 @@ export default async function Page(props: PageProps) {
       )
       SELECT
         bpe."name",
+        bpe."stateId",
         json_agg(
           json_build_object(
             'eventId', bpe."eventId",
@@ -231,29 +248,18 @@ export default async function Page(props: PageProps) {
         ) AS events,
         SUM(bpe."bestRank") AS overall
       FROM "bestPersonEvent" bpe
-      GROUP BY bpe."name"
+      GROUP BY bpe."name", bpe."stateId"
       ORDER BY SUM(bpe."bestRank")
     `,
   );
 
-  const teams = data.rows as {
-    name: string;
-    overall: number;
-    events: {
-      eventId: string;
-      bestRank: number;
-      personId: string | null;
-      personName: string | null;
-      completed: boolean;
-    }[];
-  }[];
+  const teams = data.rows as unknown as TeamData[];
 
   return (
     <main className="flex-grow container mx-auto px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">
-          Sum of Ranks de Teams (Single)
-        </h1>
+      <div className="flex flex-col gap-4 mb-6">
+        <h1 className="text-3xl font-bold">Sum of Ranks de Teams (Single)</h1>
+        <RankTypeSelector selectedRankType={rankType} />
       </div>
       <Table>
         <TableHeader>
@@ -315,8 +321,15 @@ export default async function Page(props: PageProps) {
         </TableHeader>
         <TableBody>
           {teams.map((team) => (
-            <TableRow key={team.name}>
-              <TableCell>{team.name}</TableCell>
+            <TableRow key={team.stateId}>
+              <TableCell>
+                <Link
+                  className="hover:underline"
+                  href={`/teams/${team.stateId}`}
+                >
+                  {team.name}
+                </Link>
+              </TableCell>
               <TableCell className="font-semibold">{team.overall}</TableCell>
               {team.events.map((event) => (
                 <TableCell

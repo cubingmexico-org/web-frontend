@@ -110,7 +110,7 @@ export default async function Page(props: PageProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Estado</TableHead>
+              <TableHead>Team</TableHead>
               <TableHead>Total</TableHead>
               <TableHead>
                 <span className="cubing-icon event-333" />

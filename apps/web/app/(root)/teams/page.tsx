@@ -41,8 +41,7 @@ export default async function Page() {
           conectar con otros speedcubers en tu estado!
         </p>
         <div className="flex gap-4">
-          <Button>Crear un Team</Button>
-          <Button variant="outline">Aprender más</Button>
+          <Button>Contáctate con nosotros para registrar un nuevo Team</Button>
         </div>
       </div>
     </main>

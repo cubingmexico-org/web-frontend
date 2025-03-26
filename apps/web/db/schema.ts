@@ -355,3 +355,18 @@ export const kinchRanks = pgTable(
 );
 
 export type KinchRanks = InferSelectModel<typeof kinchRanks>;
+
+export const exportMetadata = pgTable(
+  "exportMetadata",
+  {
+    id: varchar("id", { length: 32 }).primaryKey(),
+    date: timestamp("date").notNull(),
+  },
+  (table) => {
+    return [
+      {
+        pk: primaryKey({ columns: [table.id] }),
+      },
+    ];
+  },
+);

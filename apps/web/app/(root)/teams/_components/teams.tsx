@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, buttonVariants } from "@workspace/ui/components/button";
+import { buttonVariants } from "@workspace/ui/components/button";
 import {
   Card,
   CardContent,
@@ -57,9 +57,6 @@ export function Teams({ teams }: { teams: Team[] }) {
             Descubre y conecta con los Teams de speedcubers en México
           </p>
         </div>
-        <Button className="bg-green-500 hover:bg-green-600">
-          Registra a tu Team
-        </Button>
       </div>
 
       <div className="flex flex-col md:flex-row gap-4 mb-6">

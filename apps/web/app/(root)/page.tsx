@@ -1,12 +1,13 @@
 import Image from "next/image";
 import { ArrowRight, Trophy, Users, Clock } from "lucide-react";
-import { Button } from "@workspace/ui/components/button";
+import { buttonVariants } from "@workspace/ui/components/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
+import Link from "next/link";
 
 export default function Page() {
   return (
@@ -21,14 +22,17 @@ export default function Page() {
             </h1>
             <p className="mb-8 leading-relaxed">
               Descubre a los mejores speedcubers en México, sigue los récords
-              estatales y mantente actualizado con los últimos eventos y logros
-              de la WCA.
+              estatales y mantente actualizado con las últimas competencias de
+              la WCA.
             </p>
             <div className="flex justify-center">
-              <Button>
+              <Link
+                className={buttonVariants({ variant: "default" })}
+                href="/rankings/333/single"
+              >
                 Explorar Rankings
                 <ArrowRight />
-              </Button>
+              </Link>
             </div>
           </div>
           <div className="lg:max-w-lg lg:w-full md:w-1/2 w-5/6">

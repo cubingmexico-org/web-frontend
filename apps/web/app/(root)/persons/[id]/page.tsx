@@ -43,9 +43,9 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const id = (await params).id;
-  
-  const headersList = await headers()
-  const domain = headersList.get('host')
+
+  const headersList = await headers();
+  const domain = headersList.get("host");
 
   const response = await fetch(
     `https://www.worldcubeassociation.org/api/v0/persons/${id}`,
@@ -214,7 +214,9 @@ export default async function Page({
       };
     });
 
-  const states = await fetch(`${isProduction ? "https://" : "http://"}` + domain + "/states.geojson");
+  const states = await fetch(
+    `${isProduction ? "https://" : "http://"}` + domain + "/states.geojson",
+  );
 
   const statesData = (await states.json()) as {
     type: string;

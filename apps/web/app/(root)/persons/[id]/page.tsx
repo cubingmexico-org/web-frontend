@@ -33,6 +33,9 @@ import { cn } from "@workspace/ui/lib/utils";
 import { Badge } from "@workspace/ui/components/badge";
 import { Map } from "./_components/map";
 import type { GeoJSONProps } from "react-leaflet";
+import { headers } from "next/headers";
+
+const isProduction = process.env.NODE_ENV === "production";
 
 export default async function Page({
   params,
@@ -40,6 +43,9 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const id = (await params).id;
+  
+  const headersList = await headers()
+  const domain = headersList.get('host')
 
   const response = await fetch(
     `https://www.worldcubeassociation.org/api/v0/persons/${id}`,
@@ -208,7 +214,7 @@ export default async function Page({
       };
     });
 
-  const states = await fetch(process.env.URL + "/states.geojson");
+  const states = await fetch(`${isProduction ? "https://" : "http://"}` + domain + "/states.geojson");
 
   const statesData = (await states.json()) as {
     type: string;

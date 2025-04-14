@@ -1,15 +1,12 @@
 import { Button } from "@workspace/ui/components/button";
 import { Icons } from "@workspace/ui/components/icons";
-import type { getDictionary } from "@/get-dictionary";
 import { signIn, signOut } from "auth";
 
 export function SignIn({
   provider,
-  dictionary,
   ...props
 }: {
   provider?: string;
-  dictionary: Awaited<ReturnType<typeof getDictionary>>["auth_components"];
 } & React.ComponentPropsWithRef<typeof Button>): JSX.Element {
   return (
     <form
@@ -21,18 +18,15 @@ export function SignIn({
     >
       <Button className="flex gap-2" {...props}>
         <Icons.WcaMonochrome className="size-5" />
-        {dictionary.signIn}
+        Iniciar sesión
       </Button>
     </form>
   );
 }
 
 export function SignOut({
-  dictionary,
   ...props
-}: {
-  dictionary: Awaited<ReturnType<typeof getDictionary>>["auth_components"];
-} & React.ComponentPropsWithRef<typeof Button>): JSX.Element {
+}: React.ComponentPropsWithRef<typeof Button>): JSX.Element {
   return (
     <form
       action={async () => {
@@ -42,7 +36,7 @@ export function SignOut({
       className="w-full"
     >
       <Button className="w-full p-0" variant="ghost" {...props}>
-        {dictionary.signOut}
+        Cerrar sesión
       </Button>
     </form>
   );

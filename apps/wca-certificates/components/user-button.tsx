@@ -13,23 +13,15 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
 import { auth } from "@/auth";
-import type { getDictionary } from "@/get-dictionary";
 import { SignOut } from "./auth-components";
-import LocaleSwitcher from "./locale-switcher";
 
-interface UserButtonProps {
-  dictionary: Awaited<ReturnType<typeof getDictionary>>;
-}
-
-export default async function UserButton({
-  dictionary,
-}: UserButtonProps): Promise<JSX.Element> {
+export async function UserButton(): Promise<JSX.Element> {
   const session = await auth();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="!relative !w-8 !h-8 !rounded-full" variant="ghost">
+        <Button className="relative w-8 h-8 rounded-full" variant="ghost">
           <Avatar>
             <AvatarImage
               alt={session?.user?.name ?? ""}
@@ -50,10 +42,9 @@ export default async function UserButton({
             </p>
           </div>
         </DropdownMenuLabel>
-        <LocaleSwitcher dictionary={dictionary.locale_switcher} />
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <SignOut dictionary={dictionary.auth_components} />
+          <SignOut />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

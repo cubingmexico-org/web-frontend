@@ -25,12 +25,8 @@ import { Input } from "@workspace/ui/components/input";
 import type { Margins, PageOrientation, PageSize } from "pdfmake/interfaces";
 import { FileText } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
-import type { getDictionary } from "@/get-dictionary";
 
 interface DialogDocumentSettingsProps {
-  dictionary: Awaited<
-    ReturnType<typeof getDictionary>
-  >["certificates"]["podium"]["document_settings"]["tiptap"]["dialogDocumentSettings"];
   pageOrientation: PageOrientation;
   setPageOrientation: (value: PageOrientation) => void;
   pageSize: PageSize;
@@ -40,7 +36,6 @@ interface DialogDocumentSettingsProps {
 }
 
 export function DialogDocumentSettings({
-  dictionary,
   pageOrientation,
   setPageOrientation,
   pageSize,
@@ -70,16 +65,16 @@ export function DialogDocumentSettings({
     <Dialog onOpenChange={(value) => setOpen(value)} open={open}>
       <DialogTrigger className="flex text-sm hover:bg-accent px-2 py-1.5 cursor-default rounded-sm w-full">
         <FileText className="h-4 w-4 mr-2" />
-        {dictionary.pageSettings}
+        Configuración de página
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{dictionary.pageSettings}</DialogTitle>
+          <DialogTitle>Configuración de página</DialogTitle>
         </DialogHeader>
         <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="pageOrientation">{dictionary.orientation}</Label>
+              <Label htmlFor="pageOrientation">Orientación</Label>
               <RadioGroup
                 className="flex"
                 defaultValue="portrait"
@@ -91,16 +86,16 @@ export function DialogDocumentSettings({
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem id="portrait" value="portrait" />
-                  <Label htmlFor="portrait">{dictionary.portrait}</Label>
+                  <Label htmlFor="portrait">Vertical</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem id="landscape" value="landscape" />
-                  <Label htmlFor="landscape">{dictionary.landscape}</Label>
+                  <Label htmlFor="landscape">Horizontal</Label>
                 </div>
               </RadioGroup>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="pageSize">{dictionary.paperSize}</Label>
+              <Label htmlFor="pageSize">Tamaño de papel</Label>
               <Select
                 onValueChange={(value: string) => {
                   setTempPageSize(value as PageSize);
@@ -108,19 +103,21 @@ export function DialogDocumentSettings({
                 value={tempPageSize as string}
               >
                 <SelectTrigger className="w-full" id="pageSize">
-                  <SelectValue placeholder={dictionary.size} />
+                  <SelectValue placeholder="" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="LETTER">{dictionary.letter}</SelectItem>
-                  <SelectItem value="A4">{dictionary.a4}</SelectItem>
+                  <SelectItem value="LETTER">
+                    Carta (21.6 cm x 27.9 cm)
+                  </SelectItem>
+                  <SelectItem value="A4">A4 (21 cm x 29.7 cm)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="pageMargins">{dictionary.margins}</Label>
+            <Label htmlFor="pageMargins">Márgenes</Label>
             <div className="grid items-center grid-cols-2 gap-2">
-              <Label htmlFor="top">{dictionary.top}</Label>
+              <Label htmlFor="top">Superior</Label>
               <Input
                 className="w-full"
                 id="top"
@@ -146,7 +143,7 @@ export function DialogDocumentSettings({
                     : 0
                 }
               />
-              <Label htmlFor="bottom">{dictionary.bottom}</Label>
+              <Label htmlFor="bottom">Inferior</Label>
               <Input
                 className="w-full"
                 id="bottom"
@@ -172,7 +169,7 @@ export function DialogDocumentSettings({
                     : 0
                 }
               />
-              <Label htmlFor="right">{dictionary.right}</Label>
+              <Label htmlFor="right">Derecho</Label>
               <Input
                 className="w-full"
                 id="right"
@@ -198,7 +195,7 @@ export function DialogDocumentSettings({
                     : 0
                 }
               />
-              <Label htmlFor="left">{dictionary.left}</Label>
+              <Label htmlFor="left">Izquierdo</Label>
               <Input
                 className="w-full"
                 id="left"
@@ -229,9 +226,9 @@ export function DialogDocumentSettings({
         </div>
         <DialogFooter>
           <Button onClick={() => setOpen(false)} variant="secondary">
-            {dictionary.cancel}
+            Cancelar
           </Button>
-          <Button onClick={handleSave}>{dictionary.save}</Button>
+          <Button onClick={handleSave}>Guardar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

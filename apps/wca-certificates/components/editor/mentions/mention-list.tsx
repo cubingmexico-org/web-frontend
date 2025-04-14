@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- . */
 /* eslint-disable react/display-name -- . */
 
-import { usePathname } from "next/navigation";
 import React, {
   forwardRef,
   useEffect,
@@ -11,9 +10,6 @@ import React, {
 
 export const MentionList = forwardRef((props: any, ref) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
-
-  const pathname = usePathname();
-  const lang = pathname.startsWith("/es") ? "es" : "en";
 
   const selectItem = (index: number) => {
     const item = props.items[index];
@@ -77,9 +73,7 @@ export const MentionList = forwardRef((props: any, ref) => {
           </button>
         ))
       ) : (
-        <div className="py-1 px-4 italic">
-          {lang === "es" ? "Sin resultados" : "No results"}
-        </div>
+        <div className="py-1 px-4 italic">Sin resultados</div>
       )}
     </div>
   );

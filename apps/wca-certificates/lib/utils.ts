@@ -1,7 +1,27 @@
-/* eslint-disable no-case-declarations -- . */
 import { faker } from "@faker-js/faker";
-import type { Event, Person, Result, EventId, Round } from "@/types/wca-live";
-import type { Locale } from "@/i18n-config";
+import type { Event, Person, Result, EventId, Round } from "@/types/wcif";
+
+interface ApplicationError extends Error {
+  info: string;
+  status: number;
+}
+
+export const fetcher = async (url: string) => {
+  const res = await fetch(url);
+
+  if (!res.ok) {
+    const error = new Error(
+      "An error occurred while fetching the data.",
+    ) as ApplicationError;
+
+    error.info = await res.json();
+    error.status = res.status;
+
+    throw error;
+  }
+
+  return res.json();
+};
 
 export function processPersons(persons: Person[]) {
   const getRole = (role: string) => (person: Person) =>
@@ -27,6 +47,7 @@ export function processPersons(persons: Person[]) {
           result.ranking >= 1 &&
           result.ranking <= 3,
       )
+      .sort((a, b) => a.ranking! - b.ranking!)
       .map((person) => ({
         personName: personIdToName[person.personId],
         result:
@@ -68,11 +89,7 @@ export function transformString(
   }
 }
 
-export function formatResults(
-  result: number,
-  eventId: EventId,
-  lang?: Locale,
-): string {
+export function formatResults(result: number, eventId: EventId): string {
   if (result === -1) {
     return "DNF";
   }
@@ -95,10 +112,7 @@ export function formatResults(
     const TTTTTInt = parseInt(TTTTT);
     const minutes = Math.floor(TTTTTInt / 60);
     const seconds = TTTTTInt % 60;
-    const time =
-      lang === "es"
-        ? `${solved}/${attempted} en ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`
-        : `${solved}/${attempted} in ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    const time = `${solved}/${attempted} en ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
 
     return time;
   }
@@ -117,94 +131,50 @@ export function formatResults(
   return time;
 }
 
-export function formatEvents(eventId: EventId, lang?: Locale) {
-  switch (lang) {
-    case "es":
-      switch (eventId) {
-        case "333":
-          return "3x3x3";
-        case "222":
-          return "2x2x2";
-        case "444":
-          return "4x4x4";
-        case "555":
-          return "5x5x5";
-        case "666":
-          return "6x6x6";
-        case "777":
-          return "7x7x7";
-        case "333bf":
-          return "3x3x3 A Ciegas";
-        case "333fm":
-          return "3x3x3 Menos Movimientos";
-        case "333oh":
-          return "3x3x3 A Una Mano";
-        case "clock":
-          return "Clock";
-        case "minx":
-          return "Megaminx";
-        case "pyram":
-          return "Pyraminx";
-        case "skewb":
-          return "Skewb";
-        case "sq1":
-          return "Square-1";
-        case "444bf":
-          return "4x4x4 A Ciegas";
-        case "555bf":
-          return "5x5x5 A Ciegas";
-        case "333mbf":
-          return "3x3x3 Múltiples A Ciegas";
-        default:
-          return eventId;
-      }
-    case "en":
+export function formatEvents(eventId: EventId) {
+  switch (eventId) {
+    case "333":
+      return "3x3x3";
+    case "222":
+      return "2x2x2";
+    case "444":
+      return "4x4x4";
+    case "555":
+      return "5x5x5";
+    case "666":
+      return "6x6x6";
+    case "777":
+      return "7x7x7";
+    case "333bf":
+      return "3x3x3 A Ciegas";
+    case "333fm":
+      return "3x3x3 Menos Movimientos";
+    case "333oh":
+      return "3x3x3 A Una Mano";
+    case "clock":
+      return "Clock";
+    case "minx":
+      return "Megaminx";
+    case "pyram":
+      return "Pyraminx";
+    case "skewb":
+      return "Skewb";
+    case "sq1":
+      return "Square-1";
+    case "444bf":
+      return "4x4x4 A Ciegas";
+    case "555bf":
+      return "5x5x5 A Ciegas";
+    case "333mbf":
+      return "3x3x3 Múltiples A Ciegas";
     default:
-      switch (eventId) {
-        case "333":
-          return "3x3x3";
-        case "222":
-          return "2x2x2";
-        case "444":
-          return "4x4x4";
-        case "555":
-          return "5x5x5";
-        case "666":
-          return "6x6x6";
-        case "777":
-          return "7x7x7";
-        case "333bf":
-          return "3x3x3 Blindfolded";
-        case "333fm":
-          return "3x3x3 Fewest Moves";
-        case "333oh":
-          return "3x3x3 One-Handed";
-        case "clock":
-          return "Clock";
-        case "minx":
-          return "Megaminx";
-        case "pyram":
-          return "Pyraminx";
-        case "skewb":
-          return "Skewb";
-        case "sq1":
-          return "Square-1";
-        case "444bf":
-          return "4x4x4 Blindfolded";
-        case "555bf":
-          return "5x5x5 Blindfolded";
-        case "333mbf":
-          return "3x3x3 Multi-Blind";
-        default:
-          return eventId;
-      }
+      return eventId;
   }
 }
 
 export function formatPlace(
   place: number,
   formatType: "cardinal" | "ordinal" | "ordinal_text" | "medal" | "other",
-  lang?: Locale,
 ): string {
   switch (formatType) {
     case "cardinal":
@@ -221,33 +191,33 @@ export function formatPlace(
     case "ordinal":
       switch (place) {
         case 1:
-          return lang === "es" ? "1er" : "1st";
+          return "1er";
         case 2:
-          return lang === "es" ? "2do" : "2nd";
+          return "2do";
         case 3:
-          return lang === "es" ? "3er" : "3rd";
+          return "3er";
         default:
           return String(place);
       }
     case "ordinal_text":
       switch (place) {
         case 1:
-          return lang === "es" ? "Primer" : "First";
+          return "Primer";
         case 2:
-          return lang === "es" ? "Segundo" : "Second";
+          return "Segundo";
         case 3:
-          return lang === "es" ? "Tercer" : "Third";
+          return "Tercer";
         default:
           return String(place);
       }
     case "medal":
       switch (place) {
         case 1:
-          return lang === "es" ? "Oro" : "Gold";
+          return "Oro";
         case 2:
-          return lang === "es" ? "Plata" : "Silver";
+          return "Plata";
         case 3:
-          return lang === "es" ? "Bronce" : "Bronze";
+          return "Bronce";
         default:
           return String(place);
       }
@@ -256,85 +226,59 @@ export function formatPlace(
   }
 }
 
-export function formatResultType(eventId: EventId, lang?: Locale): string {
+export function formatResultType(eventId: EventId): string {
   switch (eventId) {
     case "333bf":
     case "444bf":
     case "555bf":
-      return lang === "es" ? "un mejor tiempo" : "a single";
+      return "un mejor tiempo";
     case "333mbf":
     case "333fm":
-      return lang === "es" ? "un mejor resultado" : "a single";
+      return "un mejor resultado";
     case "666":
     case "777":
-      return lang === "es" ? "una media" : "a mean";
+      return "una media";
     default:
-      return lang === "es" ? "un promedio" : "an average";
+      return "un promedio";
   }
 }
 
-export function formatDates(date: string, days: string, lang?: Locale): string {
-  switch (lang) {
-    case "es":
-      const daysNumber = Number(days);
-      const [year, month, day] = date.split("-");
-      const startDate = new Date(Number(year), Number(month) - 1, Number(day));
-      const options: Intl.DateTimeFormatOptions = {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      };
+export function formatDates(date: string, days: string): string {
+  const daysNumber = Number(days);
+  const [year, month, day] = date.split("-");
+  const startDate = new Date(Number(year), Number(month) - 1, Number(day));
+  const options: Intl.DateTimeFormatOptions = {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  };
 
-      const dates = [];
-      for (let i = 0; i < daysNumber; i++) {
-        const currentDate = new Date(startDate);
-        currentDate.setDate(startDate.getDate() + i);
-        dates.push(
-          new Intl.DateTimeFormat(lang, options)
-            .format(currentDate)
-            .split(" ")[0],
-        );
-      }
-
-      const lastDate = dates.pop();
-      const monthYear = new Intl.DateTimeFormat(lang, options)
-        .format(startDate)
-        .split(" ")
-        .slice(1)
-        .join(" ");
-
-      if (daysNumber === 1) {
-        const day = new Intl.DateTimeFormat(lang, { day: "numeric" }).format(
-          startDate,
-        );
-        return `${day} ${monthYear}`;
-      }
-      return `${dates.join(", ")} y ${lastDate} ${monthYear}`;
-    case "en":
-    default:
-      const startDate2 = new Date(date);
-      const endDate = new Date(startDate2);
-      endDate.setDate(startDate2.getDate() + Number(days) - 1);
-
-      const month2 = startDate2.toLocaleString("default", { month: "long" });
-      const year2 = startDate2.getFullYear();
-      const dayNumbers = [];
-
-      for (let d = startDate2.getDate(); d <= endDate.getDate(); d++) {
-        dayNumbers.push(d);
-      }
-
-      if (dayNumbers.length === 1) {
-        return `${month2} ${dayNumbers[0]}, ${year2}`;
-      } else if (dayNumbers.length === 2) {
-        return `${month2} ${dayNumbers[0]} and ${dayNumbers[1]}, ${year2}`;
-      }
-      const lastDay = dayNumbers.pop();
-      return `${month2} ${dayNumbers.join(", ")}, and ${lastDay}, ${year2}`;
+  const dates = [];
+  for (let i = 0; i < daysNumber; i++) {
+    const currentDate = new Date(startDate);
+    currentDate.setDate(startDate.getDate() + i);
+    dates.push(
+      new Intl.DateTimeFormat("es", options).format(currentDate).split(" ")[0],
+    );
   }
+
+  const lastDate = dates.pop();
+  const monthYear = new Intl.DateTimeFormat("es", options)
+    .format(startDate)
+    .split(" ")
+    .slice(1)
+    .join(" ");
+
+  if (daysNumber === 1) {
+    const day = new Intl.DateTimeFormat("es", { day: "numeric" }).format(
+      startDate,
+    );
+    return `${day} ${monthYear}`;
+  }
+  return `${dates.join(", ")} y ${lastDate} ${monthYear}`;
 }
 
-export function joinPersons(persons: string[], lang?: Locale): string {
+export function joinPersons(persons: string[]): string {
   const personsCopy = [...persons];
 
   if (personsCopy.length === 1) {
@@ -342,9 +286,7 @@ export function joinPersons(persons: string[], lang?: Locale): string {
   }
 
   const lastPerson = personsCopy.pop();
-  return lang === "es"
-    ? `${personsCopy.join(", ")} ${lastPerson?.startsWith("I") ? "e" : "y"} ${lastPerson}`
-    : `${personsCopy.join(", ")} and ${lastPerson}`;
+  return `${personsCopy.join(", ")} ${lastPerson?.startsWith("I") ? "e" : "y"} ${lastPerson}`;
 }
 
 export function formatBytes(

@@ -1,6 +1,5 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import type { JSONContent } from "@tiptap/react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import Mention from "@tiptap/extension-mention";
@@ -57,26 +56,13 @@ import { Button } from "@workspace/ui/components/button";
 import { DialogDocumentSettings } from "@/components/editor/dialog-document-settings";
 import { TextTransform } from "@/components/editor/extensions/text-transform";
 import { FontSize } from "@/components/editor/extensions/font-size";
-import {
-  participation as participationEs,
-  podium as podiumEs,
-} from "@/data/es/certificates";
-import {
-  participation as participationEn,
-  podium as podiumEn,
-} from "@/data/en/certificates";
-import type { getDictionary } from "@/get-dictionary";
+import { participation, podium } from "@/data/certificates";
 import Toolbar from "./toolbar";
-import suggestionPodiumEs from "./mentions/suggestions/es/suggestion-podium";
-import suggestionParticipationEs from "./mentions/suggestions/es/suggestion-participation";
-import suggestionPodiumEn from "./mentions/suggestions/en/suggestion-podium";
-import suggestionParticipationEn from "./mentions/suggestions/en/suggestion-participation";
+import suggestionPodiumEs from "./mentions/suggestions/suggestion-podium";
+import suggestionParticipationEs from "./mentions/suggestions/suggestion-participation";
 import Submenu from "./submenu";
 
 interface TiptapProps {
-  dictionary: Awaited<
-    ReturnType<typeof getDictionary>
-  >["certificates"]["podium"]["document_settings"]["tiptap"];
   content: JSONContent;
   pdfDisabled: boolean;
   pageSize: PageSize;
@@ -92,7 +78,6 @@ interface TiptapProps {
 }
 
 export default function Tiptap({
-  dictionary,
   content,
   pdfDisabled,
   pageSize,
@@ -106,9 +91,6 @@ export default function Tiptap({
   variant,
   competitionId,
 }: TiptapProps): JSX.Element {
-  const pathname = usePathname();
-  const lang = pathname.startsWith("/es") ? "es" : "en";
-
   const handleChange = (newContent: JSONContent) => {
     onChange(newContent);
   };
@@ -121,13 +103,7 @@ export default function Tiptap({
           class: "mention",
         },
         suggestion:
-          lang === "es"
-            ? variant === "podium"
-              ? suggestionPodiumEs
-              : suggestionParticipationEs
-            : variant === "podium"
-              ? suggestionPodiumEn
-              : suggestionParticipationEn,
+          variant === "podium" ? suggestionPodiumEs : suggestionParticipationEs,
       }),
       TextAlign.configure({
         types: ["heading", "paragraph"],
@@ -203,7 +179,7 @@ export default function Tiptap({
   });
 
   if (!editor) {
-    return <>{dictionary.loading}</>;
+    return <></>;
   }
 
   const saveContent = () => {
@@ -242,62 +218,51 @@ export default function Tiptap({
   };
 
   return (
-    <div className="w-full">
-      <Menubar className="mb-4">
+    <div className="flex flex-col gap-2">
+      <Menubar>
         <MenubarMenu>
-          <MenubarTrigger>{dictionary.file}</MenubarTrigger>
+          <MenubarTrigger>Archivo</MenubarTrigger>
           <MenubarContent>
             <MenubarItem
               disabled={
-                lang === "es"
-                  ? variant === "podium"
-                    ? content === podiumEs
-                    : content === participationEs
-                  : variant === "podium"
-                    ? content === podiumEn
-                    : content === participationEn
+                variant === "podium"
+                  ? content === podium
+                  : content === participation
               }
               onClick={() => {
                 const newContent =
-                  lang === "es"
-                    ? variant === "podium"
-                      ? podiumEs
-                      : participationEs
-                    : variant === "podium"
-                      ? podiumEn
-                      : participationEn;
+                  variant === "podium" ? podium : participation;
                 editor.commands.setContent(newContent);
                 handleChange(newContent);
               }}
             >
               <RotateCcw className="h-4 w-4 mr-2" />
-              {dictionary.reset}
+              Reiniciar
             </MenubarItem>
             <MenubarItem onClick={saveContent}>
               <Save className="h-4 w-4 mr-2" />
-              {dictionary.save}
+              Guardar
             </MenubarItem>
             <MenubarItem onClick={loadContent}>
               <Loader className="h-4 w-4 mr-2" />
-              {dictionary.load}
+              Cargar
             </MenubarItem>
             <MenubarSeparator />
             <MenubarItem asChild>
               <Button
-                className="!w-full !px-2 !py-1.5 !justify-start !font-normal !h-8"
+                className="w-full px-2 py-1.5 justify-start font-normal h-8"
                 disabled={pdfDisabled}
                 onClick={pdfOnClick}
                 type="submit"
                 variant="ghost"
               >
-                <FileDown className="h-4 w-4 mr-2" />
-                {dictionary.exportAsPDF}
+                <FileDown />
+                Exportar como PDF
               </Button>
             </MenubarItem>
             <MenubarSeparator />
             <MenubarItem asChild>
               <DialogDocumentSettings
-                dictionary={dictionary.dialogDocumentSettings}
                 pageMargins={pageMargins}
                 pageOrientation={pageOrientation}
                 pageSize={pageSize}
@@ -309,14 +274,14 @@ export default function Tiptap({
           </MenubarContent>
         </MenubarMenu>
         <MenubarMenu>
-          <MenubarTrigger>{dictionary.edit}</MenubarTrigger>
+          <MenubarTrigger>Editar</MenubarTrigger>
           <MenubarContent className="w-60">
             <MenubarItem
               disabled={!editor.can().chain().focus().undo().run()}
               onClick={() => editor.chain().focus().undo().run()}
             >
               <Undo className="h-4 w-4 mr-2" />
-              {dictionary.undo}
+              Deshacer
               <MenubarShortcut>Ctrl+Y</MenubarShortcut>
             </MenubarItem>
             <MenubarItem
@@ -324,35 +289,35 @@ export default function Tiptap({
               onClick={() => editor.chain().focus().redo().run()}
             >
               <Redo className="h-4 w-4 mr-2" />
-              {dictionary.redo}
+              Rehacer
               <MenubarShortcut>Ctrl+Z</MenubarShortcut>
             </MenubarItem>
             <MenubarSeparator />
             <MenubarItem disabled>
               <Scissors className="h-4 w-4 mr-2" />
-              {dictionary.cut}
+              Cortar
               <MenubarShortcut>Ctrl+X</MenubarShortcut>
             </MenubarItem>
             <MenubarItem disabled>
               <Files className="h-4 w-4 mr-2" />
-              {dictionary.copy}
+              Copiar
               <MenubarShortcut>Ctrl+C</MenubarShortcut>
             </MenubarItem>
             <MenubarItem disabled>
               <Clipboard className="h-4 w-4 mr-2" />
-              {dictionary.paste}
+              Pegar
               <MenubarShortcut>Ctrl+V</MenubarShortcut>
             </MenubarItem>
             <MenubarSeparator />
             <MenubarItem disabled>
               <TextSelect className="h-4 w-4 mr-2" />
-              {dictionary.selectAll}
+              Seleccionar todo
               <MenubarShortcut>Ctrl+A</MenubarShortcut>
             </MenubarItem>
           </MenubarContent>
         </MenubarMenu>
         <MenubarMenu>
-          <MenubarTrigger>{dictionary.insert}</MenubarTrigger>
+          <MenubarTrigger>Insertar</MenubarTrigger>
           <MenubarContent>
             <MenubarItem
               onClick={() =>
@@ -364,33 +329,33 @@ export default function Tiptap({
               }
             >
               <Sheet className="h-4 w-4 mr-2" />
-              {dictionary.table}
+              Tabla
             </MenubarItem>
           </MenubarContent>
         </MenubarMenu>
         <MenubarMenu>
-          <MenubarTrigger>{dictionary.format}</MenubarTrigger>
+          <MenubarTrigger>Formato</MenubarTrigger>
           <MenubarContent>
             <MenubarSub>
               <MenubarSubTrigger>
                 <Bold className="h-4 w-4 mr-2" />
-                {dictionary.text}
+                Texto
               </MenubarSubTrigger>
               <MenubarSubContent>
                 <MenubarItem
                   onClick={() => editor.chain().focus().toggleBold().run()}
                 >
                   <Bold className="h-4 w-4 mr-2" />
-                  {dictionary.bold}
+                  Negrita
                 </MenubarItem>
                 <MenubarSeparator />
-                <Submenu dictionary={dictionary.submenu} editor={editor} />
+                <Submenu editor={editor} />
               </MenubarSubContent>
             </MenubarSub>
             <MenubarSub>
               <MenubarSubTrigger>
                 <AlignJustify className="h-4 w-4 mr-2" />
-                {dictionary.paragraphStyles}
+                Estilos de párrafo
               </MenubarSubTrigger>
               <MenubarSubContent>
                 <MenubarCheckboxItem
@@ -398,7 +363,7 @@ export default function Tiptap({
                   disabled={!editor.can().chain().focus().setParagraph().run()}
                   onClick={() => editor.chain().focus().setParagraph().run()}
                 >
-                  {dictionary.normalText}
+                  Texto normal
                 </MenubarCheckboxItem>
                 <MenubarCheckboxItem
                   checked={editor.isActive("heading", { level: 1 })}
@@ -406,7 +371,7 @@ export default function Tiptap({
                     editor.chain().focus().toggleHeading({ level: 1 }).run()
                   }
                 >
-                  {dictionary.heading1}
+                  Encabezado 1
                 </MenubarCheckboxItem>
                 <MenubarCheckboxItem
                   checked={editor.isActive("heading", { level: 2 })}
@@ -414,7 +379,7 @@ export default function Tiptap({
                     editor.chain().focus().toggleHeading({ level: 2 }).run()
                   }
                 >
-                  {dictionary.heading2}
+                  Encabezado 2
                 </MenubarCheckboxItem>
                 <MenubarCheckboxItem
                   checked={editor.isActive("heading", { level: 3 })}
@@ -422,7 +387,7 @@ export default function Tiptap({
                     editor.chain().focus().toggleHeading({ level: 3 }).run()
                   }
                 >
-                  {dictionary.heading3}
+                  Encabezado 3
                 </MenubarCheckboxItem>
                 <MenubarCheckboxItem
                   checked={editor.isActive("heading", { level: 4 })}
@@ -430,7 +395,7 @@ export default function Tiptap({
                     editor.chain().focus().toggleHeading({ level: 4 }).run()
                   }
                 >
-                  {dictionary.heading4}
+                  Encabezado 4
                 </MenubarCheckboxItem>
                 <MenubarCheckboxItem
                   checked={editor.isActive("heading", { level: 5 })}
@@ -438,7 +403,7 @@ export default function Tiptap({
                     editor.chain().focus().toggleHeading({ level: 5 }).run()
                   }
                 >
-                  {dictionary.heading5}
+                  Encabezado 5
                 </MenubarCheckboxItem>
                 <MenubarCheckboxItem
                   checked={editor.isActive("heading", { level: 6 })}
@@ -446,14 +411,14 @@ export default function Tiptap({
                     editor.chain().focus().toggleHeading({ level: 6 }).run()
                   }
                 >
-                  {dictionary.heading6}
+                  Encabezado 6
                 </MenubarCheckboxItem>
               </MenubarSubContent>
             </MenubarSub>
             <MenubarSub>
               <MenubarSubTrigger>
                 <AlignLeft className="h-4 w-4 mr-2" />
-                {dictionary.align}
+                Alinear
               </MenubarSubTrigger>
               <MenubarSubContent>
                 <MenubarItem
@@ -462,7 +427,7 @@ export default function Tiptap({
                   }
                 >
                   <AlignLeft className="h-4 w-4 mr-2" />
-                  {dictionary.left}
+                  Izquierda
                 </MenubarItem>
                 <MenubarItem
                   onClick={() =>
@@ -470,7 +435,7 @@ export default function Tiptap({
                   }
                 >
                   <AlignCenter className="h-4 w-4 mr-2" />
-                  {dictionary.center}
+                  Centro
                 </MenubarItem>
                 <MenubarItem
                   onClick={() =>
@@ -478,7 +443,7 @@ export default function Tiptap({
                   }
                 >
                   <AlignRight className="h-4 w-4 mr-2" />
-                  {dictionary.right}
+                  Derecha
                 </MenubarItem>
                 <MenubarItem
                   onClick={() =>
@@ -486,7 +451,7 @@ export default function Tiptap({
                   }
                 >
                   <AlignJustify className="h-4 w-4 mr-2" />
-                  {dictionary.justify}
+                  Justificado
                 </MenubarItem>
               </MenubarSubContent>
             </MenubarSub>
@@ -494,7 +459,7 @@ export default function Tiptap({
             <MenubarSub>
               <MenubarSubTrigger>
                 <Sheet className="h-4 w-4 mr-2" />
-                {dictionary.table}
+                Tabla
               </MenubarSubTrigger>
               <MenubarSubContent>
                 <MenubarItem
@@ -502,28 +467,28 @@ export default function Tiptap({
                   onClick={() => editor.chain().focus().addRowBefore().run()}
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  {dictionary.insertRowAbove}
+                  Inertar fila arriba
                 </MenubarItem>
                 <MenubarItem
                   disabled={!editor.can().addRowAfter()}
                   onClick={() => editor.chain().focus().addRowAfter().run()}
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  {dictionary.insertRowBelow}
+                  Insertar fila abajo
                 </MenubarItem>
                 <MenubarItem
                   disabled={!editor.can().addColumnBefore()}
                   onClick={() => editor.chain().focus().addColumnBefore().run()}
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  {dictionary.insertColumnLeft}
+                  Insertar columna a la izquierda
                 </MenubarItem>
                 <MenubarItem
                   disabled={!editor.can().addColumnAfter()}
                   onClick={() => editor.chain().focus().addColumnAfter().run()}
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  {dictionary.insertColumnRight}
+                  Insertar columna a la derecha
                 </MenubarItem>
                 <MenubarSeparator />
                 <MenubarItem
@@ -531,21 +496,21 @@ export default function Tiptap({
                   onClick={() => editor.chain().focus().deleteRow().run()}
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
-                  {dictionary.deleteRow}
+                  Eliminar fila
                 </MenubarItem>
                 <MenubarItem
                   disabled={!editor.can().deleteColumn()}
                   onClick={() => editor.chain().focus().deleteColumn().run()}
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
-                  {dictionary.deleteColumn}
+                  Eliminar columna
                 </MenubarItem>
                 <MenubarItem
                   disabled={!editor.can().deleteTable()}
                   onClick={() => editor.chain().focus().deleteTable().run()}
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
-                  {dictionary.deleteTable}
+                  Eliminar tabla
                 </MenubarItem>
                 <MenubarSeparator />
                 <MenubarItem
@@ -553,7 +518,7 @@ export default function Tiptap({
                   onClick={() => editor.chain().focus().toggleHeaderRow().run()}
                 >
                   <Heading className="h-4 w-4 mr-2" />
-                  {dictionary.toggleHeaderRow}
+                  Alternar fila de encabezado
                 </MenubarItem>
                 <MenubarSeparator />
                 <MenubarItem
@@ -561,14 +526,14 @@ export default function Tiptap({
                   onClick={() => editor.chain().focus().mergeCells().run()}
                 >
                   <TableCellsMerge className="h-4 w-4 mr-2" />
-                  {dictionary.mergeCells}
+                  Combinar celdas
                 </MenubarItem>
                 <MenubarItem
                   disabled={!editor.can().splitCell()}
                   onClick={() => editor.chain().focus().splitCell().run()}
                 >
                   <TableCellsSplit className="h-4 w-4 mr-2" />
-                  {dictionary.splitCells}
+                  Separar celdas
                 </MenubarItem>
               </MenubarSubContent>
             </MenubarSub>
@@ -580,13 +545,13 @@ export default function Tiptap({
               }}
             >
               <RemoveFormatting className="h-4 w-4 mr-2" />
-              {dictionary.clearFormatting}
+              Borrar formato
             </MenubarItem>
           </MenubarContent>
         </MenubarMenu>
       </Menubar>
-      <Toolbar dictionary={dictionary.toolbar} editor={editor} />
-      <div className="flex justify-center bg-secondary py-8 my-4">
+      <Toolbar editor={editor} />
+      <div className="flex justify-center bg-secondary py-4">
         <EditorContent editor={editor} />
       </div>
     </div>

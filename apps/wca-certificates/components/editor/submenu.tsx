@@ -8,40 +8,36 @@ import {
   MenubarSubContent,
   MenubarSubTrigger,
 } from "@workspace/ui/components/menubar";
-import type { getDictionary } from "@/get-dictionary";
 
 interface SubmenuProps {
-  dictionary: Awaited<
-    ReturnType<typeof getDictionary>
-  >["certificates"]["podium"]["document_settings"]["tiptap"]["submenu"];
   editor: Editor | null;
 }
 
-export default function Submenu({ dictionary, editor }: SubmenuProps) {
+export default function Submenu({ editor }: SubmenuProps) {
   if (!editor) {
     return null;
   }
 
   return (
     <MenubarSub>
-      <MenubarSubTrigger>{dictionary.useCapitalLetters}</MenubarSubTrigger>
+      <MenubarSubTrigger>Uso de mayúsculas</MenubarSubTrigger>
       <MenubarSubContent>
         <MenubarItem
           onClick={() => editor.chain().focus().setTransform("lowercase").run()}
         >
-          {dictionary.lowercase}
+          minúsculas
         </MenubarItem>
         <MenubarItem
           onClick={() => editor.chain().focus().setTransform("uppercase").run()}
         >
-          {dictionary.uppercase}
+          MAYÚSCULAS
         </MenubarItem>
         <MenubarItem
           onClick={() =>
             editor.chain().focus().setTransform("capitalize").run()
           }
         >
-          {dictionary.capitalize}
+          Todas Las Palabras Con Mayúscula
         </MenubarItem>
       </MenubarSubContent>
     </MenubarSub>

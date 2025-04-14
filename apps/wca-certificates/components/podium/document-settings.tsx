@@ -3,7 +3,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
 import type { JSONContent } from "@tiptap/react";
 import { Label } from "@workspace/ui/components/label";
 import {
@@ -20,7 +19,7 @@ import type {
   TDocumentDefinitions,
 } from "pdfmake/interfaces";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import type { Event, Competition, PodiumData } from "@/types/wca-live";
+import type { Event, WCIF, PodiumData } from "@/types/wcif";
 import {
   processPersons,
   formatResults,
@@ -31,31 +30,22 @@ import {
   transformString,
   formatResultType,
 } from "@/lib/utils";
-import { columnsEs, columnsEn } from "@/components/podium/columns";
+import { columns } from "@/components/podium/columns";
 import { DataTable } from "@/components/podium/data-table";
 import { FileUploader } from "@/components/file-uploader";
-import { podium as podiumEs } from "@/data/es/certificates";
-import { podium as podiumEn } from "@/data/en/certificates";
+import { podium as podiumEs } from "@/data/certificates";
 import Tiptap from "@/components/editor/tiptap";
 import { fontDeclarations } from "@/lib/fonts";
-import type { getDictionary } from "@/get-dictionary";
 
 interface DocumentSettingsProps {
-  dictionary: Awaited<
-    ReturnType<typeof getDictionary>
-  >["certificates"]["podium"]["document_settings"];
-  competition: Competition;
+  competition: WCIF;
   city: string;
 }
 
 export default function DocumentSettings({
-  dictionary,
   competition,
   city,
 }: DocumentSettingsProps): JSX.Element {
-  const pathname = usePathname();
-  const lang = pathname.startsWith("/es") ? "es" : "en";
-
   const date = competition.schedule.startDate;
   const days = competition.schedule.numberOfDays;
 
@@ -74,9 +64,7 @@ export default function DocumentSettings({
   const [files, setFiles] = useState<File[]>([]);
   const [background, setBackground] = useState<string>();
 
-  const [content, setContent] = useState<JSONContent>(
-    lang === "es" ? podiumEs : podiumEn,
-  );
+  const [content, setContent] = useState<JSONContent>(podiumEs);
 
   const selectedEvents = competition.events.filter(
     (event) => rowSelection[event.id],
@@ -188,84 +176,65 @@ export default function DocumentSettings({
           case "mention":
             switch (contentItem.attrs?.id) {
               case "Delegados":
-              case "Delegates":
                 return textObject(
-                  transformString(joinPersons(delegates, lang), transform),
+                  transformString(joinPersons(delegates), transform),
                 );
               case "Organizadores":
-              case "Organizers":
                 return textObject(
-                  transformString(joinPersons(organizers, lang), transform),
+                  transformString(joinPersons(organizers), transform),
                 );
               case "Posición (cardinal)":
-              case "Ranking (cardinal)":
                 return textObject(
                   transformString(
-                    formatPlace(data.place, "cardinal", lang),
+                    formatPlace(data.place, "cardinal"),
                     transform,
                   ),
                 );
               case "Posición (ordinal)":
-              case "Ranking (ordinal)":
                 return textObject(
                   transformString(
-                    formatPlace(data.place, "ordinal", lang),
+                    formatPlace(data.place, "ordinal"),
                     transform,
                   ),
                 );
               case "Posición (ordinal con texto)":
-              case "Ranking (ordinal with text)":
                 return textObject(
                   transformString(
-                    formatPlace(data.place, "ordinal_text", lang),
+                    formatPlace(data.place, "ordinal_text"),
                     transform,
                   ),
                 );
               case "Medalla":
-              case "Medal":
                 return textObject(
-                  transformString(
-                    formatPlace(data.place, "medal", lang),
-                    transform,
-                  ),
+                  transformString(formatPlace(data.place, "medal"), transform),
                 );
               case "Competidor":
-              case "Competitor":
                 return textObject(transformString(data.name, transform));
               case "Evento":
-              case "Event":
                 return textObject(
-                  transformString(formatEvents(data.event, lang), transform),
+                  transformString(formatEvents(data.event), transform),
                 );
               case "Resultado":
-              case "Result":
                 return textObject(
                   transformString(
-                    formatResults(data.result, data.event, lang),
+                    formatResults(data.result, data.event),
                     transform,
                   ),
                 );
               case "Tipo de resultado":
-              case "Result type":
                 return textObject(
-                  transformString(
-                    formatResultType(data.event, lang),
-                    transform,
-                  ),
+                  transformString(formatResultType(data.event), transform),
                 );
               case "Competencia":
-              case "Competition":
                 return textObject(transformString(competition.name, transform));
               case "Fecha":
-              case "Date":
                 return textObject(
                   transformString(
-                    formatDates(date, days.toString(), lang),
+                    formatDates(date, days.toString()),
                     transform,
                   ),
                 );
               case "Ciudad":
-              case "City":
                 return textObject(transformString(city, transform));
               default:
                 return null;
@@ -280,7 +249,7 @@ export default function DocumentSettings({
   const generatePDF = () => {
     const docDefinition = {
       info: {
-        title: `${dictionary.title} - ${competition.name}`,
+        title: `Certificados - ${competition.name}`,
         author: "Cubing México",
       },
       content: pdfData.map((data, index) => ({
@@ -339,14 +308,13 @@ export default function DocumentSettings({
   return (
     <Tabs defaultValue="results">
       <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="results">{dictionary.results}</TabsTrigger>
-        <TabsTrigger value="document">{dictionary.document}</TabsTrigger>
+        <TabsTrigger value="results">Resultados</TabsTrigger>
+        <TabsTrigger value="document">Documento</TabsTrigger>
       </TabsList>
       <TabsContent value="results">
         <DataTable
-          columns={lang === "es" ? columnsEs : columnsEn}
+          columns={columns}
           data={competition.events}
-          dictionary={dictionary.data_table}
           rowSelection={rowSelection}
           setRowSelection={setRowSelection}
         />
@@ -363,7 +331,6 @@ export default function DocumentSettings({
               <Tiptap
                 competitionId={competition.id}
                 content={content}
-                dictionary={dictionary.tiptap}
                 key={`${pageSize}-${pageOrientation}-${pageMargins}`}
                 onChange={(newContent: JSONContent) => {
                   setContent(newContent);
@@ -386,11 +353,10 @@ export default function DocumentSettings({
               />
             </form>
             <div>
-              <Label htmlFor="background">{dictionary.background}</Label>
+              <Label htmlFor="background">Fondo</Label>
               <FileUploader
-                dictionary={dictionary.fileUploader}
                 id="background"
-                maxFiles={1}
+                maxFileCount={1}
                 maxSize={1 * 1024 * 1024}
                 onValueChange={(e) => {
                   setFiles(e);
@@ -400,7 +366,7 @@ export default function DocumentSettings({
             </div>
           </div>
         ) : (
-          <div className="text-center">{dictionary.mobileFallback}</div>
+          <div className="text-center"></div>
         )}
       </TabsContent>
     </Tabs>

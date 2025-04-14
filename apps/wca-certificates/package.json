@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "@cubing/icons": "^1.1.2",
-    "@formatjs/intl-localematcher": "0.2.32",
     "@react-pdf/renderer": "^3.4.4",
     "@tanstack/react-table": "^8.15.3",
     "@tiptap/core": "^2.4.0",
@@ -31,8 +30,8 @@
     "@tiptap/starter-kit": "^2.4.0",
     "@vercel/analytics": "^1.2.2",
     "@workspace/ui": "workspace:*",
+    "date-fns": "^4.1.0",
     "lucide-react": "0.456.0",
-    "negotiator": "0.6.3",
     "next": "^15.1.0",
     "next-auth": "^5.0.0-beta.25",
     "next-themes": "^0.4.3",
@@ -41,13 +40,13 @@
     "react-dom": "^19.0.0",
     "react-dropzone": "^14.2.3",
     "sonner": "^1.4.41",
+    "swr": "^2.3.3",
     "tippy.js": "^6.3.7",
     "webfontloader": "^1.6.28",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
-    "@types/negotiator": "0.6.1",
     "@types/node": "^20",
     "@types/pdfmake": "^0.2.9",
     "@types/react": "18.3.0",

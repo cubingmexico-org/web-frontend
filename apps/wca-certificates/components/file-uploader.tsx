@@ -4,7 +4,7 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { X, UploadIcon } from "lucide-react";
+import { FileText, Upload, X } from "lucide-react";
 import Dropzone, {
   type DropzoneProps,
   type FileRejection,
@@ -16,33 +16,95 @@ import { ScrollArea } from "@workspace/ui/components/scroll-area";
 import { cn } from "@workspace/ui//lib/utils";
 import { formatBytes } from "@/lib/utils";
 import { useControllableState } from "@/hooks/use-controllable-state";
-import type { getDictionary } from "@/get-dictionary";
 
 interface FileUploaderProps extends React.HTMLAttributes<HTMLDivElement> {
-  dictionary: Awaited<
-    ReturnType<typeof getDictionary>
-  >["certificates"]["podium"]["document_settings"]["fileUploader"];
+  /**
+   * Value of the uploader.
+   * @type File[]
+   * @default undefined
+   * @example value={files}
+   */
   value?: File[];
-  onValueChange?: React.Dispatch<React.SetStateAction<File[]>>;
+
+  /**
+   * Function to be called when the value changes.
+   * @type (files: File[]) => void
+   * @default undefined
+   * @example onValueChange={(files) => setFiles(files)}
+   */
+  onValueChange?: (files: File[]) => void;
+
+  /**
+   * Function to be called when files are uploaded.
+   * @type (files: File[]) => Promise<void>
+   * @default undefined
+   * @example onUpload={(files) => uploadFiles(files)}
+   */
   onUpload?: (files: File[]) => Promise<void>;
+
+  /**
+   * Progress of the uploaded files.
+   * @type Record<string, number> | undefined
+   * @default undefined
+   * @example progresses={{ "file1.png": 50 }}
+   */
   progresses?: Record<string, number>;
+
+  /**
+   * Accepted file types for the uploader.
+   * @type { [key: string]: string[]}
+   * @default
+   * ```ts
+   * { "image/*": [] }
+   * ```
+   * @example accept={["image/png", "image/jpeg"]}
+   */
   accept?: DropzoneProps["accept"];
+
+  /**
+   * Maximum file size for the uploader.
+   * @type number | undefined
+   * @default 1024 * 1024 * 2 // 2MB
+   * @example maxSize={1024 * 1024 * 2} // 2MB
+   */
   maxSize?: DropzoneProps["maxSize"];
-  maxFiles?: DropzoneProps["maxFiles"];
+
+  /**
+   * Maximum number of files for the uploader.
+   * @type number | undefined
+   * @default 1
+   * @example maxFileCount={4}
+   */
+  maxFileCount?: DropzoneProps["maxFiles"];
+
+  /**
+   * Whether the uploader should accept multiple files.
+   * @type boolean
+   * @default false
+   * @example multiple
+   */
   multiple?: boolean;
+
+  /**
+   * Whether the uploader is disabled.
+   * @type boolean
+   * @default false
+   * @example disabled
+   */
   disabled?: boolean;
 }
 
 export function FileUploader(props: FileUploaderProps) {
   const {
-    dictionary,
     value: valueProp,
     onValueChange,
     onUpload,
     progresses,
-    accept = { "image/*": [] },
+    accept = {
+      "image/*": [],
+    },
     maxSize = 1024 * 1024 * 2,
-    maxFiles = 1,
+    maxFileCount = 1,
     multiple = false,
     disabled = false,
     className,
@@ -56,15 +118,13 @@ export function FileUploader(props: FileUploaderProps) {
 
   const onDrop = React.useCallback(
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
-      if (!multiple && maxFiles === 1 && acceptedFiles.length > 1) {
-        toast.error(dictionary.moreThanOneFileError);
+      if (!multiple && maxFileCount === 1 && acceptedFiles.length > 1) {
+        toast.error("Cannot upload more than 1 file at a time");
         return;
       }
 
-      if ((files?.length ?? 0) + acceptedFiles.length > maxFiles) {
-        toast.error(
-          dictionary.maxFilesError.replace("${maxFiles}", maxFiles.toString()),
-        );
+      if ((files?.length ?? 0) + acceptedFiles.length > maxFileCount) {
+        toast.error(`Cannot upload more than ${maxFileCount} files`);
         return;
       }
 
@@ -80,32 +140,30 @@ export function FileUploader(props: FileUploaderProps) {
 
       if (rejectedFiles.length > 0) {
         rejectedFiles.forEach(({ file }) => {
-          toast.error(
-            dictionary.fileRejectedError.replace("${file.name}", file.name),
-          );
+          toast.error(`File ${file.name} was rejected`);
         });
       }
 
       if (
         onUpload &&
         updatedFiles.length > 0 &&
-        updatedFiles.length <= maxFiles
+        updatedFiles.length <= maxFileCount
       ) {
         const target =
           updatedFiles.length > 0 ? `${updatedFiles.length} files` : `file`;
 
         toast.promise(onUpload(updatedFiles), {
-          loading: dictionary.uploadingFiles.replace("${target}", target),
+          loading: `Uploading ${target}...`,
           success: () => {
             setFiles([]);
-            return dictionary.uploadSuccess.replace("${target}", target);
+            return `${target} uploaded`;
           },
-          error: dictionary.uploadFailed.replace("${target}", target),
+          error: `Failed to upload ${target}`,
         });
       }
     },
 
-    [files, maxFiles, multiple, onUpload, setFiles],
+    [files, maxFileCount, multiple, onUpload, setFiles],
   );
 
   function onRemove(index: number) {
@@ -119,7 +177,7 @@ export function FileUploader(props: FileUploaderProps) {
   React.useEffect(() => {
     return () => {
       if (!files) return;
-      files.forEach((file: File) => {
+      files.forEach((file) => {
         if (isFileWithPreview(file)) {
           URL.revokeObjectURL(file.preview);
         }
@@ -127,17 +185,17 @@ export function FileUploader(props: FileUploaderProps) {
     };
   }, []);
 
-  const isDisabled = disabled || (files?.length ?? 0) >= maxFiles;
+  const isDisabled = disabled || (files?.length ?? 0) >= maxFileCount;
 
   return (
     <div className="relative flex flex-col gap-6 overflow-hidden">
       <Dropzone
-        accept={accept}
-        disabled={isDisabled}
-        maxFiles={maxFiles}
-        maxSize={maxSize}
-        multiple={maxFiles > 1 || multiple}
         onDrop={onDrop}
+        accept={accept}
+        maxSize={maxSize}
+        maxFiles={maxFileCount}
+        multiple={maxFileCount > 1 || multiple}
+        disabled={isDisabled}
       >
         {({ getRootProps, getInputProps, isDragActive }) => (
           <div
@@ -155,44 +213,33 @@ export function FileUploader(props: FileUploaderProps) {
             {isDragActive ? (
               <div className="flex flex-col items-center justify-center gap-4 sm:px-5">
                 <div className="rounded-full border border-dashed p-3">
-                  <UploadIcon
-                    aria-hidden="true"
+                  <Upload
                     className="size-7 text-muted-foreground"
+                    aria-hidden="true"
                   />
                 </div>
                 <p className="font-medium text-muted-foreground">
-                  {dictionary.dropFilesHere}
+                  Suelta el archivo aquí
                 </p>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center gap-4 sm:px-5">
                 <div className="rounded-full border border-dashed p-3">
-                  <UploadIcon
-                    aria-hidden="true"
+                  <Upload
                     className="size-7 text-muted-foreground"
+                    aria-hidden="true"
                   />
                 </div>
-                <div className="space-y-px">
+                <div className="flex flex-col gap-px">
                   <p className="font-medium text-muted-foreground">
-                    {dictionary.dragAndDropOrClick}
+                    Arrastra y suelta o haz clic para subir un archivo
                   </p>
                   <p className="text-sm text-muted-foreground/70">
-                    {maxFiles > 1
-                      ? dictionary.canUploadMultiple
-                          .replace(
-                            "${maxFiles}",
-                            maxFiles === Infinity
-                              ? "múltiples"
-                              : maxFiles.toString(),
-                          )
-                          .replace(
-                            "${formatBytes(maxSize)}",
-                            formatBytes(maxSize),
-                          )
-                      : dictionary.canUploadSingle.replace(
-                          "${formatBytes(maxSize)}",
-                          formatBytes(maxSize),
-                        )}
+                    Puedes subir
+                    {maxFileCount > 1
+                      ? ` ${maxFileCount === Infinity ? "varios" : maxFileCount}
+                      archivos (de hasta ${formatBytes(maxSize)} cada uno)`
+                      : ` un archivo de ${formatBytes(maxSize)}`}
                   </p>
                 </div>
               </div>
@@ -202,15 +249,12 @@ export function FileUploader(props: FileUploaderProps) {
       </Dropzone>
       {files?.length ? (
         <ScrollArea className="h-fit w-full px-3">
-          <div className="max-h-48 space-y-4">
-            {files.map((file: File, index: number) => (
+          <div className="flex max-h-48 flex-col gap-4">
+            {files?.map((file, index) => (
               <FileCard
-                dictionary={dictionary}
-                file={file}
                 key={index}
-                onRemove={() => {
-                  onRemove(index);
-                }}
+                file={file}
+                onRemove={() => onRemove(index)}
                 progress={progresses?.[file.name]}
               />
             ))}
@@ -222,30 +266,18 @@ export function FileUploader(props: FileUploaderProps) {
 }
 
 interface FileCardProps {
-  dictionary: Awaited<
-    ReturnType<typeof getDictionary>
-  >["certificates"]["podium"]["document_settings"]["fileUploader"];
   file: File;
   onRemove: () => void;
   progress?: number;
 }
 
-function FileCard({ dictionary, file, progress, onRemove }: FileCardProps) {
+function FileCard({ file, progress, onRemove }: FileCardProps) {
   return (
-    <div className="relative flex items-center space-x-4">
-      <div className="flex flex-1 space-x-4">
-        {isFileWithPreview(file) ? (
-          <Image
-            alt={file.name}
-            className="aspect-square shrink-0 rounded-md object-cover"
-            height={48}
-            loading="lazy"
-            src={file.preview}
-            width={48}
-          />
-        ) : null}
+    <div className="relative flex items-center gap-2.5">
+      <div className="flex flex-1 gap-2.5">
+        {isFileWithPreview(file) ? <FilePreview file={file} /> : null}
         <div className="flex w-full flex-col gap-2">
-          <div className="space-y-px">
+          <div className="flex flex-col gap-px">
             <p className="line-clamp-1 text-sm font-medium text-foreground/80">
               {file.name}
             </p>
@@ -258,14 +290,14 @@ function FileCard({ dictionary, file, progress, onRemove }: FileCardProps) {
       </div>
       <div className="flex items-center gap-2">
         <Button
-          className="size-7"
-          onClick={onRemove}
-          size="icon"
           type="button"
           variant="outline"
+          size="icon"
+          className="size-7"
+          onClick={onRemove}
         >
-          <X aria-hidden="true" className="size-4 " />
-          <span className="sr-only">{dictionary.removeFile}</span>
+          <X className="size-4" aria-hidden="true" />
+          <span className="sr-only">Remove file</span>
         </Button>
       </div>
     </div>
@@ -274,4 +306,27 @@ function FileCard({ dictionary, file, progress, onRemove }: FileCardProps) {
 
 function isFileWithPreview(file: File): file is File & { preview: string } {
   return "preview" in file && typeof file.preview === "string";
+}
+
+interface FilePreviewProps {
+  file: File & { preview: string };
+}
+
+function FilePreview({ file }: FilePreviewProps) {
+  if (file.type.startsWith("image/")) {
+    return (
+      <Image
+        src={file.preview}
+        alt={file.name}
+        width={48}
+        height={48}
+        loading="lazy"
+        className="aspect-square shrink-0 rounded-md object-cover"
+      />
+    );
+  }
+
+  return (
+    <FileText className="size-10 text-muted-foreground" aria-hidden="true" />
+  );
 }

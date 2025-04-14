@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { usePathname } from "next/navigation";
 import type {
   ColumnDef,
   SortingState,
@@ -25,13 +24,9 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
-import type { ParticipantData } from "@/types/wca-live";
-import type { getDictionary } from "@/get-dictionary";
+import type { ParticipantData } from "@/types/wcif";
 
 interface DataTableProps<TData, TValue> {
-  dictionary: Awaited<
-    ReturnType<typeof getDictionary>
-  >["certificates"]["participation"]["document_settings"]["data_table"];
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   rowSelection: Record<string, boolean>;
@@ -41,15 +36,11 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData extends ParticipantData, TValue>({
-  dictionary,
   columns,
   data,
   rowSelection,
   setRowSelection,
 }: DataTableProps<TData, TValue>): JSX.Element {
-  const pathname = usePathname();
-  const lang = pathname.startsWith("/es") ? "es" : "en";
-
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -86,7 +77,7 @@ export function DataTable<TData extends ParticipantData, TValue>({
           onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)
           }
-          placeholder={dictionary.filterByName}
+          placeholder="Buscar por nombre"
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
         />
       </div>
@@ -133,7 +124,7 @@ export function DataTable<TData extends ParticipantData, TValue>({
                   className="h-24 text-center"
                   colSpan={columns.length}
                 >
-                  {dictionary.noResults}
+                  No hay resultados
                 </TableCell>
               </TableRow>
             )}
@@ -141,7 +132,7 @@ export function DataTable<TData extends ParticipantData, TValue>({
         </Table>
       </div>
       <div className="flex flex-col gap-2.5 mt-2">
-        <DataTablePagination lang={lang} table={table} />
+        <DataTablePagination table={table} />
       </div>
     </div>
   );

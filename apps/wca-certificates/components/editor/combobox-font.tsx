@@ -18,19 +18,14 @@ import {
 } from "@workspace/ui/components/popover";
 import { cn } from "@workspace/ui/lib/utils";
 import { fonts } from "@/lib/fonts";
-import type { getDictionary } from "@/get-dictionary";
 
 interface ComboboxFontProps {
-  dictionary: Awaited<
-    ReturnType<typeof getDictionary>
-  >["certificates"]["podium"]["document_settings"]["tiptap"]["toolbar"]["comboboxFont"];
   value: string;
   setValue: (value: string) => void;
   disabled?: boolean;
 }
 
 export function ComboboxFont({
-  dictionary,
   value,
   setValue,
   disabled,
@@ -56,14 +51,14 @@ export function ComboboxFont({
               {fonts.find((font) => font.value === value)?.label}
             </p>
           ) : (
-            dictionary.searchFont
+            "Buscar fuente..."
           )}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDown className="shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
         <Command>
-          <CommandInput placeholder={dictionary.searchFont} />
+          <CommandInput placeholder="" />
           <CommandEmpty>Sin resultados.</CommandEmpty>
           <CommandGroup>
             <CommandList>

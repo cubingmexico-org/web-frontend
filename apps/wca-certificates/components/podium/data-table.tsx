@@ -14,13 +14,9 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
-import type { Event, Result } from "@/types/wca-live";
-import type { getDictionary } from "@/get-dictionary";
+import type { Event, Result } from "@/types/wcif";
 
 interface DataTableProps<TData, TValue> {
-  dictionary: Awaited<
-    ReturnType<typeof getDictionary>
-  >["certificates"]["podium"]["document_settings"]["data_table"];
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   rowSelection: Record<string, boolean>;
@@ -30,7 +26,6 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData extends Event, TValue>({
-  dictionary,
   columns,
   data,
   rowSelection,
@@ -90,7 +85,7 @@ export function DataTable<TData extends Event, TValue>({
           ) : (
             <TableRow>
               <TableCell className="h-24 text-center" colSpan={columns.length}>
-                {dictionary.noResults}
+                No results
               </TableCell>
             </TableRow>
           )}

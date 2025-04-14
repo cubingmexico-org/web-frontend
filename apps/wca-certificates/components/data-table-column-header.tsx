@@ -12,32 +12,17 @@ import { cn } from "@workspace/ui/lib/utils";
 
 interface DataTableColumnHeaderProps<TData, TValue>
   extends React.HTMLAttributes<HTMLDivElement> {
-  lang: "es" | "en";
   column: Column<TData, TValue>;
   title: string;
   showHide?: boolean;
 }
 
 export function DataTableColumnHeader<TData, TValue>({
-  lang = "es",
   column,
   title,
   className,
   showHide = false,
 }: DataTableColumnHeaderProps<TData, TValue>): JSX.Element {
-  const dictionary = {
-    es: {
-      asc: "Ascendente",
-      desc: "Descendente",
-      hide: "Esconder",
-    },
-    en: {
-      asc: "Ascending",
-      desc: "Descending",
-      hide: "Hide",
-    },
-  }[lang];
-
   if (!column.getCanSort()) {
     return <div className={cn(className)}>{title}</div>;
   }
@@ -68,7 +53,7 @@ export function DataTableColumnHeader<TData, TValue>({
             }}
           >
             <ArrowUp className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-            {dictionary.asc}
+            Asc
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => {
@@ -76,7 +61,7 @@ export function DataTableColumnHeader<TData, TValue>({
             }}
           >
             <ArrowDown className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-            {dictionary.desc}
+            Desc
           </DropdownMenuItem>
           {showHide ? (
             <>
@@ -87,7 +72,7 @@ export function DataTableColumnHeader<TData, TValue>({
                 }}
               >
                 <EyeOff className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-                {dictionary.hide}
+                Esconder
               </DropdownMenuItem>
             </>
           ) : null}

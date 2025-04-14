@@ -1,23 +1,42 @@
 import Link from "next/link";
 import { Icons } from "@workspace/ui/components/icons";
-import type { getDictionary } from "@/get-dictionary";
-import UserButton from "./user-button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+} from "@workspace/ui/components/dropdown-menu";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@workspace/ui/components/avatar";
+import { SignOut } from "./auth-components";
+import { User } from "next-auth";
 
-interface HeaderProps {
-  dictionary: Awaited<ReturnType<typeof getDictionary>>;
-}
-
-export default function Header({ dictionary }: HeaderProps): JSX.Element {
+export function Header({ user }: { user: User }) {
   return (
-    <header className="sticky flex justify-center border-b">
-      <div className="flex items-center justify-between w-full h-16 max-w-3xl px-4 mx-auto sm:px-6">
-        <Link className="flex items-center" href="/certificates">
-          <Icons.CubingMexico className="size-12" />
-          <h1 className="sm:text-2xl text-xl ml-2 font-bold">
-            {dictionary.header.title}
-          </h1>
+    <header className="bg-primary text-primary-foreground body-font">
+      <div className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
+        <Icons.CubingMexico className="size-16" />
+        <Link
+          className="flex title-font font-medium items-center text-primary-foreground mb-4 md:mb-0"
+          href="/"
+        >
+          <span className="ml-3 text-2xl">Certificados</span>
         </Link>
-        <UserButton dictionary={dictionary} />
+        <nav className="md:ml-auto flex flex-wrap items-center text-base justify-center">
+          <DropdownMenu>
+            <DropdownMenuTrigger className="rounded-full">
+              <Avatar>
+                <AvatarImage src={user.image ?? undefined} />
+                <AvatarFallback>U</AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <SignOut />
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </nav>
       </div>
     </header>
   );

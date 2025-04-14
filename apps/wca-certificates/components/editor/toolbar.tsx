@@ -28,17 +28,13 @@ import { Button } from "@workspace/ui/components/button";
 import { Toggle } from "@workspace/ui/components/toggle";
 import { Input } from "@workspace/ui/components/input";
 import { fontFamilies, fontSizes } from "@/lib/fonts";
-import type { getDictionary } from "@/get-dictionary";
 import { ComboboxFont } from "./combobox-font";
 
 interface ToolbarProps {
-  dictionary: Awaited<
-    ReturnType<typeof getDictionary>
-  >["certificates"]["podium"]["document_settings"]["tiptap"]["toolbar"];
   editor: Editor | null;
 }
 
-export default function Toolbar({ dictionary, editor }: ToolbarProps) {
+export default function Toolbar({ editor }: ToolbarProps) {
   const loadFonts = async () => {
     const WebFont = await import("webfontloader");
     WebFont.load({
@@ -58,7 +54,6 @@ export default function Toolbar({ dictionary, editor }: ToolbarProps) {
     <div className="flex justify-between items-start mx-6">
       <div className="flex items-center justify-center gap-1">
         <ComboboxFont
-          dictionary={dictionary.comboboxFont}
           setValue={async (value) => {
             const WebFont = (await import("webfontloader")).default;
             WebFont.load({

@@ -47,6 +47,7 @@ import useSWR from "swr";
 import { notFound } from "next/navigation";
 import {
   fetcher,
+  formatDates,
   formatEvents,
   formatPlace,
   formatResults,
@@ -67,6 +68,14 @@ import {
 import { fontDeclarations } from "@/lib/fonts";
 import * as pdfMake from "pdfmake/build/pdfmake";
 import { FileUploader } from "./file-uploader";
+import { CertificateManagerSkeleton } from "./certificate-manager-skeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select";
 
 export function CertificateManager({
   competition,
@@ -108,6 +117,8 @@ export function CertificateManager({
   const [background, setBackground] = useState<string>();
   const [backgroundParticipants, setBackgroundParticipants] =
     useState<string>();
+
+  const [selectedTemplate, setSelectedTemplate] = useState("general");
 
   useEffect(() => {
     if (files.length > 0) {
@@ -158,19 +169,23 @@ export function CertificateManager({
   );
 
   if (isLoadingParticipants || isLoadingPodiums) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        Cargando...
-      </div>
-    );
+    return <CertificateManagerSkeleton />;
   }
 
   if (!competition) {
     notFound();
   }
 
-  const startDate = new Date(competition.start_date);
-  const endDate = new Date(competition.end_date);
+  const [startYear, startMonth, startDay] = competition.start_date
+    .split("-")
+    .map(Number);
+  const startDate = new Date(startYear!, startMonth! - 1, startDay);
+
+  const [endYear, endMonth, endDay] = competition.end_date
+    .split("-")
+    .map(Number);
+  const endDate = new Date(endYear!, endMonth! - 1, endDay);
+
   const isSameDay = startDate.toDateString() === endDate.toDateString();
   const formattedDate = isSameDay
     ? format(startDate, "d 'de' MMMM 'de' yyyy", { locale: es })
@@ -276,10 +291,7 @@ export function CertificateManager({
                 return textObject(transformString(competition.name, transform));
               case "Fecha":
                 return textObject(
-                  transformString(
-                    competition.start_date, // update
-                    transform,
-                  ),
+                  transformString(formatDates(startDate, endDate), transform),
                 );
               case "Ciudad":
                 return textObject(transformString(competition.city, transform));
@@ -353,10 +365,7 @@ export function CertificateManager({
                 return textObject(transformString(competition.name, transform));
               case "Fecha":
                 return textObject(
-                  transformString(
-                    competition.start_date, // update
-                    transform,
-                  ),
+                  transformString(formatDates(startDate, endDate), transform),
                 );
               case "Ciudad":
                 return textObject(transformString(competition.city, transform));
@@ -711,6 +720,10 @@ export function CertificateManager({
     sq1: "Square-1",
   };
 
+  const handleTemplateChange = (value: string) => {
+    setSelectedTemplate(value);
+  };
+
   return (
     <div className="space-y-6">
       <Breadcrumb>
@@ -896,6 +909,22 @@ export function CertificateManager({
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="podiumType">Tipo de podio</Label>
+                      <Select
+                        value={selectedTemplate}
+                        onValueChange={handleTemplateChange}
+                      >
+                        <SelectTrigger className="w-[180px]" id="podiumType">
+                          <SelectValue placeholder="Seleccionar tipo de podio" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="general">General</SelectItem>
+                          <SelectItem value="female">Femeniles</SelectItem>
+                          <SelectItem value="newcomers">Primera vez</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                     <div className="space-y-4">
                       <h4 className="text-sm font-medium">Eventos</h4>
                       <div className="grid grid-cols-2 gap-2">

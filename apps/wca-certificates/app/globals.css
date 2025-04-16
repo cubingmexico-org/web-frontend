@@ -1,0 +1,56 @@
+.ProseMirror h1 {
+  font-size: 32pt;
+  line-height: 1.217;
+}
+
+.ProseMirror h2 {
+  font-size: 24pt;
+  line-height: 1.217;
+}
+
+.ProseMirror h3 {
+  font-size: 20pt;
+  line-height: 1.217;
+}
+
+.ProseMirror h4 {
+  font-size: 16pt;
+  line-height: 1.217;
+}
+
+.ProseMirror h5 {
+  font-size: 14pt;
+  line-height: 1.217;
+}
+
+.ProseMirror h6 {
+  font-size: 12pt;
+  line-height: 1.217;
+}
+
+.ProseMirror p {
+  font-size: 12pt;
+  line-height: 1.217;
+}
+
+.tiptap table {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tiptap table th {
+  border-bottom: 3px solid #000;
+}
+
+.tiptap table td {
+  border-bottom: 1px solid #AAA;
+}
+
+
+.tiptap table th {
+  font-weight: normal;
+}
+
+.selectedCell {
+  background: #BAD3FC;
+}

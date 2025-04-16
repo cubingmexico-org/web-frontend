@@ -243,39 +243,48 @@ export function formatResultType(eventId: EventId): string {
   }
 }
 
-export function formatDates(date: string, days: string): string {
-  const daysNumber = Number(days);
-  const [year, month, day] = date.split("-");
-  const startDate = new Date(Number(year), Number(month) - 1, Number(day));
+export function formatDates(startDate: Date, endDate: Date): string {
   const options: Intl.DateTimeFormatOptions = {
-    day: "numeric",
-    month: "long",
     year: "numeric",
+    month: "long",
+    day: "2-digit",
   };
 
-  const dates = [];
-  for (let i = 0; i < daysNumber; i++) {
-    const currentDate = new Date(startDate);
-    currentDate.setDate(startDate.getDate() + i);
-    dates.push(
-      new Intl.DateTimeFormat("es", options).format(currentDate).split(" ")[0],
-    );
+  // Check if both dates are the same day
+  if (startDate.toDateString() === endDate.toDateString()) {
+    return startDate.toLocaleDateString("es-ES", options);
   }
 
-  const lastDate = dates.pop();
-  const monthYear = new Intl.DateTimeFormat("es", options)
-    .format(startDate)
-    .split(" ")
-    .slice(1)
-    .join(" ");
+  // If in the same month and year, build a list of day numbers and then add month/year
+  if (
+    startDate.getFullYear() === endDate.getFullYear() &&
+    startDate.getMonth() === endDate.getMonth()
+  ) {
+    const days: number[] = [];
+    const startDay = startDate.getDate();
+    const endDay = endDate.getDate();
 
-  if (daysNumber === 1) {
-    const day = new Intl.DateTimeFormat("es", { day: "numeric" }).format(
-      startDate,
-    );
-    return `${day} ${monthYear}`;
+    for (let day = startDay; day <= endDay; day++) {
+      days.push(day);
+    }
+
+    let daysString: string;
+    if (days.length === 2) {
+      daysString = `${days[0]} y ${days[1]}`;
+    } else {
+      // Join all but the last with comma and add " y " before the last day
+      daysString = `${days.slice(0, -1).join(", ")} y ${days[days.length - 1]}`;
+    }
+
+    const month = startDate.toLocaleDateString("es-ES", { month: "long" });
+    const year = startDate.getFullYear();
+    return `${daysString} de ${month} de ${year}`;
   }
-  return `${dates.join(", ")} y ${lastDate} ${monthYear}`;
+
+  // Fallback: return original range formatting
+  const startDateFormatted = startDate.toLocaleDateString("es-ES", options);
+  const endDateFormatted = endDate.toLocaleDateString("es-ES", options);
+  return `${startDateFormatted} - ${endDateFormatted}`;
 }
 
 export function joinPersons(persons: string[]): string {

@@ -46,9 +46,22 @@ export const config = {
     signOut: "/",
   },
   callbacks: {
-    authorized({ request, auth }) {
-      const { pathname } = request.nextUrl;
-      if (pathname === "/certificates") return !!auth;
+    authorized({ auth, request: { nextUrl } }) {
+      const isLoggedIn = Boolean(auth?.user);
+      const { pathname } = nextUrl;
+
+      if (pathname.startsWith("/competidores.jpg")) {
+        return true;
+      }
+
+      if (!isLoggedIn && pathname !== "/sign-in") {
+        return Response.redirect(new URL("/sign-in", nextUrl));
+      }
+
+      if (isLoggedIn && pathname === "/sign-in") {
+        return Response.redirect(new URL("/", nextUrl));
+      }
+
       return true;
     },
     jwt({ token, account }) {

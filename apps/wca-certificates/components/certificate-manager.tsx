@@ -33,6 +33,7 @@ import {
   MapPin,
   ChevronRight,
   Home,
+  Check,
 } from "lucide-react";
 import { Competition } from "@/types/wca";
 import {
@@ -76,6 +77,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
+import { Toggle } from "@workspace/ui/components/toggle";
+import { Input } from "@workspace/ui/components/input";
 
 export function CertificateManager({
   competition,
@@ -119,6 +122,7 @@ export function CertificateManager({
     useState<string>();
 
   const [selectedTemplate, setSelectedTemplate] = useState("general");
+  const [searchParticipant, setSearchParticipant] = useState("");
 
   useEffect(() => {
     if (files.length > 0) {
@@ -466,27 +470,51 @@ export function CertificateManager({
                         row.content?.some((cell) => cell.type === "tableCell"),
                       )
                         ? data.results.map((result) => {
-                            const cell = item.content?.find((row) =>
-                              row.content?.some(
-                                (cell) => cell.type === "tableCell",
-                              ),
-                            );
+                          const cell = item.content?.find((row) =>
+                            row.content?.some(
+                              (cell) => cell.type === "tableCell",
+                            ),
+                          );
 
-                            let event;
-                            let average;
-                            let ranking;
+                          let event;
+                          let average;
+                          let ranking;
 
-                            for (const row of cell?.content || []) {
-                              for (const cell of row.content || []) {
-                                if (
-                                  cell.content?.some(
-                                    (content) => content.type === "mention",
-                                  )
-                                ) {
-                                  switch (cell.content[0]?.attrs?.id) {
-                                    case "Evento (tabla)":
-                                    case "Event (table)":
-                                      event = renderParticipantDocumentContent(
+                          for (const row of cell?.content || []) {
+                            for (const cell of row.content || []) {
+                              if (
+                                cell.content?.some(
+                                  (content) => content.type === "mention",
+                                )
+                              ) {
+                                switch (cell.content[0]?.attrs?.id) {
+                                  case "Evento (tabla)":
+                                  case "Event (table)":
+                                    event = renderParticipantDocumentContent(
+                                      {
+                                        content: [
+                                          {
+                                            type: "paragraph",
+                                            attrs: cell.attrs,
+                                            content: [
+                                              {
+                                                type: "text",
+                                                text: formatEvents(
+                                                  result.event,
+                                                ),
+                                                marks: cell.content[0].marks,
+                                              },
+                                            ],
+                                          },
+                                        ],
+                                      },
+                                      data,
+                                    );
+                                    break;
+                                  case "Resultado (tabla)":
+                                  case "Result (table)":
+                                    average =
+                                      renderParticipantDocumentContent(
                                         {
                                           content: [
                                             {
@@ -495,10 +523,12 @@ export function CertificateManager({
                                               content: [
                                                 {
                                                   type: "text",
-                                                  text: formatEvents(
+                                                  text: formatResults(
+                                                    result.average,
                                                     result.event,
                                                   ),
-                                                  marks: cell.content[0].marks,
+                                                  marks:
+                                                    cell.content[0].marks,
                                                 },
                                               ],
                                             },
@@ -506,67 +536,41 @@ export function CertificateManager({
                                         },
                                         data,
                                       );
-                                      break;
-                                    case "Resultado (tabla)":
-                                    case "Result (table)":
-                                      average =
-                                        renderParticipantDocumentContent(
-                                          {
-                                            content: [
-                                              {
-                                                type: "paragraph",
-                                                attrs: cell.attrs,
-                                                content: [
-                                                  {
-                                                    type: "text",
-                                                    text: formatResults(
-                                                      result.average,
-                                                      result.event,
-                                                    ),
-                                                    marks:
-                                                      cell.content[0].marks,
-                                                  },
-                                                ],
-                                              },
-                                            ],
-                                          },
-                                          data,
-                                        );
-                                      break;
-                                    case "Posición (tabla)":
-                                    case "Ranking (table)":
-                                      ranking =
-                                        renderParticipantDocumentContent(
-                                          {
-                                            content: [
-                                              {
-                                                type: "paragraph",
-                                                attrs: cell.attrs,
-                                                content: [
-                                                  {
-                                                    type: "text",
-                                                    text: (
-                                                      result.ranking || ""
-                                                    ).toString(),
-                                                    marks:
-                                                      cell.content[0].marks,
-                                                  },
-                                                ],
-                                              },
-                                            ],
-                                          },
-                                          data,
-                                        );
-                                      break;
-                                    default:
-                                      break;
-                                  }
+                                    break;
+                                  case "Posición (tabla)":
+                                  case "Ranking (table)":
+                                    ranking =
+                                      renderParticipantDocumentContent(
+                                        {
+                                          content: [
+                                            {
+                                              type: "paragraph",
+                                              attrs: cell.attrs,
+                                              content: [
+                                                {
+                                                  type: "text",
+                                                  text: (
+                                                    result.ranking || ""
+                                                  ).toString(),
+                                                  marks:
+                                                    cell.content[0].marks,
+                                                },
+                                              ],
+                                            },
+                                          ],
+                                        },
+                                        data,
+                                      );
+                                    break;
+                                  default:
+                                    break;
                                 }
                               }
                             }
+                          }
 
-                            return [event || {}, average || {}, ranking || {}];
-                          })
+                          return [event || {}, average || {}, ranking || {}];
+                        })
                         : []),
                     ],
                   },
@@ -708,11 +712,12 @@ export function CertificateManager({
     "555": "5x5x5",
     "666": "6x6x6",
     "777": "7x7x7",
-    "3bld": "3x3x3 Blindfolded",
-    "4bld": "4x4x4 Blindfolded",
-    "5bld": "5x5x5 Blindfolded",
-    mbld: "3x3x3 Multi-Blind",
+    "333bf": "3x3x3 Blindfolded",
+    "444bf": "4x4x4 Blindfolded",
+    "555bf": "5x5x5 Blindfolded",
+    "333mbf": "3x3x3 Multi-Blind",
     "333oh": "3x3x3 One-Handed",
+    "333fm": "3x3x3 Fewest Moves",
     clock: "Clock",
     minx: "Megaminx",
     pyram: "Pyraminx",
@@ -723,6 +728,13 @@ export function CertificateManager({
   const handleTemplateChange = (value: string) => {
     setSelectedTemplate(value);
   };
+
+  const filteredPersons = persons
+    .filter((person) =>
+      person.name
+        .toLowerCase()
+        .includes(searchParticipant.toLowerCase()),
+    )
 
   return (
     <div className="space-y-6">
@@ -825,11 +837,11 @@ export function CertificateManager({
                       Certificados de Podio
                     </h4>
                     <span className="text-xs text-muted-foreground">
-                      {participantsData?.length || 0} generados
+                      {Math.ceil((podiumsData?.length ?? 0) / 3)} generados
                     </span>
                   </div>
                   <Progress
-                    value={participantsData ? 100 : 0}
+                    value={podiumsData ? (Math.ceil(podiumsData.length / 3) / competition.event_ids.length) * 100 : 0}
                     className="h-2"
                   />
                 </div>
@@ -839,10 +851,13 @@ export function CertificateManager({
                       Certificados de Participación
                     </h4>
                     <span className="text-xs text-muted-foreground">
-                      {podiumsData?.length || 0} generados
+                      {participantsData?.length || 0} generados
                     </span>
                   </div>
-                  <Progress value={podiumsData ? 100 : 0} className="h-2" />
+                  <Progress
+                    value={participantsData ? (participantsData.length / competition.competitor_limit) * 100 : 0}
+                    className="h-2"
+                  />
                 </div>
               </div>
               <div className="rounded-md bg-muted p-4">
@@ -912,6 +927,7 @@ export function CertificateManager({
                     <div className="space-y-2">
                       <Label htmlFor="podiumType">Tipo de podio</Label>
                       <Select
+                        disabled
                         value={selectedTemplate}
                         onValueChange={handleTemplateChange}
                       >
@@ -959,6 +975,11 @@ export function CertificateManager({
                                   );
                                 }
                               }}
+                              disabled={
+                                podiumsData?.filter(
+                                  (podium) => podium.event === eventId,
+                                ).length === 0
+                              }
                             />
                             <Label
                               htmlFor={`event-${eventId}`}
@@ -976,14 +997,33 @@ export function CertificateManager({
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter className="flex justify-end">
+                  <CardFooter className="flex justify-between">
+                    <Toggle
+                      aria-label="Seleccionar todos"
+                      onClick={() => {
+                        if (selectedPodiums.length === podiumsData?.length) {
+                          setSelectedPodiums([]);
+                        } else {
+                          setSelectedPodiums(podiumsData || []);
+                        }
+                      }}
+                      pressed={
+                        selectedPodiums.length === podiumsData?.length
+                          ? true
+                          : false
+                      }
+                    >
+                      <Check />
+                      {selectedPodiums.length === podiumsData?.length
+                        ? "Desmarcar todos"
+                        : "Seleccionar todos"}
+                    </Toggle>
                     <Button
                       disabled={selectedPodiums.length === 0}
-                      variant="outline"
                       onClick={generatePDF}
                     >
                       <Eye />
-                      Vista previa
+                      Vista previa ({Math.ceil(selectedPodiums.length / 3)})
                     </Button>
                   </CardFooter>
                 </Card>
@@ -1055,60 +1095,101 @@ export function CertificateManager({
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    <Input
+                      placeholder="Buscar participante"
+                      value={searchParticipant}
+                      onChange={(e) => {
+                        setSearchParticipant(e.target.value);
+                      }}
+                    />
                     <div className="space-y-4">
                       <h4 className="text-sm font-medium">Participantes</h4>
                       <div className="grid grid-cols-2 gap-2">
-                        {persons.map((person) => (
-                          <div
-                            key={person.wcaId}
-                            className="flex items-center space-x-2"
-                          >
-                            <Checkbox
-                              id={person.wcaId}
-                              checked={
-                                selectedParticipants.filter(
-                                  (participant) =>
-                                    participant.wcaId === person.wcaId,
-                                ).length > 0
-                              }
-                              onCheckedChange={(checked) => {
-                                if (checked) {
-                                  const participant = participantsData?.filter(
-                                    (participant) =>
-                                      participant.wcaId === person.wcaId,
-                                  );
-                                  if (participant) {
-                                    setSelctedParticipants((prev) => [
-                                      ...prev,
-                                      ...participant,
-                                    ]);
-                                  }
-                                } else {
-                                  setSelctedParticipants((prev) =>
-                                    prev.filter(
+                        {filteredPersons.length === 0 ? (
+                          <p className="text-sm text-muted-foreground">
+                            No se encontraron participantes
+                          </p>
+                        ) : (
+                          <>
+                            {filteredPersons.map((person) => (
+                              <div
+                                key={person.wcaId || person.name}
+                                className="flex items-center space-x-2"
+                              >
+                                <Checkbox
+                                  id={person.wcaId}
+                                  checked={
+                                    selectedParticipants.filter(
                                       (participant) =>
-                                        participant.wcaId !== person.wcaId,
-                                    ),
-                                  );
-                                }
-                              }}
-                            />
-                            <Label htmlFor={person.wcaId}>
-                              <p className="text-xs">{person.name}</p>
-                            </Label>
-                          </div>
-                        ))}
+                                        participant.wcaId === person.wcaId,
+                                    ).length > 0
+                                  }
+                                  onCheckedChange={(checked) => {
+                                    if (checked) {
+                                      const participant = participantsData?.filter(
+                                        (participant) =>
+                                          participant.wcaId === person.wcaId,
+                                      );
+                                      if (participant) {
+                                        setSelctedParticipants((prev) => [
+                                          ...prev,
+                                          ...participant,
+                                        ]);
+                                      }
+                                    } else {
+                                      setSelctedParticipants((prev) =>
+                                        prev.filter(
+                                          (participant) =>
+                                            participant.wcaId !== person.wcaId,
+                                        ),
+                                      );
+                                    }
+                                  }}
+                                  disabled={
+                                    participantsData?.filter(
+                                      (participant) =>
+                                        participant.wcaId === person.wcaId,
+                                    ).length === 0
+                                  }
+                                />
+                                <Label htmlFor={person.wcaId}>
+                                  <p className="text-xs">{person.name}</p>
+                                </Label>
+                              </div>
+                            ))}
+                          </>
+                        )}
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter className="flex justify-end">
+                  <CardFooter className="flex justify-between">
+                    <Toggle
+                      aria-label="Seleccionar todos"
+                      onClick={() => {
+                        if (selectedParticipants.length === participantsData?.length) {
+                          setSelctedParticipants([]);
+                        } else {
+                          setSelctedParticipants(participantsData || []);
+                        }
+                      }}
+                      pressed={
+                        selectedParticipants.length === participantsData?.length
+                          ? true
+                          : false
+                      }
+                    >
+                      <Check />
+                      {selectedParticipants.length === participantsData?.length
+                        ? "Desmarcar todos"
+                        : "Seleccionar todos"}
+                    </Toggle>
                     <Button
                       disabled={selectedParticipants.length === 0}
                       variant="outline"
                       onClick={generateParticipantPDF}
                     >
                       <Eye />
-                      Vista previa
+                      Vista previa ({selectedParticipants.length})
                     </Button>
                   </CardFooter>
                 </Card>

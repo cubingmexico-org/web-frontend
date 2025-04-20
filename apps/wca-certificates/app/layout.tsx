@@ -2,9 +2,9 @@ import "@workspace/ui/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
-import { Toaster } from "@workspace/ui/components/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,8 +27,8 @@ export default async function RootLayout({
       <body className={inter.className}>
         <ThemeProvider>
           {children}
-          <Analytics />
           <Toaster />
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>

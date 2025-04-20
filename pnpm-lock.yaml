@@ -166,7 +166,7 @@ importers:
         specifier: ^14.2.3
         version: 14.3.5(react@19.0.0)
       sonner:
-        specifier: ^1.4.41
+        specifier: ^1.7.4
         version: 1.7.4(react-dom@19.0.0)(react@19.0.0)
       swr:
         specifier: ^2.3.3

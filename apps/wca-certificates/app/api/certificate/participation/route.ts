@@ -58,7 +58,10 @@ export async function GET(request: Request): Promise<Response> {
       results,
     };
 
-    if (personWithResults.results.length > 0) {
+    if (
+      personWithResults.results.length > 0 &&
+      !personWithResults.results.some((r) => r.ranking === null)
+    ) {
       allResults.push(personWithResults);
     }
   }

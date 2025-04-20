@@ -26,7 +26,7 @@ export interface Avatar {
 export interface Person {
   name: string;
   wcaUserId: number;
-  wcaId: string;
+  wcaId: string | null;
   registrantId: number;
   countryIso2: string;
   gender: string;

@@ -1030,6 +1030,7 @@ export function CertificateManager({
                     <Button
                       disabled={selectedPodiums.length === 0}
                       onClick={generatePDF}
+                      variant="outline"
                     >
                       <Eye />
                       Vista previa ({Math.ceil(selectedPodiums.length / 3)})
@@ -1119,7 +1120,7 @@ export function CertificateManager({
                                 className="flex items-center space-x-2"
                               >
                                 <Checkbox
-                                  id={person.wcaId}
+                                  id={person.wcaId || person.name}
                                   checked={
                                     selectedParticipants.filter(
                                       (participant) =>
@@ -1155,7 +1156,7 @@ export function CertificateManager({
                                     ).length === 0
                                   }
                                 />
-                                <Label htmlFor={person.wcaId}>
+                                <Label htmlFor={person.wcaId || person.name}>
                                   <p className="text-xs">{person.name}</p>
                                 </Label>
                               </div>

@@ -49,7 +49,13 @@ export async function GET(request: Request): Promise<Response> {
       }
     }
 
-    results.sort((a, b) => a.ranking! - b.ranking!);
+    results.sort((a, b) => {
+      const aSpecial = [-2, -1, 0].includes(a.average);
+      const bSpecial = [-2, -1, 0].includes(b.average);
+      if (aSpecial && !bSpecial) return 1;
+      if (!aSpecial && bSpecial) return -1;
+      return (a.ranking ?? 0) - (b.ranking ?? 0);
+    });
 
     const personWithResults = {
       wcaId: person.wcaId,

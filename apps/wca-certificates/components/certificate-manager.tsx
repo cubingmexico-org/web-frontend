@@ -17,7 +17,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-import { Button } from "@workspace/ui/components/button";
+import { Icons } from "@workspace/ui/components/icons";
+import { Button, buttonVariants } from "@workspace/ui/components/button";
 import { Label } from "@workspace/ui/components/label";
 import { Checkbox } from "@workspace/ui/components/checkbox";
 import { Progress } from "@workspace/ui/components/progress";
@@ -786,6 +787,20 @@ export function CertificateManager({
               <CardDescription>Detalles sobre la competencia</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="flex flex-wrap gap-2 mb-2">
+                <Link
+                  href={`https://live.worldcubeassociation.org/link/competitions/${competition.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={buttonVariants({
+                    variant: "default",
+                    size: "sm",
+                  })}
+                >
+                  <Icons.WcaMonochrome />
+                  WCA Live
+                </Link>
+              </div>
               <div className="flex items-start gap-2">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                 <span className="text-sm">

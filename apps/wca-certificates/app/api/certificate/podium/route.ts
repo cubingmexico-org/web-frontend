@@ -16,8 +16,19 @@ export async function GET(request: Request): Promise<Response> {
   });
 
   function getEventData(event: Event) {
-    const rounds = event.rounds;
-    const results = rounds[rounds.length - 1]?.results
+    const finalRound = event.rounds[event.rounds.length - 1];
+    if (!finalRound) {
+      return undefined;
+    }
+
+    const validResultsCount = finalRound.results.filter(
+      (r) => r.ranking !== null && r.best !== -1 && r.best !== -2,
+    ).length;
+    if (validResultsCount < finalRound.results.length) {
+      return undefined;
+    }
+
+    const results = finalRound.results
       .filter(
         (result: Result) =>
           result.ranking !== null &&
@@ -45,8 +56,11 @@ export async function GET(request: Request): Promise<Response> {
 
   events.map((event) => {
     const results = getEventData(event);
-
-    results?.map((result, index: number) => {
+    if (!results) {
+      // Skip if event is incomplete
+      return;
+    }
+    results.map((result, index: number) => {
       podiums.push({
         name: result.personName!,
         place: index + 1,

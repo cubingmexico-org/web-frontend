@@ -17,14 +17,14 @@ export function Footer() {
         <p className="flex flex-col text-sm text-muted-foreground sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">
           <span>
             © {new Date().getFullYear()} Cubing México —
-            <a
+            <Link
               className="text-muted-foreground ml-1"
               href="https://instagram.com/cubingmexico"
               rel="noopener noreferrer"
               target="_blank"
             >
               @cubingmexico
-            </a>
+            </Link>
           </span>
           <span className="text-xs text-center sm:text-left">
             Hecho por{" "}

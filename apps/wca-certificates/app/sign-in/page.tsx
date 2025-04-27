@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Icons } from "@workspace/ui/components/icons";
-import { SignIn } from "@/components/auth-components";
+import { UserAuthForm } from "@/components/user-auth-form";
+import { CubingMexico } from "@workspace/icons";
 
 export default function Page(): JSX.Element {
   return (
@@ -10,7 +10,7 @@ export default function Page(): JSX.Element {
         <div className="mx-auto grid w-[350px] gap-6">
           <div className="grid gap-2 text-center">
             <div className="flex items-center justify-center">
-              <Icons.CubingMexico className="size-72" />
+              <CubingMexico className="size-72" />
             </div>
             <h1 className="text-3xl font-bold">Inicia Sesión</h1>
             <p className="text-balance text-muted-foreground">
@@ -18,7 +18,7 @@ export default function Page(): JSX.Element {
             </p>
           </div>
           <div className="grid gap-4">
-            <SignIn provider="wca" />
+            <UserAuthForm />
           </div>
           <div className="mt-4 text-center text-sm">
             <p>¿No tienes cuenta de la World Cube Association?</p>

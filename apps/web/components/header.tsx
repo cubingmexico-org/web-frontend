@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Icons } from "@workspace/ui/components/icons";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -19,12 +18,13 @@ import {
 import { Button } from "@workspace/ui/components/button";
 import { SignIn, SignOut } from "./auth-components";
 import { User } from "next-auth";
+import { CubingMexico } from "@workspace/icons";
 
 export function Header({ user }: { user?: User }) {
   return (
     <header className="bg-primary text-primary-foreground body-font">
       <div className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
-        <Icons.CubingMexico className="size-16" />
+        <CubingMexico className="size-16" />
         <Link
           className="flex title-font font-medium items-center text-primary-foreground mb-4 md:mb-0"
           href="/"

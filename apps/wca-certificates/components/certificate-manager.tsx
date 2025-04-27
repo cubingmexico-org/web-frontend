@@ -17,7 +17,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-import { Icons } from "@workspace/ui/components/icons";
 import { Button, buttonVariants } from "@workspace/ui/components/button";
 import { Label } from "@workspace/ui/components/label";
 import { Checkbox } from "@workspace/ui/components/checkbox";
@@ -80,6 +79,7 @@ import {
 import { Toggle } from "@workspace/ui/components/toggle";
 import { Input } from "@workspace/ui/components/input";
 import { FileUploader } from "./file-uploader";
+import { WcaMonochrome } from "@workspace/icons";
 
 export function CertificateManager({
   competition,
@@ -797,7 +797,7 @@ export function CertificateManager({
                     size: "sm",
                   })}
                 >
-                  <Icons.WcaMonochrome />
+                  <WcaMonochrome />
                   WCA Live
                 </Link>
               </div>

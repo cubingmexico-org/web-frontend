@@ -1,6 +1,6 @@
+import { WcaMonochrome } from "@workspace/icons";
 import { Button } from "@workspace/ui/components/button";
 import { DropdownMenuItem } from "@workspace/ui/components/dropdown-menu";
-import { Icons } from "@workspace/ui/components/icons";
 import { signIn, signOut } from "auth";
 
 export function SignIn({
@@ -18,7 +18,7 @@ export function SignIn({
       className="flex justify-center"
     >
       <Button {...props}>
-        <Icons.WcaMonochrome />
+        <WcaMonochrome />
         Iniciar sesión
       </Button>
     </form>

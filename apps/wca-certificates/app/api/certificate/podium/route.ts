@@ -21,10 +21,11 @@ export async function GET(request: Request): Promise<Response> {
       return undefined;
     }
 
-    const validResultsCount = finalRound.results.filter(
-      (r) => r.ranking !== null && r.best !== -1 && r.best !== -2,
-    ).length;
-    if (validResultsCount < finalRound.results.length) {
+    const missingResults = finalRound.results.find(
+      (result: Result) => result.ranking === null,
+    );
+
+    if (missingResults) {
       return undefined;
     }
 

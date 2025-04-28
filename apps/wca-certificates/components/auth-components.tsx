@@ -12,11 +12,7 @@ export function SignIn(): JSX.Element {
 
   return (
     <Button disabled={pending} type="submit">
-      {pending ? (
-        <LoaderCircle className="animate-spin" />
-      ) : (
-        <WcaMonochrome />
-      )}
+      {pending ? <LoaderCircle className="animate-spin" /> : <WcaMonochrome />}
       <span>Iniciar sesión</span>
     </Button>
   );

@@ -38,60 +38,66 @@ export async function Footer() {
 
   return (
     <footer className="text-muted-foreground body-font">
-      <div className="container px-5 py-8 mx-auto flex items-center sm:flex-row flex-col">
-        <Link
-          className="flex title-font font-medium items-center md:justify-start justify-center text-primary"
-          href="https://github.com/cubingmexico-org"
-        >
-          <span className="flex gap-2 items-center ml-3 text-xl">
-            <GitHub className="size-6" />
-            Cubing México
-          </span>
-        </Link>
-        <p className="flex flex-col text-sm text-muted-foreground sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">
-          <span>
-            © {new Date().getFullYear()} Cubing México —
+      <div className="container px-5 py-8 mx-auto">
+        <div className="flex items-center sm:flex-row flex-col">
+          <Link
+            className="flex title-font font-medium items-center md:justify-start justify-center text-primary"
+            href="https://github.com/cubingmexico-org"
+          >
+            <span className="flex gap-2 items-center ml-3 text-xl">
+              <GitHub className="size-6" />
+              Cubing México
+            </span>
+          </Link>
+          <p className="text-sm text-gray-500 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">
+            <span>
+              © {new Date().getFullYear()} Cubing México —
+              <Link
+                className="text-muted-foreground ml-1"
+                href="https://instagram.com/cubingmexico"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                @cubingmexico
+              </Link>
+            </span>
+          </p>
+          <p className="inline-flex sm:ml-auto sm:mt-0 mt-4 justify-center sm:justify-start flex-col sm:flex-row sm:items-center gap-2 text-sm">
+            <span className="text-muted-foreground flex items-center">
+              <Trophy className="h-4 w-4 mr-1" />
+              Último: {lastCompetitionWithResults[0]?.name}
+            </span>
+            <span className="hidden sm:inline text-gray-300 text-sm">•</span>
+            {competitionsWithNoResults.length > 0 && (
+              <Tooltip>
+                <TooltipTrigger>
+                  <span className="text-muted-foreground flex items-center">
+                    <Clock className="h-4 w-4 mr-1" />
+                    Resultados pendientes ({competitionsWithNoResults.length})
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {competitionsWithNoResults.map((competition) => (
+                    <p key={competition.name}>{competition.name}</p>
+                  ))}
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </p>
+        </div>
+        <div className="mt-4 text-center text-xs text-muted-foreground">
+          <p>
+            Hecho con ❤️ por{" "}
             <Link
-              className="text-muted-foreground ml-1"
-              href="https://instagram.com/cubingmexico"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              @cubingmexico
-            </Link>
-          </span>
-          <span className="text-xs text-center sm:text-left">
-            Hecho por{" "}
-            <Link
-              className="hover:underline"
               href="https://www.worldcubeassociation.org/persons/2016TORO03"
+              className="hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Leonardo Sánchez Del Toro
             </Link>
-          </span>
-        </p>
-        <p className="inline-flex sm:ml-auto sm:mt-0 mt-4 justify-center sm:justify-start flex-col sm:flex-row sm:items-center gap-2 text-sm">
-          <span className="text-muted-foreground flex items-center">
-            <Trophy className="h-4 w-4 mr-1" />
-            Último: {lastCompetitionWithResults[0]?.name}
-          </span>
-          <span className="hidden sm:inline text-gray-300 text-sm">•</span>
-          {competitionsWithNoResults.length > 0 && (
-            <Tooltip>
-              <TooltipTrigger>
-                <span className="text-muted-foreground flex items-center">
-                  <Clock className="h-4 w-4 mr-1" />
-                  Resultados pendientes ({competitionsWithNoResults.length})
-                </span>
-              </TooltipTrigger>
-              <TooltipContent>
-                {competitionsWithNoResults.map((competition) => (
-                  <p key={competition.name}>{competition.name}</p>
-                ))}
-              </TooltipContent>
-            </Tooltip>
-          )}
-        </p>
+          </p>
+        </div>
       </div>
     </footer>
   );

@@ -161,7 +161,7 @@ export async function getMembers(
     [JSON.stringify(input)],
     {
       revalidate: 3600,
-      tags: ["members"],
+      tags: [`members-${stateId}`],
     },
   )();
 }
@@ -195,7 +195,7 @@ export async function getMembersGenderCounts(stateId: Person["stateId"]) {
         return {} as Record<string, number>;
       }
     },
-    ["members-gender-counts"],
+    [`members-gender-counts-${stateId}`],
     {
       revalidate: 3600,
     },

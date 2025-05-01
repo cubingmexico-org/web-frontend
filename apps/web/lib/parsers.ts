@@ -1,26 +1,28 @@
-import type { ExtendedSortingState, Filter } from "@/types";
-import { type Row } from "@tanstack/react-table";
 import { createParser } from "nuqs/server";
 import { z } from "zod";
 
 import { dataTableConfig } from "@/config/data-table";
 
-export const sortingItemSchema = z.object({
+import type {
+  ExtendedColumnFilter,
+  ExtendedColumnSort,
+} from "@/types/data-table";
+
+const sortingItemSchema = z.object({
   id: z.string(),
   desc: z.boolean(),
 });
 
-/**
- * Creates a parser for TanStack Table sorting state.
- * @param originalRow The original row data to validate sorting keys against.
- * @returns A parser for TanStack Table sorting state.
- */
 export const getSortingStateParser = <TData>(
-  originalRow?: Row<TData>["original"],
+  columnIds?: string[] | Set<string>,
 ) => {
-  const validKeys = originalRow ? new Set(Object.keys(originalRow)) : null;
+  const validKeys = columnIds
+    ? columnIds instanceof Set
+      ? columnIds
+      : new Set(columnIds)
+    : null;
 
-  return createParser<ExtendedSortingState<TData>>({
+  return createParser({
     parse: (value) => {
       try {
         const parsed = JSON.parse(value);
@@ -32,7 +34,7 @@ export const getSortingStateParser = <TData>(
           return null;
         }
 
-        return result.data as ExtendedSortingState<TData>;
+        return result.data as ExtendedColumnSort<TData>[];
       } catch {
         return null;
       }
@@ -47,27 +49,30 @@ export const getSortingStateParser = <TData>(
   });
 };
 
-export const filterSchema = z.object({
+const filterItemSchema = z.object({
   id: z.string(),
   value: z.union([z.string(), z.array(z.string())]),
-  type: z.enum(dataTableConfig.columnTypes),
-  operator: z.enum(dataTableConfig.globalOperators),
-  rowId: z.string(),
+  variant: z.enum(dataTableConfig.filterVariants),
+  operator: z.enum(dataTableConfig.operators),
+  filterId: z.string(),
 });
 
-/**
- * Create a parser for data table filters.
- * @param originalRow The original row data to create the parser for.
- * @returns A parser for data table filters state.
- */
-export const getFiltersStateParser = <T>(originalRow?: Row<T>["original"]) => {
-  const validKeys = originalRow ? new Set(Object.keys(originalRow)) : null;
+export type FilterItemSchema = z.infer<typeof filterItemSchema>;
 
-  return createParser<Filter<T>[]>({
+export const getFiltersStateParser = <TData>(
+  columnIds?: string[] | Set<string>,
+) => {
+  const validKeys = columnIds
+    ? columnIds instanceof Set
+      ? columnIds
+      : new Set(columnIds)
+    : null;
+
+  return createParser({
     parse: (value) => {
       try {
         const parsed = JSON.parse(value);
-        const result = z.array(filterSchema).safeParse(parsed);
+        const result = z.array(filterItemSchema).safeParse(parsed);
 
         if (!result.success) return null;
 
@@ -75,7 +80,7 @@ export const getFiltersStateParser = <T>(originalRow?: Row<T>["original"]) => {
           return null;
         }
 
-        return result.data as Filter<T>[];
+        return result.data as ExtendedColumnFilter<TData>[];
       } catch {
         return null;
       }
@@ -87,7 +92,7 @@ export const getFiltersStateParser = <T>(originalRow?: Row<T>["original"]) => {
         (filter, index) =>
           filter.id === b[index]?.id &&
           filter.value === b[index]?.value &&
-          filter.type === b[index]?.type &&
+          filter.variant === b[index]?.variant &&
           filter.operator === b[index]?.operator,
       ),
   });

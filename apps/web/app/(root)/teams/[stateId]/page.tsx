@@ -552,10 +552,17 @@ export default async function Page(props: {
                 <React.Suspense
                   fallback={
                     <DataTableSkeleton
-                      columnCount={3}
-                      searchableColumnCount={1}
-                      filterableColumnCount={1}
-                      cellWidths={["10rem", "40rem", "40rem"]}
+                      columnCount={7}
+                      filterCount={2}
+                      cellWidths={[
+                        "10rem",
+                        "30rem",
+                        "10rem",
+                        "10rem",
+                        "6rem",
+                        "6rem",
+                        "6rem",
+                      ]}
                       shrinkZero
                     />
                   }

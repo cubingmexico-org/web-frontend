@@ -6,8 +6,19 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 import { Person } from "../_types";
 import { Badge } from "@workspace/ui/components/badge";
 import Link from "next/link";
+import { Check, X } from "lucide-react";
 
-export function getColumns(): ColumnDef<Person>[] {
+interface GetColumnsProps {
+  stateCounts: Record<string, number>;
+  genderCounts: Record<string, number>;
+  statusCounts: Record<string, number>;
+}
+
+export function getColumns({
+  stateCounts,
+  genderCounts,
+  statusCounts,
+}: GetColumnsProps): ColumnDef<Person>[] {
   return [
     {
       accessorKey: "id",
@@ -24,6 +35,7 @@ export function getColumns(): ColumnDef<Person>[] {
       enableHiding: false,
     },
     {
+      id: "name",
       accessorKey: "name",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Nombre" />
@@ -45,9 +57,16 @@ export function getColumns(): ColumnDef<Person>[] {
           </div>
         );
       },
+      meta: {
+        label: "Nombre",
+        variant: "text",
+        placeholder: "Buscar por nombre...",
+      },
       enableHiding: false,
+      enableColumnFilter: true,
     },
     {
+      id: "state",
       accessorKey: "state",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Estado" />
@@ -59,13 +78,50 @@ export function getColumns(): ColumnDef<Person>[] {
           )}
         </div>
       ),
+      meta: {
+        label: "Estado",
+        variant: "multiSelect",
+        options: Object.keys(stateCounts).map((name) => ({
+          label: name,
+          value: name,
+          count: stateCounts[name],
+        })),
+      },
       enableHiding: false,
+      enableColumnFilter: true,
     },
     {
+      id: "gender",
       accessorKey: "gender",
+      meta: {
+        label: "Género",
+        variant: "multiSelect",
+        options: Object.keys(genderCounts).map((name) => ({
+          label:
+            name === "m" ? "Masculino" : name === "f" ? "Femenino" : "Otro",
+          value: name,
+          count: genderCounts[name],
+        })),
+      },
+      enableColumnFilter: true,
     },
     {
+      id: "status",
       accessorKey: "status",
+      meta: {
+        label: "Estatus",
+        variant: "multiSelect",
+        options: Object.keys(statusCounts).map((name) => {
+          const statusName = name as "inactive" | "active";
+          return {
+            label: statusName === "active" ? "Activo" : "Inactivo",
+            value: statusName,
+            icon: statusName === "active" ? Check : X,
+            count: statusCounts[statusName],
+          };
+        }),
+      },
+      enableColumnFilter: true,
     },
     {
       accessorKey: "competitions",

@@ -13,9 +13,17 @@ interface Event {
   completed: boolean;
 }
 
-export function getColumns(
-  rankType: "single" | "average",
-): ColumnDef<SumOfRanks>[] {
+interface GetColumnsProps {
+  rankType: "single" | "average";
+  stateCounts: Record<string, number>;
+  genderCounts: Record<string, number>;
+}
+
+export function getColumns({
+  rankType,
+  stateCounts,
+  genderCounts,
+}: GetColumnsProps): ColumnDef<SumOfRanks>[] {
   const columns: ColumnDef<SumOfRanks>[] = [
     {
       accessorKey: "rank",
@@ -28,6 +36,7 @@ export function getColumns(
       enableHiding: false,
     },
     {
+      id: "name",
       accessorKey: "name",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Nombre" />
@@ -42,7 +51,13 @@ export function getColumns(
           </div>
         );
       },
+      meta: {
+        label: "Nombre",
+        placeholder: "Buscar por nombre...",
+        variant: "text",
+      },
       enableHiding: false,
+      enableColumnFilter: true,
     },
     {
       accessorKey: "overall",
@@ -489,10 +504,33 @@ export function getColumns(
       enableHiding: false,
     },
     {
+      id: "state",
       accessorKey: "state",
+      meta: {
+        label: "Estado",
+        variant: "multiSelect",
+        options: Object.keys(stateCounts).map((name) => ({
+          label: name,
+          value: name,
+          count: stateCounts[name],
+        })),
+      },
+      enableColumnFilter: true,
     },
     {
+      id: "gender",
       accessorKey: "gender",
+      meta: {
+        label: "Género",
+        variant: "multiSelect",
+        options: Object.keys(genderCounts).map((name) => ({
+          label:
+            name === "m" ? "Masculino" : name === "f" ? "Femenino" : "Otro",
+          value: name,
+          count: genderCounts[name],
+        })),
+      },
+      enableColumnFilter: true,
     },
   ];
 

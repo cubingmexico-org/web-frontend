@@ -153,7 +153,7 @@ export function Header({ user }: { user?: User }) {
                   Acerca de
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem disabled>
                 <Link href="/donations" className="w-full">
                   Donaciones
                 </Link>

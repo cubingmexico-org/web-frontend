@@ -7,7 +7,13 @@ import { Member } from "../_types";
 import Link from "next/link";
 import { TeamMember } from "@/db/schema";
 
-export function getColumns(): ColumnDef<Member>[] {
+interface GetColumnsProps {
+  genderCounts: Record<string, number>;
+}
+
+export function getColumns({
+  genderCounts,
+}: GetColumnsProps): ColumnDef<Member>[] {
   return [
     {
       accessorKey: "id",
@@ -35,6 +41,7 @@ export function getColumns(): ColumnDef<Member>[] {
       enableHiding: false,
     },
     {
+      id: "name",
       accessorKey: "name",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Nombre" />
@@ -51,10 +58,28 @@ export function getColumns(): ColumnDef<Member>[] {
           </div>
         );
       },
+      meta: {
+        label: "Nombre",
+        variant: "text",
+        placeholder: "Buscar por nombre...",
+      },
+      enableColumnFilter: true,
       enableHiding: false,
     },
     {
+      id: "gender",
       accessorKey: "gender",
+      meta: {
+        label: "Género",
+        variant: "multiSelect",
+        options: Object.keys(genderCounts).map((name) => ({
+          label:
+            name === "m" ? "Masculino" : name === "f" ? "Femenino" : "Otro",
+          value: name,
+          count: genderCounts[name],
+        })),
+      },
+      enableColumnFilter: true,
     },
     {
       accessorKey: "podiums",

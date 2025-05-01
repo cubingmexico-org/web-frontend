@@ -12,7 +12,15 @@ interface Event {
   ratio: number;
 }
 
-export function getColumns(): ColumnDef<KinchRanks>[] {
+interface GetColumnsProps {
+  stateCounts: Record<string, number>;
+  genderCounts: Record<string, number>;
+}
+
+export function getColumns({
+  stateCounts,
+  genderCounts,
+}: GetColumnsProps): ColumnDef<KinchRanks>[] {
   return [
     {
       accessorKey: "rank",
@@ -25,6 +33,7 @@ export function getColumns(): ColumnDef<KinchRanks>[] {
       enableHiding: false,
     },
     {
+      id: "name",
       accessorKey: "name",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Nombre" />
@@ -39,6 +48,12 @@ export function getColumns(): ColumnDef<KinchRanks>[] {
           </div>
         );
       },
+      meta: {
+        label: "Nombre",
+        variant: "text",
+        placeholder: "Buscar por nombre...",
+      },
+      enableColumnFilter: true,
       enableHiding: false,
     },
     {
@@ -479,10 +494,33 @@ export function getColumns(): ColumnDef<KinchRanks>[] {
       enableHiding: false,
     },
     {
+      id: "state",
       accessorKey: "state",
+      meta: {
+        label: "Estado",
+        variant: "multiSelect",
+        options: Object.keys(stateCounts).map((name) => ({
+          label: name,
+          value: name,
+          count: stateCounts[name],
+        })),
+      },
+      enableColumnFilter: true,
     },
     {
+      id: "gender",
       accessorKey: "gender",
+      meta: {
+        label: "Género",
+        variant: "multiSelect",
+        options: Object.keys(genderCounts).map((name) => ({
+          label:
+            name === "m" ? "Masculino" : name === "f" ? "Femenino" : "Otro",
+          value: name,
+          count: genderCounts[name],
+        })),
+      },
+      enableColumnFilter: true,
     },
   ];
 }

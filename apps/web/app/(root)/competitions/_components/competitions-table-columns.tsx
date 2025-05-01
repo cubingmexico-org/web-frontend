@@ -7,8 +7,17 @@ import type { Competition } from "../_types";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 import { Badge } from "@workspace/ui/components/badge";
+import { formatStatusName, getStatusIcon } from "../_lib/utils";
 
-export function getColumns(): ColumnDef<Competition>[] {
+interface GetColumnsProps {
+  stateCounts: Record<string, number>;
+  statusCounts: Record<"past" | "in_progress" | "upcoming", number>;
+}
+
+export function getColumns({
+  stateCounts,
+  statusCounts,
+}: GetColumnsProps): ColumnDef<Competition>[] {
   return [
     {
       accessorKey: "startDate",
@@ -27,6 +36,7 @@ export function getColumns(): ColumnDef<Competition>[] {
       enableHiding: false,
     },
     {
+      id: "name",
       accessorKey: "name",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Nombre" />
@@ -64,6 +74,12 @@ export function getColumns(): ColumnDef<Competition>[] {
           </div>
         );
       },
+      meta: {
+        label: "Nombre",
+        placeholder: "Buscar por nombre...",
+        variant: "text",
+      },
+      enableColumnFilter: true,
       enableHiding: false,
     },
     {
@@ -84,6 +100,7 @@ export function getColumns(): ColumnDef<Competition>[] {
       enableHiding: false,
     },
     {
+      id: "state",
       accessorKey: "state",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Estado" />
@@ -97,10 +114,37 @@ export function getColumns(): ColumnDef<Competition>[] {
           </div>
         );
       },
+      meta: {
+        label: "Estado",
+        placeholder: "Buscar por estado...",
+        variant: "multiSelect",
+        options: Object.keys(stateCounts).map((name) => ({
+          label: name,
+          value: name,
+          count: stateCounts[name],
+        })),
+      },
+      enableColumnFilter: true,
       enableHiding: false,
     },
     {
+      id: "status",
       accessorKey: "status",
+      meta: {
+        label: "Estatus",
+        variant: "multiSelect",
+        options: Object.keys(statusCounts).map((name) => {
+          const statusName = name as "past" | "in_progress" | "upcoming";
+          return {
+            label: formatStatusName(statusName),
+            value: statusName,
+            icon: getStatusIcon(statusName),
+            count: statusCounts[statusName],
+          };
+        }),
+      },
+      enableColumnFilter: true,
+      enableHiding: false,
     },
   ];
 }

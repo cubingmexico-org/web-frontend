@@ -48,6 +48,7 @@ import {
   AvatarImage,
   AvatarFallback,
 } from "@workspace/ui/components/avatar";
+import { ScrollArea, ScrollBar } from "@workspace/ui/components/scroll-area";
 import Link from "next/link";
 import { auth } from "@/auth";
 import ReactMarkdown from "react-markdown";
@@ -265,13 +266,16 @@ export default async function Page(props: {
           className="w-full"
           // onValueChange={setActiveTab}
         >
-          <TabsList className="w-full justify-start mb-8">
-            <TabsTrigger value="overview">Resumen</TabsTrigger>
-            <TabsTrigger value="members">Miembros</TabsTrigger>
-            <TabsTrigger value="achievements">Logros</TabsTrigger>
-            <TabsTrigger value="events">Eventos</TabsTrigger>
-            <TabsTrigger value="statistics">Estadísticas</TabsTrigger>
-          </TabsList>
+          <ScrollArea className="max-w-screen">
+            <TabsList className="w-full justify-start mb-8">
+              <TabsTrigger value="overview">Resumen</TabsTrigger>
+              <TabsTrigger value="members">Miembros</TabsTrigger>
+              <TabsTrigger value="achievements">Logros</TabsTrigger>
+              <TabsTrigger value="events">Eventos</TabsTrigger>
+              <TabsTrigger value="statistics">Estadísticas</TabsTrigger>
+            </TabsList>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
 
           <TabsContent value="overview">
             <div className="grid gap-6 md:grid-cols-3">

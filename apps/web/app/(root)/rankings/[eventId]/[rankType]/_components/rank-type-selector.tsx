@@ -11,12 +11,16 @@ import { cn } from "@workspace/ui/lib/utils";
 interface RankTypeSelectorProps extends React.HTMLAttributes<HTMLDivElement> {
   selectedEventId: string;
   selectedRankType: "single" | "average";
+  hrefSingle: string;
+  hrefAverage: string;
   className?: string;
 }
 
 export function RankTypeSelector({
   selectedEventId,
   selectedRankType,
+  hrefSingle,
+  hrefAverage,
   className,
   ...props
 }: RankTypeSelectorProps) {
@@ -32,14 +36,14 @@ export function RankTypeSelector({
           <ToggleGroupItem
             value="single"
             aria-label="single"
-            onClick={() => router.push(`/rankings/${selectedEventId}/single`)}
+            onClick={() => router.push(hrefSingle)}
           >
             Single
           </ToggleGroupItem>
           <ToggleGroupItem
             value="average"
             aria-label="average"
-            onClick={() => router.push(`/rankings/${selectedEventId}/average`)}
+            onClick={() => router.push(hrefAverage)}
           >
             Average
           </ToggleGroupItem>

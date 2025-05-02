@@ -104,6 +104,7 @@ export function getColumns({
                 row.getValue("state") === null
                   ? "text-muted-foreground"
                   : "font-medium",
+                "max-w-[31.25rem] truncate",
               )}
             >
               {row.getValue("state") ?? "N/A"}

@@ -38,7 +38,7 @@ export function StateSelector({ stateName, states }: StateSelecorProps) {
           variant="outline"
           role="combobox"
           size="sm"
-          className="ml-auto hidden h-8 gap-2 focus:outline-none focus:ring-1 focus:ring-ring focus-visible:ring-0 lg:flex mb-6"
+          className="ml-auto h-8 gap-2 focus:outline-none focus:ring-1 focus:ring-ring focus-visible:ring-0 mb-6"
         >
           {stateName}
           <ChevronsUpDown className="ml-auto shrink-0 opacity-50" />

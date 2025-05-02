@@ -141,6 +141,7 @@ export default async function Page() {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>#</TableHead>
             <TableHead>Team</TableHead>
             <TableHead>Total</TableHead>
             <TableHead>
@@ -197,8 +198,9 @@ export default async function Page() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {teams.map((team) => (
+          {teams.map((team, index) => (
             <TableRow key={team.stateId}>
+              <TableCell>{index + 1}</TableCell>
               <TableCell>
                 <Link
                   className="hover:underline"

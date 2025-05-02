@@ -134,11 +134,11 @@ export default async function Page(props: {
 
   return (
     <main className="flex-grow container mx-auto px-4 py-8">
-      <div className="flex flex-col gap-4 mb-6">
+      <div className="flex flex-col gap-4">
         <h1 className="text-3xl font-bold">
           Kinch Ranks estatales de {stateName}
-          <StateSelector states={states} stateName={stateName!} />
         </h1>
+        <StateSelector states={states} stateName={stateName!} />
       </div>
       <Table>
         <TableHeader>

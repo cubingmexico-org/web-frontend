@@ -26,7 +26,7 @@ export function getColumns({
       ),
       cell: ({ row }) => {
         return (
-          <div className="ml-2 w-2">
+          <div className="ml-2">
             <Link
               className="hover:underline text-accent-foreground"
               href={`https://www.worldcubeassociation.org/persons/${row.getValue("id")}`}

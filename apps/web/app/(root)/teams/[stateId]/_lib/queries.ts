@@ -158,10 +158,10 @@ export async function getMembers(
         return { data: [], pageCount: 0 };
       }
     },
-    [JSON.stringify(input)],
+    [JSON.stringify(input), stateId!],
     {
       revalidate: 3600,
-      tags: [`members-${stateId}`],
+      tags: ["members"],
     },
   )();
 }
@@ -195,7 +195,7 @@ export async function getMembersGenderCounts(stateId: Person["stateId"]) {
         return {} as Record<string, number>;
       }
     },
-    [`members-gender-counts-${stateId}`],
+    ["members-gender-count", stateId!],
     {
       revalidate: 3600,
     },

@@ -749,6 +749,7 @@ export default function SaveTeamForm({
                       variant="outline"
                       size="sm"
                       className="text-red-500 hover:text-red-700"
+                      disabled={!teamData.image}
                     >
                       <Trash2 />
                       Eliminar Logo
@@ -787,6 +788,7 @@ export default function SaveTeamForm({
                       variant="outline"
                       size="sm"
                       className="text-red-500 hover:text-red-700"
+                      disabled={!teamData.coverImage}
                     >
                       <Trash2 />
                       Eliminar Portada

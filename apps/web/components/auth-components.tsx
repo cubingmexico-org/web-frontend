@@ -2,6 +2,7 @@ import { WcaMonochrome } from "@workspace/icons";
 import { Button } from "@workspace/ui/components/button";
 import { DropdownMenuItem } from "@workspace/ui/components/dropdown-menu";
 import { signIn, signOut } from "auth";
+import { LogOut } from "lucide-react";
 
 export function SignIn({
   provider,
@@ -37,6 +38,7 @@ export function SignOut({
       className="w-full"
     >
       <DropdownMenuItem {...props}>
+        <LogOut />
         <button>Cerrar sesión</button>
       </DropdownMenuItem>
     </form>

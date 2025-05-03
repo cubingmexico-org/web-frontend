@@ -9,6 +9,7 @@ import {
 import { desc, eq, isNull, lt, and, notInArray } from "drizzle-orm";
 import { Clock, Trophy } from "lucide-react";
 import Link from "next/link";
+import { ThemeToggle } from "./theme-toggle";
 
 export async function Footer() {
   const lastCompetitionWithResults = await db
@@ -97,6 +98,9 @@ export async function Footer() {
               Leonardo Sánchez Del Toro
             </Link>
           </p>
+        </div>
+        <div className="flex justify-end">
+          <ThemeToggle />
         </div>
       </div>
     </footer>

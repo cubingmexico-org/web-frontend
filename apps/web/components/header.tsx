@@ -9,7 +9,20 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from "@workspace/ui/components/dropdown-menu";
-import { ChevronDown } from "lucide-react";
+import {
+  ChevronDown,
+  UserIcon,
+  UserCheck,
+  Trophy,
+  ChartNoAxesColumnIncreasing,
+  Medal,
+  ChartBarBig,
+  PlusCircle,
+  Users,
+  CircleHelp,
+  Info,
+  Hammer,
+} from "lucide-react";
 import {
   Avatar,
   AvatarFallback,
@@ -17,8 +30,9 @@ import {
 } from "@workspace/ui/components/avatar";
 import { Button } from "@workspace/ui/components/button";
 import { SignIn, SignOut } from "./auth-components";
-import { User } from "next-auth";
+import type { User } from "next-auth";
 import { CubingMexico } from "@workspace/icons";
+import Image from "next/image";
 
 export function Header({ user }: { user?: User }) {
   return (
@@ -34,17 +48,24 @@ export function Header({ user }: { user?: User }) {
         <nav className="md:ml-auto flex flex-wrap items-center text-base justify-center">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="mr-2 hover:bg-primary hover:text-muted-foreground text-base">
+              <Button className="mr-2 hover:bg-primary hover:text-muted-foreground text-base dark:shadow-none">
                 Competencias <ChevronDown />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem>
+                <Trophy />
                 <Link href="/competitions" className="w-full">
                   Oficiales
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
+                <Image
+                  src="/copa.svg"
+                  alt="Copa Inter-Patrocinadores"
+                  width={16}
+                  height={16}
+                />
                 <Link href="https://copa.cubingmexico.net" className="w-full">
                   Copa Inter-Patrocinadores
                 </Link>
@@ -53,31 +74,38 @@ export function Header({ user }: { user?: User }) {
           </DropdownMenu>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="mr-2 hover:bg-primary hover:text-muted-foreground text-base">
+              <Button className="mr-2 hover:bg-primary hover:text-muted-foreground text-base dark:shadow-none">
                 Resultados <ChevronDown />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem>
+                <ChartNoAxesColumnIncreasing />
                 <Link href="/rankings/333/single" className="w-full">
                   Rankings
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
+                <Medal />
                 <Link href="/records" className="w-full">
                   Récords
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSub>
-                <DropdownMenuSubTrigger>Sum of Ranks</DropdownMenuSubTrigger>
+                <DropdownMenuSubTrigger>
+                  <PlusCircle />
+                  Sum of Ranks
+                </DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
                   <DropdownMenuSubContent>
                     <DropdownMenuItem>
+                      <PlusCircle />
                       <Link href="/sor/single" className="w-full">
                         Sum of Ranks
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
+                      <PlusCircle />
                       <Link href="/sor/single/teams" className="w-full">
                         Sum of Ranks (Teams)
                       </Link>
@@ -86,20 +114,26 @@ export function Header({ user }: { user?: User }) {
                 </DropdownMenuPortal>
               </DropdownMenuSub>
               <DropdownMenuSub>
-                <DropdownMenuSubTrigger>Kinch Ranks</DropdownMenuSubTrigger>
+                <DropdownMenuSubTrigger>
+                  <ChartBarBig />
+                  Kinch Ranks
+                </DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
                   <DropdownMenuSubContent>
                     <DropdownMenuItem>
+                      <ChartBarBig />
                       <Link href="/kinch" className="w-full">
                         Kinch Ranks
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
+                      <ChartBarBig />
                       <Link href="/kinch/MEX" className="w-full">
                         Kinch Ranks estatales
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
+                      <ChartBarBig />
                       <Link href="/kinch/teams" className="w-full">
                         Kinch Ranks (Teams)
                       </Link>
@@ -111,61 +145,72 @@ export function Header({ user }: { user?: User }) {
           </DropdownMenu>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="mr-2 hover:bg-primary hover:text-muted-foreground text-base">
+              <Button className="mr-2 hover:bg-primary hover:text-muted-foreground text-base dark:shadow-none">
                 Personas <ChevronDown />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem>
+                <Users />
                 <Link href="/persons" className="w-full">
                   Competidores
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
+                <Users />
                 <Link href="/organisers" className="w-full">
                   Organizadores
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
+                <Users />
                 <Link href="/delegates" className="w-full">
                   Delegados
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
+                <Users />
                 <Link href="/bronze-members" className="w-full">
                   Miembros Bronce
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Link className="mr-2 hover:text-muted-foreground" href="/teams">
+          <Link
+            className="mr-2 hover:text-muted-foreground font-medium"
+            href="/teams"
+          >
             Teams estatales
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="mr-2 hover:bg-primary hover:text-muted-foreground text-base">
+              <Button className="mr-2 hover:bg-primary hover:text-muted-foreground text-base dark:shadow-none">
                 Acerca de <ChevronDown />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem>
+                <Info />
                 <Link href="/about" className="w-full">
                   Acerca de
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem disabled>
-                <Link href="/donations" className="w-full">
-                  Donaciones
-                </Link>
-              </DropdownMenuItem>
               <DropdownMenuItem>
+                <CircleHelp />
                 <Link href="/faq" className="w-full">
                   Preguntas frecuentes
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
+                <CubingMexico />
                 <Link href="/logo" className="w-full">
                   Logotipo
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem disabled>
+                <Hammer />
+                <Link href="/tools" className="w-full">
+                  Herramientas
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -178,13 +223,19 @@ export function Header({ user }: { user?: User }) {
                   <AvatarFallback>U</AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
+              <DropdownMenuContent
+                sideOffset={10}
+                align="end"
+                alignOffset={-20}
+              >
                 <DropdownMenuItem>
+                  <UserIcon />
                   <Link href="/profile" className="w-full">
                     Perfil
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
+                  <UserCheck />
                   <Link href={`/persons/${user.id}`} className="w-full">
                     Mis resultados
                   </Link>
@@ -194,7 +245,7 @@ export function Header({ user }: { user?: User }) {
             </DropdownMenu>
           ) : (
             <SignIn
-              className="mr-2 hover:bg-primary hover:text-muted-foreground text-base"
+              className="mr-2 hover:bg-primary hover:text-muted-foreground text-base dark:shadow-none"
               provider="wca"
             />
           )}

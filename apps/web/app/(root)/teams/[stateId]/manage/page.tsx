@@ -1,12 +1,31 @@
 import { db } from "@/db";
-import { state, team } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { person, state, team, teamMember } from "@/db/schema";
+import { and, eq } from "drizzle-orm";
 import SaveTeamForm from "./_components/save-team-form";
+import { auth } from "@/auth";
 
 export default async function Page(props: {
   params: Promise<{ stateId: string }>;
 }) {
+  const session = await auth();
+
   const stateId = (await props.params).stateId;
+
+  const admins = await db
+    .select({
+      id: person.id,
+    })
+    .from(person)
+    .leftJoin(teamMember, eq(person.id, teamMember.personId))
+    .where(and(eq(person.stateId, stateId), eq(teamMember.role, "leader")));
+
+  const currentUserIsAdmin = admins.some((admin) => {
+    return admin.id === session?.user?.id;
+  });
+
+  if (!currentUserIsAdmin) {
+    return <div>You are not authorized to view this page</div>;
+  }
 
   const teamsData = await db
     .select({

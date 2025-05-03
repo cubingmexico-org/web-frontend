@@ -1,6 +1,4 @@
-/* eslint-disable no-constant-condition */
-
-import { Button, buttonVariants } from "@workspace/ui/components/button";
+import { buttonVariants } from "@workspace/ui/components/button";
 import {
   Card,
   CardContent,
@@ -23,7 +21,6 @@ import {
   Twitter,
   Medal,
   Clock,
-  UserPlus,
   Settings,
   Facebook,
   Phone,
@@ -40,6 +37,7 @@ import {
   result,
   state,
   team,
+  teamMember,
 } from "@/db/schema";
 import { and, count, eq, gt, inArray, or } from "drizzle-orm";
 import { notFound } from "next/navigation";
@@ -59,13 +57,13 @@ import { getMembers, getMembersGenderCounts } from "./_lib/queries";
 import { getValidFilters } from "@/lib/data-table";
 import { SearchParams } from "@/types";
 import { searchParamsCache } from "./_lib/validations";
+import { cn } from "@workspace/ui/lib/utils";
 
 export default async function Page(props: {
   params: Promise<{ stateId: string }>;
   searchParams: Promise<SearchParams>;
 }) {
   const stateId = (await props.params).stateId;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const session = await auth();
 
   const {
@@ -182,6 +180,18 @@ export default async function Page(props: {
     (competition) => competition.startDate >= new Date(),
   );
 
+  const admins = await db
+    .select({
+      id: person.id,
+    })
+    .from(person)
+    .leftJoin(teamMember, eq(person.id, teamMember.personId))
+    .where(and(eq(person.stateId, stateId), eq(teamMember.role, "leader")));
+
+  const currentUserIsAdmin = admins.some((admin) => {
+    return admin.id === session?.user?.id;
+  });
+
   const pastCompetitions = competitions
     .filter((competition) => competition.endDate < new Date())
     .reverse();
@@ -242,17 +252,26 @@ export default async function Page(props: {
               </div>
             </div>
             <div className="ml-auto flex gap-2">
-              {false ? (
+              {/* {false ? (
                 <Button>
                   <UserPlus />
                   Unirse al Team
                 </Button>
-              ) : null}
-              {false ? (
-                <Button variant="outline" className="bg-white/10">
+              ) : null} */}
+              {currentUserIsAdmin ? (
+                <Link
+                  className={cn(
+                    buttonVariants({
+                      variant: "outline",
+                      size: "default",
+                    }),
+                    "bg-white/10",
+                  )}
+                  href={`/teams/${stateId}/manage`}
+                >
                   <Settings />
                   Administrar Team
-                </Button>
+                </Link>
               ) : null}
             </div>
           </div>

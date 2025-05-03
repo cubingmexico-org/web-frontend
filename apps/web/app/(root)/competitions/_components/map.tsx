@@ -6,6 +6,7 @@ import { LatLngExpression, LatLngTuple } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
+import { useTheme } from "next-themes";
 
 interface MapProps {
   posix: LatLngExpression | LatLngTuple;
@@ -26,6 +27,13 @@ const defaults = {
 export function Map(Map: MapProps) {
   const { zoom = defaults.zoom, posix, locations } = Map;
 
+  const { theme } = useTheme();
+
+  const tileLayerUrl =
+    theme === "dark"
+      ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+      : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+
   return (
     <MapContainer
       center={posix}
@@ -35,7 +43,7 @@ export function Map(Map: MapProps) {
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        url={tileLayerUrl}
       />
       {locations.map(({ id, name, state, latitutude, longitude }) => (
         <Marker

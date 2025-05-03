@@ -66,7 +66,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@workspace/ui/lib/utils";
 import { teamFormAction } from "@/app/actions";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
 export default function SaveTeamForm({
   stateId,
@@ -91,6 +91,9 @@ export default function SaveTeamForm({
     isActive: boolean;
   };
 }) {
+  const [tab, setTab] = useState(
+    "general",
+  );
   const [state, formAction, pending] = useActionState(teamFormAction, {
     defaultValues: {
       name: teamData.name,
@@ -135,24 +138,26 @@ export default function SaveTeamForm({
                   Actualiza la información del Team, gestiona miembros y más
                 </p>
               </div>
-              <div className="flex gap-2">
-                <Link
-                  className={cn(buttonVariants({ variant: "outline" }))}
-                  href={`/teams/${stateId}`}
-                >
-                  Cancelar
-                </Link>
-                <Button disabled={pending} type="submit">
-                  {pending ? (
-                    <>Guardando...</>
-                  ) : (
-                    <>
-                      <Save />
-                      Guardar Cambios
-                    </>
-                  )}
-                </Button>
-              </div>
+              {tab === "general" && (
+                <div className="flex gap-2">
+                  <Link
+                    className={cn(buttonVariants({ variant: "outline" }))}
+                    href={`/teams/${stateId}`}
+                  >
+                    Cancelar
+                  </Link>
+                  <Button disabled={pending} type="submit">
+                    {pending ? (
+                      <>Guardando...</>
+                    ) : (
+                      <>
+                        <Save />
+                        Guardar Cambios
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -184,7 +189,7 @@ export default function SaveTeamForm({
         <input type="hidden" name="stateId" defaultValue={stateId} readOnly />
 
         <div className="container mx-auto px-4 py-6">
-          <Tabs defaultValue="general" className="w-full">
+          <Tabs defaultValue={tab} className="w-full" onValueChange={setTab}>
             <div className="overflow-x-auto pb-2">
               <TabsList className="w-full md:w-auto justify-start mb-6">
                 <TabsTrigger value="general">General</TabsTrigger>
@@ -435,7 +440,7 @@ export default function SaveTeamForm({
                     <CardTitle>Miembros del Equipo</CardTitle>
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button size="sm">
+                        <Button size="sm" type="button">
                           <UserPlus />
                           Añadir Miembro
                         </Button>
@@ -503,7 +508,7 @@ export default function SaveTeamForm({
                           </div>
                         </div>
                         <DialogFooter>
-                          <Button type="submit">Añadir Miembro</Button>
+                          <Button type="button">Añadir Miembro</Button>
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
@@ -698,7 +703,7 @@ export default function SaveTeamForm({
                     <CardTitle>Logros del Equipo</CardTitle>
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button size="sm">
+                        <Button size="sm" type="button">
                           <Plus />
                           Añadir Logro
                         </Button>
@@ -754,7 +759,7 @@ export default function SaveTeamForm({
                           </div>
                         </div>
                         <DialogFooter>
-                          <Button type="submit">Añadir Logro</Button>
+                          <Button type="button">Añadir Logro</Button>
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
@@ -904,7 +909,7 @@ export default function SaveTeamForm({
                           layout="fill"
                         />
                         <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 hover:opacity-100 transition-opacity">
-                          <Button variant="secondary" size="sm">
+                          <Button variant="secondary" type="button" size="sm">
                             <Upload />
                             Cambiar
                           </Button>
@@ -919,6 +924,7 @@ export default function SaveTeamForm({
                         variant="outline"
                         size="sm"
                         className="text-red-500 hover:text-red-700"
+                        type="button"
                         disabled={!teamData.image}
                       >
                         <Trash2 />
@@ -944,7 +950,7 @@ export default function SaveTeamForm({
                         layout="fill"
                       />
                       <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity">
-                        <Button variant="secondary" size="sm">
+                        <Button variant="secondary" type="button" size="sm">
                           <Upload />
                           Cambiar
                         </Button>
@@ -957,6 +963,7 @@ export default function SaveTeamForm({
                       <Button
                         variant="outline"
                         size="sm"
+                        type="button"
                         className="text-red-500 hover:text-red-700"
                         disabled={!teamData.coverImage}
                       >

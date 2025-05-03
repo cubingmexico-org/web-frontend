@@ -40,6 +40,7 @@ export function formatDate(
     month: opts.month ?? "short",
     day: opts.day ?? "numeric",
     year: opts.year ?? "numeric",
+    timeZone: opts.timeZone ?? "UTC",
     ...opts,
   });
 
@@ -50,10 +51,14 @@ export function formatDate(
   const sameMonth =
     start.getMonth() === end.getMonth() &&
     start.getFullYear() === end.getFullYear();
-  const dayFormatter = new Intl.DateTimeFormat("es-MX", { day: "numeric" });
+  const dayFormatter = new Intl.DateTimeFormat("es-MX", {
+    day: "numeric",
+    timeZone: "UTC",
+  });
   const monthYearFormatter = new Intl.DateTimeFormat("es-MX", {
     month: "short",
     year: "numeric",
+    timeZone: "UTC",
   });
 
   if (sameMonth) {
@@ -65,14 +70,17 @@ export function formatDate(
     const startDayMonth = new Intl.DateTimeFormat("es-MX", {
       day: "numeric",
       month: "short",
+      timeZone: "UTC",
     }).format(start);
     const endDayMonth = new Intl.DateTimeFormat("es-MX", {
       day: "numeric",
       month: "short",
+      timeZone: "UTC",
     }).format(end);
-    const year = new Intl.DateTimeFormat("es-MX", { year: "numeric" }).format(
-      end,
-    );
+    const year = new Intl.DateTimeFormat("es-MX", {
+      year: "numeric",
+      timeZone: "UTC",
+    }).format(end);
     return `${startDayMonth} - ${endDayMonth} ${year}`;
   }
 }

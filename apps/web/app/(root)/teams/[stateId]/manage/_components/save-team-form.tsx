@@ -54,6 +54,7 @@ import {
   Phone,
   Facebook,
   ImageIcon,
+  X,
 } from "lucide-react";
 import { Switch } from "@workspace/ui/components/switch";
 import {
@@ -92,19 +93,22 @@ export default function SaveTeamForm({
 }) {
   const [state, formAction, pending] = useActionState(teamFormAction, {
     defaultValues: {
-      name: "",
-      description: null,
-      email: undefined,
-      whatsapp: undefined,
-      facebook: undefined,
-      instagram: undefined,
-      twitter: undefined,
-      tiktok: undefined,
-      isActive: "on",
+      name: teamData.name,
+      description: teamData.description,
+      email: teamData.socialLinks?.email,
+      whatsapp: teamData.socialLinks?.whatsapp,
+      facebook: teamData.socialLinks?.facebook,
+      instagram: teamData.socialLinks?.instagram,
+      twitter: teamData.socialLinks?.twitter,
+      tiktok: teamData.socialLinks?.tiktok,
+      founded: teamData.founded
+        ? teamData.founded.toISOString().split("T")[0]
+        : "",
+      isActive: teamData.isActive ? "on" : undefined,
     },
     success: false,
     errors: null,
-  })
+  });
 
   return (
     <main className="flex-grow">
@@ -153,7 +157,7 @@ export default function SaveTeamForm({
           </div>
         </div>
 
-        {state.success && (
+        {state.success ? (
           <div className="container mx-auto px-4 py-3">
             <Alert className="bg-green-50 border-green-500">
               <Check className="h-4 w-4 text-green-600" />
@@ -163,7 +167,21 @@ export default function SaveTeamForm({
               </AlertDescription>
             </Alert>
           </div>
+        ) : (
+          <div className="container mx-auto px-4 py-3">
+            {state.errors && (
+              <Alert className="bg-red-50 border-red-500">
+                <X className="h-4 w-4 text-red-600" />
+                <AlertTitle className="text-red-800">Error</AlertTitle>
+                <AlertDescription className="text-red-700">
+                  {Object.values(state.errors).join(", ")}
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
         )}
+
+        <input type="hidden" name="stateId" defaultValue={stateId} readOnly />
 
         <div className="container mx-auto px-4 py-6">
           <Tabs defaultValue="general" className="w-full">
@@ -186,8 +204,14 @@ export default function SaveTeamForm({
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="group/field grid gap-2" data-invalid={!!state.errors?.name}>
-                      <Label htmlFor="name" className="group-data-[invalid=true]/field:text-destructive">
+                    <div
+                      className="group/field grid gap-2"
+                      data-invalid={!!state.errors?.name}
+                    >
+                      <Label
+                        htmlFor="name"
+                        className="group-data-[invalid=true]/field:text-destructive"
+                      >
                         Nombre <span aria-hidden="true">*</span>
                       </Label>
                       <Input
@@ -198,7 +222,7 @@ export default function SaveTeamForm({
                         disabled={pending}
                         aria-invalid={!!state.errors?.name}
                         aria-errormessage="error-name"
-                        defaultValue={teamData.name}
+                        defaultValue={state.defaultValues.name}
                       />
                       {state.errors?.name && (
                         <p id="error-name" className="text-destructive text-sm">
@@ -216,12 +240,24 @@ export default function SaveTeamForm({
                         disabled
                       />
                     </div>
-                    {/* <div className="space-y-2">
-                    <Label htmlFor="founded">Año de Fundación</Label>
-                    <Input id="founded" name="founded" defaultValue={String(teamData.founded) || ""} type="date" />
-                  </div> */}
-                    <div className="group/field grid gap-2" data-invalid={!!state.errors?.description}>
-                      <Label htmlFor="description" className="group-data-[invalid=true]/field:text-destructive">
+                    <div className="space-y-2">
+                      <Label htmlFor="founded">Fecha de fundación</Label>
+                      <Input
+                        id="founded"
+                        name="founded"
+                        defaultValue={state.defaultValues.founded}
+                        type="date"
+                        max={new Date().toISOString().split("T")[0]}
+                      />
+                    </div>
+                    <div
+                      className="group/field grid gap-2"
+                      data-invalid={!!state.errors?.description}
+                    >
+                      <Label
+                        htmlFor="description"
+                        className="group-data-[invalid=true]/field:text-destructive"
+                      >
                         Descripción
                       </Label>
                       <Textarea
@@ -232,17 +268,27 @@ export default function SaveTeamForm({
                         disabled={pending}
                         aria-invalid={!!state.errors?.description}
                         aria-errormessage="error-description"
-                        defaultValue={teamData.description || ""}
+                        defaultValue={state.defaultValues.description || ""}
                         rows={5}
                       />
                       {state.errors?.description && (
-                        <p id="error-description" className="text-destructive text-sm">
+                        <p
+                          id="error-description"
+                          className="text-destructive text-sm"
+                        >
                           {state.errors.description}
                         </p>
                       )}
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Switch id="isActive" name="isActive" defaultChecked={teamData.isActive} disabled={pending} />
+                      <Switch
+                        id="isActive"
+                        name="isActive"
+                        defaultChecked={
+                          state.defaultValues.isActive ? true : false
+                        }
+                        disabled={pending}
+                      />
                       <Label htmlFor="isActive">El Team está activo</Label>
                     </div>
                   </CardContent>
@@ -257,8 +303,14 @@ export default function SaveTeamForm({
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="group/field grid gap-2" data-invalid={!!state.errors?.email}>
-                      <Label htmlFor="email" className="group-data-[invalid=true]/field:text-destructive">
+                    <div
+                      className="group/field grid gap-2"
+                      data-invalid={!!state.errors?.email}
+                    >
+                      <Label
+                        htmlFor="email"
+                        className="group-data-[invalid=true]/field:text-destructive"
+                      >
                         <Mail className="h-4 w-4 inline-block mr-2" />
                         Correo Electrónico
                       </Label>
@@ -270,16 +322,25 @@ export default function SaveTeamForm({
                         disabled={pending}
                         aria-invalid={!!state.errors?.email}
                         aria-errormessage="error-email"
-                        defaultValue={teamData.socialLinks?.email}
+                        defaultValue={state.defaultValues.email}
                       />
                       {state.errors?.email && (
-                        <p id="error-email" className="text-destructive text-sm">
+                        <p
+                          id="error-email"
+                          className="text-destructive text-sm"
+                        >
                           {state.errors.email}
                         </p>
                       )}
                     </div>
-                    <div className="group/field grid gap-2" data-invalid={!!state.errors?.whatsapp}>
-                      <Label htmlFor="whatsapp" className="group-data-[invalid=true]/field:text-destructive">
+                    <div
+                      className="group/field grid gap-2"
+                      data-invalid={!!state.errors?.whatsapp}
+                    >
+                      <Label
+                        htmlFor="whatsapp"
+                        className="group-data-[invalid=true]/field:text-destructive"
+                      >
                         <Phone className="h-4 w-4 inline-block mr-2" />
                         WhatsApp
                       </Label>
@@ -291,16 +352,25 @@ export default function SaveTeamForm({
                         disabled={pending}
                         aria-invalid={!!state.errors?.whatsapp}
                         aria-errormessage="error-whatsapp"
-                        defaultValue={teamData.socialLinks?.whatsapp}
+                        defaultValue={state.defaultValues.whatsapp}
                       />
                       {state.errors?.whatsapp && (
-                        <p id="error-whatsapp" className="text-destructive text-sm">
+                        <p
+                          id="error-whatsapp"
+                          className="text-destructive text-sm"
+                        >
                           {state.errors.whatsapp}
                         </p>
                       )}
                     </div>
-                    <div className="group/field grid gap-2" data-invalid={!!state.errors?.facebook}>
-                      <Label htmlFor="facebook" className="group-data-[invalid=true]/field:text-destructive">
+                    <div
+                      className="group/field grid gap-2"
+                      data-invalid={!!state.errors?.facebook}
+                    >
+                      <Label
+                        htmlFor="facebook"
+                        className="group-data-[invalid=true]/field:text-destructive"
+                      >
                         <Facebook className="h-4 w-4 inline-block mr-2" />
                         Facebook
                       </Label>
@@ -312,16 +382,25 @@ export default function SaveTeamForm({
                         disabled={pending}
                         aria-invalid={!!state.errors?.facebook}
                         aria-errormessage="error-facebook"
-                        defaultValue={teamData.socialLinks?.facebook}
+                        defaultValue={state.defaultValues.facebook}
                       />
                       {state.errors?.facebook && (
-                        <p id="error-facebook" className="text-destructive text-sm">
+                        <p
+                          id="error-facebook"
+                          className="text-destructive text-sm"
+                        >
                           {state.errors.facebook}
                         </p>
                       )}
                     </div>
-                    <div className="group/field grid gap-2" data-invalid={!!state.errors?.instagram}>
-                      <Label htmlFor="instagram" className="group-data-[invalid=true]/field:text-destructive">
+                    <div
+                      className="group/field grid gap-2"
+                      data-invalid={!!state.errors?.instagram}
+                    >
+                      <Label
+                        htmlFor="instagram"
+                        className="group-data-[invalid=true]/field:text-destructive"
+                      >
                         <Instagram className="h-4 w-4 inline-block mr-2" />
                         Instagram
                       </Label>
@@ -333,10 +412,13 @@ export default function SaveTeamForm({
                         disabled={pending}
                         aria-invalid={!!state.errors?.instagram}
                         aria-errormessage="error-instagram"
-                        defaultValue={teamData.socialLinks?.instagram}
+                        defaultValue={state.defaultValues.instagram}
                       />
                       {state.errors?.instagram && (
-                        <p id="error-instagram" className="text-destructive text-sm">
+                        <p
+                          id="error-instagram"
+                          className="text-destructive text-sm"
+                        >
                           {state.errors.instagram}
                         </p>
                       )}
@@ -403,12 +485,16 @@ export default function SaveTeamForm({
                                   <SelectItem value="moderator">
                                     Moderador
                                   </SelectItem>
-                                  <SelectItem value="member">Miembro</SelectItem>
+                                  <SelectItem value="member">
+                                    Miembro
+                                  </SelectItem>
                                 </SelectContent>
                               </Select>
                             </div>
                             <div className="space-y-2">
-                              <Label htmlFor="specialties">Especialidades</Label>
+                              <Label htmlFor="specialties">
+                                Especialidades
+                              </Label>
                               <Input
                                 id="specialties"
                                 placeholder="ej. 3x3, 4x4, OH (separado por comas)"
@@ -581,8 +667,8 @@ export default function SaveTeamForm({
                       <h3 className="font-semibold">Administrador</h3>
                       <p className="text-sm text-muted-foreground">
                         Acceso completo para gestionar el equipo, incluyendo
-                        añadir/eliminar miembros, editar información del equipo y
-                        eliminar el equipo.
+                        añadir/eliminar miembros, editar información del equipo
+                        y eliminar el equipo.
                       </p>
                     </div>
                     <div className="space-y-2">
@@ -658,7 +744,9 @@ export default function SaveTeamForm({
                                     Competencia
                                   </SelectItem>
                                   <SelectItem value="record">Récord</SelectItem>
-                                  <SelectItem value="milestone">Hito</SelectItem>
+                                  <SelectItem value="milestone">
+                                    Hito
+                                  </SelectItem>
                                   <SelectItem value="other">Otro</SelectItem>
                                 </SelectContent>
                               </Select>
@@ -784,7 +872,9 @@ export default function SaveTeamForm({
                       </p>
                     </div>
                     <div className="space-y-2">
-                      <h3 className="font-semibold">Incluye Contenido Visual</h3>
+                      <h3 className="font-semibold">
+                        Incluye Contenido Visual
+                      </h3>
                       <p className="text-sm text-muted-foreground">
                         Considera agregar fotos de eventos para hacer los logros
                         más atractivos.

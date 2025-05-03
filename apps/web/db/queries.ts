@@ -57,11 +57,15 @@ export async function saveTeam({
   name,
   description,
   socialLinks,
+  founded,
+  isActive,
 }: {
   stateId: State["id"];
   name: Team["name"];
   description: Team["description"];
   socialLinks: Team["socialLinks"];
+  founded: Team["founded"];
+  isActive: Team["isActive"];
 }) {
   try {
     return await db
@@ -70,6 +74,8 @@ export async function saveTeam({
         name,
         description,
         socialLinks,
+        founded,
+        isActive,
       })
       .where(eq(team.stateId, stateId));
   } catch (error) {

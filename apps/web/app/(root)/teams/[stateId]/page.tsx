@@ -326,39 +326,47 @@ export default async function Page(props: {
                         </a>
                       ) : null}
                       {teamData?.socialLinks?.facebook ? (
-                        <a
-                          href={`https://facebook.com/${teamData?.socialLinks?.facebook}`}
+                        <Link
+                          href={teamData?.socialLinks?.facebook}
                           className="flex items-center text-sm text-muted-foreground hover:underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
                         >
                           <Facebook className="mr-2 h-4 w-4" />
                           Facebook
-                        </a>
+                        </Link>
                       ) : null}
                       {teamData?.socialLinks?.instagram ? (
-                        <a
-                          href={`https://instagram.com/${teamData?.socialLinks?.instagram}`}
+                        <Link
+                          href={teamData?.socialLinks?.instagram}
                           className="flex items-center text-sm text-muted-foreground hover:underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
                         >
                           <Instagram className="mr-2 h-4 w-4" />
                           Instagram
-                        </a>
+                        </Link>
                       ) : null}
                       {teamData?.socialLinks?.tiktok ? (
-                        <a
-                          href={`https://tiktok.com/${teamData?.socialLinks?.tiktok}`}
+                        <Link
+                          href={teamData?.socialLinks?.tiktok}
                           className="flex items-center text-sm text-muted-foreground hover:underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
                         >
                           TikTok
-                        </a>
+                        </Link>
                       ) : null}
                       {teamData?.socialLinks?.twitter ? (
-                        <a
-                          href={`https://twitter.com/${teamData?.socialLinks?.twitter}`}
+                        <Link
+                          href={teamData?.socialLinks?.twitter}
                           className="flex items-center text-sm text-muted-foreground hover:underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
                         >
                           <Twitter className="mr-2 h-4 w-4" />
                           Twitter
-                        </a>
+                        </Link>
                       ) : null}
                     </div>
                   </CardContent>
@@ -498,7 +506,7 @@ export default async function Page(props: {
                             Sum of Ranks de {teamData?.state}
                           </Link>
                           <Link
-                            href={`/kinch?state=${encodeURIComponent(teamData?.state ?? "")}`}
+                            href={`/kinch/${stateId}`}
                             className="text-sm flex items-center text-blue-600 hover:underline"
                           >
                             <ChartNoAxesCombined className="w-4 h-4 mr-2" />
@@ -534,6 +542,7 @@ export default async function Page(props: {
                                   year: "numeric",
                                   month: "long",
                                   day: "numeric",
+                                  timeZone: "UTC",
                                 },
                               )}{" "}
                             </div>

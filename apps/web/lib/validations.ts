@@ -1,28 +1,89 @@
-import { z } from "zod"
+import { z } from "zod";
 import validator from "validator";
 
 export const teamFormSchema = z.object({
+  stateId: z.string(),
   name: z
     .string()
     .min(2, { message: "El nombre debe tener al menos 2 caracteres" })
     .max(32, { message: "El nombre debe tener como máximo 32 caracteres" }),
   description: z
     .string()
-    .max(1000, { message: "La descripción debe tener como máximo 1000 caracteres" })
+    .max(1000, {
+      message: "La descripción debe tener como máximo 1000 caracteres",
+    })
     .nullable(),
   email: z
     .string()
-    .email({ message: "Debe ser un correo electrónico válido" })
-    .optional()
-    .nullable(),
+    .refine(
+      (value) =>
+        value === null ||
+        value === "" ||
+        z.string().email().safeParse(value).success,
+      {
+        message: "Debe ser un correo electrónico válido",
+      },
+    )
+    .optional(),
   whatsapp: z
     .string()
-    .refine(validator.isMobilePhone, { message: "Debe ser un número de teléfono móvil válido" })
-    .optional()
-    .nullable(),
-  facebook: z.string().optional(),
-  instagram: z.string().optional(),
-  twitter: z.string().optional(),
-  tiktok: z.string().optional(),
-  isActive: z.string(),
-})
+    .refine(
+      (value) =>
+        value === null || value === "" || validator.isMobilePhone(value),
+      {
+        message:
+          "Debe ser un número de teléfono móvil válido, asegúrate que no contenga espacios",
+      },
+    )
+    .optional(),
+  facebook: z
+    .string()
+    .refine(
+      (value) =>
+        value === null ||
+        value === "" ||
+        z.string().url().safeParse(value).success,
+      {
+        message: "Debe ser una URL válida",
+      },
+    )
+    .optional(),
+  instagram: z
+    .string()
+    .refine(
+      (value) =>
+        value === null ||
+        value === "" ||
+        z.string().url().safeParse(value).success,
+      {
+        message: "Debe ser una URL válida",
+      },
+    )
+    .optional(),
+  twitter: z
+    .string()
+    .refine(
+      (value) =>
+        value === null ||
+        value === "" ||
+        z.string().url().safeParse(value).success,
+      {
+        message: "Debe ser una URL válida",
+      },
+    )
+    .optional(),
+  tiktok: z
+    .string()
+    .refine(
+      (value) =>
+        value === null ||
+        value === "" ||
+        z.string().url().safeParse(value).success,
+      {
+        message: "Debe ser una URL válida",
+      },
+    )
+    .optional(),
+  founded: z.string().optional(),
+  isActive: z.string().optional(),
+});

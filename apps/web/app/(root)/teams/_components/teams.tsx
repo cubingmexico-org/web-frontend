@@ -1,32 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { buttonVariants } from "@workspace/ui/components/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card";
 import { Input } from "@workspace/ui/components/input";
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
-// import { Badge } from "@workspace/ui/components/badge"
-import { Users, MapPin, Calendar, Search } from "lucide-react";
-import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from "@workspace/ui/components/avatar";
-import Link from "next/link";
-import { cn } from "@workspace/ui/lib/utils";
+import { Search } from "lucide-react";
+import { TeamCard } from "./team-card";
 
 interface Team {
   id: string;
   name: string;
   description: string | null;
   image: string | null;
+  coverImage: string | null;
   state: string;
   founded: Date | null;
   isActive: boolean;
@@ -84,81 +69,18 @@ export function Teams({ teams }: { teams: Team[] }) {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {filteredTeams.map((team) => (
-          <Card key={team.state} className="flex flex-col">
-            <CardHeader>
-              <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage
-                    src={team.image ?? undefined}
-                    alt={team.name ?? undefined}
-                  />
-                  <AvatarFallback>
-                    {team.name
-                      ?.split(" ")
-                      .map((n) => n[0])
-                      .join("")}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <CardTitle className="text-xl">{team.name}</CardTitle>
-                  <CardDescription className="flex items-center mt-1">
-                    <MapPin className="w-4 h-4 mr-1" />
-                    {team.state}
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="flex-grow">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="flex items-center">
-                  <Users className="w-4 h-4 mr-1" />
-                  {team.members} miembros
-                </div>
-                {team.founded ? (
-                  <div className="flex items-center">
-                    <Calendar className="w-4 h-4 mr-1" />
-                    Desde{" "}
-                    {team.founded.toLocaleDateString("es-ES", {
-                      year: "numeric",
-                    })}
-                  </div>
-                ) : null}
-              </div>
-              {/* <div className="mb-4">
-                <h3 className="font-semibold mb-2 flex items-center">
-                  <Trophy className="w-4 h-4 mr-1" />
-                  Logros recientes
-                </h3>
-                <ul className="list-disc list-inside text-sm text-muted-foreground">
-                  {team.achievements.map((achievement, index) => (
-                    <li key={index}>{achievement}</li>
-                  ))}
-                </ul>
-              </div> */}
-              {/* <div>
-                <h3 className="font-semibold mb-2">Miembros destacados</h3>
-                <div className="space-y-2">
-                  {team.topMembers.map((member, index) => (
-                    <div key={index} className="text-sm">
-                      <div className="font-medium">{member.name}</div>
-                      <div className="flex gap-2">
-                        <Badge variant="secondary">{member.specialty}</Badge>
-                        <Badge variant="outline">{member.achievement}</Badge>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div> */}
-            </CardContent>
-            <CardFooter>
-              <Link
-                className={cn("w-full", buttonVariants({ variant: "outline" }))}
-                href={`/teams/${team.id}`}
-              >
-                Ver perfil del Team
-              </Link>
-            </CardFooter>
-          </Card>
+          <TeamCard
+            key={team.id}
+            id={team.id}
+            name={team.name}
+            description={team.description}
+            image={team.image}
+            coverImage={team.coverImage}
+            state={team.state}
+            founded={team.founded}
+            isActive={team.isActive}
+            members={team.members}
+          />
         ))}
       </div>
     </>

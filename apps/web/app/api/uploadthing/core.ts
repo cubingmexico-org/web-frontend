@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { updateTeamCover, updateTeamLogo } from "@/db/queries";
+import { revalidatePath } from "next/cache";
 import { createUploadthing } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 
@@ -72,6 +73,8 @@ export const ourFileRouter = {
         stateId: metadata.stateId, // Use the passed stateId here
         coverImage: file.ufsUrl,
       });
+      
+      revalidatePath(`/teams/${metadata.stateId}/manage`);
 
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
       return { uploadedBy: metadata.userId };

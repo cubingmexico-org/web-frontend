@@ -3,6 +3,7 @@ import { person, state, team, teamMember } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 import SaveTeamForm from "./_components/save-team-form";
 import { auth } from "@/auth";
+import { UnauthorizedView } from "@/components/unauthorized-view";
 
 export default async function Page(props: {
   params: Promise<{ stateId: string }>;
@@ -24,7 +25,7 @@ export default async function Page(props: {
   });
 
   if (!currentUserIsAdmin) {
-    return <div>You are not authorized to view this page</div>;
+    return <UnauthorizedView />;
   }
 
   const teamsData = await db

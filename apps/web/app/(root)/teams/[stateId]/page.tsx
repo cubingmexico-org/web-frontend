@@ -216,39 +216,41 @@ export default async function Page(props: {
           height={400}
         />
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-6">
-          <div className="container mx-auto flex items-end gap-6">
-            <Avatar className="h-24 w-24 border-4 border-white">
-              <AvatarImage
-                src={teamData?.image ?? undefined}
-                alt={teamData?.name ?? undefined}
-              />
-              <AvatarFallback>
-                {teamData?.name
-                  ?.split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-              </AvatarFallback>
-            </Avatar>
-            <div className="text-white mb-2">
-              <h1 className="text-3xl font-bold">{teamData?.name}</h1>
-              <div className="flex items-center gap-4 mt-2">
-                <div className="flex items-center">
-                  <MapPin className="w-4 h-4 mr-1" />
-                  {teamData?.state}
-                </div>
-                <div className="flex items-center">
-                  <Users className="w-4 h-4 mr-1" />
-                  {totalMembers} miembros
-                </div>
-                {teamData?.founded ? (
+          <div className="container mx-auto flex flex-col sm:flex-row items-end gap-6">
+            <div className="flex gap-6 w-full">
+              <Avatar className="h-24 w-24 border-4 border-white">
+                <AvatarImage
+                  src={teamData?.image ?? undefined}
+                  alt={teamData?.name ?? undefined}
+                />
+                <AvatarFallback>
+                  {teamData?.name
+                    ?.split(" ")
+                    .map((n) => n[0])
+                    .join("")}
+                </AvatarFallback>
+              </Avatar>
+              <div className="text-white mb-2">
+                <h1 className="text-3xl font-bold">{teamData?.name}</h1>
+                <div className="flex flex-col sm:flex-row items-start sm:gap-4 gap-2 mt-2">
                   <div className="flex items-center">
-                    <Calendar className="w-4 h-4 mr-1" />
-                    Desde{" "}
-                    {teamData.founded.toLocaleDateString("es-ES", {
-                      year: "numeric",
-                    })}
+                    <MapPin className="w-4 h-4 mr-1" />
+                    {teamData?.state}
                   </div>
-                ) : null}
+                  <div className="flex items-center">
+                    <Users className="w-4 h-4 mr-1" />
+                    {totalMembers} miembros
+                  </div>
+                  {teamData?.founded ? (
+                    <div className="flex items-center">
+                      <Calendar className="w-4 h-4 mr-1" />
+                      Desde{" "}
+                      {teamData.founded.toLocaleDateString("es-ES", {
+                        year: "numeric",
+                      })}
+                    </div>
+                  ) : null}
+                </div>
               </div>
             </div>
             <div className="ml-auto flex gap-2">
@@ -265,7 +267,6 @@ export default async function Page(props: {
                       variant: "outline",
                       size: "default",
                     }),
-                    "bg-white/10",
                   )}
                   href={`/teams/${stateId}/manage`}
                 >
@@ -755,6 +756,8 @@ export default async function Page(props: {
                         <Link
                           href={`https://www.worldcubeassociation.org/competitions/${competition.id}`}
                           className={buttonVariants({ variant: "default" })}
+                          target="_blank"
+                          rel="noopener noreferrer"
                         >
                           Ver detalles
                         </Link>

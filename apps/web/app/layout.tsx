@@ -4,6 +4,7 @@ import "@cubing/icons";
 import { Providers } from "@/components/providers";
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://cubingmexico.net"),
@@ -38,6 +39,7 @@ export default function RootLayout({
       >
         <Providers>{children}</Providers>
         <Analytics />
+        <Toaster />
       </body>
     </html>
   );

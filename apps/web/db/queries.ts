@@ -83,3 +83,71 @@ export async function saveTeam({
     throw error;
   }
 }
+
+export async function deleteTeamLogo({ stateId }: { stateId: State["id"] }) {
+  try {
+    return await db
+      .update(team)
+      .set({
+        image: null,
+      })
+      .where(eq(team.stateId, stateId));
+  } catch (error) {
+    console.error("Failed to delete team logo in database");
+    throw error;
+  }
+}
+
+export async function updateTeamLogo({
+  stateId,
+  image,
+}: {
+  stateId: State["id"];
+  image: Team["image"];
+}) {
+  try {
+    return await db
+      .update(team)
+      .set({
+        image,
+      })
+      .where(eq(team.stateId, stateId));
+  } catch (error) {
+    console.error("Failed to update team logo in database");
+    throw error;
+  }
+}
+
+export async function deleteTeamCover({ stateId }: { stateId: State["id"] }) {
+  try {
+    return await db
+      .update(team)
+      .set({
+        coverImage: null,
+      })
+      .where(eq(team.stateId, stateId));
+  } catch (error) {
+    console.error("Failed to delete team cover in database");
+    throw error;
+  }
+}
+
+export async function updateTeamCover({
+  stateId,
+  coverImage,
+}: {
+  stateId: State["id"];
+  coverImage: Team["coverImage"];
+}) {
+  try {
+    return await db
+      .update(team)
+      .set({
+        coverImage,
+      })
+      .where(eq(team.stateId, stateId));
+  } catch (error) {
+    console.error("Failed to update team cover in database");
+    throw error;
+  }
+}

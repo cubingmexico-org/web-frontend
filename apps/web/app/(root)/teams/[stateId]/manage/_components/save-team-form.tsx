@@ -44,7 +44,6 @@ import {
 import {
   Mail,
   Instagram,
-  Upload,
   UserPlus,
   Trash2,
   Save,
@@ -62,11 +61,28 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@workspace/ui/components/alert";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@workspace/ui/components/alert-dialog";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@workspace/ui/lib/utils";
-import { teamFormAction } from "@/app/actions";
+import {
+  deleteTeamCoverAction,
+  deleteTeamLogoAction,
+  teamFormAction,
+} from "@/app/actions";
 import { useActionState, useState } from "react";
+import { ImageUploader } from "./image-uploader";
+import { CoverUploader } from "./cover-uploader";
 
 export default function SaveTeamForm({
   stateId,
@@ -91,9 +107,7 @@ export default function SaveTeamForm({
     isActive: boolean;
   };
 }) {
-  const [tab, setTab] = useState(
-    "general",
-  );
+  const [tab, setTab] = useState("general");
   const [state, formAction, pending] = useActionState(teamFormAction, {
     defaultValues: {
       name: teamData.name,
@@ -909,10 +923,7 @@ export default function SaveTeamForm({
                           layout="fill"
                         />
                         <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 hover:opacity-100 transition-opacity">
-                          <Button variant="secondary" type="button" size="sm">
-                            <Upload />
-                            Cambiar
-                          </Button>
+                          <ImageUploader stateId={stateId} />
                         </div>
                       </div>
                     </div>
@@ -920,16 +931,41 @@ export default function SaveTeamForm({
                       Tamaño recomendado: 400x400 píxeles (cuadrado)
                     </div>
                     <div className="flex justify-center pt-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-red-500 hover:text-red-700"
-                        type="button"
-                        disabled={!teamData.image}
-                      >
-                        <Trash2 />
-                        Eliminar Logo
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-red-500 hover:text-red-700"
+                            type="button"
+                            disabled={!teamData.image}
+                          >
+                            <Trash2 />
+                            Eliminar Logo
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              ¿Estás completamente seguro?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Esta acción eliminará el logo de tu team. No
+                              podrás deshacer esta acción.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={async () => {
+                                await deleteTeamLogoAction(stateId);
+                              }}
+                            >
+                              Continuar
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </CardContent>
                 </Card>
@@ -950,26 +986,48 @@ export default function SaveTeamForm({
                         layout="fill"
                       />
                       <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity">
-                        <Button variant="secondary" type="button" size="sm">
-                          <Upload />
-                          Cambiar
-                        </Button>
+                        <CoverUploader stateId={stateId} />
                       </div>
                     </div>
                     <div className="text-center text-sm text-muted-foreground">
                       Tamaño recomendado: 1200x400 píxeles (relación 3:1)
                     </div>
                     <div className="flex justify-center pt-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        type="button"
-                        className="text-red-500 hover:text-red-700"
-                        disabled={!teamData.coverImage}
-                      >
-                        <Trash2 />
-                        Eliminar Portada
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            type="button"
+                            className="text-red-500 hover:text-red-700"
+                            disabled={!teamData.coverImage}
+                          >
+                            <Trash2 />
+                            Eliminar Portada
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              ¿Estás completamente seguro?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Esta acción eliminará el logo de tu team. No
+                              podrás deshacer esta acción.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={async () => {
+                                await deleteTeamCoverAction(stateId);
+                              }}
+                            >
+                              Continuar
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </CardContent>
                 </Card>

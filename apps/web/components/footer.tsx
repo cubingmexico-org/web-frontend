@@ -99,7 +99,7 @@ export async function Footer() {
             </Link>
           </p>
         </div>
-        <div className="flex justify-end">
+        <div className="flex justify-center sm:justify-end pt-4">
           <ThemeToggle />
         </div>
       </div>

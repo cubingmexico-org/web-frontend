@@ -8,7 +8,7 @@ import {
 import { Upload } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
-import { uploadFiles } from "@/lib/utils";
+import { uploadFiles } from "@/lib/uploadthing";
 import { UploadThingError } from "uploadthing/server";
 
 export function ImageUploader({ stateId }: { stateId: string }) {

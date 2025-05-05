@@ -1,6 +1,3 @@
-import { generateReactHelpers } from "@uploadthing/react";
-import type { OurFileRouter } from "@/app/api/uploadthing/core";
-
 export function formatTime(centiseconds: number): string {
   const seconds = centiseconds / 100;
   if (seconds < 60) {
@@ -97,6 +94,3 @@ export function toSentenceCase(str: string) {
     .replace(/\s+/g, " ")
     .trim();
 }
-
-export const { useUploadThing, uploadFiles } =
-  generateReactHelpers<OurFileRouter>();

@@ -1,6 +1,4 @@
 import { auth } from "@/auth";
-import { updateTeamCover, updateTeamLogo } from "@/db/queries";
-import { revalidatePath } from "next/cache";
 import { createUploadthing } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 
@@ -35,13 +33,8 @@ export const ourFileRouter = {
       return { userId: session.user?.id, stateId };
     })
     .onUploadComplete(async ({ metadata, file }) => {
-      await updateTeamLogo({
-        stateId: metadata.stateId, // Use the passed stateId here
-        image: file.ufsUrl,
-      });
-
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
-      return { uploadedBy: metadata.userId };
+      return { stateId: metadata.stateId, image: file.ufsUrl };
     }),
   coverUploader: f({
     image: {
@@ -69,15 +62,8 @@ export const ourFileRouter = {
       return { userId: session.user?.id, stateId };
     })
     .onUploadComplete(async ({ metadata, file }) => {
-      await updateTeamCover({
-        stateId: metadata.stateId, // Use the passed stateId here
-        coverImage: file.ufsUrl,
-      });
-      
-      revalidatePath(`/teams/${metadata.stateId}/manage`);
-
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
-      return { uploadedBy: metadata.userId };
+      return { stateId: metadata.stateId, coverImage: file.ufsUrl };
     }),
 };
 

@@ -130,7 +130,7 @@ export default function SaveTeamForm({
   return (
     <main className="flex-grow">
       <form action={formAction}>
-        <div className="bg-gray-100 border-b">
+        <div className="bg-muted/75 border-b">
           <div className="container mx-auto px-4 py-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
@@ -451,7 +451,7 @@ export default function SaveTeamForm({
               <div className="grid gap-6 md:grid-cols-3">
                 <Card className="md:col-span-2">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle>Miembros del Equipo</CardTitle>
+                    <CardTitle>Miembros del Team</CardTitle>
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button size="sm" type="button">
@@ -461,9 +461,9 @@ export default function SaveTeamForm({
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-[525px]">
                         <DialogHeader>
-                          <DialogTitle>Añadir Miembro del Equipo</DialogTitle>
+                          <DialogTitle>Añadir Miembro al Team</DialogTitle>
                           <DialogDescription>
-                            Añade un nuevo miembro a tu equipo
+                            Añade un nuevo miembro a tu team
                           </DialogDescription>
                         </DialogHeader>
                         <div className="py-4">
@@ -678,31 +678,29 @@ export default function SaveTeamForm({
                   <CardHeader>
                     <CardTitle>Roles de Miembros</CardTitle>
                     <CardDescription>
-                      Comprender los permisos de los miembros del equipo
+                      Comprender los permisos de los miembros del team
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
                       <h3 className="font-semibold">Administrador</h3>
                       <p className="text-sm text-muted-foreground">
-                        Acceso completo para gestionar el equipo, incluyendo
-                        añadir/eliminar miembros, editar información del equipo
-                        y eliminar el equipo.
+                        Acceso completo para gestionar al team, incluyendo
+                        añadir/eliminar miembros, editar información del team.
                       </p>
                     </div>
                     <div className="space-y-2">
                       <h3 className="font-semibold">Moderador</h3>
                       <p className="text-sm text-muted-foreground">
-                        Puede gestionar el contenido del equipo como logros y
-                        eventos, pero no puede eliminar el equipo ni gestionar
-                        administradores.
+                        Puede gestionar el contenido del team como logros y
+                        eventos, pero no puede gestionar administradores.
                       </p>
                     </div>
                     <div className="space-y-2">
                       <h3 className="font-semibold">Miembro</h3>
                       <p className="text-sm text-muted-foreground">
-                        Acceso básico para ver la información del equipo y
-                        participar en eventos del equipo.
+                        Acceso básico para ver la información del team y
+                        participar en eventos del team.
                       </p>
                     </div>
                   </CardContent>
@@ -714,7 +712,7 @@ export default function SaveTeamForm({
               <div className="grid gap-6 md:grid-cols-3">
                 <Card className="md:col-span-2">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle>Logros del Equipo</CardTitle>
+                    <CardTitle>Logros del Team</CardTitle>
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button size="sm" type="button">
@@ -726,7 +724,7 @@ export default function SaveTeamForm({
                         <DialogHeader>
                           <DialogTitle>Añadir Logro</DialogTitle>
                           <DialogDescription>
-                            Añade un nuevo logro al perfil de tu equipo
+                            Añade un nuevo logro al perfil de tu team
                           </DialogDescription>
                         </DialogHeader>
                         <div className="py-4 space-y-4">
@@ -861,7 +859,7 @@ export default function SaveTeamForm({
                   <CardHeader>
                     <CardTitle>Consejos para Logros</CardTitle>
                     <CardDescription>
-                      Mejores prácticas para mostrar los logros del equipo
+                      Mejores prácticas para mostrar los logros del team
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -874,10 +872,10 @@ export default function SaveTeamForm({
                     </div>
                     <div className="space-y-2">
                       <h3 className="font-semibold">
-                        Destaca los Esfuerzos del Equipo
+                        Destaca los Esfuerzos del Team
                       </h3>
                       <p className="text-sm text-muted-foreground">
-                        Enfócate en los logros del equipo en lugar de los logros
+                        Enfócate en los logros del team en lugar de los logros
                         individuales.
                       </p>
                     </div>
@@ -908,9 +906,9 @@ export default function SaveTeamForm({
               <div className="grid gap-6 md:grid-cols-2">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Logo del Equipo</CardTitle>
+                    <CardTitle>Logo del Team</CardTitle>
                     <CardDescription>
-                      Sube la imagen del logo de tu equipo
+                      Sube la imagen del logo de tu team
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -918,7 +916,7 @@ export default function SaveTeamForm({
                       <div className="relative w-40 h-40">
                         <Image
                           src={teamData.image || "/placeholder.svg"}
-                          alt="Logo del equipo"
+                          alt="Logo del team"
                           className="w-full h-full object-cover rounded-full border-2 border-gray-200"
                           layout="fill"
                         />
@@ -974,14 +972,14 @@ export default function SaveTeamForm({
                   <CardHeader>
                     <CardTitle>Imagen de Portada</CardTitle>
                     <CardDescription>
-                      Sube la imagen de portada de tu equipo
+                      Sube la imagen de portada de tu team
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="relative h-48 w-full overflow-hidden rounded-md border border-gray-200">
                       <Image
                         src={teamData.coverImage || "/placeholder.svg"}
-                        alt="Portada del equipo"
+                        alt="Portada del team"
                         className="w-full h-full object-cover"
                         layout="fill"
                       />
@@ -1036,7 +1034,7 @@ export default function SaveTeamForm({
                   <CardHeader>
                     <CardTitle>Guías de Imágenes</CardTitle>
                     <CardDescription>
-                      Mejores prácticas para imágenes de equipo
+                      Mejores prácticas para imágenes de team
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -1071,7 +1069,7 @@ export default function SaveTeamForm({
                             <li>Elige imágenes de alta resolución</li>
                             <li>Evita texto en la imagen</li>
                             <li>Usa formato JPG para fotos</li>
-                            <li>Tamaño máximo del archivo: 5MB</li>
+                            <li>Tamaño máximo del archivo: 4MB</li>
                           </ul>
                         </div>
                       </div>

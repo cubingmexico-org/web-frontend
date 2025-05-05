@@ -34,6 +34,7 @@ import { Badge } from "@workspace/ui/components/badge";
 import { Map } from "./_components/map";
 import type { GeoJSONProps } from "react-leaflet";
 import { headers } from "next/headers";
+import Link from "next/link";
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -239,8 +240,14 @@ export default async function Page({
 
   return (
     <main className="flex-grow container mx-auto px-4 py-8">
-      <h1 className="text-center font-semibold text-2xl mb-4">
-        {data.person.name}
+      <h1 className="text-center font-semibold text-2xl mb-4 hover:underline">
+        <Link
+          href={`https://www.worldcubeassociation.org/persons/${id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {data.person.name}
+        </Link>
       </h1>
       <div className="w-full flex justify-center gap-2 mb-2">
         {isBronze.length > 0 && (

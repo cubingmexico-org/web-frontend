@@ -418,7 +418,7 @@ const FileUploadRoot = React.forwardRef<HTMLDivElement, FileUploadRootProps>(
             filesToProcess = filesToProcess.slice(0, remainingSlotCount);
 
             for (const file of rejectedFiles) {
-              let rejectionMessage = `Maximum ${propsRef.current.maxFiles} files allowed`;
+              let rejectionMessage = `Se permiten como máximo ${propsRef.current.maxFiles} archivo(s)`;
 
               if (propsRef.current.onFileValidate) {
                 const validationMessage = propsRef.current.onFileValidate(file);

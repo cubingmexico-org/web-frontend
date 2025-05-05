@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@workspace/ui/components/button";
+import { Button, buttonVariants } from "@workspace/ui/components/button";
 import {
   Card,
   CardHeader,
@@ -9,6 +9,7 @@ import {
   CardContent,
   CardFooter,
 } from "@workspace/ui/components/card";
+import { cn } from "@workspace/ui/lib/utils";
 import { Home, ArrowLeft, Mail, Lock } from "lucide-react";
 import Link from "next/link";
 
@@ -68,18 +69,26 @@ export function UnauthorizedView() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-            <Button asChild variant="outline" className="w-full sm:w-auto">
-              <Link href="/">
-                <Home className="mr-2 h-5 w-5" />
-                Ir al Inicio
-              </Link>
-            </Button>
-            <Button asChild variant="ghost" className="w-full sm:w-auto">
-              <Link href="javascript:history.back()">
-                <ArrowLeft className="mr-2 h-5 w-5" />
-                Regresar
-              </Link>
-            </Button>
+            <Link
+              className={cn(
+                buttonVariants({ variant: "outline" }),
+                "w-full sm:w-auto",
+              )}
+              href="/"
+            >
+              <Home className="mr-2 h-5 w-5" />
+              Ir al Inicio
+            </Link>
+            <Link
+              className={cn(
+                buttonVariants({ variant: "ghost" }),
+                "w-full sm:w-auto",
+              )}
+              href="javascript:history.back()"
+            >
+              <ArrowLeft className="mr-2 h-5 w-5" />
+              Regresar
+            </Link>
           </CardFooter>
         </Card>
 
@@ -93,8 +102,8 @@ export function UnauthorizedView() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Mail className="mr-2 h-4 w-4" />
-              Contacta al Equipo de Soporte
+              <Mail />
+              Contacta al desarrollador
             </Link>
           </Button>
         </div>

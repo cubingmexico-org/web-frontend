@@ -1,6 +1,12 @@
 "use server";
 
-import { deleteTeamCover, deleteTeamLogo, saveTeam } from "@/db/queries";
+import {
+  deleteTeamCover,
+  deleteTeamLogo,
+  saveTeam,
+  updateTeamCover,
+  updateTeamLogo,
+} from "@/db/queries";
 import { teamFormSchema } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -103,6 +109,48 @@ export async function deleteTeamCoverAction(stateId: string) {
     };
   } catch (error) {
     console.error("Failed to delete team cover in database");
+    throw error;
+  }
+}
+
+export async function updateTeamLogoAction(
+  stateId: string,
+  image: string | null,
+) {
+  try {
+    await updateTeamLogo({
+      stateId,
+      image,
+    });
+
+    revalidatePath(`/teams/${stateId}/manage`);
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error("Failed to update team logo in database");
+    throw error;
+  }
+}
+
+export async function updateTeamCoverAction(
+  stateId: string,
+  coverImage: string | null,
+) {
+  try {
+    await updateTeamCover({
+      stateId,
+      coverImage,
+    });
+
+    revalidatePath(`/teams/${stateId}/manage`);
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error("Failed to update team cover in database");
     throw error;
   }
 }

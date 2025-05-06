@@ -48,6 +48,7 @@ export function KinchTable({ promises }: KinchTableProps) {
     getRowId: (originalRow) => originalRow.personId,
     shallow: false,
     clearOnDefault: true,
+    enableRowSelection: false,
   });
 
   return (

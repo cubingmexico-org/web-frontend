@@ -50,6 +50,7 @@ export function RankSinglesTable({ promises }: RankSinglesTableProps) {
     getRowId: (originalRow) => originalRow.personId,
     shallow: false,
     clearOnDefault: true,
+    enableRowSelection: false,
   });
 
   return (
@@ -95,6 +96,7 @@ export function RankAveragesTable({ promises }: RankAveragesTableProps) {
     getRowId: (originalRow) => originalRow.personId,
     shallow: false,
     clearOnDefault: true,
+    enableRowSelection: false,
   });
 
   return (

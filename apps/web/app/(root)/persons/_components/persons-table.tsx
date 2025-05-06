@@ -47,6 +47,7 @@ export function PersonsTable({ promises }: PersonsTableProps) {
     getRowId: (originalRow) => originalRow.id,
     shallow: false,
     clearOnDefault: true,
+    enableRowSelection: false,
   });
 
   return (

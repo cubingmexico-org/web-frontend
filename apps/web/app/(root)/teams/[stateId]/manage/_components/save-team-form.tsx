@@ -1,6 +1,6 @@
 "use client";
 
-import type React from "react";
+import React from "react";
 import { Button, buttonVariants } from "@workspace/ui/components/button";
 import {
   Card,
@@ -19,13 +19,6 @@ import {
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
 import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@workspace/ui/components/table";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -43,15 +36,12 @@ import {
 } from "@workspace/ui/components/dialog";
 import {
   Mail,
-  Instagram,
   UserPlus,
   Trash2,
   Save,
   ArrowLeft,
   Plus,
   Check,
-  Phone,
-  Facebook,
   ImageIcon,
   X,
 } from "lucide-react";
@@ -83,10 +73,15 @@ import {
 import { useActionState, useState } from "react";
 import { ImageUploader } from "./image-uploader";
 import { CoverUploader } from "./cover-uploader";
+import { Facebook, Instagram, WhatsApp } from "@workspace/icons";
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
+import { getMembers, getMembersGenderCounts } from "../../_lib/queries";
+import { MembersTable } from "../_components/members-table";
 
 export default function SaveTeamForm({
   stateId,
   teamData,
+  promises,
 }: {
   stateId: string;
   teamData: {
@@ -106,6 +101,12 @@ export default function SaveTeamForm({
     } | null;
     isActive: boolean;
   };
+  promises: Promise<
+    [
+      Awaited<ReturnType<typeof getMembers>>,
+      Awaited<ReturnType<typeof getMembersGenderCounts>>,
+    ]
+  >;
 }) {
   const [tab, setTab] = useState("general");
   const [state, formAction, pending] = useActionState(teamFormAction, {
@@ -360,7 +361,7 @@ export default function SaveTeamForm({
                         htmlFor="whatsapp"
                         className="group-data-[invalid=true]/field:text-destructive"
                       >
-                        <Phone className="h-4 w-4 inline-block mr-2" />
+                        <WhatsApp className="h-4 w-4 inline-block mr-2" />
                         WhatsApp
                       </Label>
                       <Input
@@ -454,7 +455,7 @@ export default function SaveTeamForm({
                     <CardTitle>Miembros del Team</CardTitle>
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button size="sm" type="button">
+                        <Button size="sm" type="button" disabled>
                           <UserPlus />
                           Añadir Miembro
                         </Button>
@@ -501,9 +502,6 @@ export default function SaveTeamForm({
                                   <SelectItem value="admin">
                                     Administrador
                                   </SelectItem>
-                                  <SelectItem value="moderator">
-                                    Moderador
-                                  </SelectItem>
                                   <SelectItem value="member">
                                     Miembro
                                   </SelectItem>
@@ -516,7 +514,7 @@ export default function SaveTeamForm({
                               </Label>
                               <Input
                                 id="specialties"
-                                placeholder="ej. 3x3, 4x4, OH (separado por comas)"
+                                placeholder="ej. 3x3, 4x4, Megaminx (separado por comas)"
                               />
                             </div>
                           </div>
@@ -529,147 +527,26 @@ export default function SaveTeamForm({
                   </CardHeader>
                   <CardContent className="px-0 sm:px-6">
                     <div className="overflow-x-auto">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Miembro</TableHead>
-                            <TableHead>Rol</TableHead>
-                            <TableHead className="hidden md:table-cell">
-                              Unido
-                            </TableHead>
-                            <TableHead className="hidden md:table-cell">
-                              Estado
-                            </TableHead>
-                            <TableHead>Acciones</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {/* {teamData.members.map((member) => (
-                              <TableRow key={member.id}>
-                                <TableCell>
-                                  <div className="flex items-center gap-3">
-                                    <Avatar>
-                                      <AvatarImage src={member.image} alt={member.name} />
-                                      <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                      <div className="font-medium">{member.name}</div>
-                                      <div className="text-sm text-muted-foreground">{member.email}</div>
-                                    </div>
-                                  </div>
-                                </TableCell>
-                                <TableCell>
-                                  <Badge
-                                    variant={
-                                      member.role === "admin"
-                                        ? "default"
-                                        : member.role === "moderator"
-                                          ? "secondary"
-                                          : "outline"
-                                    }
-                                  >
-                                    {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell className="hidden md:table-cell">
-                                  {new Date(member.joinDate).toLocaleDateString()}
-                                </TableCell>
-                                <TableCell className="hidden md:table-cell">
-                                  <Badge
-                                    variant={member.isActive ? "default" : "destructive"}
-                                    className={
-                                      member.isActive
-                                        ? "bg-green-100 text-green-800 hover:bg-green-100"
-                                        : "bg-red-100 text-red-800 hover:bg-red-100"
-                                    }
-                                  >
-                                    {member.isActive ? "Activo" : "Inactivo"}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell>
-                                  <div className="flex items-center gap-2">
-                                    <Dialog>
-                                      <DialogTrigger asChild>
-                                        <Button variant="ghost" size="icon">
-                                          <Pencil className="h-4 w-4" />
-                                          <span className="sr-only">Editar</span>
-                                        </Button>
-                                      </DialogTrigger>
-                                      <DialogContent>
-                                        <DialogHeader>
-                                          <DialogTitle>Editar Miembro</DialogTitle>
-                                          <DialogDescription>Actualiza la información y el rol del miembro</DialogDescription>
-                                        </DialogHeader>
-                                        <div className="py-4 space-y-4">
-                                          <div className="flex items-center gap-4 mb-4">
-                                            <Avatar className="h-12 w-12">
-                                              <AvatarImage src={member.image} alt={member.name} />
-                                              <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                                            </Avatar>
-                                            <div>
-                                              <div className="font-medium">{member.name}</div>
-                                              <div className="text-sm text-muted-foreground">{member.email}</div>
-                                            </div>
-                                          </div>
-                                          <div className="space-y-2">
-                                            <Label htmlFor="edit-role">Rol</Label>
-                                            <Select defaultValue={member.role}>
-                                              <SelectTrigger>
-                                                <SelectValue placeholder="Selecciona un rol" />
-                                              </SelectTrigger>
-                                              <SelectContent>
-                                                <SelectItem value="admin">Administrador</SelectItem>
-                                                <SelectItem value="moderator">Moderador</SelectItem>
-                                                <SelectItem value="member">Miembro</SelectItem>
-                                              </SelectContent>
-                                            </Select>
-                                          </div>
-                                          <div className="space-y-2">
-                                            <Label htmlFor="edit-specialties">Especialidades</Label>
-                                            <Input
-                                              id="edit-specialties"
-                                              defaultValue={member.specialties.join(", ")}
-                                              placeholder="ej. 3x3, 4x4, OH (separado por comas)"
-                                            />
-                                          </div>
-                                          <div className="flex items-center space-x-2">
-                                            <Switch id="edit-active" defaultChecked={member.isActive} />
-                                            <Label htmlFor="edit-active">El miembro está activo</Label>
-                                          </div>
-                                        </div>
-                                        <DialogFooter>
-                                          <Button type="submit">Guardar Cambios</Button>
-                                        </DialogFooter>
-                                      </DialogContent>
-                                    </Dialog>
-                                    <AlertDialog>
-                                      <AlertDialogTrigger asChild>
-                                        <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700">
-                                          <Trash2 className="h-4 w-4" />
-                                          <span className="sr-only">Eliminar</span>
-                                        </Button>
-                                      </AlertDialogTrigger>
-                                      <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                          <AlertDialogTitle>Eliminar Miembro</AlertDialogTitle>
-                                          <AlertDialogDescription>
-                                            ¿Estás seguro de que quieres eliminar a {member.name} del equipo? Esta acción no se puede deshacer.
-                                          </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                          <AlertDialogAction className="bg-red-600 hover:bg-red-700">
-                                            Eliminar
-                                          </AlertDialogAction>
-                                        </AlertDialogFooter>
-                                      </AlertDialogContent>
-                                    </AlertDialog>
-                                  </div>
-                                </TableCell>
-                              </TableRow>
-                            ))} */}
-                        </TableBody>
-                      </Table>
+                      <React.Suspense
+                        fallback={
+                          <DataTableSkeleton
+                            columnCount={7}
+                            filterCount={2}
+                            cellWidths={[
+                              "10rem",
+                              "30rem",
+                              "10rem",
+                              "10rem",
+                              "6rem",
+                              "6rem",
+                              "6rem",
+                            ]}
+                            shrinkZero
+                          />
+                        }
+                      >
+                        <MembersTable promises={promises} />
+                      </React.Suspense>
                     </div>
                   </CardContent>
                 </Card>
@@ -690,17 +567,9 @@ export default function SaveTeamForm({
                       </p>
                     </div>
                     <div className="space-y-2">
-                      <h3 className="font-semibold">Moderador</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Puede gestionar el contenido del team como logros y
-                        eventos, pero no puede gestionar administradores.
-                      </p>
-                    </div>
-                    <div className="space-y-2">
                       <h3 className="font-semibold">Miembro</h3>
                       <p className="text-sm text-muted-foreground">
-                        Acceso básico para ver la información del team y
-                        participar en eventos del team.
+                        Acceso básico para ver la información del team.
                       </p>
                     </div>
                   </CardContent>
@@ -715,7 +584,7 @@ export default function SaveTeamForm({
                     <CardTitle>Logros del Team</CardTitle>
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button size="sm" type="button">
+                        <Button size="sm" type="button" disabled>
                           <Plus />
                           Añadir Logro
                         </Button>

@@ -4,9 +4,14 @@ import { and, eq } from "drizzle-orm";
 import SaveTeamForm from "./_components/save-team-form";
 import { auth } from "@/auth";
 import { UnauthorizedView } from "@/components/unauthorized-view";
+import { getValidFilters } from "@/lib/data-table";
+import { SearchParams } from "@/types";
+import { searchParamsCache } from "../_lib/validations";
+import { getMembers, getMembersGenderCounts } from "../_lib/queries";
 
 export default async function Page(props: {
   params: Promise<{ stateId: string }>;
+  searchParams: Promise<SearchParams>;
 }) {
   const session = await auth();
 
@@ -43,5 +48,27 @@ export default async function Page(props: {
     .innerJoin(state, eq(team.stateId, state.id))
     .where(eq(team.stateId, stateId));
 
-  return <SaveTeamForm stateId={stateId} teamData={teamsData[0]!} />;
+  const searchParams = await props.searchParams;
+  const search = searchParamsCache.parse(searchParams);
+
+  const validFilters = getValidFilters(search.filters);
+
+  const promises = Promise.all([
+    getMembers(
+      {
+        ...search,
+        filters: validFilters,
+      },
+      stateId,
+    ),
+    getMembersGenderCounts(stateId),
+  ]);
+
+  return (
+    <SaveTeamForm
+      stateId={stateId}
+      teamData={teamsData[0]!}
+      promises={promises}
+    />
+  );
 }

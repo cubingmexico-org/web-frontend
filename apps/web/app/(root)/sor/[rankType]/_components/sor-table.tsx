@@ -50,6 +50,7 @@ export function SORTable({ promises, rankType }: SORTableProps) {
     getRowId: (originalRow) => originalRow.personId,
     shallow: false,
     clearOnDefault: true,
+    enableRowSelection: false,
   });
 
   return (

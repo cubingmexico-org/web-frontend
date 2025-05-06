@@ -118,7 +118,7 @@ export default function Page() {
               <CardContent>
                 <p className="leading-relaxed text-base">
                   Mantente al tanto de los tiempos más rápidos y los mejores
-                  promedios establecidos por cuberos mexicanos en competiciones
+                  promedios establecidos por cuberos mexicanos en competencias
                   oficiales de la WCA.
                 </p>
               </CardContent>
@@ -126,13 +126,13 @@ export default function Page() {
             <Card className="!p-4">
               <CardHeader>
                 <CardTitle className="!text-lg !text-primary !font-medium !title-font !mb-4">
-                  Próximos Eventos
+                  Próximas Competencias
                 </CardTitle>
                 <Users className="w-12 h-12 inline-block mb-4" />
               </CardHeader>
               <CardContent>
                 <p className="leading-relaxed text-base">
-                  Encuentra información sobre las próximas competiciones de la
+                  Encuentra información sobre las próximas competencias de la
                   WCA en México y regístrate para participar.
                 </p>
               </CardContent>

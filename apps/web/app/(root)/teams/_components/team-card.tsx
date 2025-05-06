@@ -37,7 +37,7 @@ export function TeamCard({
   return (
     <Link href={`/teams/${id}`}>
       <Card className="overflow-hidden transition-all hover:border-primary hover:shadow-md">
-        <div className="h-16 w-full overflow-hidden">
+        <div className="h-32 w-full overflow-hidden">
           <div className="relative h-full w-full">
             <Image
               src={coverImage || "/placeholder.svg"}

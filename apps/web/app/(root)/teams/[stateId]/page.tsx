@@ -17,13 +17,9 @@ import {
   MapPin,
   Calendar,
   Mail,
-  Instagram,
-  Twitter,
   Medal,
   Clock,
   Settings,
-  Facebook,
-  Phone,
   ChartNoAxesCombined,
   Plus,
 } from "lucide-react";
@@ -58,6 +54,13 @@ import { getValidFilters } from "@/lib/data-table";
 import { SearchParams } from "@/types";
 import { searchParamsCache } from "./_lib/validations";
 import { cn } from "@workspace/ui/lib/utils";
+import {
+  Facebook,
+  Instagram,
+  TikTok,
+  Twitter,
+  WhatsApp,
+} from "@workspace/icons";
 
 export default async function Page(props: {
   params: Promise<{ stateId: string }>;
@@ -207,7 +210,7 @@ export default async function Page(props: {
 
   return (
     <main className="flex-grow">
-      <div className="relative h-[300px] bg-gray-200">
+      <div className="relative h-[400px] bg-gray-200">
         <Image
           src={teamData?.coverImage || "/placeholder.svg"}
           alt={`${teamData?.name} cover`}
@@ -254,12 +257,17 @@ export default async function Page(props: {
               </div>
             </div>
             <div className="ml-auto flex gap-2">
-              {/* {false ? (
-                <Button>
-                  <UserPlus />
-                  Unirse al Team
-                </Button>
-              ) : null} */}
+              <Link
+                className={cn(
+                  buttonVariants({
+                    variant: "secondary",
+                    size: "default",
+                  }),
+                )}
+                href="/teams"
+              >
+                <Users /> Ver todos los Teams
+              </Link>
               {currentUserIsAdmin ? (
                 <Link
                   className={cn(
@@ -291,7 +299,7 @@ export default async function Page(props: {
               <TabsTrigger value="overview">Resumen</TabsTrigger>
               <TabsTrigger value="members">Miembros</TabsTrigger>
               <TabsTrigger value="achievements">Logros</TabsTrigger>
-              <TabsTrigger value="events">Eventos</TabsTrigger>
+              <TabsTrigger value="competitions">Competencias</TabsTrigger>
               <TabsTrigger value="statistics">Estadísticas</TabsTrigger>
             </TabsList>
             <ScrollBar orientation="horizontal" />
@@ -318,13 +326,15 @@ export default async function Page(props: {
                         </a>
                       ) : null}
                       {teamData?.socialLinks?.whatsapp ? (
-                        <a
+                        <Link
                           href={`https://wa.me/${teamData?.socialLinks?.whatsapp}`}
                           className="flex items-center text-sm text-muted-foreground hover:underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
                         >
-                          <Phone className="mr-2 h-4 w-4" />
+                          <WhatsApp className="mr-2 h-4 w-4" />
                           WhatsApp
-                        </a>
+                        </Link>
                       ) : null}
                       {teamData?.socialLinks?.facebook ? (
                         <Link
@@ -355,6 +365,7 @@ export default async function Page(props: {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
+                          <TikTok className="mr-2 h-4 w-4" />
                           TikTok
                         </Link>
                       ) : null}
@@ -631,7 +642,7 @@ export default async function Page(props: {
             </Card>
           </TabsContent>
 
-          <TabsContent value="events">
+          <TabsContent value="competitions">
             <div className="grid gap-6 md:grid-cols-2">
               <Card>
                 <CardHeader>

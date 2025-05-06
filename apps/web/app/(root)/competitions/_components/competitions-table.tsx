@@ -48,6 +48,7 @@ export function CompetitionsTable({ promises }: CompetitionsTableProps) {
     getRowId: (originalRow) => originalRow.id,
     shallow: false,
     clearOnDefault: true,
+    enableRowSelection: false,
   });
 
   return (

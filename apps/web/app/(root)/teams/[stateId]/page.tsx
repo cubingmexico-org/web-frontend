@@ -486,13 +486,15 @@ export default async function Page(props: {
                           {competitions.length}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center">
-                          <Clock className="w-4 h-4 mr-2" />
-                          Años activo
+                      {activeYears > 0 && (
+                        <div className="flex justify-between items-center">
+                          <div className="flex items-center">
+                            <Clock className="w-4 h-4 mr-2" />
+                            Años activo
+                          </div>
+                          <span className="font-semibold">{activeYears}</span>
                         </div>
-                        <span className="font-semibold">{activeYears}</span>
-                      </div>
+                      )}
                       <div className="border-t pt-3 mt-3">
                         <div className="text-sm font-medium mb-2">Ver más:</div>
                         <div className="flex flex-col space-y-2">

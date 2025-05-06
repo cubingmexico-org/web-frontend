@@ -273,15 +273,9 @@ export const teamMember = pgTable("team_members", {
       onDelete: "cascade",
     })
     .primaryKey(),
-  role: varchar("role", {
-    length: 50,
-    enum: ["leader", "member"],
-  })
-    .notNull()
-    .default("member"),
   specialties: json("specialties").$type<string[]>(),
   achievements: json("achievements").$type<string[]>(),
-  isActive: boolean("isActive").notNull().default(true),
+  isAdmin: boolean("isAdmin").notNull().default(false),
 });
 
 export type TeamMember = InferSelectModel<typeof teamMember>;

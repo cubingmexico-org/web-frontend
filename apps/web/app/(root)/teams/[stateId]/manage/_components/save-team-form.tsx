@@ -449,7 +449,6 @@ export default function SaveTeamForm({
             </TabsContent>
 
             <TabsContent value="members">
-              <div className="grid gap-6 md:grid-cols-3">
                 <Card className="md:col-span-2">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle>Miembros del Team</CardTitle>
@@ -525,8 +524,7 @@ export default function SaveTeamForm({
                       </DialogContent>
                     </Dialog>
                   </CardHeader>
-                  <CardContent className="px-0 sm:px-6">
-                    <div className="overflow-x-auto">
+                  <CardContent>
                       <React.Suspense
                         fallback={
                           <DataTableSkeleton
@@ -547,7 +545,6 @@ export default function SaveTeamForm({
                       >
                         <MembersTable promises={promises} />
                       </React.Suspense>
-                    </div>
                   </CardContent>
                 </Card>
 
@@ -574,7 +571,6 @@ export default function SaveTeamForm({
                     </div>
                   </CardContent>
                 </Card>
-              </div>
             </TabsContent>
 
             <TabsContent value="achievements">

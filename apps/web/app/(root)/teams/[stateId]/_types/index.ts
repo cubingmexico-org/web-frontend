@@ -4,7 +4,7 @@ export interface Member {
   id: Person["id"];
   name: Person["name"];
   gender: Person["gender"];
-  role: TeamMember["role"] | null;
+  isAdmin: TeamMember["isAdmin"] | null;
   podiums: number;
   stateRecords: unknown;
   // specialties: TeamMember["specialties"];

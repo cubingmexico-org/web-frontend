@@ -32,13 +32,13 @@ import { deleteMembers } from "../_lib/actions";
 
 interface DeleteMembersDialogProps
   extends React.ComponentPropsWithoutRef<typeof Dialog> {
-  tasks: Row<Member>["original"][];
+  members: Row<Member>["original"][];
   showTrigger?: boolean;
   onSuccess?: () => void;
 }
 
 export function DeleteMembersDialog({
-  tasks,
+  members,
   showTrigger = true,
   onSuccess,
   ...props
@@ -49,7 +49,7 @@ export function DeleteMembersDialog({
   function onDelete() {
     startDeleteTransition(async () => {
       const { error } = await deleteMembers({
-        ids: tasks.map((task) => task.id),
+        ids: members.map((task) => task.id),
       });
 
       if (error) {
@@ -70,7 +70,7 @@ export function DeleteMembersDialog({
           <DialogTrigger asChild>
             <Button variant="outline" size="sm">
               <Trash className="mr-2 size-4" aria-hidden="true" />
-              Eliminar ({tasks.length})
+              Eliminar ({members.length})
             </Button>
           </DialogTrigger>
         ) : null}
@@ -78,10 +78,9 @@ export function DeleteMembersDialog({
           <DialogHeader>
             <DialogTitle>¿Estás absolutamente seguro?</DialogTitle>
             <DialogDescription>
-              Esta acción no se puede deshacer. Esto eliminará permanentemente{" "}
-              <span className="font-medium">{tasks.length}</span>
-              {tasks.length === 1 ? " miembro" : " miembros"} de nuestros
-              servidores.
+              Esta acción no se puede deshacer. Esto eliminará {" "}
+              <span className="font-medium">{members.length}</span>
+              {members.length === 1 ? " miembro" : " miembros"} del team.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:space-x-0">
@@ -114,7 +113,7 @@ export function DeleteMembersDialog({
         <DrawerTrigger asChild>
           <Button variant="outline" size="sm">
             <Trash className="mr-2 size-4" aria-hidden="true" />
-            Eliminar ({tasks.length})
+            Eliminar ({members.length})
           </Button>
         </DrawerTrigger>
       ) : null}
@@ -122,9 +121,9 @@ export function DeleteMembersDialog({
         <DrawerHeader>
           <DrawerTitle>¿Estás absolutamente seguro?</DrawerTitle>
           <DrawerDescription>
-            Esta acción no se puede deshacer. Esto eliminará permanentemente{" "}
-            <span className="font-medium">{tasks.length}</span>
-            {tasks.length === 1 ? " tarea" : " tareas"} de nuestros servidores.
+            Esta acción no se puede deshacer. Esto eliminará {" "}
+            <span className="font-medium">{members.length}</span>
+            {members.length === 1 ? " miembro" : " miembros"} del team.
           </DrawerDescription>
         </DrawerHeader>
         <DrawerFooter className="gap-2 sm:space-x-0">

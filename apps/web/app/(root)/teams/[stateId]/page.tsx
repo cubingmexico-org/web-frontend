@@ -189,7 +189,7 @@ export default async function Page(props: {
     })
     .from(person)
     .leftJoin(teamMember, eq(person.id, teamMember.personId))
-    .where(and(eq(person.stateId, stateId), eq(teamMember.role, "leader")));
+    .where(and(eq(person.stateId, stateId), eq(teamMember.isAdmin, true)));
 
   const currentUserIsAdmin = admins.some((admin) => {
     return admin.id === session?.user?.id;

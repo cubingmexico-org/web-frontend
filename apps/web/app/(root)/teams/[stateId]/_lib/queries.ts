@@ -39,10 +39,10 @@ export async function getMembers(
           input.sort.length > 0
             ? input.sort.map((item) => {
                 switch (item.id) {
-                  case "role":
+                  case "isAdmin":
                     return item.desc
-                      ? desc(teamMember.role)
-                      : asc(teamMember.role);
+                      ? desc(teamMember.isAdmin)
+                      : asc(teamMember.isAdmin);
                   case "stateRecords":
                     return item.desc
                       ? desc(
@@ -103,7 +103,7 @@ export async function getMembers(
               id: person.id,
               name: person.name,
               gender: person.gender,
-              role: teamMember.role,
+              isAdmin: teamMember.isAdmin,
               podiums: count(
                 sql`CASE 
                       WHEN ${result.roundTypeId} IN ('f', 'c') 
@@ -132,7 +132,7 @@ export async function getMembers(
             .limit(input.perPage)
             .offset(offset)
             .where(where)
-            .groupBy(person.id, person.name, person.gender, teamMember.role)
+            .groupBy(person.id, person.name, person.gender, teamMember.isAdmin)
             .orderBy(...orderBy);
 
           const total = (await tx

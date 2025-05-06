@@ -78,7 +78,7 @@ export function DeleteMembersDialog({
           <DialogHeader>
             <DialogTitle>¿Estás absolutamente seguro?</DialogTitle>
             <DialogDescription>
-              Esta acción no se puede deshacer. Esto eliminará {" "}
+              Esta acción no se puede deshacer. Esto eliminará{" "}
               <span className="font-medium">{members.length}</span>
               {members.length === 1 ? " miembro" : " miembros"} del team.
             </DialogDescription>
@@ -121,7 +121,7 @@ export function DeleteMembersDialog({
         <DrawerHeader>
           <DrawerTitle>¿Estás absolutamente seguro?</DrawerTitle>
           <DrawerDescription>
-            Esta acción no se puede deshacer. Esto eliminará {" "}
+            Esta acción no se puede deshacer. Esto eliminará{" "}
             <span className="font-medium">{members.length}</span>
             {members.length === 1 ? " miembro" : " miembros"} del team.
           </DrawerDescription>

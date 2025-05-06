@@ -77,6 +77,8 @@ import { Facebook, Instagram, WhatsApp } from "@workspace/icons";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
 import { getMembers, getMembersGenderCounts } from "../../_lib/queries";
 import { MembersTable } from "../_components/members-table";
+import { PersonsCombobox } from "./persons-combobox";
+import { EventsCheckboxes } from "./events-checkboxes";
 
 export default function SaveTeamForm({
   stateId,
@@ -449,128 +451,58 @@ export default function SaveTeamForm({
             </TabsContent>
 
             <TabsContent value="members">
-                <Card className="md:col-span-2">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle>Miembros del Team</CardTitle>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button size="sm" type="button" disabled>
-                          <UserPlus />
-                          Añadir Miembro
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[525px]">
-                        <DialogHeader>
-                          <DialogTitle>Añadir Miembro al Team</DialogTitle>
-                          <DialogDescription>
-                            Añade un nuevo miembro a tu team
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="py-4">
-                          <div className="space-y-4">
-                            <div className="space-y-2">
-                              <Label htmlFor="new-member">
-                                Seleccionar Usuario
-                              </Label>
-                              <Select>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Selecciona un usuario" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {/* {availableUsers.map((user) => (
-                                      <SelectItem key={user.id} value={user.id.toString()}>
-                                        <div className="flex items-center">
-                                          <Avatar className="h-6 w-6 mr-2">
-                                            <AvatarImage src={user.image} alt={user.name} />
-                                            <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                                          </Avatar>
-                                          {user.name} ({user.email})
-                                        </div>
-                                      </SelectItem>
-                                    ))} */}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div className="space-y-2">
-                              <Label htmlFor="role">Rol</Label>
-                              <Select defaultValue="member">
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Selecciona un rol" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="admin">
-                                    Administrador
-                                  </SelectItem>
-                                  <SelectItem value="member">
-                                    Miembro
-                                  </SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div className="space-y-2">
-                              <Label htmlFor="specialties">
-                                Especialidades
-                              </Label>
-                              <Input
-                                id="specialties"
-                                placeholder="ej. 3x3, 4x4, Megaminx (separado por comas)"
-                              />
-                            </div>
-                          </div>
+              <Card className="md:col-span-2">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle>Miembros del Team</CardTitle>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button size="sm" type="button">
+                        <UserPlus />
+                        Añadir Miembro
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[525px]">
+                      <DialogHeader>
+                        <DialogTitle>Añadir Miembro al Team</DialogTitle>
+                        <DialogDescription>
+                          Añade un nuevo miembro a tu team
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="py-4">
+                        <div className="space-y-4">
+                          <PersonsCombobox />
+                          <EventsCheckboxes />
                         </div>
-                        <DialogFooter>
-                          <Button type="button">Añadir Miembro</Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                  </CardHeader>
-                  <CardContent>
-                      <React.Suspense
-                        fallback={
-                          <DataTableSkeleton
-                            columnCount={7}
-                            filterCount={2}
-                            cellWidths={[
-                              "10rem",
-                              "30rem",
-                              "10rem",
-                              "10rem",
-                              "6rem",
-                              "6rem",
-                              "6rem",
-                            ]}
-                            shrinkZero
-                          />
-                        }
-                      >
-                        <MembersTable promises={promises} />
-                      </React.Suspense>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Roles de Miembros</CardTitle>
-                    <CardDescription>
-                      Comprender los permisos de los miembros del team
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <h3 className="font-semibold">Administrador</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Acceso completo para gestionar al team, incluyendo
-                        añadir/eliminar miembros, editar información del team.
-                      </p>
-                    </div>
-                    <div className="space-y-2">
-                      <h3 className="font-semibold">Miembro</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Acceso básico para ver la información del team.
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+                      </div>
+                      <DialogFooter>
+                        <Button type="button">Añadir Miembro</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </CardHeader>
+                <CardContent>
+                  <React.Suspense
+                    fallback={
+                      <DataTableSkeleton
+                        columnCount={7}
+                        filterCount={2}
+                        cellWidths={[
+                          "10rem",
+                          "30rem",
+                          "10rem",
+                          "10rem",
+                          "6rem",
+                          "6rem",
+                          "6rem",
+                        ]}
+                        shrinkZero
+                      />
+                    }
+                  >
+                    <MembersTable promises={promises} />
+                  </React.Suspense>
+                </CardContent>
+              </Card>
             </TabsContent>
 
             <TabsContent value="achievements">

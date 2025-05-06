@@ -1,11 +1,46 @@
 "use server";
 
 import { db } from "@/db/index";
-import { eq, inArray } from "drizzle-orm";
-import { revalidateTag, unstable_noStore } from "next/cache";
+import { and, eq, ilike, inArray, isNull, or } from "drizzle-orm";
+import { revalidateTag, unstable_cache, unstable_noStore } from "next/cache";
 
 import { getErrorMessage } from "@/lib/handle-error";
 import { person, teamMember } from "@/db/schema";
+
+export async function getPersonsWithoutState({ search }: { search: string }) {
+  return unstable_cache(
+    async () => {
+      try {
+        return await db
+          .select({
+            id: person.id,
+            name: person.name,
+          })
+          .from(person)
+          .where(
+            and(
+              isNull(person.stateId),
+              or(
+                ilike(person.name, `%${search}%`),
+                ilike(person.id, `%${search}%`),
+              ),
+            ),
+          )
+          .orderBy(person.name)
+          .limit(5)
+          .then((res) => res);
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    },
+    [JSON.stringify({ search })],
+    {
+      revalidate: 3600,
+      tags: ["persons-without-state"],
+    },
+  )();
+}
 
 // import type { CreateTaskSchema, UpdateTaskSchema } from "./validations";
 

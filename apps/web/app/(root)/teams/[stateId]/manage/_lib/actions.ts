@@ -154,7 +154,6 @@ export async function deleteMembers(input: { ids: string[] }) {
   unstable_noStore();
   try {
     await db.transaction(async (tx) => {
-      console.log("Deleting members", input.ids);
       await tx
         .delete(teamMember)
         .where(inArray(teamMember.personId, input.ids));

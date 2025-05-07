@@ -87,3 +87,11 @@ export const teamFormSchema = z.object({
   founded: z.string().optional(),
   isActive: z.string().optional(),
 });
+
+export const addMemberFormSchema = z.object({
+  stateId: z.string(),
+  personId: z.string().min(10, {
+    message: "Selecciona una persona",
+  }),
+  specialties: z.string().optional(),
+});

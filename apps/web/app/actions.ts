@@ -1,14 +1,15 @@
 "use server";
 
 import {
+  addMember,
   deleteTeamCover,
   deleteTeamLogo,
   saveTeam,
   updateTeamCover,
   updateTeamLogo,
 } from "@/db/queries";
-import { teamFormSchema } from "@/lib/validations";
-import { revalidatePath } from "next/cache";
+import { addMemberFormSchema, teamFormSchema } from "@/lib/validations";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 
 export async function teamFormAction(_prevState: unknown, formData: FormData) {
@@ -53,6 +54,64 @@ export async function teamFormAction(_prevState: unknown, formData: FormData) {
         tiktok: data.tiktok,
         founded: data.founded,
         isActive: data.isActive,
+      },
+      success: true,
+      errors: null,
+    };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return {
+        defaultValues,
+        success: false,
+        errors: Object.fromEntries(
+          Object.entries(error.flatten().fieldErrors).map(([key, value]) => [
+            key,
+            value?.join(", "),
+          ]),
+        ),
+      };
+    }
+
+    return {
+      defaultValues,
+      success: false,
+      errors: null,
+    };
+  }
+}
+
+export async function addMemberFormAction(
+  _prevState: unknown,
+  formData: FormData,
+) {
+  const defaultValues = z
+    .record(z.string(), z.string())
+    .parse(Object.fromEntries(formData.entries()));
+
+  try {
+    const data = addMemberFormSchema.parse(Object.fromEntries(formData));
+
+    console.log("data", data);
+
+    const specialties = data.specialties
+      ? data.specialties.split(",").map((speciality) => speciality.trim())
+      : null;
+
+    await addMember({
+      stateId: data.stateId,
+      personId: data.personId,
+      specialties,
+      achievements: null,
+    });
+
+    revalidateTag("members");
+    revalidateTag("members-gender-count");
+
+    return {
+      defaultValues: {
+        stateId: data.stateId,
+        personId: data.personId,
+        specialties,
       },
       success: true,
       errors: null,

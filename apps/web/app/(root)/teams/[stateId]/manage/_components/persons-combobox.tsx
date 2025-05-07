@@ -16,7 +16,17 @@ import * as React from "react";
 import { getPersonsWithoutState } from "../_lib/actions";
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 
-export function PersonsCombobox() {
+export function PersonsCombobox({
+  state,
+}: {
+  state: {
+    defaultValues: Record<string, string>;
+    success: boolean;
+    errors: {
+      [key: string]: string[] | null;
+    };
+  };
+}) {
   const [value, setValue] = React.useState("");
   const [search, setSearch] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
@@ -63,17 +73,23 @@ export function PersonsCombobox() {
       onInputValueChange={onInputValueChange}
       manualFiltering
     >
-      <ComboboxLabel>Competidor</ComboboxLabel>
+      <input type="text" name="personId" hidden defaultValue={value} />
+      <ComboboxLabel className="group-data-[invalid=true]/field:text-destructive">
+        Competidor
+      </ComboboxLabel>
       <ComboboxAnchor>
-        <ComboboxInput placeholder="Buscar competidor..." />
+        <ComboboxInput
+          placeholder="Buscar competidor..."
+          className="group-data-[invalid=true]/field:border-destructive focus-visible:group-data-[invalid=true]/field:ring-destructive"
+          aria-invalid={!!state.errors?.personId}
+          aria-errormessage="error-personId"
+        />
         <ComboboxTrigger>
           <ChevronDown className="h-4 w-4" />
         </ComboboxTrigger>
       </ComboboxAnchor>
       <ComboboxContent>
-        {isLoading ? (
-          <ComboboxLoading label="Buscando competidor..." />
-        ) : null}
+        {isLoading ? <ComboboxLoading label="Buscando competidor..." /> : null}
         <ComboboxEmpty keepVisible={!isLoading && filteredItems.length === 0}>
           No se encontraron competidores.
         </ComboboxEmpty>

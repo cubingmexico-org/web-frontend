@@ -1,6 +1,16 @@
 import "server-only";
 import { db } from "@/db";
-import { event, State, state, Team, team } from "@/db/schema";
+import {
+  event,
+  Person,
+  State,
+  state,
+  Team,
+  team,
+  teamMember,
+  person,
+  TeamMember,
+} from "@/db/schema";
 import { unstable_cache } from "@/lib/unstable-cache";
 import { eq, lt } from "drizzle-orm";
 
@@ -148,6 +158,46 @@ export async function updateTeamCover({
       .where(eq(team.stateId, stateId));
   } catch (error) {
     console.error("Failed to update team cover in database");
+    throw error;
+  }
+}
+
+export async function addMember({
+  personId,
+  stateId,
+  specialties,
+  achievements,
+}: {
+  stateId: State["id"];
+  personId: Person["id"];
+  specialties: TeamMember["specialties"];
+  achievements: TeamMember["achievements"];
+}) {
+  try {
+    await db
+      .update(person)
+      .set({
+        stateId,
+      })
+      .where(eq(person.id, personId));
+
+    await db
+      .insert(teamMember)
+      .values({
+        personId,
+        specialties,
+        achievements,
+      })
+      .onConflictDoUpdate({
+        target: [teamMember.personId],
+        set: {
+          personId,
+          specialties,
+          achievements,
+        },
+      });
+  } catch (error) {
+    console.error("Failed to add member in database");
     throw error;
   }
 }

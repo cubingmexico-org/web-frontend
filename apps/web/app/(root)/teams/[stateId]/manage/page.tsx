@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { person, state, team, teamMember } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
-import SaveTeamForm from "./_components/save-team-form";
+import { ManageTeam } from "./_components/manage-team";
 import { auth } from "@/auth";
 import { UnauthorizedView } from "@/components/unauthorized-view";
 import { getValidFilters } from "@/lib/data-table";
@@ -65,7 +65,7 @@ export default async function Page(props: {
   ]);
 
   return (
-    <SaveTeamForm
+    <ManageTeam
       stateId={stateId}
       teamData={teamsData[0]!}
       promises={promises}

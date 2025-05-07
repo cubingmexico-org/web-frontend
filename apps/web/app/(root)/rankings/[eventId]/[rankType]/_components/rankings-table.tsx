@@ -42,7 +42,6 @@ export function RankSinglesTable({ promises }: RankSinglesTableProps) {
     pageCount,
     initialState: {
       sorting: [{ id: "countryRank", desc: false }],
-      columnPinning: { right: ["actions"] },
       columnVisibility: {
         gender: false,
       },
@@ -88,7 +87,6 @@ export function RankAveragesTable({ promises }: RankAveragesTableProps) {
     pageCount,
     initialState: {
       sorting: [{ id: "countryRank", desc: false }],
-      columnPinning: { right: ["actions"] },
       columnVisibility: {
         gender: false,
       },

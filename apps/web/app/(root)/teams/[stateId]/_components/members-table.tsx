@@ -33,7 +33,6 @@ export function MembersTable({ promises }: MembersTableProps) {
     pageCount,
     initialState: {
       sorting: [{ id: "name", desc: false }],
-      columnPinning: { right: ["actions"] },
       columnVisibility: {
         gender: false,
       },

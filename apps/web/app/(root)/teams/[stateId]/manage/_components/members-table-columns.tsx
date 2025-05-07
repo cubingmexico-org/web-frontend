@@ -197,7 +197,11 @@ export function getColumns({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem disabled>Editar</DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={() => setRowAction({ row, variant: "update" })}
+              >
+                Editar
+              </DropdownMenuItem>
               <DropdownMenuItem
                 className="text-destructive"
                 onSelect={() => setRowAction({ row, variant: "delete" })}

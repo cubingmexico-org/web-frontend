@@ -81,10 +81,10 @@ export async function getMembers(
                       : asc(
                           sql`count(CASE WHEN ${result.roundTypeId} IN ('f', 'c') AND ${result.pos} IN (1, 2, 3) AND ${result.best} > 0 THEN 1 END)`,
                         );
-                  // case "specialties":
-                  //   return item.desc
-                  //     ? desc(teamMember.specialties)
-                  //     : asc(teamMember.specialties);
+                  case "specialties": // TODO: Fix this
+                    return item.desc
+                      ? desc(teamMember.specialties)
+                      : asc(teamMember.specialties);
                   // case "achievements":
                   //   return item.desc
                   //     ? desc(teamMember.achievements)
@@ -125,6 +125,7 @@ export async function getMembers(
                     AND "stateRank" = 1)
                 ) AS INTEGER) AS stateRecords
               )`,
+              specialties: teamMember.specialties,
             })
             .from(person)
             .leftJoin(teamMember, eq(person.id, teamMember.personId))
@@ -132,7 +133,13 @@ export async function getMembers(
             .limit(input.perPage)
             .offset(offset)
             .where(where)
-            .groupBy(person.id, person.name, person.gender, teamMember.isAdmin)
+            .groupBy(
+              person.id,
+              person.name,
+              person.gender,
+              teamMember.isAdmin,
+              teamMember.specialties,
+            )
             .orderBy(...orderBy);
 
           const total = (await tx

@@ -15,6 +15,13 @@
       "when": 1746539179239,
       "tag": "0001_chemical_turbo",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1746629862106,
+      "tag": "0002_long_hardball",
+      "breakpoints": true
     }
   ]
 }

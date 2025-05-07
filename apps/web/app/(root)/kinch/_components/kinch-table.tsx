@@ -39,7 +39,6 @@ export function KinchTable({ promises }: KinchTableProps) {
     pageCount,
     initialState: {
       sorting: [{ id: "rank", desc: false }],
-      columnPinning: { right: ["actions"] },
       columnVisibility: {
         gender: false,
         state: false,

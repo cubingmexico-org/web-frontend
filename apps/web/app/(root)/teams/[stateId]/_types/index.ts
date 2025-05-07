@@ -7,6 +7,6 @@ export interface Member {
   isAdmin: TeamMember["isAdmin"] | null;
   podiums: number;
   stateRecords: unknown;
-  // specialties: TeamMember["specialties"];
+  specialties: TeamMember["specialties"];
   // achievements: TeamMember["achievements"];
 }

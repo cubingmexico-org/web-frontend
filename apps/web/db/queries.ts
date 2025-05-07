@@ -191,7 +191,6 @@ export async function addMember({
       .onConflictDoUpdate({
         target: [teamMember.personId],
         set: {
-          personId,
           specialties,
           achievements,
         },

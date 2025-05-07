@@ -9,6 +9,7 @@ import { getColumns } from "./members-table-columns";
 import { Member } from "../../_types";
 import { DataTableRowAction } from "@/types/data-table";
 import { DeleteMembersDialog } from "./delete-member-dialog";
+import { UpdateMemberSheet } from "./update-member-sheet";
 
 interface MembersTableProps {
   promises: Promise<
@@ -48,7 +49,7 @@ export function MembersTable({ promises }: MembersTableProps) {
     getRowId: (originalRow) => originalRow.id,
     shallow: false,
     clearOnDefault: true,
-    enableRowSelection: false,
+    enableRowSelection: true,
   });
 
   return (
@@ -56,6 +57,11 @@ export function MembersTable({ promises }: MembersTableProps) {
       <DataTable table={table}>
         <DataTableToolbar table={table} />
       </DataTable>
+      <UpdateMemberSheet
+        open={rowAction?.variant === "update"}
+        onOpenChange={() => setRowAction(null)}
+        member={rowAction?.row.original ?? null}
+      />
       <DeleteMembersDialog
         open={rowAction?.variant === "delete"}
         onOpenChange={() => setRowAction(null)}

@@ -91,8 +91,6 @@ export async function addMemberFormAction(
   try {
     const data = addMemberFormSchema.parse(Object.fromEntries(formData));
 
-    console.log("data", data);
-
     const specialties = data.specialties
       ? data.specialties.split(",").map((speciality) => speciality.trim())
       : null;

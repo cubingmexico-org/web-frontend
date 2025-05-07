@@ -24,8 +24,14 @@ const events = [
   "333mbf",
 ];
 
-export function EventsCheckboxes() {
-  const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
+export function EventsCheckboxes({
+  defaultValue,
+}: {
+  defaultValue?: string[];
+}) {
+  const [selectedEvents, setSelectedEvents] = useState<string[]>(
+    defaultValue || [],
+  );
 
   const eventNames: Record<string, string> = {
     "333": "Cubo 3x3x3",
@@ -55,7 +61,8 @@ export function EventsCheckboxes() {
           type="text"
           name="specialties"
           hidden
-          defaultValue={selectedEvents}
+          value={selectedEvents}
+          readOnly
         />
         {events.map((eventId) => (
           <div key={eventId} className="flex items-center space-x-2">

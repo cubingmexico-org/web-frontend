@@ -40,7 +40,6 @@ export function CompetitionsTable({ promises }: CompetitionsTableProps) {
     pageCount,
     initialState: {
       sorting: [{ id: "startDate", desc: true }],
-      columnPinning: { right: ["actions"] },
       columnVisibility: {
         status: false,
       },

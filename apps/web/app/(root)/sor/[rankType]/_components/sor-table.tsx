@@ -41,7 +41,6 @@ export function SORTable({ promises, rankType }: SORTableProps) {
     pageCount,
     initialState: {
       sorting: [{ id: "rank", desc: false }],
-      columnPinning: { right: ["actions"] },
       columnVisibility: {
         gender: false,
         state: false,

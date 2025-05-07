@@ -7,9 +7,9 @@ import {
   integer,
   primaryKey,
   timestamp,
-  json,
   doublePrecision,
   boolean,
+  jsonb,
 } from "drizzle-orm/pg-core";
 
 // WCA
@@ -253,7 +253,7 @@ export const team = pgTable("teams", {
     .references(() => state.id, { onDelete: "cascade" })
     .primaryKey(),
   founded: timestamp("founded"),
-  socialLinks: json("socialLinks").$type<{
+  socialLinks: jsonb("socialLinks").$type<{
     email?: string;
     whatsapp?: string;
     facebook?: string;
@@ -273,8 +273,8 @@ export const teamMember = pgTable("team_members", {
       onDelete: "cascade",
     })
     .primaryKey(),
-  specialties: json("specialties").$type<string[]>(),
-  achievements: json("achievements").$type<string[]>(),
+  specialties: jsonb("specialties").$type<string[]>(),
+  achievements: jsonb("achievements").$type<string[]>(),
   isAdmin: boolean("isAdmin").notNull().default(false),
 });
 
@@ -316,7 +316,7 @@ export const sumOfRanks = pgTable(
       .references(() => person.id, { onDelete: "cascade" }),
     resultType: varchar("resultType", { length: 7 }).notNull(),
     overall: integer("overall").notNull(),
-    events: json("events").notNull(),
+    events: jsonb("events").notNull(),
   },
   (table) => {
     return [
@@ -337,7 +337,7 @@ export const kinchRanks = pgTable(
       .notNull()
       .references(() => person.id, { onDelete: "cascade" }),
     overall: doublePrecision("overall").notNull(),
-    events: json("events").notNull(),
+    events: jsonb("events").notNull(),
   },
   (table) => {
     return [

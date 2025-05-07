@@ -39,7 +39,6 @@ export function PersonsTable({ promises }: PersonsTableProps) {
     pageCount,
     initialState: {
       sorting: [{ id: "name", desc: false }],
-      columnPinning: { right: ["actions"] },
       columnVisibility: {
         gender: false,
       },

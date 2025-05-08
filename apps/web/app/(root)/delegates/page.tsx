@@ -33,7 +33,12 @@ export default async function Page(props: PageProps) {
 
   return (
     <main className="flex-grow container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Delegados</h1>
+      <div className="flex flex-col gap-4 mb-6">
+        <h1 className="text-3xl font-bold">Delegados</h1>
+        <p>
+          Directorio de todos los delegados de competencias de la WCA en México.
+        </p>
+      </div>
       <div className="grid gap-6">
         <React.Suspense
           fallback={

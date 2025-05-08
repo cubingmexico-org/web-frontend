@@ -57,7 +57,7 @@ export async function getStates() {
     },
     ["states"],
     {
-      revalidate: 3600,
+      revalidate: false,
     },
   )();
 }

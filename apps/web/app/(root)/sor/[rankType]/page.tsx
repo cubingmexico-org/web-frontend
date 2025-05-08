@@ -6,6 +6,7 @@ import { SearchParams } from "@/types";
 import { getValidFilters } from "@/lib/data-table";
 import { searchParamsCache } from "./_lib/validations";
 import { RankTypeSelector } from "./_components/rank-type-selector";
+import Link from "next/link";
 
 interface PageProps {
   params: Promise<{ rankType: "single" | "average" }>;
@@ -38,6 +39,24 @@ export default async function Page(props: PageProps) {
         <h1 className="text-3xl font-bold">
           {`Sum of Ranks (${rankType === "single" ? "Single" : "Average"})`}
         </h1>
+        <p>
+          Sum Of Ranks (SOR) o &quot;suma de rankings&quot;, es un método
+          utilizado para calcular la habilidad de un cubero en los 17 eventos de
+          la WCA. La suma de rankings se calcula sumando el{" "}
+          <Link
+            className="text-muted-foreground hover:underline"
+            href="/rankings/333/single"
+          >
+            ranking nacional
+          </Link>{" "}
+          obtenido por un cubero en cada evento.
+        </p>
+        <p>
+          Se utiliza a menudo como una medida del rendimiento general o la
+          consistencia en varios eventos. Una suma de rankings más baja indica
+          un mejor rendimiento general, ya que significa que el cubero logró
+          consistentemente rankings más altos en los eventos.
+        </p>
         <RankTypeSelector selectedRankType={rankType} />
       </div>
       <div className="grid gap-6">

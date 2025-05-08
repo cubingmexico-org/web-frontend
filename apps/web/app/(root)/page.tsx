@@ -49,7 +49,7 @@ export default function Page() {
             <AlertDescription>
               Únete a nuestra comunidad en{" "}
               <Link
-                className="hover:underline text-accent-foreground"
+                className="hover:underline text-muted-foreground"
                 href="https://discord.gg/N9KcpWngz7"
               >
                 Discord

@@ -168,12 +168,52 @@ export function Header({ user }: { user?: User }) {
                   Delegados
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Users />
-                <Link href="/bronze-members" className="w-full">
-                  Miembros Bronce
-                </Link>
-              </DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Users />
+                  Miembros
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuItem>
+                      <Medal className="text-amber-600" />
+                      <Link href="/members/bronze" className="w-full">
+                        Miembros Bronce
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem disabled>
+                      <Medal className="text-gray-400" />
+                      <Link href="/members/silver" className="w-full">
+                        Miembros Plata
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem disabled>
+                      <Medal className="text-yellow-500" />
+                      <Link href="/members/gold" className="w-full">
+                        Miembros Oro
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem disabled>
+                      <Medal className="text-gray-200" />
+                      <Link href="/members/platinum" className="w-full">
+                        Miembros Platino
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem disabled>
+                      <Medal className="text-pink-400" />
+                      <Link href="/members/opal" className="w-full">
+                        Miembros Ópalo
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem disabled>
+                      <Medal className="text-blue-300" />
+                      <Link href="/members/diamond" className="w-full">
+                        Miembros Diamante
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
             </DropdownMenuContent>
           </DropdownMenu>
           <Link

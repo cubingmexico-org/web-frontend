@@ -105,6 +105,12 @@ export default async function Page(props: PageProps) {
           <h1 className="text-3xl font-bold">
             Sum of Ranks de Teams (Average)
           </h1>
+          <p>
+            El Sum of Ranks de Teams combina los mejores resultados de cada
+            miembro del team en cada evento, sumando sus posiciones. Un número
+            más bajo indica un mejor desempeño. Este ranking refleja el
+            rendimiento colectivo del equipo en competencias oficiales.
+          </p>
           <RankTypeSelector selectedRankType={rankType} />
         </div>
         <Table>
@@ -261,6 +267,12 @@ export default async function Page(props: PageProps) {
     <main className="flex-grow container mx-auto px-4 py-8">
       <div className="flex flex-col gap-4 mb-6">
         <h1 className="text-3xl font-bold">Sum of Ranks de Teams (Single)</h1>
+        <p>
+          El Sum of Ranks de Teams combina los mejores resultados de cada
+          miembro del team en cada evento, sumando sus posiciones. Un número más
+          bajo indica un mejor desempeño. Este ranking refleja el rendimiento
+          colectivo del equipo en competencias oficiales.
+        </p>
         <RankTypeSelector selectedRankType={rankType} />
       </div>
       <Table>

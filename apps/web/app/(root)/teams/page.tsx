@@ -1,8 +1,9 @@
-import { Button } from "@workspace/ui/components/button";
+import { buttonVariants } from "@workspace/ui/components/button";
 import { Teams } from "./_components/teams";
 import { db } from "@/db";
 import { person, state, team } from "@/db/schema";
 import { count, desc, eq } from "drizzle-orm";
+import Link from "next/link";
 
 export default async function Page() {
   const data = await db
@@ -43,7 +44,13 @@ export default async function Page() {
           conectar con otros speedcubers en tu estado!
         </p>
         <div className="flex gap-4">
-          <Button>Contáctate</Button>
+          <Link
+            href="https://www.facebook.com/cubingmexico"
+            target="_blank"
+            className={buttonVariants({ variant: "default" })}
+          >
+            Contáctate
+          </Link>
         </div>
       </div>
     </main>

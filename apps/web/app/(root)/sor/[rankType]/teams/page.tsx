@@ -173,7 +173,7 @@ export default async function Page(props: PageProps) {
             {teams.map((team, index) => (
               <TableRow key={team.stateId}>
                 <TableCell>{index + 1}</TableCell>
-                <TableCell>
+                <TableCell className="whitespace-nowrap">
                   <Link
                     className="hover:underline"
                     href={`/teams/${team.stateId}`}
@@ -338,7 +338,7 @@ export default async function Page(props: PageProps) {
           {teams.map((team, index) => (
             <TableRow key={team.stateId}>
               <TableCell>{index + 1}</TableCell>
-              <TableCell>
+              <TableCell className="whitespace-nowrap">
                 <Link
                   className="hover:underline"
                   href={`/teams/${team.stateId}`}

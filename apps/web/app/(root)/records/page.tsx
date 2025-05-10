@@ -61,7 +61,7 @@ export default async function Page(props: PageProps) {
         <TableBody>
           {records.map((record, index) => (
             <TableRow key={index}>
-              <TableCell className="min-w-40">
+              <TableCell className="whitespace-nowrap">
                 <Link
                   className="hover:underline"
                   href={`/persons/${record.single.personId}`}
@@ -99,7 +99,7 @@ export default async function Page(props: PageProps) {
                   {record.average?.countryRank}
                 </TableCell>
               ) : null}
-              <TableCell className="min-w-40 text-right">
+              <TableCell className="whitespace-nowrap text-right">
                 <Link
                   className="hover:underline"
                   href={`/persons/${record.average?.personId}`}
@@ -130,14 +130,14 @@ export default async function Page(props: PageProps) {
         <p>
           Para obtener más información sobre las regulaciones y récords de la
           WCA, por favor visite el{" "}
-          <a
+          <Link
             href="https://www.worldcubeassociation.org/"
             className="text-blue-500 hover:underline"
             target="_blank"
             rel="noopener noreferrer"
           >
             sitio web oficial de la WCA
-          </a>
+          </Link>
           .
         </p>
       </div>

@@ -198,104 +198,110 @@ export function Members({ members }: MembersProps) {
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="w-full overflow-auto">
-              <div className="overflow-hidden">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Nombre</TableHead>
-                      <TableHead>Nivel</TableHead>
-                      <TableHead>Todos los eventos</TableHead>
-                      <TableHead>Promedios Speedsolving</TableHead>
-                      <TableHead>Medias BLD/FMC</TableHead>
-                      <TableHead>Podio WC</TableHead>
-                      <TableHead>WR</TableHead>
-                      <TableHead>Eventos ganados</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {members.map((member) => (
-                      <TableRow key={member.id}>
-                        <TableCell>
-                          <Link
-                            href={`/persons/${member.id}`}
-                            className="font-medium hover:underline"
-                          >
-                            {member.name}
-                          </Link>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={getTierClass(getTier(member))}>
-                            {getTier(member)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-green-500">✓</TableCell>
-                        <TableCell>
-                          <span
-                            className={
-                              Number(member.numberOfSpeedsolvingAverages) === 12
-                                ? "text-green-500"
-                                : "text-red-500"
-                            }
-                          >
-                            {Number(member.numberOfSpeedsolvingAverages) === 12
-                              ? "✓"
-                              : "✗"}
-                          </span>{" "}
-                          ({member.numberOfSpeedsolvingAverages}/12)
-                        </TableCell>
-                        <TableCell>
-                          <span
-                            className={
-                              Number(member.numberOfBLDFMCMeans) === 4
-                                ? "text-green-500"
-                                : "text-red-500"
-                            }
-                          >
-                            {Number(member.numberOfBLDFMCMeans) === 4
-                              ? "✓"
-                              : "✗"}
-                          </span>{" "}
-                          ({member.numberOfBLDFMCMeans}/4)
-                        </TableCell>
-                        <TableCell>
-                          <span
-                            className={
-                              member.hasWorldChampionshipPodium
-                                ? "text-green-500"
-                                : "text-red-500"
-                            }
-                          >
-                            {member.hasWorldChampionshipPodium ? "✓" : "✗"}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <span
-                            className={
-                              member.hasWorldRecord
-                                ? "text-green-500"
-                                : "text-red-500"
-                            }
-                          >
-                            {member.hasWorldRecord ? "✓" : "✗"}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <span
-                            className={
-                              Number(member.eventsWon) === 17
-                                ? "text-green-500"
-                                : "text-red-500"
-                            }
-                          >
-                            {Number(member.eventsWon) === 17 ? "✓" : "✗"}
-                          </span>{" "}
-                          ({member.eventsWon}/17)
-                        </TableCell>
+            <div className="grid">
+              <div className="w-full overflow-auto">
+                <div className="overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Nombre</TableHead>
+                        <TableHead>Nivel</TableHead>
+                        <TableHead>Todos los eventos</TableHead>
+                        <TableHead>Promedios Speedsolving</TableHead>
+                        <TableHead>Medias BLD/FMC</TableHead>
+                        <TableHead>Podio WC</TableHead>
+                        <TableHead>WR</TableHead>
+                        <TableHead>Eventos ganados</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {members.map((member) => (
+                        <TableRow key={member.id}>
+                          <TableCell className="whitespace-nowrap">
+                            <div className="flex">
+                              <Link
+                                href={`/persons/${member.id}`}
+                                className="font-medium"
+                              >
+                                {member.name}
+                              </Link>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={getTierClass(getTier(member))}>
+                              {getTier(member)}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-green-500">✓</TableCell>
+                          <TableCell>
+                            <span
+                              className={
+                                Number(member.numberOfSpeedsolvingAverages) ===
+                                12
+                                  ? "text-green-500"
+                                  : "text-red-500"
+                              }
+                            >
+                              {Number(member.numberOfSpeedsolvingAverages) ===
+                              12
+                                ? "✓"
+                                : "✗"}
+                            </span>{" "}
+                            ({member.numberOfSpeedsolvingAverages}/12)
+                          </TableCell>
+                          <TableCell>
+                            <span
+                              className={
+                                Number(member.numberOfBLDFMCMeans) === 4
+                                  ? "text-green-500"
+                                  : "text-red-500"
+                              }
+                            >
+                              {Number(member.numberOfBLDFMCMeans) === 4
+                                ? "✓"
+                                : "✗"}
+                            </span>{" "}
+                            ({member.numberOfBLDFMCMeans}/4)
+                          </TableCell>
+                          <TableCell>
+                            <span
+                              className={
+                                member.hasWorldChampionshipPodium
+                                  ? "text-green-500"
+                                  : "text-red-500"
+                              }
+                            >
+                              {member.hasWorldChampionshipPodium ? "✓" : "✗"}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <span
+                              className={
+                                member.hasWorldRecord
+                                  ? "text-green-500"
+                                  : "text-red-500"
+                              }
+                            >
+                              {member.hasWorldRecord ? "✓" : "✗"}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <span
+                              className={
+                                Number(member.eventsWon) === 17
+                                  ? "text-green-500"
+                                  : "text-red-500"
+                              }
+                            >
+                              {Number(member.eventsWon) === 17 ? "✓" : "✗"}
+                            </span>{" "}
+                            ({member.eventsWon}/17)
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </div>
             </div>
           </CardContent>

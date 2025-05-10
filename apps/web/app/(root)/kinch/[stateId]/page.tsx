@@ -229,7 +229,7 @@ export default async function Page(props: {
           {persons.map((person, index) => (
             <TableRow key={person.id}>
               <TableCell>{index + 1}</TableCell>
-              <TableCell className="w-72">
+              <TableCell className="whitespace-nowrap">
                 <Link
                   className="hover:underline"
                   href={`/persons/${person.id}`}

@@ -26,7 +26,7 @@ export function getColumns({
       ),
       cell: ({ row }) => {
         return (
-          <div className="flex space-x-2 ml-2">
+          <div className="flex space-x-2 ml-2 whitespace-nowrap">
             <span>
               {formatDate(row.getValue("startDate"), row.original.endDate)}
             </span>

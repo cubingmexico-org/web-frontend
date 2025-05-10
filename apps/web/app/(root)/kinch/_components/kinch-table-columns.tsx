@@ -41,7 +41,7 @@ export function getColumns({
       cell: ({ row }) => {
         const personId = row.original.personId;
         return (
-          <div className="flex space-x-2 w-72">
+          <div className="flex space-x-2 whitespace-nowrap">
             <Link className="hover:underline" href={`/persons/${personId}`}>
               {row.getValue("name")}
             </Link>

@@ -41,6 +41,18 @@ export const competition = pgTable("competitions", {
 
 export type Competition = InferSelectModel<typeof competition>;
 
+export const championship = pgTable("championships", {
+  id: varchar("id", { length: 32 }).primaryKey(),
+  competitionId: varchar("competitionId", { length: 32 })
+    .references(() => competition.id, { onDelete: "cascade" })
+    .notNull(),
+  championshipType: varchar("championshipType", {
+    length: 50,
+  }).notNull(),
+});
+
+export type Championship = InferSelectModel<typeof championship>;
+
 export const event = pgTable("events", {
   id: varchar("id", { length: 6 }).primaryKey(),
   name: varchar("name", { length: 54 }).notNull(),

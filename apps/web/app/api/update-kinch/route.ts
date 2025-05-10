@@ -4,8 +4,17 @@ import { sql } from "drizzle-orm";
 import { EXCLUDED_EVENTS, SINGLE_EVENTS } from "@/lib/constants";
 import { kinchRanks } from "@/db/schema";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 export async function POST(): Promise<NextResponse> {
   try {
+    if (isProduction) {
+      return NextResponse.json(
+        { success: false, message: "Not runnable in production" },
+        { status: 403 },
+      );
+    }
+
     const query = sql`
       WITH PersonalRecords AS (
         SELECT

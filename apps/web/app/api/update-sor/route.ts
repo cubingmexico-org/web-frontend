@@ -4,8 +4,16 @@ import { eq, sql } from "drizzle-orm";
 import { EXCLUDED_EVENTS } from "@/lib/constants";
 import { sumOfRanks } from "@/db/schema";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 export async function POST(): Promise<NextResponse> {
   try {
+    if (isProduction) {
+      return NextResponse.json(
+        { success: false, message: "Not runnable in production" },
+        { status: 403 },
+      );
+    }
     const singleQuery = sql`
       WITH "allEvents" AS (
         SELECT DISTINCT "eventId" FROM "ranksSingle"

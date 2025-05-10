@@ -4,8 +4,16 @@ import { and, asc, eq, ne, notInArray } from "drizzle-orm";
 import { person, rankAverage, event, rankSingle, state } from "@/db/schema";
 import { EXCLUDED_EVENTS } from "@/lib/constants";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 export async function POST(): Promise<NextResponse> {
   try {
+    if (isProduction) {
+      return NextResponse.json(
+        { success: false, message: "Not runnable in production" },
+        { status: 403 },
+      );
+    }
     const states = await db.select().from(state);
     const events = await db
       .select()

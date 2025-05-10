@@ -22,6 +22,13 @@
       "when": 1746629862106,
       "tag": "0002_long_hardball",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1746827871373,
+      "tag": "0003_yellow_scalphunter",
+      "breakpoints": true
     }
   ]
 }

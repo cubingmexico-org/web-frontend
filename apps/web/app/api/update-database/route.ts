@@ -13,6 +13,7 @@ import type {
   Result,
 } from "@/db/schema";
 import {
+  championship,
   competition,
   competitionDelegate,
   competitionEvent,
@@ -30,8 +31,17 @@ import { getStateFromCoordinates } from "@/lib/geocoder";
 
 export const maxDuration = 60;
 
+const isProduction = process.env.NODE_ENV === "production";
+
 export async function POST(): Promise<NextResponse> {
   try {
+    if (isProduction) {
+      return NextResponse.json(
+        { success: false, message: "Not runnable in production" },
+        { status: 403 },
+      );
+    }
+
     const response = await fetch(
       "https://www.worldcubeassociation.org/export/results/WCA_export.tsv.zip",
     );
@@ -223,6 +233,35 @@ export async function POST(): Promise<NextResponse> {
                 }
               }
             }
+          }
+        });
+      }
+
+      if (fileName === "WCA_export_championships.tsv") {
+        console.log("Processing file:", fileName);
+        const fileContent = await zipContents.files[fileName]!.async("text");
+        const cleanedContent = fileContent.replace(/"/g, "");
+        const parsedData = parse(cleanedContent, {
+          header: true,
+          delimiter: "\t",
+          skipEmptyLines: "greedy",
+          transform: (value) => (value === "NULL" ? null : value),
+        }).data as {
+          id: string;
+          competition_id: string;
+          championship_type: string;
+        }[];
+
+        await db.transaction(async (tx) => {
+          for (const row of parsedData) {
+            await tx
+              .insert(championship)
+              .values({
+                id: row.id,
+                competitionId: row.competition_id,
+                championshipType: row.championship_type,
+              })
+              .onConflictDoNothing();
           }
         });
       }

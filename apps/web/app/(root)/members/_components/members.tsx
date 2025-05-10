@@ -1,5 +1,6 @@
 "use client";
 
+import { getTier, getTierClass } from "@/lib/utils";
 import { Badge } from "@workspace/ui/components/badge";
 import { buttonVariants } from "@workspace/ui/components/button";
 import {
@@ -38,53 +39,6 @@ interface MembersProps {
 }
 
 export function Members({ members }: MembersProps) {
-  const getTier = (member: Member): string => {
-    const conditions = [
-      member.hasWorldRecord === true,
-      member.hasWorldChampionshipPodium === true,
-      Number(member.numberOfSpeedsolvingAverages) === 12,
-      Number(member.numberOfBLDFMCMeans) === 4,
-      Number(member.eventsWon) === 17,
-    ];
-
-    const fulfilledConditions = conditions.filter(Boolean).length;
-
-    switch (fulfilledConditions) {
-      case 0:
-        return "Bronce";
-      case 1:
-        return "Plata";
-      case 2:
-        return "Oro";
-      case 3:
-        return "Platino";
-      case 4:
-        return "Ópalo";
-      case 5:
-        return "Diamante";
-      default:
-        return "Bronce";
-    }
-  };
-
-  const getTierClass = (tier: string): string => {
-    switch (tier) {
-      case "Plata":
-        return "bg-gray-400";
-      case "Oro":
-        return "bg-yellow-500";
-      case "Platino":
-        return "bg-gray-200";
-      case "Ópalo":
-        return "bg-gradient-to-r from-blue-400 via-purple-300 to-pink-400";
-      case "Diamante":
-        return "bg-blue-300";
-      case "Bronce":
-      default:
-        return "bg-amber-600";
-    }
-  };
-
   return (
     <main className="flex-grow container mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
@@ -228,7 +182,9 @@ export function Members({ members }: MembersProps) {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge className={getTierClass(getTier(member))}>
+                            <Badge
+                              className={getTierClass(getTier(member) || "")}
+                            >
                               {getTier(member)}
                             </Badge>
                           </TableCell>

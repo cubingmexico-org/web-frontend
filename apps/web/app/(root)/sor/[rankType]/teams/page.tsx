@@ -18,6 +18,7 @@ import {
 import { notFound } from "next/navigation";
 import { RankTypeSelector } from "./_components/rank-type-selector";
 import Link from "next/link";
+import { unstable_cache } from "@/lib/unstable-cache";
 
 interface TeamData {
   stateId: string;
@@ -44,8 +45,10 @@ export default async function Page(props: PageProps) {
   }
 
   if (rankType === "average") {
-    const data = await db.execute(
-      sql`
+    const data = await unstable_cache(
+      async () => {
+        return await db.execute(
+          sql`
         WITH "allEvents" AS (
           SELECT DISTINCT "eventId"
           FROM "ranksAverage"
@@ -95,7 +98,11 @@ export default async function Page(props: PageProps) {
         GROUP BY bpe."name", bpe."stateId"
         ORDER BY SUM(bpe."bestRank")
       `,
-    );
+        );
+      },
+      ["sor-teams-average"],
+      { revalidate: 3600 },
+    )();
 
     const teams = data.rows as unknown as TeamData[];
 
@@ -208,8 +215,10 @@ export default async function Page(props: PageProps) {
     );
   }
 
-  const data = await db.execute(
-    sql`
+  const data = await unstable_cache(
+    async () => {
+      return await db.execute(
+        sql`
       WITH "allEvents" AS (
         SELECT DISTINCT "eventId"
         FROM "ranksSingle"
@@ -259,7 +268,11 @@ export default async function Page(props: PageProps) {
       GROUP BY bpe."name", bpe."stateId"
       ORDER BY SUM(bpe."bestRank")
     `,
-  );
+      );
+    },
+    ["sor-teams-single"],
+    { revalidate: 3600 },
+  )();
 
   const teams = data.rows as unknown as TeamData[];
 

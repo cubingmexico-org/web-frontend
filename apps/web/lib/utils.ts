@@ -94,3 +94,64 @@ export function toSentenceCase(str: string) {
     .replace(/\s+/g, " ")
     .trim();
 }
+
+export const getTier = (
+  member:
+    | {
+        numberOfSpeedsolvingAverages: number;
+        numberOfBLDFMCMeans: number;
+        hasWorldRecord: boolean;
+        hasWorldChampionshipPodium: boolean;
+        eventsWon: number;
+      }
+    | undefined,
+): string | null => {
+  if (!member) {
+    return null;
+  }
+
+  const conditions = [
+    member.hasWorldRecord === true,
+    member.hasWorldChampionshipPodium === true,
+    Number(member.numberOfSpeedsolvingAverages) === 12,
+    Number(member.numberOfBLDFMCMeans) === 4,
+    Number(member.eventsWon) === 17,
+  ];
+
+  const fulfilledConditions = conditions.filter(Boolean).length;
+
+  switch (fulfilledConditions) {
+    case 0:
+      return "Bronce";
+    case 1:
+      return "Plata";
+    case 2:
+      return "Oro";
+    case 3:
+      return "Platino";
+    case 4:
+      return "Ópalo";
+    case 5:
+      return "Diamante";
+    default:
+      return "Bronce";
+  }
+};
+
+export const getTierClass = (tier: string): string => {
+  switch (tier) {
+    case "Plata":
+      return "bg-gray-400";
+    case "Oro":
+      return "bg-yellow-500";
+    case "Platino":
+      return "bg-gray-200";
+    case "Ópalo":
+      return "bg-gradient-to-r from-blue-400 via-purple-300 to-pink-400";
+    case "Diamante":
+      return "bg-blue-300";
+    case "Bronce":
+    default:
+      return "bg-amber-600";
+  }
+};

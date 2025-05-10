@@ -3,6 +3,7 @@
 import { db } from "@/db";
 import { and, countDistinct, eq, gt, inArray, sql } from "drizzle-orm";
 import {
+  championship,
   competition,
   delegate,
   organiser,
@@ -22,7 +23,12 @@ import {
 } from "@workspace/ui/components/table";
 import Image from "next/image";
 import { getEvents } from "@/db/queries";
-import { formatTime, formatTime333mbf } from "@/lib/utils";
+import {
+  formatTime,
+  formatTime333mbf,
+  getTier,
+  getTierClass,
+} from "@/lib/utils";
 import { Info } from "lucide-react";
 import {
   Tooltip,
@@ -35,6 +41,11 @@ import { Map } from "./_components/map";
 import type { GeoJSONProps } from "react-leaflet";
 import { headers } from "next/headers";
 import Link from "next/link";
+import {
+  BLD_FMC_MEANS_EVENTS,
+  SPEEDSOLVING_AVERAGES_EVENTS,
+} from "@/lib/constants";
+import { unstable_cache } from "@/lib/unstable-cache";
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -48,178 +59,150 @@ export default async function Page({
   const headersList = await headers();
   const domain = headersList.get("host");
 
-  const response = await fetch(
-    `https://www.worldcubeassociation.org/api/v0/persons/${id}`,
-  );
-
-  const data = (await response.json()) as {
-    person: {
-      name: string;
-      gender: string;
-      url: string;
-      country: {
-        id: string;
-        name: string;
-        continentId: string;
-        iso2: string;
-      };
-      delegate_status: string;
-      // teams: any[];
-      avatar: {
-        id: number;
-        status: string;
-        thumbnail_crop_x: null;
-        thumbnail_crop_y: null;
-        thumbnail_crop_w: null;
-        thumbnail_crop_h: null;
-        url: string;
-        thumb_url: string;
-        is_default: boolean;
-        can_edit_thumbnail: boolean;
-      };
-      wca_id: string;
-      country_iso2: string;
-      id: string;
-    };
-    competition_count: number;
-    personal_records: {
-      [key: string]: {
-        single: {
-          best: number;
-          world_rank: number;
-          continent_rank: number;
-          country_rank: number;
-        };
-        average: {
-          best: number;
-          world_rank: number;
-          continent_rank: number;
-          country_rank: number;
-        };
-      };
-    };
-    medals: {
-      gold: number;
-      silver: number;
-      bronze: number;
-      total: number;
-    };
-    records: {
-      national: number;
-      continental: number;
-      world: number;
-      total: number;
-    };
-  };
+  const data = await unstable_cache(
+    async () => {
+      const response = await fetch(
+        `https://www.worldcubeassociation.org/api/v0/persons/${id}`,
+      );
+      return response.json();
+    },
+    [`wca-person-${id}`],
+    { revalidate: 3600 },
+  )();
 
   const events = await getEvents();
 
-  const { persons, SRcount, records, isBronze, isDelegate, isOrganiser } =
-    await db.transaction(async (tx) => {
-      const persons = await tx
-        .select({
-          state: state.name,
-          statesNames: sql`array_agg(DISTINCT ${competition.stateId})`,
-        })
-        .from(person)
-        .leftJoin(state, eq(person.stateId, state.id))
-        .leftJoin(result, eq(person.id, result.personId))
-        .leftJoin(competition, eq(result.competitionId, competition.id))
-        .where(eq(person.id, id))
-        .groupBy(state.name);
+  const { persons, SRcount, records, tier, isDelegate, isOrganiser } =
+    await unstable_cache(
+      async () => {
+        return await db.transaction(async (tx) => {
+          const persons = await tx
+            .select({
+              state: state.name,
+              statesNames: sql`array_agg(DISTINCT ${competition.stateId})`,
+            })
+            .from(person)
+            .leftJoin(state, eq(person.stateId, state.id))
+            .leftJoin(result, eq(person.id, result.personId))
+            .leftJoin(competition, eq(result.competitionId, competition.id))
+            .where(eq(person.id, id))
+            .groupBy(state.name);
 
-      const singleStateRanks = await tx
-        .select({
-          stateRank: rankSingle.stateRank,
-          eventId: rankSingle.eventId,
-        })
-        .from(rankSingle)
-        .where(eq(rankSingle.personId, id));
+          const singleStateRanks = await tx
+            .select({
+              stateRank: rankSingle.stateRank,
+              eventId: rankSingle.eventId,
+            })
+            .from(rankSingle)
+            .where(eq(rankSingle.personId, id));
 
-      const averageStateRanks = await tx
-        .select({
-          stateRank: rankAverage.stateRank,
-          eventId: rankAverage.eventId,
-        })
-        .from(rankAverage)
-        .where(eq(rankAverage.personId, id));
+          const averageStateRanks = await tx
+            .select({
+              stateRank: rankAverage.stateRank,
+              eventId: rankAverage.eventId,
+            })
+            .from(rankAverage)
+            .where(eq(rankAverage.personId, id));
 
-      const SRcount =
-        singleStateRanks.filter((rank) => rank.stateRank === 1).length +
-        averageStateRanks.filter((rank) => rank.stateRank === 1).length;
+          const SRcount =
+            singleStateRanks.filter((rank) => rank.stateRank === 1).length +
+            averageStateRanks.filter((rank) => rank.stateRank === 1).length;
 
-      const records = events
-        .filter((event) => data.personal_records[event.id])
-        .map((event) => {
-          const singleStateRank = singleStateRanks.find(
-            (rank) => rank.eventId === event.id,
-          )?.stateRank;
-          const averageStateRank = averageStateRanks.find(
-            (rank) => rank.eventId === event.id,
-          )?.stateRank;
+          const records = events
+            .filter((event) => data.personal_records[event.id])
+            .map((event) => {
+              const singleStateRank = singleStateRanks.find(
+                (rank) => rank.eventId === event.id,
+              )?.stateRank;
+              const averageStateRank = averageStateRanks.find(
+                (rank) => rank.eventId === event.id,
+              )?.stateRank;
+
+              return {
+                event: event.id,
+                record: {
+                  ...data.personal_records[event.id],
+                  single: {
+                    ...data.personal_records[event.id]?.single,
+                    state_rank: singleStateRank ?? undefined,
+                  },
+                  average: {
+                    ...data.personal_records[event.id]?.average,
+                    state_rank: averageStateRank ?? undefined,
+                  },
+                },
+              };
+            });
+
+          const membershipData = await db
+            .select({
+              numberOfSpeedsolvingAverages: sql<number>`COUNT(DISTINCT CASE WHEN ${result.eventId} IN(${sql.join(SPEEDSOLVING_AVERAGES_EVENTS, sql`, `)}) AND ${result.average} > 0 THEN ${result.eventId} ELSE NULL END)`,
+              numberOfBLDFMCMeans: sql<number>`COUNT(DISTINCT CASE WHEN ${result.eventId} IN(${sql.join(BLD_FMC_MEANS_EVENTS, sql`, `)}) AND ${result.average} > 0 THEN ${result.eventId} ELSE NULL END)`,
+              hasWorldRecord: sql<boolean>`MAX(CASE WHEN ${result.regionalSingleRecord} = 'WR' OR ${result.regionalAverageRecord} = 'WR' THEN 1 ELSE 0 END) = 1`,
+              hasWorldChampionshipPodium: sql<boolean>`MAX(CASE WHEN ${result.pos} IN(1, 2, 3) AND ${result.roundTypeId} IN('f', 'c') AND ${championship.championshipType} = 'world' THEN 1 ELSE 0 END) = 1`,
+              eventsWon: sql<number>`COUNT(DISTINCT CASE WHEN ${result.pos} = 1 AND ${result.roundTypeId} IN('f', 'c') THEN ${result.eventId} ELSE NULL END)`,
+            })
+            .from(result)
+            .leftJoin(
+              championship,
+              eq(result.competitionId, championship.competitionId),
+            )
+            .where(
+              and(
+                eq(result.personId, id),
+                inArray(
+                  result.eventId,
+                  events.map((event) => event.id),
+                ),
+                gt(result.best, 0),
+              ),
+            )
+            .having(eq(countDistinct(result.eventId), events.length));
+
+          const tier = getTier(membershipData[0]!);
+
+          const isDelegate = await tx
+            .select()
+            .from(delegate)
+            .where(
+              and(eq(delegate.personId, id), eq(delegate.status, "active")),
+            );
+
+          const isOrganiser = await tx
+            .select()
+            .from(organiser)
+            .where(
+              and(eq(organiser.personId, id), eq(organiser.status, "active")),
+            );
 
           return {
-            event: event.id,
-            record: {
-              ...data.personal_records[event.id],
-              single: {
-                ...data.personal_records[event.id]?.single,
-                state_rank: singleStateRank ?? undefined,
-              },
-              average: {
-                ...data.personal_records[event.id]?.average,
-                state_rank: averageStateRank ?? undefined,
-              },
-            },
+            persons,
+            singleStateRanks,
+            averageStateRanks,
+            SRcount,
+            records,
+            tier,
+            isDelegate,
+            isOrganiser,
           };
         });
+      },
+      [`db-person-${id}`],
+      { revalidate: 3600 },
+    )();
 
-      const isBronze = await tx
-        .select({
-          id: person.id,
-        })
-        .from(person)
-        .innerJoin(result, eq(person.id, result.personId))
-        .where(
-          and(
-            eq(person.id, id),
-            inArray(
-              result.eventId,
-              events.map((event) => event.id),
-            ),
-            gt(result.best, 0),
-          ),
-        )
-        .groupBy(person.id)
-        .having(eq(countDistinct(result.eventId), events.length));
+  const states = await unstable_cache(
+    async () => {
+      const response = await fetch(
+        `${isProduction ? "https://" : "http://"}` + domain + "/states.geojson",
+      );
+      return response.json();
+    },
+    [`states-geojson`],
+    { revalidate: 3600 },
+  )();
 
-      const isDelegate = await tx
-        .select()
-        .from(delegate)
-        .where(and(eq(delegate.personId, id), eq(delegate.status, "active")));
-
-      const isOrganiser = await tx
-        .select()
-        .from(organiser)
-        .where(and(eq(organiser.personId, id), eq(organiser.status, "active")));
-
-      return {
-        persons,
-        singleStateRanks,
-        averageStateRanks,
-        SRcount,
-        records,
-        isBronze,
-        isDelegate,
-        isOrganiser,
-      };
-    });
-
-  const states = await fetch(
-    `${isProduction ? "https://" : "http://"}` + domain + "/states.geojson",
-  );
-
-  const statesData = (await states.json()) as {
+  const statesData = states as {
     type: string;
     features: {
       type: string;
@@ -250,11 +233,7 @@ export default async function Page({
         </Link>
       </h1>
       <div className="w-full flex justify-center gap-2 mb-2">
-        {isBronze.length > 0 && (
-          <Badge className="bg-[#cd7f32] hover:bg-[#b87333] text-white">
-            Miembro Bronce
-          </Badge>
-        )}
+        {tier && <Badge className={getTierClass(tier)}>Miembro {tier}</Badge>}
         {isDelegate.length > 0 && (
           <Badge>
             {data.person.gender === "m"

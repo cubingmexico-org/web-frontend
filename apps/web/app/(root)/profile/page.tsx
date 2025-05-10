@@ -6,20 +6,27 @@ import { person, state } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { Profile } from "./_components/profile";
 import { getStates } from "@/db/queries";
+import { unstable_cache } from "@/lib/unstable-cache";
 
 export default async function Page() {
   const session = await auth();
 
-  const persons = await db
-    .select({
-      id: person.id,
-      name: person.name,
-      gender: person.gender,
-      state: state.name,
-    })
-    .from(person)
-    .leftJoin(state, eq(person.stateId, state.id))
-    .where(eq(person.id, session?.user?.id!));
+  const persons = await unstable_cache(
+    async () => {
+      return await db
+        .select({
+          id: person.id,
+          name: person.name,
+          gender: person.gender,
+          state: state.name,
+        })
+        .from(person)
+        .leftJoin(state, eq(person.stateId, state.id))
+        .where(eq(person.id, session?.user?.id!));
+    },
+    [`profile-person-${session?.user?.id}`],
+    { revalidate: 3600 },
+  )();
 
   const states = await getStates();
 

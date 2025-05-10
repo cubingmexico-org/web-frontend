@@ -4,34 +4,41 @@ import { db } from "@/db";
 import { person, state, team } from "@/db/schema";
 import { count, desc, eq } from "drizzle-orm";
 import Link from "next/link";
+import { unstable_cache } from "@/lib/unstable-cache";
 
 export default async function Page() {
-  const data = await db
-    .select({
-      id: team.stateId,
-      name: team.name,
-      description: team.description,
-      image: team.image,
-      coverImage: team.coverImage,
-      state: state.name,
-      founded: team.founded,
-      isActive: team.isActive,
-      members: count(person.id),
-    })
-    .from(team)
-    .innerJoin(state, eq(team.stateId, state.id))
-    .innerJoin(person, eq(team.stateId, person.stateId))
-    .groupBy(
-      team.stateId,
-      team.name,
-      team.description,
-      team.image,
-      team.coverImage,
-      state.name,
-      team.founded,
-      team.isActive,
-    )
-    .orderBy(desc(count(person.id)));
+  const data = await unstable_cache(
+    async () => {
+      return await db
+        .select({
+          id: team.stateId,
+          name: team.name,
+          description: team.description,
+          image: team.image,
+          coverImage: team.coverImage,
+          state: state.name,
+          founded: team.founded,
+          isActive: team.isActive,
+          members: count(person.id),
+        })
+        .from(team)
+        .innerJoin(state, eq(team.stateId, state.id))
+        .innerJoin(person, eq(team.stateId, person.stateId))
+        .groupBy(
+          team.stateId,
+          team.name,
+          team.description,
+          team.image,
+          team.coverImage,
+          state.name,
+          team.founded,
+          team.isActive,
+        )
+        .orderBy(desc(count(person.id)));
+    },
+    ["teams-data"],
+    { revalidate: 3600 },
+  )();
 
   return (
     <main className="flex-grow container mx-auto px-4 py-8">

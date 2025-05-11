@@ -2,14 +2,19 @@
 
 import { auth } from "@/auth";
 import { db } from "@/db";
-import { person, state } from "@/db/schema";
+import { person } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { Profile } from "./_components/profile";
 import { getStates } from "@/db/queries";
 import { unstable_cache } from "@/lib/unstable-cache";
+import { UnauthorizedView } from "@/components/unauthorized-view";
 
 export default async function Page() {
   const session = await auth();
+
+  if (!session?.user) {
+    return <UnauthorizedView />;
+  }
 
   const persons = await unstable_cache(
     async () => {
@@ -18,10 +23,9 @@ export default async function Page() {
           id: person.id,
           name: person.name,
           gender: person.gender,
-          state: state.name,
+          stateId: person.stateId,
         })
         .from(person)
-        .leftJoin(state, eq(person.stateId, state.id))
         .where(eq(person.id, session?.user?.id!));
     },
     [session?.user?.id!],

@@ -64,6 +64,35 @@ export async function getStates() {
   )();
 }
 
+export async function getCurrentUserTeam({ userId }: { userId: Person["id"] }) {
+  return await unstable_cache(
+    async () => {
+      try {
+        return (await db
+          .select({
+            id: person.stateId,
+            name: team.name,
+          })
+          .from(person)
+          .innerJoin(team, eq(person.stateId, team.stateId))
+          .where(eq(person.id, userId))
+          .then((res) => res[0])) as {
+          id: string;
+          name: string;
+        };
+      } catch (err) {
+        console.error(err);
+        return null;
+      }
+    },
+    [userId],
+    {
+      revalidate: 3600,
+      tags: ["current-user-team"],
+    },
+  )();
+}
+
 export async function saveTeam({
   stateId,
   name,
@@ -92,6 +121,26 @@ export async function saveTeam({
       .where(eq(team.stateId, stateId));
   } catch (error) {
     console.error("Failed to save team in database");
+    throw error;
+  }
+}
+
+export async function saveProfile({
+  stateId,
+  personId,
+}: {
+  stateId: State["id"];
+  personId: Person["id"];
+}) {
+  try {
+    return await db
+      .update(person)
+      .set({
+        stateId,
+      })
+      .where(eq(person.id, personId));
+  } catch (error) {
+    console.error("Failed to save profile in database");
     throw error;
   }
 }

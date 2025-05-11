@@ -70,48 +70,6 @@ export async function updateMember(_prevState: unknown, formData: FormData) {
   }
 }
 
-// export async function updateTasks(input: {
-//   ids: string[];
-//   label?: Task["label"];
-//   status?: Task["status"];
-//   priority?: Task["priority"];
-// }) {
-//   unstable_noStore();
-//   try {
-//     const data = await db
-//       .update(tasks)
-//       .set({
-//         label: input.label,
-//         status: input.status,
-//         priority: input.priority,
-//       })
-//       .where(inArray(tasks.id, input.ids))
-//       .returning({
-//         status: tasks.status,
-//         priority: tasks.priority,
-//       })
-//       .then(takeFirstOrThrow);
-
-//     revalidateTag("tasks");
-//     if (data.status === input.status) {
-//       revalidateTag("task-status-counts");
-//     }
-//     if (data.priority === input.priority) {
-//       revalidateTag("task-priority-counts");
-//     }
-
-//     return {
-//       data: null,
-//       error: null,
-//     };
-//   } catch (err) {
-//     return {
-//       data: null,
-//       error: getErrorMessage(err),
-//     };
-//   }
-// }
-
 export async function deleteMember(input: { id: string }) {
   unstable_noStore();
   try {
@@ -138,7 +96,7 @@ export async function deleteMember(input: { id: string }) {
   }
 }
 
-export async function deleteMembers(input: { ids: string[] }) {
+export async function deleteMembers(input: { ids: string[]; stateId: string }) {
   unstable_noStore();
   try {
     await db.transaction(async (tx) => {
@@ -153,6 +111,16 @@ export async function deleteMembers(input: { ids: string[] }) {
 
     revalidateTag("members");
     revalidateTag("members-gender-count");
+
+    await fetch(process.env.URL + "/api/update-state-ranks", {
+      method: "POST",
+      body: JSON.stringify({ stateId: input.stateId }),
+    });
+
+    revalidateTag("state-kinch-ranks");
+    revalidateTag("combined-records");
+    revalidateTag("ranks-single");
+    revalidateTag("ranks-average");
 
     return {
       data: null,

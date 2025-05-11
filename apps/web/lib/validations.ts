@@ -1,6 +1,15 @@
 import { z } from "zod";
 import validator from "validator";
 
+export const profileFormSchema = z.object({
+  stateId: z.string().min(3, {
+    message: "Selecciona un estado",
+  }),
+  personId: z.string().min(10, {
+    message: "Selecciona una persona",
+  }),
+});
+
 export const teamFormSchema = z.object({
   stateId: z.string(),
   name: z

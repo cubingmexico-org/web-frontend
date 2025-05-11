@@ -33,12 +33,14 @@ import { deleteMembers } from "../_lib/actions";
 interface DeleteMembersDialogProps
   extends React.ComponentPropsWithoutRef<typeof Dialog> {
   members: Row<Member>["original"][];
+  stateId: string;
   showTrigger?: boolean;
   onSuccess?: () => void;
 }
 
 export function DeleteMembersDialog({
   members,
+  stateId,
   showTrigger = true,
   onSuccess,
   ...props
@@ -50,6 +52,7 @@ export function DeleteMembersDialog({
     startDeleteTransition(async () => {
       const { error } = await deleteMembers({
         ids: members.map((task) => task.id),
+        stateId,
       });
 
       if (error) {

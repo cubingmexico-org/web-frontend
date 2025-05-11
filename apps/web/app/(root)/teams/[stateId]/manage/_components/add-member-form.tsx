@@ -159,7 +159,7 @@ export function AddMemberForm({
               />
             }
           >
-            <MembersTable promises={promises} />
+            <MembersTable promises={promises} stateId={stateId} />
           </React.Suspense>
         </CardContent>
       </Card>

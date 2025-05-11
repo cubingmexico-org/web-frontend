@@ -4,13 +4,76 @@ import {
   addMember,
   deleteTeamCover,
   deleteTeamLogo,
+  saveProfile,
   saveTeam,
   updateTeamCover,
   updateTeamLogo,
 } from "@/db/queries";
-import { addMemberFormSchema, teamFormSchema } from "@/lib/validations";
+import {
+  addMemberFormSchema,
+  profileFormSchema,
+  teamFormSchema,
+} from "@/lib/validations";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
+
+export async function profileFormAction(
+  _prevState: unknown,
+  formData: FormData,
+) {
+  const formDataEntries = Object.fromEntries(formData.entries());
+
+  const defaultValues = z.record(z.string(), z.string()).parse(formDataEntries);
+
+  try {
+    const data = profileFormSchema.parse(Object.fromEntries(formData));
+
+    await saveProfile({
+      stateId: data.stateId,
+      personId: data.personId,
+    });
+
+    revalidateTag("profile-person");
+
+    await fetch(process.env.URL + "/api/update-state-ranks", {
+      method: "POST",
+      body: JSON.stringify({ stateId: data.stateId }),
+    });
+
+    revalidateTag("state-kinch-ranks");
+    revalidateTag("combined-records");
+    revalidateTag("ranks-single");
+    revalidateTag("ranks-average");
+
+    return {
+      defaultValues: {
+        stateId: data.stateId,
+        personId: data.personId,
+      },
+      success: true,
+      errors: null,
+    };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return {
+        defaultValues,
+        success: false,
+        errors: Object.fromEntries(
+          Object.entries(error.flatten().fieldErrors).map(([key, value]) => [
+            key,
+            value?.join(", "),
+          ]),
+        ),
+      };
+    }
+
+    return {
+      defaultValues,
+      success: false,
+      errors: null,
+    };
+  }
+}
 
 export async function teamFormAction(_prevState: unknown, formData: FormData) {
   const formDataEntries = Object.fromEntries(formData.entries());
@@ -104,6 +167,16 @@ export async function addMemberFormAction(
 
     revalidateTag("members");
     revalidateTag("members-gender-count");
+
+    await fetch(process.env.URL + "/api/update-state-ranks", {
+      method: "POST",
+      body: JSON.stringify({ stateId: data.stateId }),
+    });
+
+    revalidateTag("state-kinch-ranks");
+    revalidateTag("combined-records");
+    revalidateTag("ranks-single");
+    revalidateTag("ranks-average");
 
     return {
       defaultValues: {

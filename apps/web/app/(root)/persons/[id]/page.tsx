@@ -229,18 +229,18 @@ export default async function Page({
   const getTierClass = (tier: Tier): string => {
     switch (tier) {
       case "Plata":
-        return "bg-gray-400";
+        return "bg-gradient-to-r from-gray-300 to-gray-500 border-0";
       case "Oro":
-        return "bg-yellow-500";
+        return "bg-gradient-to-r from-yellow-400 to-yellow-600 border-0";
       case "Platino":
-        return "bg-gray-200";
+        return "bg-gradient-to-r from-gray-100 to-gray-300 border-0";
       case "Ópalo":
-        return "bg-gradient-to-r from-blue-400 via-purple-300 to-pink-400";
+        return "bg-gradient-to-r from-blue-400 via-purple-300 to-pink-400 border-0";
       case "Diamante":
-        return "bg-blue-300";
+        return "bg-gradient-to-r from-blue-200 to-blue-400 border-0";
       case "Bronce":
       default:
-        return "bg-amber-600";
+        return "bg-gradient-to-r from-amber-500 to-amber-700 border-0";
     }
   };
 

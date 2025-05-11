@@ -31,10 +31,18 @@ import {
 import { Button } from "@workspace/ui/components/button";
 import { SignIn, SignOut } from "./auth-components";
 import type { User } from "next-auth";
-import { CubingMexico } from "@workspace/icons";
-import Image from "next/image";
+import { Copa, CubingMexico } from "@workspace/icons";
 
-export function Header({ user }: { user?: User }) {
+export function Header({
+  user,
+  team,
+}: {
+  user?: User;
+  team: {
+    id: string;
+    name: string;
+  } | null;
+}) {
   return (
     <header className="bg-primary text-primary-foreground body-font">
       <div className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
@@ -60,12 +68,7 @@ export function Header({ user }: { user?: User }) {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Image
-                  src="/copa.svg"
-                  alt="Copa Inter-Patrocinadores"
-                  width={16}
-                  height={16}
-                />
+                <Copa />
                 <Link href="https://copa.cubingmexico.net" className="w-full">
                   Copa Inter-Patrocinadores
                 </Link>
@@ -240,6 +243,14 @@ export function Header({ user }: { user?: User }) {
                     Mis resultados
                   </Link>
                 </DropdownMenuItem>
+                {team && (
+                  <DropdownMenuItem>
+                    <Users />
+                    <Link href={`/teams/${team.id}`} className="w-full">
+                      Mi Team
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <SignOut />
               </DropdownMenuContent>
             </DropdownMenu>

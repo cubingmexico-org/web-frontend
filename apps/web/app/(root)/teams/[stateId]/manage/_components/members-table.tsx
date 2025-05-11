@@ -10,6 +10,7 @@ import { Member } from "../../_types";
 import { DataTableRowAction } from "@/types/data-table";
 import { DeleteMembersDialog } from "./delete-member-dialog";
 import { UpdateMemberSheet } from "./update-member-sheet";
+import { MembersTableActionBar } from "./members-table-action-bar";
 
 interface MembersTableProps {
   promises: Promise<
@@ -18,9 +19,10 @@ interface MembersTableProps {
       Awaited<ReturnType<typeof getMembersGenderCounts>>,
     ]
   >;
+  stateId: string;
 }
 
-export function MembersTable({ promises }: MembersTableProps) {
+export function MembersTable({ promises, stateId }: MembersTableProps) {
   const [{ data, pageCount }, genderCounts] = React.use(promises);
 
   const [rowAction, setRowAction] =
@@ -54,7 +56,10 @@ export function MembersTable({ promises }: MembersTableProps) {
 
   return (
     <>
-      <DataTable table={table}>
+      <DataTable
+        table={table}
+        actionBar={<MembersTableActionBar table={table} stateId={stateId} />}
+      >
         <DataTableToolbar table={table} />
       </DataTable>
       <UpdateMemberSheet
@@ -67,6 +72,7 @@ export function MembersTable({ promises }: MembersTableProps) {
         onOpenChange={() => setRowAction(null)}
         members={rowAction?.row.original ? [rowAction?.row.original] : []}
         showTrigger={false}
+        stateId={stateId}
         onSuccess={() => rowAction?.row.toggleSelected(false)}
       />
     </>

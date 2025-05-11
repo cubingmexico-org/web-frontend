@@ -9,32 +9,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-import { Input } from "@workspace/ui/components/input";
-import { Textarea } from "@workspace/ui/components/textarea";
-import { Label } from "@workspace/ui/components/label";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@workspace/ui/components/dialog";
-import { Trash2, ArrowLeft, Plus, ImageIcon } from "lucide-react";
+import { Trash2, ArrowLeft, ImageIcon } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -120,7 +101,7 @@ export function ManageTeam({
             <TabsList className="w-full md:w-auto justify-start mb-6">
               <TabsTrigger value="general">General</TabsTrigger>
               <TabsTrigger value="members">Miembros</TabsTrigger>
-              <TabsTrigger value="achievements">Logros</TabsTrigger>
+              {/* <TabsTrigger value="achievements">Logros</TabsTrigger> */}
               <TabsTrigger value="images">Imágenes</TabsTrigger>
             </TabsList>
           </div>
@@ -133,7 +114,7 @@ export function ManageTeam({
             <AddMemberForm stateId={stateId} promises={promises} />
           </TabsContent>
 
-          <TabsContent value="achievements">
+          {/* <TabsContent value="achievements">
             <div className="grid gap-6 md:grid-cols-3">
               <Card className="md:col-span-2">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -201,79 +182,6 @@ export function ManageTeam({
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {/* {teamData.achievements.map((achievement) => (
-                          <div key={achievement.id} className="flex items-start gap-4 p-4 rounded-lg border">
-                            <Trophy className="w-6 h-6 text-yellow-500 mt-1" />
-                            <div<main className="flex-grow">
-          <div className="bg-gray-100 border-b">
-            <div className="container mx-auto px-4 py-6">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Button variant="ghost" size="sm" onClick={() => router.push(`/teams/${stateId}`)}>
-                      <ArrowLeft className="h-4 w-4 mr-1" />
-                      Volver al Equipo
-                    </Button>
-                  </div>
-                  <h1 className="text-2xl md:text-3xl font-bold">Gestionar Equipo: {teamData.name}</h1>
-                  <p className="text-muted-foreground mt-1">Actualiza la información del equipo, gestiona miembros y más</p>
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => router.push(`/teams/${stateId}`)}>
-                    Cancelar
-                  </Button>
-                  <Button onClick={handleSaveTeamInfo} disabled={isSaving}>
-                    {isSaving ? (
-                      <>Guardando...</>
-                    ) : (
-                      <>
-                        <Save />
-                        Guardar Cambios
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-    
-          {saveSuccess && (
-            <div className="container mx-auto px-4 py-3">
-              <Alert className="bg-green-50 border-green-500">
-                <Check className="h-4 w-4 text-green-600" />
-                <AlertTitle className="text-green-800">Éxito</AlertTitle>
-                <AlertDescription className="text-green-700">Tus cambios se han guardado correctamente.</AlertDescription>
-              </Alert>
-            </div>
-          )}
-    
-          <div className="container mx-auto px-4 py-6">
-            <Tabs defaultValue="general" className="w-full" onValueChange={setActiveTab}>
-              <div className="overflow-x-auto pb-2">
-                <TabsList className="w-full md:w-auto justify-start mb-6">
-                  <TabsTrigger value="general">General</TabsTrigger>
-                  <TabsTrigger value="members">Miembros</TabsTrigger>
-                  <TabsTrigger value="achievements">Logros</TabsTrigger>
-                  <TabsTrigger value="events">Eventos</TabsTrigger>
-                  <TabsTrigger value="images">Imágenes</TabsTrigger>
-                </TabsList>
-              </div>
-    
-              <TabsContent value="general">
-                <div className="grid gap-6 md:grid-cols-2">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Información del Equipo</CardTitle>
-                      <CardDescription>Actualiza la información básica de tu equipo</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Nombre del Equipo</Label>
-                        <Input id="name" name="name" value={teamData.name} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="location">Ubicación</Label>
-                        {/* <Input id="location" name="location" value={teamData.location} /> */}
                   </div>
                 </CardContent>
               </Card>
@@ -321,7 +229,7 @@ export function ManageTeam({
                 </CardContent>
               </Card>
             </div>
-          </TabsContent>
+          </TabsContent> */}
 
           <TabsContent value="images">
             <div className="grid gap-6 md:grid-cols-2">

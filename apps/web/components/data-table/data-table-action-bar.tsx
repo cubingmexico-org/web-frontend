@@ -138,7 +138,7 @@ function DataTableActionBarSelection<TData>({
   return (
     <div className="flex h-7 items-center rounded-md border pr-1 pl-2.5">
       <span className="whitespace-nowrap text-xs">
-        {table.getFilteredSelectedRowModel().rows.length} selected
+        {table.getFilteredSelectedRowModel().rows.length} seleccionado(s)
       </span>
       <Separator
         orientation="vertical"

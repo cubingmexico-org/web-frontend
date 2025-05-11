@@ -298,7 +298,7 @@ export default async function Page(props: {
             <TabsList className="w-full justify-start mb-8">
               <TabsTrigger value="overview">Resumen</TabsTrigger>
               <TabsTrigger value="members">Miembros</TabsTrigger>
-              <TabsTrigger value="achievements">Logros</TabsTrigger>
+              {/* <TabsTrigger value="achievements">Logros</TabsTrigger> */}
               <TabsTrigger value="competitions">Competencias</TabsTrigger>
               <TabsTrigger value="statistics">Estadísticas</TabsTrigger>
             </TabsList>
@@ -385,7 +385,7 @@ export default async function Page(props: {
                 </Card>
 
                 {/* Recent Achievements */}
-                <Card>
+                {/* <Card>
                   <CardHeader>
                     <CardTitle>Logros recientes</CardTitle>
                   </CardHeader>
@@ -394,7 +394,7 @@ export default async function Page(props: {
                       <p className="text-muted-foreground">
                         No hay logros recientes todavía
                       </p>
-                      {/* {teamData.achievements.slice(0, 3).map((achievement, index) => (
+                      {teamData.achievements.slice(0, 3).map((achievement, index) => (
                         <div key={index} className="flex items-start gap-4">
                           <Trophy className="w-5 h-5 text-yellow-500 mt-1" />
                           <div>
@@ -403,13 +403,13 @@ export default async function Page(props: {
                             <p className="text-sm text-muted-foreground mt-1">{achievement.year}</p>
                           </div>
                         </div>
-                      ))} */}
+                      ))}
                     </div>
                   </CardContent>
-                </Card>
+                </Card> */}
 
                 {/* Top Members */}
-                <Card>
+                {/* <Card>
                   <CardHeader>
                     <CardTitle>Miembros destacados</CardTitle>
                   </CardHeader>
@@ -418,7 +418,7 @@ export default async function Page(props: {
                       <p className="text-muted-foreground">
                         No hay miembros destacados todavía
                       </p>
-                      {/* {teamData.members.slice(0, 3).map((member) => (
+                      {teamData.members.slice(0, 3).map((member) => (
                         <div key={member.id} className="flex items-start gap-4">
                           <Image
                             src={member.image || "/placeholder.svg"}
@@ -445,10 +445,10 @@ export default async function Page(props: {
                             </Button>
                           </div>
                         </div>
-                      ))} */}
+                      ))}
                     </div>
                   </CardContent>
-                </Card>
+                </Card> */}
               </div>
 
               <div className="space-y-6">
@@ -619,7 +619,7 @@ export default async function Page(props: {
             </Card>
           </TabsContent>
 
-          <TabsContent value="achievements">
+          {/* <TabsContent value="achievements">
             <Card>
               <CardHeader>
                 <CardTitle>Logros</CardTitle>
@@ -629,7 +629,7 @@ export default async function Page(props: {
                   <p className="text-muted-foreground">
                     No hay logros registrados todavía
                   </p>
-                  {/* {teamData.achievements.map((achievement, index) => (
+                   {teamData.achievements.map((achievement, index) => (
                     <div key={index} className="flex items-start gap-4 p-4 rounded-lg border">
                       <Trophy className="w-6 h-6 text-yellow-500" />
                       <div>
@@ -638,11 +638,11 @@ export default async function Page(props: {
                         <p className="text-sm text-muted-foreground mt-2">{achievement.year}</p>
                       </div>
                     </div>
-                  ))} */}
+                  ))}
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+          </TabsContent> */}
 
           <TabsContent value="competitions">
             <div className="grid gap-6 md:grid-cols-2">
@@ -783,7 +783,7 @@ export default async function Page(props: {
           </TabsContent>
 
           <TabsContent value="statistics">
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-6">
               <Card>
                 <CardHeader>
                   <CardTitle>Estadísticas</CardTitle>
@@ -840,14 +840,14 @@ export default async function Page(props: {
                 </CardContent>
               </Card>
 
-              <Card>
+              {/* <Card>
                 <CardHeader>
                   <CardTitle>Estadísticas de miembros</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">Próximamente...</p>
                 </CardContent>
-              </Card>
+              </Card> */}
             </div>
           </TabsContent>
         </Tabs>

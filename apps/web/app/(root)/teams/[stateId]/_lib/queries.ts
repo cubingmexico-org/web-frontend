@@ -142,8 +142,6 @@ export async function getMembers(
             )
             .orderBy(...orderBy);
 
-          console.log("data", data);
-
           const total = (await tx
             .select({
               count: count(),

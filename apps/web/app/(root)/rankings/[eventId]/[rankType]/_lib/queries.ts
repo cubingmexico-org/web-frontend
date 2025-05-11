@@ -134,9 +134,10 @@ export async function getRankSinglesStateCounts(eventId: Event["id"]) {
         return {} as Record<State["name"], number>;
       }
     },
-    ["single-state-counts", eventId],
+    [eventId],
     {
       revalidate: 3600,
+      tags: ["single-state-counts"],
     },
   )();
 }
@@ -171,9 +172,10 @@ export async function getRankSinglesGenderCounts(eventId: Event["id"]) {
         return {} as Record<string, number>;
       }
     },
-    ["single-gender-counts", eventId],
+    [eventId],
     {
       revalidate: 3600,
+      tags: ["single-gender-counts"],
     },
   )();
 }
@@ -297,9 +299,10 @@ export async function getRankAveragesStateCounts(eventId: Event["id"]) {
         return {} as Record<State["name"], number>;
       }
     },
-    ["average-state-counts", eventId],
+    [eventId],
     {
       revalidate: 3600,
+      tags: ["average-state-counts"],
     },
   )();
 }
@@ -334,9 +337,10 @@ export async function getRankAveragesGenderCounts(eventId: Event["id"]) {
         return {} as Record<string, number>;
       }
     },
-    ["average-gender-counts", eventId],
+    [eventId],
     {
       revalidate: 3600,
+      tags: ["average-gender-counts"],
     },
   )();
 }

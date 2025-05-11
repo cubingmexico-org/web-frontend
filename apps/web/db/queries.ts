@@ -32,9 +32,10 @@ export async function getEvents() {
         return [];
       }
     },
-    ["events"],
+    [],
     {
       revalidate: false,
+      tags: ["events"],
     },
   )();
 }
@@ -55,9 +56,10 @@ export async function getStates() {
         return [];
       }
     },
-    ["states"],
+    [],
     {
       revalidate: false,
+      tags: ["states"],
     },
   )();
 }

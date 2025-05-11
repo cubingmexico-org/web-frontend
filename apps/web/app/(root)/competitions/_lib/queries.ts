@@ -7,6 +7,7 @@ import {
   event,
   type Event,
   competitionEvent,
+  championship,
 } from "@/db/schema";
 import {
   and,
@@ -90,6 +91,10 @@ export async function getCompetitions(input: GetCompetitionsSchema) {
                           ELSE 'in_progress'
                         END`,
                         );
+                  case "isChampionship":
+                    return item.desc
+                      ? desc(championship.competitionId)
+                      : asc(championship.competitionId);
                   default:
                     return item.desc
                       ? desc(competition[item.id])
@@ -116,6 +121,12 @@ export async function getCompetitions(input: GetCompetitionsSchema) {
                   ELSE 'in_progress'
                 END
               `.as("status"),
+              isChampionship: sql`
+                CASE
+                  WHEN ${championship.competitionId} IS NOT NULL THEN true
+                  ELSE false
+                END
+              `.as("isChampionship"),
             })
             .from(competition)
             .leftJoin(state, eq(competition.stateId, state.id))
@@ -124,6 +135,10 @@ export async function getCompetitions(input: GetCompetitionsSchema) {
               eq(competition.id, competitionEvent.competitionId),
             )
             .leftJoin(event, eq(competitionEvent.eventId, event.id))
+            .leftJoin(
+              championship,
+              eq(competition.id, championship.competitionId),
+            )
             .limit(input.perPage)
             .offset(offset)
             .where(where)
@@ -132,6 +147,7 @@ export async function getCompetitions(input: GetCompetitionsSchema) {
               state.name,
               competition.startDate,
               competition.endDate,
+              championship.competitionId,
             )
             .orderBy(...orderBy);
 

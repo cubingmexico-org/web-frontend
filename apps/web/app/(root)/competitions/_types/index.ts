@@ -6,4 +6,5 @@ export interface Competition {
   startDate: Date;
   endDate: Date;
   status: unknown;
+  isChampionship: unknown;
 }

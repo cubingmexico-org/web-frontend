@@ -1,6 +1,7 @@
 "use client";
 
-import { getTier, getTierClass } from "@/lib/utils";
+import { getTier } from "@/lib/utils";
+import { Tier } from "@/types";
 import { Badge } from "@workspace/ui/components/badge";
 import { buttonVariants } from "@workspace/ui/components/button";
 import {
@@ -39,6 +40,24 @@ interface MembersProps {
 }
 
 export function Members({ members }: MembersProps) {
+  const getTierClass = (tier: Tier): string => {
+    switch (tier) {
+      case "Plata":
+        return "bg-gray-400";
+      case "Oro":
+        return "bg-yellow-500";
+      case "Platino":
+        return "bg-gray-200";
+      case "Ópalo":
+        return "bg-gradient-to-r from-blue-400 via-purple-300 to-pink-400";
+      case "Diamante":
+        return "bg-blue-300";
+      case "Bronce":
+      default:
+        return "bg-amber-600";
+    }
+  };
+
   return (
     <main className="flex-grow container mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
@@ -183,7 +202,9 @@ export function Members({ members }: MembersProps) {
                           </TableCell>
                           <TableCell>
                             <Badge
-                              className={getTierClass(getTier(member) || "")}
+                              className={getTierClass(
+                                getTier(member) || "Bronce",
+                              )}
                             >
                               {getTier(member)}
                             </Badge>

@@ -100,8 +100,11 @@ export default async function Page(props: PageProps) {
       `,
         );
       },
-      ["sor-teams-average"],
-      { revalidate: 3600 },
+      [],
+      {
+        revalidate: 3600,
+        tags: ["sor-teams-average"],
+      },
     )();
 
     const teams = data.rows as unknown as TeamData[];
@@ -270,8 +273,11 @@ export default async function Page(props: PageProps) {
     `,
       );
     },
-    ["sor-teams-single"],
-    { revalidate: 3600 },
+    [],
+    {
+      revalidate: 3600,
+      tags: ["sor-teams-single"],
+    },
   )();
 
   const teams = data.rows as unknown as TeamData[];

@@ -1,3 +1,5 @@
+import { Tier } from "@/types";
+
 export function formatTime(centiseconds: number): string {
   const seconds = centiseconds / 100;
   if (seconds < 60) {
@@ -105,7 +107,7 @@ export const getTier = (
         eventsWon: number;
       }
     | undefined,
-): string | null => {
+): Tier | null => {
   if (!member) {
     return null;
   }
@@ -135,23 +137,5 @@ export const getTier = (
       return "Diamante";
     default:
       return "Bronce";
-  }
-};
-
-export const getTierClass = (tier: string): string => {
-  switch (tier) {
-    case "Plata":
-      return "bg-gray-400";
-    case "Oro":
-      return "bg-yellow-500";
-    case "Platino":
-      return "bg-gray-200";
-    case "Ópalo":
-      return "bg-gradient-to-r from-blue-400 via-purple-300 to-pink-400";
-    case "Diamante":
-      return "bg-blue-300";
-    case "Bronce":
-    default:
-      return "bg-amber-600";
   }
 };

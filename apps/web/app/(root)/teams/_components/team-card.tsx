@@ -66,7 +66,9 @@ export function TeamCard({
           <div className="flex items-center text-sm text-muted-foreground">
             <span className="font-bold">{state}</span>
             {founded && <span className="mx-2">•</span>}
-            {founded && <span>{`Fundado en ${new Date(founded).getFullYear()}`}</span>}
+            {founded && (
+              <span>{`Fundado en ${new Date(founded).getFullYear()}`}</span>
+            )}
           </div>
           <div className="flex items-center text-sm text-muted-foreground">
             <Users className="mr-1 h-4 w-4" />

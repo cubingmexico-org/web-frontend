@@ -23,12 +23,7 @@ import {
 } from "@workspace/ui/components/table";
 import Image from "next/image";
 import { getEvents } from "@/db/queries";
-import {
-  formatTime,
-  formatTime333mbf,
-  getTier,
-  getTierClass,
-} from "@/lib/utils";
+import { formatTime, formatTime333mbf, getTier } from "@/lib/utils";
 import { Info } from "lucide-react";
 import {
   Tooltip,
@@ -46,6 +41,7 @@ import {
   SPEEDSOLVING_AVERAGES_EVENTS,
 } from "@/lib/constants";
 import { unstable_cache } from "@/lib/unstable-cache";
+import { Tier } from "@/types";
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -66,8 +62,11 @@ export default async function Page({
       );
       return response.json();
     },
-    [`wca-person-${id}`],
-    { revalidate: 3600 },
+    [id],
+    {
+      revalidate: 3600,
+      tags: ["wca-person"],
+    },
   )();
 
   const events = await getEvents();
@@ -187,8 +186,11 @@ export default async function Page({
           };
         });
       },
-      [`db-person-${id}`],
-      { revalidate: 3600 },
+      [id],
+      {
+        revalidate: 3600,
+        tags: ["person"],
+      },
     )();
 
   const states = await unstable_cache(
@@ -198,8 +200,11 @@ export default async function Page({
       );
       return response.json();
     },
-    [`states-geojson`],
-    { revalidate: 3600 },
+    [],
+    {
+      revalidate: false,
+      tags: ["geojson"],
+    },
   )();
 
   const statesData = states as {
@@ -220,6 +225,24 @@ export default async function Page({
   const filteredStatesData = statesData.features.filter((feature) =>
     (persons[0]?.statesNames as string[]).includes(feature.properties.id),
   ) as unknown as GeoJSONProps["data"];
+
+  const getTierClass = (tier: Tier): string => {
+    switch (tier) {
+      case "Plata":
+        return "bg-gray-400";
+      case "Oro":
+        return "bg-yellow-500";
+      case "Platino":
+        return "bg-gray-200";
+      case "Ópalo":
+        return "bg-gradient-to-r from-blue-400 via-purple-300 to-pink-400";
+      case "Diamante":
+        return "bg-blue-300";
+      case "Bronce":
+      default:
+        return "bg-amber-600";
+    }
+  };
 
   return (
     <main className="flex-grow container mx-auto px-4 py-8">

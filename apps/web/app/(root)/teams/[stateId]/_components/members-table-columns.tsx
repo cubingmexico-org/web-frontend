@@ -6,6 +6,7 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 import { Member } from "../_types";
 import Link from "next/link";
 import { TeamMember } from "@/db/schema";
+import { Badge } from "@workspace/ui/components/badge";
 
 interface GetColumnsProps {
   genderCounts: Record<string, number>;
@@ -48,13 +49,14 @@ export function getColumns({
       ),
       cell: ({ row }) => {
         return (
-          <div className="flex space-x-2 w-72">
+          <div className="flex space-x-2 whitespace-nowrap">
             <Link
               className="hover:underline text-accent-foreground"
               href={`/persons/${row.original.id}`}
             >
               {row.getValue("name")}
             </Link>
+            {row.original.isAdmin && <Badge>Admin</Badge>}
           </div>
         );
       },

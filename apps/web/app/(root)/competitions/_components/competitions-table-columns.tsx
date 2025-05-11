@@ -52,6 +52,9 @@ export function getColumns({
 
         return (
           <div className="flex space-x-2">
+            {(row.original.isChampionship as boolean) && (
+              <Badge>Campeonato</Badge>
+            )}
             <Badge
               variant={
                 row.original.status === "upcoming"

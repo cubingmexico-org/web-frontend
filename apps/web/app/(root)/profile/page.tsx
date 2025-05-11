@@ -24,8 +24,8 @@ export default async function Page() {
         .leftJoin(state, eq(person.stateId, state.id))
         .where(eq(person.id, session?.user?.id!));
     },
-    [`profile-person-${session?.user?.id}`],
-    { revalidate: 3600 },
+    [session?.user?.id!],
+    { revalidate: 3600, tags: ["profile-person"] },
   )();
 
   const states = await getStates();

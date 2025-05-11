@@ -19,3 +19,11 @@ export interface QueryBuilderOpts {
   distinct?: boolean;
   nullish?: boolean;
 }
+
+export type Tier =
+  | "Diamante"
+  | "Ópalo"
+  | "Platino"
+  | "Oro"
+  | "Plata"
+  | "Bronce";

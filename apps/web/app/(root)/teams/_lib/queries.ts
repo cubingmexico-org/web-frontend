@@ -38,7 +38,10 @@ export async function getTeams() {
         return [];
       }
     },
-    ["teams-data"],
-    { revalidate: 3600 },
+    [],
+    {
+      revalidate: 3600,
+      tags: ["teams-data"],
+    },
   )();
 }

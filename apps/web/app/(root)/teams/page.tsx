@@ -4,8 +4,7 @@ import Link from "next/link";
 import { getTeams } from "./_lib/queries";
 
 export default async function Page() {
-  
-  const teams = await getTeams()
+  const teams = await getTeams();
 
   return (
     <main className="flex-grow container mx-auto px-4 py-8">

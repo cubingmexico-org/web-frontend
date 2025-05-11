@@ -142,6 +142,8 @@ export async function getMembers(
             )
             .orderBy(...orderBy);
 
+          console.log("data", data);
+
           const total = (await tx
             .select({
               count: count(),
@@ -202,9 +204,10 @@ export async function getMembersGenderCounts(stateId: Person["stateId"]) {
         return {} as Record<string, number>;
       }
     },
-    ["members-gender-count", stateId!],
+    [stateId!],
     {
       revalidate: 3600,
+      tags: ["members-gender-count"],
     },
   )();
 }

@@ -68,21 +68,25 @@ export async function Footer() {
               <Trophy className="h-4 w-4 mr-1" />
               Último: {lastCompetitionWithResults[0]?.name}
             </span>
-            <span className="hidden sm:inline text-gray-300 text-sm">•</span>
             {competitionsWithNoResults.length > 0 && (
-              <Tooltip>
-                <TooltipTrigger>
-                  <span className="text-muted-foreground flex items-center">
-                    <Clock className="h-4 w-4 mr-1" />
-                    Resultados pendientes ({competitionsWithNoResults.length})
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {competitionsWithNoResults.map((competition) => (
-                    <p key={competition.name}>{competition.name}</p>
-                  ))}
-                </TooltipContent>
-              </Tooltip>
+              <>
+                <span className="hidden sm:inline text-gray-300 text-sm">
+                  •
+                </span>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <span className="text-muted-foreground flex items-center">
+                      <Clock className="h-4 w-4 mr-1" />
+                      Resultados pendientes ({competitionsWithNoResults.length})
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {competitionsWithNoResults.map((competition) => (
+                      <p key={competition.name}>{competition.name}</p>
+                    ))}
+                  </TooltipContent>
+                </Tooltip>
+              </>
             )}
           </p>
         </div>

@@ -3,7 +3,8 @@
 import * as React from "react";
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 import { Circle } from "lucide-react";
-import { cn } from "../lib/utils";
+
+import { cn } from "@workspace/ui/lib/utils";
 
 const RadioGroup = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Root>,
@@ -11,7 +12,7 @@ const RadioGroup = React.forwardRef<
 >(({ className, ...props }, ref) => {
   return (
     <RadioGroupPrimitive.Root
-      className={cn("ui-grid ui-gap-2", className)}
+      className={cn("grid gap-2", className)}
       {...props}
       ref={ref}
     />
@@ -25,15 +26,15 @@ const RadioGroupItem = React.forwardRef<
 >(({ className, ...props }, ref) => {
   return (
     <RadioGroupPrimitive.Item
+      ref={ref}
       className={cn(
-        "ui-aspect-square ui-h-4 ui-w-4 ui-rounded-full ui-border ui-border-primary ui-text-primary ui-ring-offset-background focus:ui-outline-none focus-visible:ui-ring-2 focus-visible:ui-ring-ring focus-visible:ui-ring-offset-2 disabled:ui-cursor-not-allowed disabled:ui-opacity-50",
+        "aspect-square h-4 w-4 rounded-full border border-primary text-primary shadow focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
         className,
       )}
-      ref={ref}
       {...props}
     >
-      <RadioGroupPrimitive.Indicator className="ui-flex ui-items-center ui-justify-center">
-        <Circle className="ui-h-2.5 ui-w-2.5 ui-fill-current ui-text-current" />
+      <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
+        <Circle className="h-3.5 w-3.5 fill-primary" />
       </RadioGroupPrimitive.Indicator>
     </RadioGroupPrimitive.Item>
   );

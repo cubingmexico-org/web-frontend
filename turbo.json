@@ -1,20 +1,22 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env.*local"],
-  "globalEnv": ["WCA_CLIENT_ID", "WCA_CLIENT_SECRET", "CRON_SECRET", "NEXT_PUBLIC_APP_URL", "NODE_ENV"],
-  "pipeline": {
+  "ui": "tui",
+  "globalEnv": ["URL", "CRON_SECRET", "WCA_CLIENT_ID", "WCA_CLIENT_SECRET", "NODE_ENV", "DATABASE_URL"],
+  "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [".next/**", "!.next/cache/**"]
     },
-    "lint": {},
-    "type-check": {},
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "check-types": {
+      "dependsOn": ["^check-types"]
+    },
     "dev": {
       "cache": false,
       "persistent": true
-    },
-    "clean": {
-      "cache": false
     }
   }
 }

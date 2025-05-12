@@ -86,6 +86,7 @@ export default function Page() {
               height={900}
               src="/competidores.jpg"
               width={1080}
+              priority
             />
           </div>
         </div>

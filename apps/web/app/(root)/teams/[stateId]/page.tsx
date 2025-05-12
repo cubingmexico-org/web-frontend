@@ -61,6 +61,23 @@ import {
   Twitter,
   WhatsApp,
 } from "@workspace/icons";
+import type { Metadata } from "next";
+import { getTeam } from "@/db/queries";
+
+type Props = {
+  params: Promise<{ stateId: string }>;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const stateId = (await params).stateId;
+
+  const team = await getTeam(stateId);
+
+  return {
+    title: `${team?.name} | Cubing México`,
+    description: `${team?.name} es un equipo de ${team?.state} que compite en competencias de la World Cube Association.`,
+  };
+}
 
 export default async function Page(props: {
   params: Promise<{ stateId: string }>;
@@ -217,6 +234,7 @@ export default async function Page(props: {
           className="w-full h-full object-cover"
           width={1200}
           height={400}
+          priority
         />
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-6">
           <div className="container mx-auto flex flex-col sm:flex-row items-end gap-6">

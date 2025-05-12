@@ -9,6 +9,13 @@ import {
   getPersonsStateCounts,
 } from "./_lib/queries";
 import { getValidFilters } from "@/lib/data-table";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Competidores | Cubing México",
+  description:
+    "Encuentra el directorio de todos los competidores mexicanos de la WCA. Filtra por estado, género y más.",
+};
 
 interface PageProps {
   searchParams: Promise<SearchParams>;

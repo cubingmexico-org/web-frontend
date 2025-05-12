@@ -22,7 +22,7 @@ import {
   TableCell,
 } from "@workspace/ui/components/table";
 import Image from "next/image";
-import { getEvents } from "@/db/queries";
+import { getEvents, getPerson } from "@/db/queries";
 import { formatTime, formatTime333mbf, getTier } from "@/lib/utils";
 import { Info } from "lucide-react";
 import {
@@ -42,8 +42,24 @@ import {
 } from "@/lib/constants";
 import { unstable_cache } from "@/lib/unstable-cache";
 import { Tier } from "@/types";
+import type { Metadata } from "next";
 
 const isProduction = process.env.NODE_ENV === "production";
+
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const id = (await params).id;
+
+  const person = await getPerson(id);
+
+  return {
+    title: `${person?.name} | Cubing México`,
+    description: `Resultados de ${person?.name}`,
+  };
+}
 
 export default async function Page({
   params,

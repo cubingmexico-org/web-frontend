@@ -131,7 +131,7 @@ export function Header({
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <ChartBarBig />
-                      <Link href="/kinch/MEX" className="w-full">
+                      <Link href="/kinch/PUE" className="w-full">
                         Kinch Ranks estatales
                       </Link>
                     </DropdownMenuItem>

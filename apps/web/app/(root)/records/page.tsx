@@ -15,6 +15,13 @@ import {
 } from "@workspace/ui/components/table";
 import { formatTime333mbf, formatTime } from "@/lib/utils";
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Récords | Cubing México",
+  description:
+    "Encuentra los récords nacionales de speedcubing en México y descubre los mejores cuberos del país.",
+};
 
 interface PageProps {
   searchParams: Promise<SearchParams>;

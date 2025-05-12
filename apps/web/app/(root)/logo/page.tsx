@@ -3,6 +3,13 @@ import { buttonVariants } from "@workspace/ui/components/button";
 import { Card, CardContent } from "@workspace/ui/components/card";
 import { Download } from "lucide-react";
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Logotipo | Cubing México",
+  description:
+    "Encuentra el logotipo de Cubing México en diferentes formatos y resoluciones. Descarga el logotipo para su uso en eventos, redes sociales y más.",
+};
 
 export default function Page(): JSX.Element {
   return (

@@ -5,9 +5,21 @@ import { db } from "@/db";
 import { person } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { Profile } from "./_components/profile";
-import { getStates } from "@/db/queries";
+import { getPerson, getStates } from "@/db/queries";
 import { unstable_cache } from "@/lib/unstable-cache";
 import { UnauthorizedView } from "@/components/unauthorized-view";
+import type { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const session = await auth();
+
+  const person = await getPerson(session?.user?.id!);
+
+  return {
+    title: `${person?.name} | Cubing México`,
+    description: `Perfil de ${person?.name}`,
+  };
+}
 
 export default async function Page() {
   const session = await auth();

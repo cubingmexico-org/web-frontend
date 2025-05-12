@@ -18,6 +18,32 @@ import { searchParamsCache } from "./_lib/validations";
 import { EventSelector } from "./_components/event-selector";
 import { getEvents } from "@/db/queries";
 import { redirect } from "next/navigation";
+import { Metadata } from "next";
+
+type Props = {
+  params: Promise<{ rankType: string; eventId: string }>;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const rankType = (await params).rankType;
+  // const eventId = (await params).eventId;
+
+  // const team = await getTeam(rankType);
+
+  if (rankType === "single") {
+    return {
+      title: `Ranking de Singles | Cubing México`,
+      description:
+        "Encuentra el ranking de los mejores cuberos de México en cada evento de la WCA. Filtra por estado, género y más.",
+    };
+  }
+
+  return {
+    title: `Ranking de Averages | Cubing México`,
+    description:
+      "Encuentra el ranking de los mejores cuberos de México en cada evento de la WCA. Filtra por estado, género y más.",
+  };
+}
 
 interface PageProps {
   params: Promise<{ eventId: string; rankType: "single" | "average" }>;

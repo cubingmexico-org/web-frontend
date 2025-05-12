@@ -13,6 +13,7 @@ import {
 } from "@/db/schema";
 import { unstable_cache } from "@/lib/unstable-cache";
 import { eq, lt } from "drizzle-orm";
+import { cache } from "react";
 
 export async function getEvents() {
   return unstable_cache(
@@ -92,6 +93,28 @@ export async function getCurrentUserTeam({ userId }: { userId: Person["id"] }) {
     },
   )();
 }
+
+export const getPerson = cache(async (id: string) => {
+  const res = await db
+    .select({
+      name: person.name,
+    })
+    .from(person)
+    .where(eq(person.id, id));
+  return res[0];
+});
+
+export const getTeam = cache(async (stateId: string) => {
+  const res = await db
+    .select({
+      name: team.name,
+      state: state.name,
+    })
+    .from(team)
+    .innerJoin(state, eq(team.stateId, state.id))
+    .where(eq(team.stateId, stateId));
+  return res[0];
+});
 
 export async function saveTeam({
   stateId,

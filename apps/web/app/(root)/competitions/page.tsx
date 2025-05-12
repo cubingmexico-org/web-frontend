@@ -14,11 +14,28 @@ import { DateRangePicker } from "@/components/date-range-picker";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Map } from "./_components/map";
 import Link from "next/link";
+import { Metadata } from "next";
 
 interface PageProps {
   searchParams: Promise<SearchParams>;
 }
 
+type Props = {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+export async function generateMetadata({
+  searchParams,
+}: Props): Promise<Metadata> {
+  const search = await searchParams;
+  console.log("searchParams", search.state);
+
+  return {
+    title: `Competencias ${search.state ? `en ${search.state} ` : ""}| Cubing México`,
+    description:
+      "Encuentra competencias oficiales de la WCA en México y conéctate con otros cuberos.",
+  };
+}
 export default async function Page(props: PageProps) {
   const searchParams = await props.searchParams;
   const search = searchParamsCache.parse(searchParams);

@@ -2,6 +2,13 @@ import { buttonVariants } from "@workspace/ui/components/button";
 import { Teams } from "./_components/teams";
 import Link from "next/link";
 import { getTeams } from "./_lib/queries";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Teams | Cubing México",
+  description:
+    "Encuentra tu Team de speedcubing en México y conéctate con otros cuberos.",
+};
 
 export default async function Page() {
   const teams = await getTeams();

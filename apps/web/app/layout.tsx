@@ -5,9 +5,10 @@ import { Providers } from "@/components/providers";
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import { Toaster } from "sonner";
+import { WebVitals } from "@/components/web-vitals";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://cubingmexico.net"),
+  metadataBase: new URL("https://www.cubingmexico.net"),
   title: "Cubing México",
   description:
     "Cubing México es un stio web que recopila rankings y récords estatales mexicanos basado en los resultados de la WCA.",
@@ -37,6 +38,7 @@ export default function RootLayout({
       <body
         className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}
       >
+        <WebVitals />
         <Providers>{children}</Providers>
         <Analytics />
         <Toaster />

@@ -1,6 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getCompetitions, getPersons } from "./_lib/queries";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Acerca de | Cubing México",
+  description:
+    "Cubing México es un sitio web de apasionados por el speedcubing y diseñado con el propósito de unir a la comunidad de speedcubers en México.",
+};
 
 export default async function Page(): Promise<JSX.Element> {
   const competitions = await getCompetitions();
@@ -50,6 +57,7 @@ export default async function Page(): Promise<JSX.Element> {
         height={900}
         src="/competidores.jpg"
         width={1080}
+        priority
       />
     </main>
   );

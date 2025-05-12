@@ -2,6 +2,13 @@ import { GitHub } from "@workspace/icons";
 import { buttonVariants } from "@workspace/ui/components/button";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Herramientas | Cubing México",
+  description:
+    "Encuentra herramientas útiles para speedcubers y organizadores de competencias. Explora generadores de certificados, visualizadores de mezclas y más.",
+};
 
 export default function Page(): JSX.Element {
   return (

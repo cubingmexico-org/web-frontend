@@ -17,6 +17,13 @@ import {
 } from "@workspace/ui/components/tooltip";
 import Link from "next/link";
 import { unstable_cache } from "@/lib/unstable-cache";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Kinch Ranks de Teams | Cubing México",
+  description:
+    "Encuentra el ranking de los mejores equipos de speedcubing en México en cada evento de la WCA. Filtra por estado, género y más.",
+};
 
 export default async function Page() {
   const data = await unstable_cache(

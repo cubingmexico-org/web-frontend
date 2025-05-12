@@ -8,6 +8,23 @@ import { getValidFilters } from "@/lib/data-table";
 import { SearchParams } from "@/types";
 import { searchParamsCache } from "../_lib/validations";
 import { getMembers, getMembersGenderCounts } from "../_lib/queries";
+import { getTeam } from "@/db/queries";
+import { Metadata } from "next";
+
+type Props = {
+  params: Promise<{ stateId: string }>;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const stateId = (await params).stateId;
+
+  const team = await getTeam(stateId);
+
+  return {
+    title: `${team?.name} | Cubing México`,
+    description: `${team?.name} es un equipo de ${team?.state} que compite en competencias de la World Cube Association.`,
+  };
+}
 
 export default async function Page(props: {
   params: Promise<{ stateId: string }>;

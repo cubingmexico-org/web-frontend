@@ -7,6 +7,13 @@ import { getValidFilters } from "@/lib/data-table";
 import { searchParamsCache } from "./_lib/validations";
 import { RankTypeSelector } from "./_components/rank-type-selector";
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Sum Of Ranks | Cubing México",
+  description:
+    "Encuentra el ranking de los mejores cuberos de México en cada evento de la WCA. Filtra por estado, género y más.",
+};
 
 interface PageProps {
   params: Promise<{ rankType: "single" | "average" }>;

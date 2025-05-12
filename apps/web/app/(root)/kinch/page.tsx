@@ -10,6 +10,13 @@ import {
 } from "./_lib/queries";
 import { getValidFilters } from "@/lib/data-table";
 import Link from "next/link";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Kinch Ranks | Cubing México",
+  description:
+    "Encuentra los mejores cuberos de México en cada evento de la WCA. Filtra por estado, género y más.",
+};
 
 interface PageProps {
   searchParams: Promise<SearchParams>;

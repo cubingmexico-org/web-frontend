@@ -8,6 +8,13 @@ import {
   BLD_FMC_MEANS_EVENTS,
 } from "@/lib/constants";
 import { unstable_cache } from "@/lib/unstable-cache";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Miembros | Cubing México",
+  description:
+    "Encuentra el directorio de todos los miembros Mollerz mexicanos de la WCA. Filtra por estado, género y más.",
+};
 
 export default async function Page() {
   const events = await getEvents();

@@ -15,7 +15,23 @@ import Link from "next/link";
 import { StateSelector } from "./_components/state-selector";
 import { getStates } from "@/db/queries";
 import { unstable_cache } from "@/lib/unstable-cache";
+import { Metadata } from "next";
+import { getTeam } from "@/db/queries";
 
+type Props = {
+  params: Promise<{ stateId: string }>;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const stateId = (await params).stateId;
+
+  const team = await getTeam(stateId);
+
+  return {
+    title: `Kinch Ranks de ${team?.state} | Cubing México`,
+    description: `Encuentra el ranking del ${team?.name} de speedcubing en México en cada evento de la WCA. Filtra por estado, género y más.`,
+  };
+}
 export default async function Page(props: {
   params: Promise<{ stateId: string }>;
   searchParams: Promise<SearchParams>;

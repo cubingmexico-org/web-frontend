@@ -152,39 +152,39 @@ export function getColumns({
       enableHiding: false,
       enableSorting: false,
     },
-    {
-      accessorKey: "achievements",
-      header: ({ column }) => (
-        <DataTableColumnHeader
-          className="text-xs"
-          column={column}
-          title="Logros"
-        />
-      ),
-      cell: ({ row }) => {
-        const achievements = row.getValue(
-          "achievements",
-        ) as TeamMember["achievements"];
+    // {
+    //   accessorKey: "achievements",
+    //   header: ({ column }) => (
+    //     <DataTableColumnHeader
+    //       className="text-xs"
+    //       column={column}
+    //       title="Logros"
+    //     />
+    //   ),
+    //   cell: ({ row }) => {
+    //     const achievements = row.getValue(
+    //       "achievements",
+    //     ) as TeamMember["achievements"];
 
-        return (
-          <div className="flex space-x-2 w-72">
-            {achievements ? (
-              <>
-                {achievements.map((achievement) => (
-                  <span className="text-accent-foreground" key={achievement}>
-                    {achievement}
-                  </span>
-                ))}
-              </>
-            ) : (
-              <span className="text-muted-foreground">Sin logros</span>
-            )}
-          </div>
-        );
-      },
-      enableSorting: false,
-      enableHiding: false,
-    },
+    //     return (
+    //       <div className="flex space-x-2 w-72">
+    //         {achievements ? (
+    //           <>
+    //             {achievements.map((achievement) => (
+    //               <span className="text-accent-foreground" key={achievement}>
+    //                 {achievement}
+    //               </span>
+    //             ))}
+    //           </>
+    //         ) : (
+    //           <span className="text-muted-foreground">Sin logros</span>
+    //         )}
+    //       </div>
+    //     );
+    //   },
+    //   enableSorting: false,
+    //   enableHiding: false,
+    // },
     {
       id: "actions",
       cell: function Cell({ row }) {

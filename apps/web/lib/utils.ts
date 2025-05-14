@@ -1,6 +1,12 @@
 import { Tier } from "@/types";
 
 export function formatTime(centiseconds: number): string {
+  if (centiseconds === -1) {
+    return "DNF";
+  }
+  if (centiseconds === -2) {
+    return "DNS";
+  }
   const seconds = centiseconds / 100;
   if (seconds < 60) {
     return seconds.toFixed(2);
@@ -12,6 +18,13 @@ export function formatTime(centiseconds: number): string {
 }
 
 export function formatTime333mbf(value: number): string {
+  if (value === -1) {
+    return "DNF";
+  }
+  if (value === -2) {
+    return "DNS";
+  }
+
   const valueStr = value.toString();
   const DD = valueStr.slice(0, 2);
   const TTTTT = valueStr.slice(2, 7);

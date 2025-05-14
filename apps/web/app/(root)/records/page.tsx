@@ -16,6 +16,7 @@ import { formatTime333mbf, formatTime } from "@/lib/utils";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { GenderSelector } from "./_components/gender-selector";
+import { MEAN_EVENTS } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Récords | Cubing México",
@@ -65,7 +66,7 @@ export default async function Page(props: PageProps) {
                 <TableHead>Resultado</TableHead>
                 <TableHead>Estado</TableHead>
                 <TableHead>Competencia</TableHead>
-                {/* <TableHead>Resoluciones</TableHead> */}
+                <TableHead>Resoluciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -89,7 +90,7 @@ export default async function Page(props: PageProps) {
                 <TableCell className="whitespace-nowrap">
                   {record.single.state}
                 </TableCell>
-                <TableCell>
+                <TableCell className="whitespace-nowrap">
                   <Link
                     className="hover:underline"
                     href={`https://www.worldcubeassociation.org/competitions/${record.single.competitionId}`}
@@ -97,25 +98,75 @@ export default async function Page(props: PageProps) {
                     {record.single.competition}
                   </Link>
                 </TableCell>
-                {/* <TableCell className="whitespace-nowrap">
+                <TableCell className="whitespace-nowrap">
                   {record.eventId === "333mbf" ? (
-                    <span>
-                      {record.single.solves.value1}{" "}
-                      {record.single.solves.value2}{" "}
-                      {record.single.solves.value3}{" "}
-                      {record.single.solves.value4}{" "}
-                      {record.single.solves.value5}
-                    </span>
-                  ) : record.eventId === "333fm" ? (
-                    <span>{record.single.solves.value1}</span>
+                    <p className="flex gap-4">
+                      <span>
+                        {formatTime333mbf(record.single.solves.value1)}
+                      </span>
+                      {record.single.solves.value2 !== 0 && (
+                        <span>
+                          {formatTime333mbf(record.single.solves.value2)}
+                        </span>
+                      )}
+                      {record.single.solves.value3 !== 0 && (
+                        <span>
+                          {formatTime333mbf(record.single.solves.value3)}
+                        </span>
+                      )}
+                    </p>
+                  ) : MEAN_EVENTS.includes(record.eventId) ? (
+                    <>
+                      {record.eventId === "333fm" ? (
+                        <p className="flex gap-4">
+                          <span>
+                            {record.single.solves.value1 === -1
+                              ? "DNF"
+                              : record.single.solves.value1}
+                          </span>
+                          <span>
+                            {record.single.solves.value2 === -1
+                              ? "DNF"
+                              : record.single.solves.value2}
+                          </span>
+                          <span>
+                            {record.single.solves.value3 === -1
+                              ? "DNF"
+                              : record.single.solves.value3}
+                          </span>
+                        </p>
+                      ) : (
+                        <p className="flex gap-4">
+                          <span>{formatTime(record.single.solves.value1)}</span>
+                          <span>{formatTime(record.single.solves.value2)}</span>
+                          <span>{formatTime(record.single.solves.value3)}</span>
+                        </p>
+                      )}
+                    </>
                   ) : (
-                    <span>
-                      {record.single.solves.value1}{" "}
-                      {record.single.solves.value2}{" "}
-                      {record.single.solves.value3}
-                    </span>
+                    <p className="flex gap-4">
+                      {[
+                        record.single.solves.value1,
+                        record.single.solves.value2,
+                        record.single.solves.value3,
+                        record.single.solves.value4,
+                        record.single.solves.value5,
+                      ].map((value, _, array) => {
+                        const min = Math.min(...array);
+                        const max = Math.max(...array);
+                        const formattedValue = formatTime(value);
+
+                        return (
+                          <span key={value}>
+                            {value === min || value === max
+                              ? `(${formattedValue})`
+                              : formattedValue}
+                          </span>
+                        );
+                      })}
+                    </p>
                   )}
-                </TableCell> */}
+                </TableCell>
               </TableRow>
               {record.eventId !== "333mbf" ? (
                 <TableRow>
@@ -136,7 +187,7 @@ export default async function Page(props: PageProps) {
                   <TableCell className="whitespace-nowrap">
                     {record.average?.state}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="whitespace-nowrap">
                     <Link
                       className="hover:underline"
                       href={`https://www.worldcubeassociation.org/competitions/${record.average?.competitionId}`}
@@ -144,13 +195,77 @@ export default async function Page(props: PageProps) {
                       {record.average?.competition}
                     </Link>
                   </TableCell>
-                  {/* <TableCell className="whitespace-nowrap">
-                    {record.average?.best
-                      ? record.eventId === "333mbf"
-                        ? `${record.average.solves.value1} ${record.average.solves.value2} ${record.average.solves.value3} ${record.average.solves.value4} ${record.average.solves.value5}`
-                        : `${record.average.solves.value1} ${record.average.solves.value2} ${record.average.solves.value3}`
-                      : "N/A"}
-                  </TableCell> */}
+                  <TableCell className="whitespace-nowrap">
+                    {MEAN_EVENTS.includes(record.eventId) ? (
+                      <>
+                        {record.eventId === "333fm" ? (
+                          <p className="flex gap-4">
+                            <span>
+                              {record.average?.solves.value1 === -1
+                                ? "DNF"
+                                : record.average?.solves.value1}
+                            </span>
+                            <span>
+                              {record.average?.solves.value2 === -1
+                                ? "DNF"
+                                : record.average?.solves.value2}
+                            </span>
+                            <span>
+                              {record.average?.solves.value3 === -1
+                                ? "DNF"
+                                : record.average?.solves.value3}
+                            </span>
+                          </p>
+                        ) : (
+                          <p className="flex gap-4">
+                            <span>
+                              {record.average?.solves.value1
+                                ? formatTime(
+                                    record.average?.solves.value1 as number,
+                                  )
+                                : null}
+                            </span>
+                            <span>
+                              {record.average?.solves.value2
+                                ? formatTime(
+                                    record.average?.solves.value2 as number,
+                                  )
+                                : null}
+                            </span>
+                            <span>
+                              {record.average?.solves.value3
+                                ? formatTime(
+                                    record.average?.solves.value3 as number,
+                                  )
+                                : null}
+                            </span>
+                          </p>
+                        )}
+                      </>
+                    ) : (
+                      <p className="flex gap-4">
+                        {[
+                          record.average?.solves.value1,
+                          record.average?.solves.value2,
+                          record.average?.solves.value3,
+                          record.average?.solves.value4,
+                          record.average?.solves.value5,
+                        ].map((value, _, array) => {
+                          const min = Math.min(...(array as number[]));
+                          const max = Math.max(...(array as number[]));
+                          const formattedValue = formatTime(value as number);
+
+                          return (
+                            <span key={value}>
+                              {value === min || value === max
+                                ? `(${formattedValue})`
+                                : formattedValue}
+                            </span>
+                          );
+                        })}
+                      </p>
+                    )}
+                  </TableCell>
                 </TableRow>
               ) : null}
             </TableBody>

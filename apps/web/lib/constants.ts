@@ -21,3 +21,5 @@ export const SPEEDSOLVING_AVERAGES_EVENTS = [
   "sq1",
   "pyram",
 ];
+
+export const MEAN_EVENTS = ["666", "777", "333bf", "333fm", "444bf", "555bf"];

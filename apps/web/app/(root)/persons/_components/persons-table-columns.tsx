@@ -19,14 +19,10 @@ export function getColumns({
     {
       accessorKey: "id",
       header: ({ column }) => (
-        <DataTableColumnHeader
-          column={column}
-          title="WCA ID"
-          className="ml-2"
-        />
+        <DataTableColumnHeader column={column} title="WCA ID" />
       ),
       cell: ({ row }) => {
-        return <div className="ml-2 w-2">{row.getValue("id")}</div>;
+        return <div>{row.getValue("id")}</div>;
       },
       enableHiding: false,
     },
@@ -38,7 +34,7 @@ export function getColumns({
       ),
       cell: ({ row }) => {
         return (
-          <div className="flex space-x-2 w-72">
+          <div className="flex space-x-2 whitespace-nowrap">
             <Link
               className="hover:underline text-accent-foreground"
               href={`/persons/${row.original.id}`}
@@ -63,7 +59,7 @@ export function getColumns({
         <DataTableColumnHeader column={column} title="Estado" />
       ),
       cell: ({ row }) => (
-        <div className="flex space-x-2">
+        <div className="flex space-x-2 whitespace-nowrap">
           {row.getValue("state") ?? (
             <span className="text-muted-foreground font-light">N/A</span>
           )}

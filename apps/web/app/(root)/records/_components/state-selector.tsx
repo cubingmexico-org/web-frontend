@@ -53,7 +53,7 @@ export function StateSelector({ states }: StateSelecorProps) {
           variant="outline"
           role="combobox"
           size="sm"
-          className="ml-auto h-8 gap-2 focus:outline-none focus:ring-1 focus:ring-ring focus-visible:ring-0 mb-6"
+          className="h-8 gap-2 focus:outline-none focus:ring-1 focus:ring-ring focus-visible:ring-0"
         >
           {memoizedState.length ? memoizedState : "Seleccionar estado"}
           <ChevronsUpDown className="ml-auto shrink-0 opacity-50" />

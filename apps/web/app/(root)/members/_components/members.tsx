@@ -178,6 +178,7 @@ export function Members({ members }: MembersProps) {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Nombre</TableHead>
+                        <TableHead>Estado</TableHead>
                         <TableHead>Nivel</TableHead>
                         <TableHead>Todos los eventos</TableHead>
                         <TableHead>Promedios Speedsolving</TableHead>
@@ -199,6 +200,13 @@ export function Members({ members }: MembersProps) {
                                 {member.name}
                               </Link>
                             </div>
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            {member.state ?? (
+                              <span className="text-muted-foreground font-light">
+                                N/A
+                              </span>
+                            )}
                           </TableCell>
                           <TableCell>
                             <Badge

@@ -22,11 +22,11 @@ export function getColumns({
     {
       accessorKey: "startDate",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Fecha" className="ml-2" />
+        <DataTableColumnHeader column={column} title="Fecha" />
       ),
       cell: ({ row }) => {
         return (
-          <div className="flex space-x-2 ml-2 whitespace-nowrap">
+          <div className="flex space-x-2 whitespace-nowrap">
             <span>
               {formatDate(row.getValue("startDate"), row.original.endDate)}
             </span>

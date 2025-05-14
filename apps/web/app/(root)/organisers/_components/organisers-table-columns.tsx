@@ -23,14 +23,10 @@ export function getColumns({
     {
       accessorKey: "id",
       header: ({ column }) => (
-        <DataTableColumnHeader
-          column={column}
-          title="WCA ID"
-          className="ml-2"
-        />
+        <DataTableColumnHeader column={column} title="WCA ID" />
       ),
       cell: ({ row }) => {
-        return <div className="ml-2 w-2">{row.getValue("id")}</div>;
+        return <div>{row.getValue("id")}</div>;
       },
       enableHiding: false,
     },
@@ -44,7 +40,7 @@ export function getColumns({
         const status = row.original.status;
 
         return (
-          <div className="flex space-x-2 w-80">
+          <div className="flex space-x-2 whitespace-nowrap">
             <Badge variant={status === "active" ? "default" : "outline"}>
               {status === "active" ? "Activo" : "Inactivo"}
             </Badge>
@@ -72,7 +68,7 @@ export function getColumns({
         <DataTableColumnHeader column={column} title="Estado" />
       ),
       cell: ({ row }) => (
-        <div className="flex space-x-2">
+        <div className="flex space-x-2 whitespace-nowrap">
           {row.getValue("state") ?? (
             <span className="text-muted-foreground font-light">N/A</span>
           )}

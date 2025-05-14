@@ -21,6 +21,7 @@ export function ThemeToggle() {
         }`}
       />
       <Switch
+        defaultChecked={theme === "dark"}
         checked={theme === "dark"}
         onCheckedChange={toggleTheme}
         aria-label="Toggle theme"

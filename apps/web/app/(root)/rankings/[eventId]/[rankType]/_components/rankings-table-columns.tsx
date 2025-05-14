@@ -22,10 +22,10 @@ export function getColumns({
     {
       accessorKey: "countryRank",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="NR" className="ml-2" />
+        <DataTableColumnHeader column={column} title="NR" />
       ),
       cell: ({ row }) => {
-        return <div className="ml-2 w-2">{row.getValue("countryRank")}</div>;
+        return <div>{row.getValue("countryRank")}</div>;
       },
       enableHiding: false,
     },

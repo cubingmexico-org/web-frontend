@@ -19,15 +19,11 @@ export function getColumns({
     {
       accessorKey: "id",
       header: ({ column }) => (
-        <DataTableColumnHeader
-          column={column}
-          title="WCA ID"
-          className="ml-2"
-        />
+        <DataTableColumnHeader column={column} title="WCA ID" />
       ),
       cell: ({ row }) => {
         return (
-          <div className="ml-2">
+          <div>
             <Link
               className="hover:underline text-accent-foreground"
               href={`https://www.worldcubeassociation.org/persons/${row.getValue("id")}`}

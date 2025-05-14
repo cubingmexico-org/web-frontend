@@ -25,10 +25,10 @@ export function getColumns({
     {
       accessorKey: "rank",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="#" className="ml-2" />
+        <DataTableColumnHeader column={column} title="#" />
       ),
       cell: ({ row }) => {
-        return <div className="ml-2 w-2">{row.getValue("rank")}</div>;
+        return <div>{row.getValue("rank")}</div>;
       },
       enableHiding: false,
     },

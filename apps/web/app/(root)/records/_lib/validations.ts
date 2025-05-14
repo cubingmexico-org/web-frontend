@@ -1,8 +1,13 @@
-import { createSearchParamsCache, parseAsString } from "nuqs/server";
+import { person } from "@/db/schema";
+import {
+  createSearchParamsCache,
+  parseAsString,
+  parseAsStringEnum,
+} from "nuqs/server";
 
 export const searchParamsCache = createSearchParamsCache({
   state: parseAsString.withDefault(""),
-  gender: parseAsString.withDefault(""),
+  gender: parseAsStringEnum(person.gender.enumValues),
 });
 
 export type GetRecordsSchema = Awaited<

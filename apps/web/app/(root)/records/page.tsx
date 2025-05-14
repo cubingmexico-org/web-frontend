@@ -4,7 +4,6 @@ import { SearchParams } from "@/types";
 import { searchParamsCache } from "./_lib/validations";
 import { getStates } from "@/db/queries";
 import { StateSelector } from "./_components/state-selector";
-// import { GenderSelector } from "./_components/gender-selector";
 import {
   Table,
   TableBody,
@@ -16,6 +15,7 @@ import {
 import { formatTime333mbf, formatTime } from "@/lib/utils";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { GenderSelector } from "./_components/gender-selector";
 
 export const metadata: Metadata = {
   title: "Récords | Cubing México",
@@ -46,78 +46,117 @@ export default async function Page(props: PageProps) {
             ? `(${search.gender === "m" ? "Masculinos" : "Femeniles"})`
             : undefined}
         </h1>
-        <StateSelector states={states} />
-        {/* <GenderSelector /> */}
+        <div className="flex items-center justify-between">
+          <GenderSelector />
+          <StateSelector states={states} />
+        </div>
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Nombre</TableHead>
-            {search.state ? (
-              <TableHead className="text-center">NR</TableHead>
-            ) : null}
-            <TableHead className="text-right">Single</TableHead>
-            <TableHead className="text-center">Evento</TableHead>
-            <TableHead>Average</TableHead>
-            {search.state ? (
-              <TableHead className="text-center">NR</TableHead>
-            ) : null}
-            <TableHead className="text-right">Nombre</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {records.map((record, index) => (
-            <TableRow key={index}>
-              <TableCell className="whitespace-nowrap">
-                <Link
-                  className="hover:underline"
-                  href={`/persons/${record.single.personId}`}
-                >
-                  {record.single.name}
-                </Link>
-              </TableCell>
-              {search.state ? (
-                <TableCell className="text-center">
-                  {record.single.countryRank}
+      {records.map((record) => (
+        <div key={record.eventId} className="space-y-4 py-4">
+          <div className="flex gap-2 items-center">
+            <span className={`cubing-icon event-${record.eventId} text-2xl`} />
+            <h1>{record.eventName}</h1>
+          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Tipo</TableHead>
+                <TableHead>Nombre</TableHead>
+                <TableHead>Resultado</TableHead>
+                <TableHead>Estado</TableHead>
+                <TableHead>Competencia</TableHead>
+                {/* <TableHead>Resoluciones</TableHead> */}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell>Single</TableCell>
+                <TableCell className="whitespace-nowrap">
+                  <Link
+                    className="hover:underline"
+                    href={`/persons/${record.single.personId}`}
+                  >
+                    {record.single.name}
+                  </Link>
                 </TableCell>
-              ) : null}
-              <TableCell className="text-right">
-                {record.eventId === "333mbf"
-                  ? formatTime333mbf(record.single.best)
-                  : record.eventId === "333fm"
-                    ? record.single.best
-                    : formatTime(record.single.best)}
-              </TableCell>
-              <TableCell className="min-w-60 font-medium flex justify-center gap-2">
-                <span className={`cubing-icon event-${record.eventId}`} />
-                {record.eventName}
-              </TableCell>
-              <TableCell>
-                {record.eventId !== "333mbf" ? (
-                  record.average?.best ? (
-                    formatTime(record.average.best)
+                <TableCell>
+                  {record.eventId === "333mbf"
+                    ? formatTime333mbf(record.single.best)
+                    : record.eventId === "333fm"
+                      ? record.single.best
+                      : formatTime(record.single.best)}
+                </TableCell>
+                <TableCell className="whitespace-nowrap">
+                  {record.single.state}
+                </TableCell>
+                <TableCell>
+                  <Link
+                    className="hover:underline"
+                    href={`https://www.worldcubeassociation.org/competitions/${record.single.competitionId}`}
+                  >
+                    {record.single.competition}
+                  </Link>
+                </TableCell>
+                {/* <TableCell className="whitespace-nowrap">
+                  {record.eventId === "333mbf" ? (
+                    <span>
+                      {record.single.solves.value1}{" "}
+                      {record.single.solves.value2}{" "}
+                      {record.single.solves.value3}{" "}
+                      {record.single.solves.value4}{" "}
+                      {record.single.solves.value5}
+                    </span>
+                  ) : record.eventId === "333fm" ? (
+                    <span>{record.single.solves.value1}</span>
                   ) : (
-                    <span className="text-muted-foreground">N/A</span>
-                  )
-                ) : null}
-              </TableCell>
-              {search.state ? (
-                <TableCell className="text-center">
-                  {record.average?.countryRank}
-                </TableCell>
+                    <span>
+                      {record.single.solves.value1}{" "}
+                      {record.single.solves.value2}{" "}
+                      {record.single.solves.value3}
+                    </span>
+                  )}
+                </TableCell> */}
+              </TableRow>
+              {record.eventId !== "333mbf" ? (
+                <TableRow>
+                  <TableCell>Average</TableCell>
+                  <TableCell className="whitespace-nowrap">
+                    <Link
+                      className="hover:underline"
+                      href={`/persons/${record.average?.personId}`}
+                    >
+                      {record.average?.name}
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    {record.average?.best
+                      ? formatTime(record.average.best)
+                      : "N/A"}
+                  </TableCell>
+                  <TableCell className="whitespace-nowrap">
+                    {record.average?.state}
+                  </TableCell>
+                  <TableCell>
+                    <Link
+                      className="hover:underline"
+                      href={`https://www.worldcubeassociation.org/competitions/${record.average?.competitionId}`}
+                    >
+                      {record.average?.competition}
+                    </Link>
+                  </TableCell>
+                  {/* <TableCell className="whitespace-nowrap">
+                    {record.average?.best
+                      ? record.eventId === "333mbf"
+                        ? `${record.average.solves.value1} ${record.average.solves.value2} ${record.average.solves.value3} ${record.average.solves.value4} ${record.average.solves.value5}`
+                        : `${record.average.solves.value1} ${record.average.solves.value2} ${record.average.solves.value3}`
+                      : "N/A"}
+                  </TableCell> */}
+                </TableRow>
               ) : null}
-              <TableCell className="whitespace-nowrap text-right">
-                <Link
-                  className="hover:underline"
-                  href={`/persons/${record.average?.personId}`}
-                >
-                  {record.average?.name}
-                </Link>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+            </TableBody>
+          </Table>
+        </div>
+      ))}
       <div className="mt-12">
         <h2 className="text-2xl font-bold mb-4">
           Acerca de los Récords de la WCA

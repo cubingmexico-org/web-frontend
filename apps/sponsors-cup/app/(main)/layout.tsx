@@ -58,9 +58,9 @@ export default function Layout({
           </Link>
         </div>
         <h1 className="text-2xl font-semibold">
-          Copa Inter-Patrocinadores 2024
+          Copa Inter-Patrocinadores 2025
         </h1>
-        <h2 className="text-lg">Segunda temporada (Septiembre - Diciembre)</h2>
+        <h2 className="text-lg">Tercera temporada (Mayo - Agosto)</h2>
         <p className="p-4">
           Competencia dirigida a la comunidad nacional, con el propósito de dar
           mayor protagonismo a los speedcubers y a las tiendas que los apoyan,

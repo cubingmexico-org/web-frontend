@@ -1,6 +1,7 @@
-import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Copa, CubingMexico, SponsorsCupBorder } from "@workspace/icons";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Layout({
   children,
@@ -10,51 +11,16 @@ export default function Layout({
   return (
     <main className="flex flex-col items-center justify-center min-h-screen">
       <div className="flex">
-        <Image
-          alt="Logo de la Copa Inter-patrocinadores"
-          className="hidden 2xl:block"
-          height={30}
-          src="/border.svg"
-          width={300}
-        />
-        <Image
-          alt="Logo de la Copa Inter-patrocinadores"
-          className="hidden xl:block"
-          height={30}
-          src="/border.svg"
-          width={300}
-        />
-        <Image
-          alt="Logo de la Copa Inter-patrocinadores"
-          className="hidden lg:block"
-          height={30}
-          src="/border.svg"
-          width={300}
-        />
-        <Image
-          alt="Logo de la Copa Inter-patrocinadores"
-          className="hidden md:block"
-          height={30}
-          src="/border.svg"
-          width={300}
-        />
-        <Image
-          alt="Logo de la Copa Inter-patrocinadores"
-          height={30}
-          src="/border.svg"
-          width={300}
-        />
+        <SponsorsCupBorder className="hidden 2xl:block h-8 w-80 text-primary/75" />
+        <SponsorsCupBorder className="hidden xl:block h-8 w-80 text-primary/75" />
+        <SponsorsCupBorder className="hidden lg:block h-8 w-80 text-primary/75" />
+        <SponsorsCupBorder className="hidden md:block h-8 w-80 text-primary/75" />
+        <SponsorsCupBorder className="h-8 w-80 text-primary/75" />
       </div>
       <div className="text-center">
         <div className="mx-auto inline-block">
           <Link href="/">
-            <Image
-              alt="Logo de la Copa Inter-Patrocinadores"
-              className="mx-auto"
-              height={30}
-              src="/logo.svg"
-              width={300}
-            />
+            <Copa className="size-80" />
           </Link>
         </div>
         <h1 className="text-2xl font-semibold">
@@ -68,7 +34,7 @@ export default function Layout({
           crecer el speedcubing en todo el país.
         </p>
       </div>
-      <div className="p-4">{children}</div>
+      {children}
       <div className="text-center p-4">
         <p className="font-bold text-lg">Aviso</p>
         <p>
@@ -101,12 +67,7 @@ export default function Layout({
           </ul>
         </div>
         <div className="flex justify-center items-center pt-4">
-          <Image
-            alt="Logo de Cubing México"
-            height={100}
-            src="/cubingmexico_logo.svg"
-            width={100}
-          />
+          <CubingMexico className="size-[100px]" />
           <Image
             alt="Logo de SanLuis Rubik's Team"
             height={100}
@@ -114,42 +75,16 @@ export default function Layout({
             width={100}
           />
         </div>
+        <div className="flex justify-center pt-4">
+          <ThemeToggle />
+        </div>
       </div>
       <div className="flex">
-        <Image
-          alt="Logo de la Copa Inter-patrocinadores"
-          className="hidden 2xl:block"
-          height={30}
-          src="/border.svg"
-          width={300}
-        />
-        <Image
-          alt="Logo de la Copa Inter-patrocinadores"
-          className="hidden xl:block"
-          height={30}
-          src="/border.svg"
-          width={300}
-        />
-        <Image
-          alt="Logo de la Copa Inter-patrocinadores"
-          className="hidden lg:block"
-          height={30}
-          src="/border.svg"
-          width={300}
-        />
-        <Image
-          alt="Logo de la Copa Inter-patrocinadores"
-          className="hidden md:block"
-          height={30}
-          src="/border.svg"
-          width={300}
-        />
-        <Image
-          alt="Logo de la Copa Inter-patrocinadores"
-          height={30}
-          src="/border.svg"
-          width={300}
-        />
+        <SponsorsCupBorder className="hidden 2xl:block h-8 w-80 text-primary/75" />
+        <SponsorsCupBorder className="hidden xl:block h-8 w-80 text-primary/75" />
+        <SponsorsCupBorder className="hidden lg:block h-8 w-80 text-primary/75" />
+        <SponsorsCupBorder className="hidden md:block h-8 w-80 text-primary/75" />
+        <SponsorsCupBorder className="h-8 w-80 text-primary/75" />
       </div>
     </main>
   );

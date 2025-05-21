@@ -1,0 +1,1 @@
+ALTER TABLE "sponsored_competition_scores" ADD COLUMN "type" varchar(10) NOT NULL;

@@ -1,169 +1,16 @@
 "use server";
 
-import { unstable_noStore as noStore } from "next/cache";
-import { sql } from "@vercel/postgres";
-import type { Competition } from "./types/unofficial-wca-api";
+import { db } from "@/db";
 import type { Competition as WCIFCompetition } from "./types/wcif";
-import type {
-  CompetitorTable,
-  Member,
-  TableDataByCompetitor,
-  TableDataByTeam,
-} from "./types";
-
-export async function fetchTeamsTable(
-  competitions: Competition[],
-): Promise<TableDataByTeam[]> {
-  noStore();
-
-  const competitionIds = competitions.map((comp) => comp.id);
-  const maxStatements = competitionIds
-    .map(
-      (id) => `MAX(CASE WHEN competition_id = '${id}' THEN score END) AS ${id}`,
-    )
-    .join(",");
-
-  const query = `
-    WITH ScorePerMember AS (
-      SELECT
-        Teams.name AS team_name,
-        Members.id AS member_id,
-        Members.name AS member_name,
-        Competitions.id AS competition_id,
-        Scores.score
-      FROM
-        Teams
-      JOIN
-        Members ON Teams.id = Members.team_id
-      JOIN
-        Scores ON Members.id = Scores.member_id
-      JOIN
-        Competitions ON Scores.competition_id = Competitions.id
-    ),
-    CompetitionScores AS (
-      SELECT
-        team_name,
-        member_id,
-        member_name,
-        ${maxStatements},
-        SUM(score) AS total_score
-      FROM
-        ScorePerMember
-      GROUP BY
-        team_name, member_id, member_name
-    )
-    SELECT
-      team_name,
-      member_id,
-      member_name,
-      ${competitionIds.join(",")},
-      total_score
-    FROM
-      CompetitionScores
-    ORDER BY
-      total_score DESC, team_name, member_name;
-  `;
-
-  const data = await sql.query<TableDataByTeam>(query);
-
-  return data.rows;
-}
-
-export async function fetchIndividualTable(
-  competitions: Competition[],
-): Promise<TableDataByCompetitor[]> {
-  noStore();
-
-  const competitionIds = competitions.map((comp) => comp.id);
-  const maxStatements = competitionIds
-    .map(
-      (id) => `MAX(CASE WHEN competition_id = '${id}' THEN score END) AS ${id}`,
-    )
-    .join(",");
-
-  const query = `
-  WITH ScorePerMember AS (
-    SELECT
-      Members.id AS member_id,
-      Members.name AS member_name,
-      Competitions.id AS competition_id,
-      Scores.score
-    FROM
-      Members
-    JOIN
-      Scores ON Members.id = Scores.member_id
-    JOIN
-      Competitions ON Scores.competition_id = Competitions.id
-  ),
-  CompetitionScores AS (
-    SELECT
-      member_id,
-      member_name,
-      ${maxStatements},
-      SUM(score) AS total_score
-    FROM
-      ScorePerMember
-    GROUP BY
-      member_id, member_name
-  )
-  SELECT
-    member_id,
-    member_name,
-    ${competitionIds.join(",")},
-    total_score
-  FROM
-    CompetitionScores
-  ORDER BY
-    total_score DESC, member_name;
-`;
-
-  const data = await sql.query<TableDataByCompetitor>(query);
-
-  return data.rows;
-}
-
-export async function fetchCompetitorTable(
-  memberId: string,
-): Promise<CompetitorTable[]> {
-  noStore();
-
-  const data = await sql<CompetitorTable>`
-    SELECT 
-      Members.name as member_name, 
-      Members.id as member_id, 
-      Scores.score, 
-      Competitions.name as competition_name, 
-      Competitions.id as competition_id 
-    FROM 
-      Members 
-    INNER JOIN 
-      Scores ON Members.id = Scores.member_id 
-    INNER JOIN 
-      Competitions ON Scores.competition_id = Competitions.id 
-    WHERE 
-      Members.id = ${memberId} 
-      AND (
-        (Competitions.startDate <= CURRENT_DATE AND Competitions.endDate >= CURRENT_DATE) 
-        OR Competitions.endDate < CURRENT_DATE
-      )
-    ORDER BY 
-      Scores.score DESC
-    `;
-
-  return data.rows;
-}
-
-export async function fetchCompetitions(): Promise<Competition[]> {
-  noStore();
-
-  const data =
-    await sql<Competition>`SELECT * FROM Competitions WHERE CURRENT_DATE BETWEEN startDate AND endDate OR endDate < CURRENT_DATE ORDER BY startDate ASC`;
-  return data.rows;
-}
+import {
+  competition,
+  person,
+  sponsoredCompetitionScore,
+  sponsoredTeamMember,
+} from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export async function getWCIFCompetition(id: string): Promise<WCIFCompetition> {
-  noStore();
-
   const response = await fetch(
     `https://www.worldcubeassociation.org/api/v0/competitions/${id}/wcif/public`,
   );
@@ -177,61 +24,19 @@ export async function getWCIFCompetition(id: string): Promise<WCIFCompetition> {
   return competition;
 }
 
-export async function getCompetitions(): Promise<Competition[]> {
-  noStore();
-
-  const response = await fetch(
-    "https://raw.githubusercontent.com/robiningelbrecht/wca-rest-api/master/api/competitions/MX.json",
-  );
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch competitions");
-  }
-
-  const competitions = (await response.json()) as { items: Competition[] };
-
-  const filteredCompetitions = competitions.items.filter((competition) => {
-    const fromDate = new Date(competition.date.from);
-    const month = fromDate.getMonth();
-    const year = fromDate.getFullYear();
-    return year === 2024 && month >= 8 && month <= 11;
-  });
-
-  return filteredCompetitions;
-}
-
-export async function insertNewCompetition(): Promise<void> {
-  noStore();
-
-  const competitions = await getCompetitions();
-
-  const membersData = await sql<Member>`SELECT * FROM Members`;
-
-  for (const competition of competitions) {
-    await sql`INSERT INTO Competitions (id, name, startDate, endDate) VALUES (${competition.id}, ${competition.name}, ${competition.date.from}, ${competition.date.till}) ON CONFLICT (id) DO NOTHING;`;
-    for (const member of membersData.rows) {
-      await sql`
-        INSERT INTO Scores (member_id, competition_id, score) 
-        VALUES (${member.id}, ${competition.id}, 0)
-        ON CONFLICT (member_id, competition_id) DO NOTHING;
-      `;
-    }
-  }
-}
-
 export async function updateScores(): Promise<void> {
-  noStore();
-
   const currentDate = new Date();
   currentDate.setHours(currentDate.getHours() - 6);
-  const dataCompetitions =
-    await sql<Competition>`SELECT * FROM Competitions WHERE endDate = ${currentDate.toISOString()}`;
-  for (const competition of dataCompetitions.rows) {
+  const dataCompetitions = await db
+    .select()
+    .from(competition)
+    .where(eq(competition.endDate, currentDate));
+  for (const competition of dataCompetitions) {
     const wcif = await getWCIFCompetition(competition.id);
 
-    const dataMembers = await sql<Member>`SELECT * FROM Members`;
+    const dataMembers = await db.select().from(sponsoredTeamMember);
 
-    const participatingMembers = dataMembers.rows
+    const participatingMembers = dataMembers
       .filter((member) =>
         wcif.persons.some((person) => person.wcaId === member.id),
       )
@@ -333,31 +138,40 @@ export async function updateScores(): Promise<void> {
     );
 
     for (const best of personalBestsBroken) {
-      await sql<Competition>`UPDATE Scores SET score = score + ${best.timesBroken} WHERE member_id = ${best.id} AND competition_id = ${competition.id}`;
+      await db.update(sponsoredCompetitionScore).set({
+        score: best.timesBroken,
+      });
+      // .where(
+      //   and(
+      //     eq(sponsoredCompetitionScore.sponsoredTeamMemberId, best.id),
+      //     eq(sponsoredCompetitionScore.competitionId, competition.id),
+      //   )
+      // );
     }
   }
 }
 
 export async function resetScores(competitionId: string): Promise<void> {
-  noStore();
-
-  await sql`UPDATE Scores SET score = 0 WHERE competition_id = ${competitionId}`;
+  await db
+    .update(sponsoredCompetitionScore)
+    .set({
+      score: 0,
+    })
+    .where(eq(sponsoredCompetitionScore.competitionId, competitionId));
 }
 
-export async function findCompetitors(competitionId: string): Promise<
-  {
-    personId: number;
-    id: string;
-    name: string;
-  }[]
-> {
-  noStore();
-
+export async function findCompetitors(competitionId: string) {
   const wcif = await getWCIFCompetition(competitionId);
 
-  const dataMembers = await sql<Member>`SELECT * FROM Members`;
+  const dataMembers = await db
+    .select({
+      id: sponsoredTeamMember.personId,
+      name: person.name,
+    })
+    .from(sponsoredTeamMember)
+    .innerJoin(person, eq(person.id, sponsoredTeamMember.personId));
 
-  const participatingMembers = dataMembers.rows
+  const participatingMembers = dataMembers
     .filter((member) =>
       wcif.persons.some((person) => person.wcaId === member.id),
     )

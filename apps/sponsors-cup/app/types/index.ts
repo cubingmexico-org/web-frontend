@@ -1,49 +1,23 @@
-export interface Member {
+export type TeamMember = {
   id: string;
   name: string;
-  team: Team;
-}
+  scores: {
+    competition: string;
+    score: number;
+  }[];
+};
 
-export interface Team {
+export type Team = {
   id: string;
   name: string;
-  sponsor: Sponsor;
-}
+  members: TeamMember[];
+};
 
-export interface Sponsor {
+export type Competitor = {
   id: string;
   name: string;
-  image: string | null;
-  url: string | null;
-}
-
-export interface TableDataByTeam extends TeamMember {
-  team_name: string;
-  total_score: string;
-}
-
-export interface TeamMember {
-  member_id: string;
-  member_name: string;
-  [key: string]: string;
-}
-
-export type GroupedData = Record<
-  string,
-  {
-    members: TeamMember[];
-    total_score: number;
-  }
->;
-
-export interface TableDataByCompetitor extends TeamMember {
-  total_score: string;
-}
-
-export interface CompetitorTable {
-  member_id: string;
-  member_name: string;
-  competition_id: string;
-  competition_name: string;
-  score: number;
-}
+  scores: {
+    competition: string;
+    score: number;
+  }[];
+};

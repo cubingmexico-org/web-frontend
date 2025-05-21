@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { insertNewCompetition } from "@/app/actions";
+// import { insertNewCompetition } from "@/app/actions";
 
 export async function GET(request: NextRequest): Promise<Response> {
   const authHeader = request.headers.get("authorization");
@@ -10,6 +10,6 @@ export async function GET(request: NextRequest): Promise<Response> {
     });
   }
 
-  await insertNewCompetition();
+  // await insertNewCompetition();
   return NextResponse.json({ success: true });
 }

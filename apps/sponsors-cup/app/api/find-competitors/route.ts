@@ -11,9 +11,9 @@ export async function GET(request: NextRequest): Promise<Response> {
   }
 
   const url = new URL(request.url);
-  const competitionId = url.searchParams.get("competition_id");
+  const competitionId = url.searchParams.get("competitionId");
   if (!competitionId) {
-    return new Response("Bad Request: Missing competition_id parameter", {
+    return new Response("Bad Request: Missing competitionId parameter", {
       status: 400,
     });
   }

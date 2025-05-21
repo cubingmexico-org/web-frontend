@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@workspace/ui/components/table";
 import { ArrowLeft } from "lucide-react";
-import { fetchCompetitorTable } from "@/app/actions";
+// import { fetchCompetitorTable } from "@/app/actions";
 
 type Params = Promise<{ id: string }>;
 
@@ -20,11 +20,11 @@ export default async function Page({
   params: Params;
 }): Promise<JSX.Element> {
   const { id } = await params;
-  const data = await fetchCompetitorTable(id);
+  // const data = await fetchCompetitorTable(id);
 
   return (
     <>
-      <Link
+      {/* <Link
         className="flex items-center justify-center mb-2 hover:underline text-sm"
         href="/"
       >
@@ -75,7 +75,7 @@ export default async function Page({
             </TableRow>
           ))}
         </TableBody>
-      </Table>
+      </Table> */}
     </>
   );
 }

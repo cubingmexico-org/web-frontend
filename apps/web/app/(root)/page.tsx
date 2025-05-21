@@ -1,5 +1,10 @@
 import Image from "next/image";
-import { ArrowRight, Trophy, Users, Clock } from "lucide-react";
+import {
+  ArrowRight,
+  Users,
+  Clock,
+  ChartNoAxesColumnIncreasing,
+} from "lucide-react";
 import { buttonVariants } from "@workspace/ui/components/button";
 import {
   Card,
@@ -13,20 +18,20 @@ import {
   AlertTitle,
   AlertDescription,
 } from "@workspace/ui/components/alert";
-import { Discord } from "@workspace/icons";
+import { Copa, Discord } from "@workspace/icons";
 
 export default function Page() {
   return (
     <main className="flex-grow">
-      {/* <div className="bg-yellow-50 border-b border-yellow-200">
+      {/* <div className="bg-accent border-b">
         <div className="container mx-auto px-5 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <AlertCircle className="h-5 w-5 text-yellow-600 mr-2 flex-shrink-0" />
-              <div className="text-sm text-yellow-800">
-                <span className="font-semibold">¡Atención!</span> Las inscripciones para el Campeonato Nacional 2024
-                cierran en 3 días.{" "}
-                <a href="/competitions?id=national-2024" className="underline font-medium hover:text-yellow-900">
+              <Trophy className="h-5 w-5 text-accent-foreground mr-2 flex-shrink-0" />
+              <div className="text-sm">
+                <span className="font-semibold">¡Atención!</span> Las inscripciones para el Mexican Championship 2025
+                abre en 3 días.{" "}
+                <a href="/competitions?id=national-2024" className="underline font-medium hover:text-accent-foreground/50">
                   Regístrate ahora →
                 </a>
               </div>
@@ -95,49 +100,78 @@ export default function Page() {
       <section className="text-muted-foreground body-font">
         <div className="container px-5 py-24 mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-            <Card className="!p-4">
-              <CardHeader>
-                <CardTitle className="!text-lg !text-primary !font-medium !title-font !mb-4">
-                  Rankings Estatales
-                </CardTitle>
-                <Trophy className="w-12 h-12 inline-block mb-4" />
-              </CardHeader>
-              <CardContent>
-                <p className="leading-relaxed text-base">
-                  Ve a los mejores speedcubers de cada estado mexicano en varios
-                  eventos de la WCA.
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="!p-4">
-              <CardHeader>
-                <CardTitle className="!text-lg !text-primary !font-medium !title-font !mb-4">
-                  Récords Nacionales
-                </CardTitle>
-                <Clock className="w-12 h-12 inline-block mb-4" />
-              </CardHeader>
-              <CardContent>
-                <p className="leading-relaxed text-base">
-                  Mantente al tanto de los tiempos más rápidos y los mejores
-                  promedios establecidos por cuberos mexicanos en competencias
-                  oficiales de la WCA.
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="!p-4">
-              <CardHeader>
-                <CardTitle className="!text-lg !text-primary !font-medium !title-font !mb-4">
-                  Próximas Competencias
-                </CardTitle>
-                <Users className="w-12 h-12 inline-block mb-4" />
-              </CardHeader>
-              <CardContent>
-                <p className="leading-relaxed text-base">
-                  Encuentra información sobre las próximas competencias de la
-                  WCA en México y regístrate para participar.
-                </p>
-              </CardContent>
-            </Card>
+            <Link
+              className="col-span-3 text-center"
+              href="https://copa.cubingmexico.net/"
+            >
+              <Card className="transition-all hover:border-primary hover:shadow-md">
+                <CardHeader>
+                  <div className="w-full flex justify-center">
+                    <Copa className="w-32 h-32 mb-4" />
+                  </div>
+                  <CardTitle className="text-lg text-primary font-medium title-font mb-4">
+                    Copa Inter-Patrocinadores
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="leading-relaxed text-base">
+                    La Copa Inter-Patrocinadores es una competencia donde los
+                    patrocinadores de speedcubing en México registran a sus
+                    mejores speedcubers para ver quién consigue más récords
+                    personales
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link href="/rankings/333/single">
+              <Card className="p-4 transition-all hover:border-primary hover:shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-lg text-primary font-medium title-font mb-4">
+                    Rankings Estatales
+                  </CardTitle>
+                  <ChartNoAxesColumnIncreasing className="w-12 h-12 inline-block mb-4" />
+                </CardHeader>
+                <CardContent>
+                  <p className="leading-relaxed text-base">
+                    Ve a los mejores speedcubers de cada estado mexicano en
+                    varios eventos de la WCA.
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link href="/records">
+              <Card className="p-4 transition-all hover:border-primary hover:shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-lg text-primary font-medium title-font mb-4">
+                    Récords Nacionales
+                  </CardTitle>
+                  <Clock className="w-12 h-12 inline-block mb-4" />
+                </CardHeader>
+                <CardContent>
+                  <p className="leading-relaxed text-base">
+                    Mantente al tanto de los tiempos más rápidos y los mejores
+                    promedios establecidos por cuberos mexicanos en competencias
+                    oficiales de la WCA.
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link href="/competitions">
+              <Card className="p-4 transition-all hover:border-primary hover:shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-lg text-primary font-medium title-font mb-4">
+                    Próximas Competencias
+                  </CardTitle>
+                  <Users className="w-12 h-12 inline-block mb-4" />
+                </CardHeader>
+                <CardContent>
+                  <p className="leading-relaxed text-base">
+                    Encuentra información sobre las próximas competencias de la
+                    WCA en México y regístrate para participar.
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
           </div>
         </div>
       </section>

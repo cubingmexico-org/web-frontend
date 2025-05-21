@@ -1,0 +1,1 @@
+ALTER TABLE "sponsored_competition_scores" ALTER COLUMN "score" SET DATA TYPE real;

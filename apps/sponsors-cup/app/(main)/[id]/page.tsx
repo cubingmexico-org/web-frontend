@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 import Link from "next/link";
 import {
@@ -19,7 +20,7 @@ export default async function Page({
 }: {
   params: Params;
 }): Promise<JSX.Element> {
-  const { id } = await params;
+  // const { id } = await params;
   // const data = await fetchCompetitorTable(id);
 
   return (

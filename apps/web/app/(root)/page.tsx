@@ -101,7 +101,7 @@ export default function Page() {
         <div className="container px-5 py-24 mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
             <Link
-              className="col-span-3 text-center"
+              className="col-span-1 md:col-span-3 text-center"
               href="https://copa.cubingmexico.net/"
             >
               <Card className="transition-all hover:border-primary hover:shadow-md">

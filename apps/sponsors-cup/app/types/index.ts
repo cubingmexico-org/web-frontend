@@ -2,7 +2,10 @@ export type TeamMember = {
   id: string;
   name: string;
   scores: {
-    competition: string;
+    competition: {
+      id: string;
+      name: string;
+    };
     score: number;
   }[];
 };
@@ -17,7 +20,10 @@ export type Competitor = {
   id: string;
   name: string;
   scores: {
-    competition: string;
+    competition: {
+      id: string;
+      name: string;
+    };
     score: number;
   }[];
 };

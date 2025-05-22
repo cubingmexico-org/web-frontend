@@ -32,8 +32,7 @@ import {
 } from "@workspace/ui/components/tooltip";
 import { cn } from "@workspace/ui/lib/utils";
 import { Badge } from "@workspace/ui/components/badge";
-import { Map } from "./_components/map";
-import type { GeoJSONProps } from "react-leaflet";
+import { type GeoJSONProps } from "react-leaflet";
 import { headers } from "next/headers";
 import Link from "next/link";
 import {
@@ -43,6 +42,7 @@ import {
 import { unstable_cache } from "@/lib/unstable-cache";
 import { Tier } from "@/types";
 import type { Metadata } from "next";
+import { MapContainer } from "./_components/map-container";
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -338,7 +338,9 @@ export default async function Page({
         <TableHeader>
           <TableRow>
             <TableHead>Evento</TableHead>
-            <TableHead className="text-center">SR</TableHead>
+            {persons[0]?.state && (
+              <TableHead className="text-center">SR</TableHead>
+            )}
             <TableHead className="text-center">NR</TableHead>
             <TableHead className="text-center">CR</TableHead>
             <TableHead className="text-center">WR</TableHead>
@@ -347,7 +349,9 @@ export default async function Page({
             <TableHead className="text-center">WR</TableHead>
             <TableHead className="text-center">CR</TableHead>
             <TableHead className="text-center">NR</TableHead>
-            <TableHead className="text-center">SR</TableHead>
+            {persons[0]?.state && (
+              <TableHead className="text-center">SR</TableHead>
+            )}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -359,18 +363,22 @@ export default async function Page({
                   className={`cubing-icon event-${record.event}`}
                 />
               </TableCell>
-              <TableCell
-                className={cn(
-                  "text-center",
-                  record?.record?.single.state_rank === 1 &&
-                    "font-semibold text-blue-700",
-                )}
-              >
-                {record?.record?.single.state_rank ??
-                  (!record.event && (
-                    <span className="text-muted-foreground font-thin">N/A</span>
-                  ))}
-              </TableCell>
+              {persons[0]?.state && (
+                <TableCell
+                  className={cn(
+                    "text-center",
+                    record?.record?.single.state_rank === 1 &&
+                      "font-semibold text-blue-700",
+                  )}
+                >
+                  {record?.record?.single.state_rank ??
+                    (!record.event && (
+                      <span className="text-muted-foreground font-thin">
+                        N/A
+                      </span>
+                    ))}
+                </TableCell>
+              )}
               <TableCell
                 className={cn(
                   "text-center",
@@ -437,18 +445,22 @@ export default async function Page({
               >
                 {record?.record?.average?.country_rank}
               </TableCell>
-              <TableCell
-                className={cn(
-                  "text-center",
-                  record?.record?.average.state_rank === 1 &&
-                    "font-semibold text-blue-700",
-                )}
-              >
-                {record?.record?.average.state_rank ??
-                  (!record.event && (
-                    <span className="text-muted-foreground font-thin">N/A</span>
-                  ))}
-              </TableCell>
+              {persons[0]?.state && (
+                <TableCell
+                  className={cn(
+                    "text-center",
+                    record?.record?.average.state_rank === 1 &&
+                      "font-semibold text-blue-700",
+                  )}
+                >
+                  {record?.record?.average.state_rank ??
+                    (!record.event && (
+                      <span className="text-muted-foreground font-thin">
+                        N/A
+                      </span>
+                    ))}
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>
@@ -526,7 +538,7 @@ export default async function Page({
         </Badge>
       </h2>
       <div className="bg-white-700 mx-auto my-5 w-[98%] h-[480px]">
-        <Map posix={[23.9345, -102.5528]} statesData={filteredStatesData} />
+        <MapContainer statesData={filteredStatesData} />
       </div>
     </main>
   );

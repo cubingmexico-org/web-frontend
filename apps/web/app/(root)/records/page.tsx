@@ -152,15 +152,17 @@ export default async function Page(props: PageProps) {
                         record.single.solves.value4,
                         record.single.solves.value5,
                       ].map((value, _, array) => {
-                        const min = Math.min(...array);
+                        const min = Math.min(...array.filter((n) => n !== 0));
                         const max = Math.max(...array);
                         const formattedValue = formatTime(value);
 
                         return (
                           <span key={value}>
-                            {value === min || value === max
-                              ? `(${formattedValue})`
-                              : formattedValue}
+                            {value === 0
+                              ? null
+                              : value === min || value === max
+                                ? `(${formattedValue})`
+                                : formattedValue}
                           </span>
                         );
                       })}
@@ -180,9 +182,13 @@ export default async function Page(props: PageProps) {
                     </Link>
                   </TableCell>
                   <TableCell>
-                    {record.average?.best
-                      ? formatTime(record.average.best)
-                      : "N/A"}
+                    {record.average?.best ? (
+                      formatTime(record.average.best)
+                    ) : (
+                      <span className="text-muted-foreground font-thin">
+                        N/A
+                      </span>
+                    )}
                   </TableCell>
                   <TableCell className="whitespace-nowrap">
                     {record.average?.state}
@@ -251,15 +257,21 @@ export default async function Page(props: PageProps) {
                           record.average?.solves.value4,
                           record.average?.solves.value5,
                         ].map((value, _, array) => {
-                          const min = Math.min(...(array as number[]));
+                          const min = Math.min(
+                            ...(array as number[]).filter((n) => n !== 0),
+                          );
                           const max = Math.max(...(array as number[]));
                           const formattedValue = formatTime(value as number);
 
+                          console.log(value);
+
                           return (
                             <span key={value}>
-                              {value === min || value === max
-                                ? `(${formattedValue})`
-                                : formattedValue}
+                              {value === 0 || value === undefined
+                                ? null
+                                : value === min || value === max
+                                  ? `(${formattedValue})`
+                                  : formattedValue}
                             </span>
                           );
                         })}

@@ -24,9 +24,12 @@ const calculateTeamTotal = (team: Team): number => {
 
 const getCompetitionScore = (
   member: TeamMember,
-  competition: string,
+  competition: {
+    id: string;
+    name: string;
+  },
 ): number => {
-  const score = member.scores.find((s) => s.competition === competition);
+  const score = member.scores.find((s) => s.competition.id === competition.id);
   return score ? score.score : 0;
 };
 
@@ -34,7 +37,13 @@ const calculateCompetitorTotal = (competitor: Competitor): number => {
   return competitor.scores.reduce((total, score) => total + score.score, 0);
 };
 
-export function ScoreboardTable({ teams }: { teams: Team[] }) {
+export function ScoreboardTable({
+  teams,
+  variant,
+}: {
+  teams: Team[];
+  variant: "prs" | "kinch";
+}) {
   const competitions = Array.from(
     new Set(
       teams.flatMap((team) =>
@@ -63,10 +72,18 @@ export function ScoreboardTable({ teams }: { teams: Team[] }) {
               </TableHead>
               {competitions.map((competition) => (
                 <TableHead
-                  key={competition}
+                  key={competition.id}
                   className="text-center min-w-[120px]"
                 >
-                  {competition}
+                  <Link
+                    href={
+                      variant === "prs"
+                        ? `https://live.worldcubeassociation.org/link/competitions/${competition.id}`
+                        : `https://comp-kinch.sylvermyst.com/#/competition/${competition.id}`
+                    }
+                  >
+                    {competition.name}
+                  </Link>
                 </TableHead>
               ))}
               <TableHead className="sticky right-0 z-20 text-center w-[100px] bg-background">
@@ -101,7 +118,7 @@ export function ScoreboardTable({ teams }: { teams: Team[] }) {
                       </Link>
                     </TableCell>
                     {competitions.map((competition) => (
-                      <TableCell key={competition} className="text-center">
+                      <TableCell key={competition.id} className="text-center">
                         {getCompetitionScore(member, competition)}
                       </TableCell>
                     ))}
@@ -116,7 +133,7 @@ export function ScoreboardTable({ teams }: { teams: Team[] }) {
                   </TableCell>
                   {competitions.map((competition) => (
                     <TableCell
-                      key={competition}
+                      key={competition.id}
                       className="text-center font-bold"
                     >
                       {team.members.reduce(
@@ -176,7 +193,7 @@ export function IndividualScoreboardTable({
         }
       });
 
-      highestScores[competition] = { score: maxScore, competitorIds };
+      highestScores[competition.id] = { score: maxScore, competitorIds };
     });
 
     return highestScores;
@@ -198,10 +215,14 @@ export function IndividualScoreboardTable({
               </TableHead>
               {competitions.map((competition) => (
                 <TableHead
-                  key={competition}
+                  key={competition.id}
                   className="text-center min-w-[120px]"
                 >
-                  {competition}
+                  <Link
+                    href={`https://live.worldcubeassociation.org/link/competitions/${competition.id}`}
+                  >
+                    {competition.name}
+                  </Link>
                 </TableHead>
               ))}
               <TableHead className="sticky right-0 z-20 text-center w-[100px] bg-background">
@@ -237,12 +258,12 @@ export function IndividualScoreboardTable({
                 {competitions.map((competition) => {
                   const score = getCompetitionScore(competitor, competition);
                   const isHighest = highestScores[
-                    competition
+                    competition.id
                   ]!.competitorIds.includes(competitor.id);
 
                   return (
                     <TableCell
-                      key={competition}
+                      key={competition.id}
                       className={`text-center ${isHighest ? "font-bold" : ""}`}
                     >
                       {isHighest ? (

@@ -36,17 +36,17 @@ export default async function Page(): Promise<JSX.Element> {
         <CardContent>
           <Tabs defaultValue="teams-prs" className="w-full">
             <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 mb-8">
-              <TabsTrigger value="teams-prs">PRs (equipos)</TabsTrigger>
-              <TabsTrigger value="kinch">Kinch (equipos)</TabsTrigger>
-              <TabsTrigger value="individual-prs">PRs (individual)</TabsTrigger>
+              <TabsTrigger value="teams-prs">PRs</TabsTrigger>
+              <TabsTrigger value="kinch">Kinch</TabsTrigger>
+              <TabsTrigger value="individual-prs">Individual</TabsTrigger>
             </TabsList>
 
             <TabsContent value="teams-prs">
-              <ScoreboardTable teams={prs} />
+              <ScoreboardTable teams={prs} variant="prs" />
             </TabsContent>
 
             <TabsContent value="kinch">
-              <ScoreboardTable teams={kinchs} />
+              <ScoreboardTable teams={kinchs} variant="kinch" />
             </TabsContent>
 
             <TabsContent value="individual-prs">

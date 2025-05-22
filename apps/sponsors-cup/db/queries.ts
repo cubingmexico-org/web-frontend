@@ -16,6 +16,7 @@ export async function getPRScoreboard() {
       teamName: sponsoredTeam.name,
       memberId: person.id,
       memberName: person.name,
+      competitionId: sponsoredCompetitionScore.competitionId,
       competitionName: competition.name,
       score: sponsoredCompetitionScore.score,
     })
@@ -65,7 +66,10 @@ export async function getPRScoreboard() {
 
     if (row.competitionName) {
       member.scores.push({
-        competition: row.competitionName,
+        competition: {
+          id: row.competitionId!,
+          name: row.competitionName,
+        },
         score: row.score ?? 0,
       });
     }
@@ -81,6 +85,7 @@ export async function getKinchScoreboard() {
       teamName: sponsoredTeam.name,
       memberId: person.id,
       memberName: person.name,
+      competitionId: sponsoredCompetitionScore.competitionId,
       competitionName: competition.name,
       score: sponsoredCompetitionScore.score,
     })
@@ -114,7 +119,10 @@ export async function getKinchScoreboard() {
         id: string;
         name: string;
         scores: {
-          competition: string;
+          competition: {
+            id: string;
+            name: string;
+          };
           score: number;
         }[];
       }[];
@@ -144,7 +152,10 @@ export async function getKinchScoreboard() {
 
     if (row.competitionName) {
       member.scores.push({
-        competition: row.competitionName,
+        competition: {
+          id: row.competitionId!,
+          name: row.competitionName,
+        },
         score: row.score ?? 0,
       });
     }
@@ -158,6 +169,7 @@ export async function getIndividualScoreboard() {
     .select({
       memberId: person.id,
       memberName: person.name,
+      competitionId: sponsoredCompetitionScore.competitionId,
       competitionName: competition.name,
       score: sponsoredCompetitionScore.score,
     })
@@ -198,7 +210,10 @@ export async function getIndividualScoreboard() {
 
     if (competitor && row.competitionName) {
       competitor.scores.push({
-        competition: row.competitionName,
+        competition: {
+          id: row.competitionId!,
+          name: row.competitionName,
+        },
         score: row.score ?? 0,
       });
     }

@@ -16,14 +16,21 @@ export type Team = {
   members: TeamMember[];
 };
 
-export type Competitor = {
+export interface Competitor {
   id: string;
   name: string;
-  scores: {
-    competition: {
-      id: string;
-      name: string;
-    };
-    score: number;
-  }[];
-};
+  // Dynamically added properties for each competition, e.g., "Competition A": 100
+  [competitionName: string]: string | number;
+}
+
+export interface TransformedMember {
+  id: string;
+  name: string;
+  [competitionName: string]: string | number;
+}
+
+export interface TransformedTeam {
+  id: string;
+  name: string;
+  members: TransformedMember[];
+}

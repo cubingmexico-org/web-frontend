@@ -1,4 +1,8 @@
-import { Competitor, Team, TeamMember } from "@/app/types";
+import type {
+  TransformedMember,
+  TransformedTeam,
+  Competitor,
+} from "@/app/types";
 import {
   TableHeader,
   TableRow,
@@ -11,51 +15,60 @@ import { Medal, Trophy } from "lucide-react";
 import Link from "next/link";
 import { Fragment } from "react";
 
-const calculateMemberTotal = (member: TeamMember): number => {
-  return member.scores.reduce((total, score) => total + score.score, 0);
+const calculateMemberTotal = (
+  member: TransformedMember,
+  competitions: string[],
+  variant: "prs" | "kinch",
+): number => {
+  const total = Object.keys(member)
+    .filter((key) => key !== "id" && key !== "name")
+    .reduce((sum, competition) => sum + (member[competition] as number), 0);
+
+  return variant === "kinch" ? total / competitions.length : total;
 };
 
-const calculateTeamTotal = (team: Team): number => {
-  return team.members.reduce(
-    (total, member) => total + calculateMemberTotal(member),
+const calculateTeamTotal = (
+  team: TransformedTeam,
+  competitions: string[],
+  variant: "prs" | "kinch",
+): number => {
+  const total = team.members.reduce(
+    (sum, member) => sum + calculateMemberTotal(member, competitions, variant),
     0,
   );
-};
 
-const getCompetitionScore = (
-  member: TeamMember,
-  competition: {
-    id: string;
-    name: string;
-  },
-): number => {
-  const score = member.scores.find((s) => s.competition.id === competition.id);
-  return score ? score.score : 0;
+  return variant === "kinch" ? total / competitions.length : total;
 };
 
 const calculateCompetitorTotal = (competitor: Competitor): number => {
-  return competitor.scores.reduce((total, score) => total + score.score, 0);
+  return Object.keys(competitor)
+    .filter((key) => key !== "id" && key !== "name")
+    .reduce((sum, competition) => sum + (competitor[competition] as number), 0);
 };
 
 export function ScoreboardTable({
   teams,
   variant,
 }: {
-  teams: Team[];
+  teams: TransformedTeam[];
   variant: "prs" | "kinch";
 }) {
+  // Extract all unique competition names from the first team member
   const competitions = Array.from(
     new Set(
       teams.flatMap((team) =>
         team.members.flatMap((member) =>
-          member.scores.map((score) => score.competition),
+          Object.keys(member).filter((key) => key !== "id" && key !== "name"),
         ),
       ),
     ),
   ).sort();
 
   const sortedTeams = [...teams].sort((a, b) => {
-    return calculateTeamTotal(b) - calculateTeamTotal(a);
+    return (
+      calculateTeamTotal(b, competitions, variant) -
+      calculateTeamTotal(a, competitions, variant)
+    );
   });
 
   return (
@@ -72,17 +85,17 @@ export function ScoreboardTable({
               </TableHead>
               {competitions.map((competition) => (
                 <TableHead
-                  key={competition.id}
+                  key={competition}
                   className="text-center min-w-[120px]"
                 >
                   <Link
                     href={
                       variant === "prs"
-                        ? `https://live.worldcubeassociation.org/link/competitions/${competition.id}`
-                        : `https://comp-kinch.sylvermyst.com/#/competition/${competition.id}`
+                        ? `https://live.worldcubeassociation.org/link/competitions/${competition.replace(/\s+/g, "")}`
+                        : `https://comp-kinch.sylvermyst.com/#/competition/${competition.replace(/\s+/g, "")}`
                     }
                   >
-                    {competition.name}
+                    {competition}
                   </Link>
                 </TableHead>
               ))}
@@ -118,12 +131,12 @@ export function ScoreboardTable({
                       </Link>
                     </TableCell>
                     {competitions.map((competition) => (
-                      <TableCell key={competition.id} className="text-center">
-                        {getCompetitionScore(member, competition)}
+                      <TableCell key={competition} className="text-center">
+                        {member[competition] || 0}
                       </TableCell>
                     ))}
                     <TableCell className="sticky right-0 z-20 text-center font-medium bg-background">
-                      {calculateMemberTotal(member)}
+                      {calculateMemberTotal(member, competitions, variant)}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -133,18 +146,18 @@ export function ScoreboardTable({
                   </TableCell>
                   {competitions.map((competition) => (
                     <TableCell
-                      key={competition.id}
+                      key={competition}
                       className="text-center font-bold"
                     >
                       {team.members.reduce(
-                        (total, member) =>
-                          total + getCompetitionScore(member, competition),
+                        (sum, member) =>
+                          sum + ((member[competition] as number) || 0),
                         0,
                       )}
                     </TableCell>
                   ))}
                   <TableCell className="sticky right-0 z-20 text-center font-bold bg-muted/50">
-                    {calculateTeamTotal(team)}
+                    {calculateTeamTotal(team, competitions, variant)}
                   </TableCell>
                 </TableRow>
               </Fragment>
@@ -161,14 +174,16 @@ export function IndividualScoreboardTable({
 }: {
   competitors: Competitor[];
 }) {
+  // Extract all competition names from the competitors
   const competitions = Array.from(
     new Set(
       competitors.flatMap((competitor) =>
-        competitor.scores.map((score) => score.competition),
+        Object.keys(competitor).filter((key) => key !== "id" && key !== "name"),
       ),
     ),
   ).sort();
 
+  // Sort competitors by their total score
   const sortedCompetitors = [...competitors].sort((a, b) => {
     return calculateCompetitorTotal(b) - calculateCompetitorTotal(a);
   });
@@ -184,7 +199,7 @@ export function IndividualScoreboardTable({
       let competitorIds: string[] = [];
 
       competitors.forEach((competitor) => {
-        const score = getCompetitionScore(competitor, competition);
+        const score = competitor[competition] as number;
         if (score > maxScore) {
           maxScore = score;
           competitorIds = [competitor.id];
@@ -193,7 +208,7 @@ export function IndividualScoreboardTable({
         }
       });
 
-      highestScores[competition.id] = { score: maxScore, competitorIds };
+      highestScores[competition] = { score: maxScore, competitorIds };
     });
 
     return highestScores;
@@ -215,13 +230,13 @@ export function IndividualScoreboardTable({
               </TableHead>
               {competitions.map((competition) => (
                 <TableHead
-                  key={competition.id}
+                  key={competition}
                   className="text-center min-w-[120px]"
                 >
                   <Link
-                    href={`https://live.worldcubeassociation.org/link/competitions/${competition.id}`}
+                    href={`https://live.worldcubeassociation.org/link/competitions/${competition}`}
                   >
-                    {competition.name}
+                    {competition}
                   </Link>
                 </TableHead>
               ))}
@@ -256,14 +271,14 @@ export function IndividualScoreboardTable({
                   </Link>
                 </TableCell>
                 {competitions.map((competition) => {
-                  const score = getCompetitionScore(competitor, competition);
+                  const score = competitor[competition] as number;
                   const isHighest = highestScores[
-                    competition.id
+                    competition
                   ]!.competitorIds.includes(competitor.id);
 
                   return (
                     <TableCell
-                      key={competition.id}
+                      key={competition}
                       className={`text-center ${isHighest ? "font-bold" : ""}`}
                     >
                       {isHighest ? (

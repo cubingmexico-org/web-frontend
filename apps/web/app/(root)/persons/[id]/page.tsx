@@ -94,7 +94,7 @@ export default async function Page({
           const persons = await tx
             .select({
               state: state.name,
-              statesNames: sql`array_agg(DISTINCT ${competition.stateId})`,
+              statesNames: sql`array_agg(DISTINCT ${competition.stateId}) FILTER (WHERE ${competition.stateId} IS NOT NULL)`,
             })
             .from(person)
             .leftJoin(state, eq(person.stateId, state.id))

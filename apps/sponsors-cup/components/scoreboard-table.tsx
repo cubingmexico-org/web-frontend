@@ -15,29 +15,21 @@ import { Medal, Trophy } from "lucide-react";
 import Link from "next/link";
 import { Fragment } from "react";
 
-const calculateMemberTotal = (
-  member: TransformedMember,
-  competitions: string[],
-  variant: "prs" | "kinch",
-): number => {
+const calculateMemberTotal = (member: TransformedMember): number => {
   const total = Object.keys(member)
     .filter((key) => key !== "id" && key !== "name")
     .reduce((sum, competition) => sum + (member[competition] as number), 0);
 
-  return variant === "kinch" ? total / competitions.length : total;
+  return total;
 };
 
-const calculateTeamTotal = (
-  team: TransformedTeam,
-  competitions: string[],
-  variant: "prs" | "kinch",
-): number => {
+const calculateTeamTotal = (team: TransformedTeam): number => {
   const total = team.members.reduce(
-    (sum, member) => sum + calculateMemberTotal(member, competitions, variant),
+    (sum, member) => sum + calculateMemberTotal(member),
     0,
   );
 
-  return variant === "kinch" ? total / competitions.length : total;
+  return total;
 };
 
 const calculateCompetitorTotal = (competitor: Competitor): number => {
@@ -65,10 +57,7 @@ export function ScoreboardTable({
   ).sort();
 
   const sortedTeams = [...teams].sort((a, b) => {
-    return (
-      calculateTeamTotal(b, competitions, variant) -
-      calculateTeamTotal(a, competitions, variant)
-    );
+    return calculateTeamTotal(b) - calculateTeamTotal(a);
   });
 
   return (
@@ -136,7 +125,7 @@ export function ScoreboardTable({
                       </TableCell>
                     ))}
                     <TableCell className="sticky right-0 z-20 text-center font-medium bg-background">
-                      {calculateMemberTotal(member, competitions, variant)}
+                      {calculateMemberTotal(member)}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -157,7 +146,7 @@ export function ScoreboardTable({
                     </TableCell>
                   ))}
                   <TableCell className="sticky right-0 z-20 text-center font-bold bg-muted/50">
-                    {calculateTeamTotal(team, competitions, variant)}
+                    {calculateTeamTotal(team)}
                   </TableCell>
                 </TableRow>
               </Fragment>

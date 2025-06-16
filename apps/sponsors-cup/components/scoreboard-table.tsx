@@ -223,7 +223,7 @@ export function IndividualScoreboardTable({
                   className="text-center min-w-[120px]"
                 >
                   <Link
-                    href={`https://live.worldcubeassociation.org/link/competitions/${competition}`}
+                    href={`https://live.worldcubeassociation.org/link/competitions/${competition.replace(/\s+/g, "")}`}
                   >
                     {competition}
                   </Link>

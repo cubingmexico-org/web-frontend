@@ -111,7 +111,7 @@ export async function getPRScoreboard(): Promise<TransformedTeam[]> {
     },
     [],
     {
-      revalidate: 3600,
+      revalidate: 300,
       tags: ["prs"],
     },
   )();
@@ -208,7 +208,7 @@ export async function getKinchScoreboard(): Promise<TransformedTeam[]> {
     },
     [],
     {
-      revalidate: 3600,
+      revalidate: 300,
       tags: ["kinch"],
     },
   )();
@@ -292,7 +292,7 @@ export async function getIndividualScoreboard(): Promise<Competitor[]> {
     },
     [],
     {
-      revalidate: 3600,
+      revalidate: 300,
       tags: ["individual"],
     },
   )();

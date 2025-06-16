@@ -42,8 +42,8 @@ export default function Layout({
           reportaras. Agradecemos tu comprensión y colaboración en este asunto.
         </p>
         <p className="mt-2">
-          Esta página se actualiza los domingos a las 19:00 UTC-6 (7:00 PM hora
-          de la Ciudad de México).
+          Esta página se actualiza en algún punto del domingo/lunes, te pedimos
+          ser paciente.
         </p>
         <div className="mt-2">
           Puedes contactarnos a través de:

@@ -4,6 +4,7 @@ import "@cubing/icons";
 import { Providers } from "@/components/providers";
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Toaster } from "sonner";
 import { WebVitals } from "@/components/web-vitals";
 
@@ -41,6 +42,7 @@ export default function RootLayout({
         <WebVitals />
         <Providers>{children}</Providers>
         <Analytics />
+        <SpeedInsights />
         <Toaster />
       </body>
     </html>

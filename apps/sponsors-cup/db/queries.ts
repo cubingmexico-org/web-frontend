@@ -20,8 +20,8 @@ export async function getPRScoreboard(): Promise<TransformedTeam[]> {
             teamName: sponsoredTeam.name,
             memberId: person.id,
             memberName: person.name,
-            // competitionId: sponsoredCompetitionScore.competitionId, // Not strictly needed for the new structure if only name is used as key
             competitionName: competition.name,
+            competitionDate: competition.startDate,
             score: sponsoredCompetitionScore.score,
           })
           .from(sponsoredTeam)
@@ -46,17 +46,15 @@ export async function getPRScoreboard(): Promise<TransformedTeam[]> {
           );
 
         const teamMap = new Map<string, TransformedTeam>();
-        const allCompetitionNames = new Set<string>();
+        const competitions = new Map<string, Date>();
 
         rawData.forEach((row) => {
-          // Collect all unique competition names from the dataset
-          // This ensures that even if a member has a null score for an existing competition,
-          // that competition column will be created.
-          if (row.competitionName) {
-            allCompetitionNames.add(row.competitionName);
+          if (row.competitionName && row.competitionDate) {
+            if (!competitions.has(row.competitionName)) {
+              competitions.set(row.competitionName, row.competitionDate);
+            }
           }
 
-          // Ensure team exists in the map
           if (!teamMap.has(row.teamId)) {
             teamMap.set(row.teamId, {
               id: row.teamId,
@@ -65,38 +63,32 @@ export async function getPRScoreboard(): Promise<TransformedTeam[]> {
             });
           }
 
-          const team = teamMap.get(row.teamId)!; // Safe due to the check above
+          const team = teamMap.get(row.teamId)!;
 
-          // Find or create member
           let member = team.members.find((m) => m.id === row.memberId);
           if (!member) {
             member = {
               id: row.memberId,
-              name: row.memberName!, // Assuming memberName is expected to be non-null
-              // Competition scores will be added directly as properties
+              name: row.memberName!,
             };
             team.members.push(member);
           }
 
-          // Add score for the current competition if available
           if (row.competitionName) {
-            // Use score if present, otherwise it will be defaulted to 0 in the post-processing step
-            // This handles cases where a score might be explicitly null from the DB for a competition
-            // but we still want to represent that competition.
-            // The original code's `row.score ?? 0` is effectively achieved by the post-processing.
             if (row.score !== null && row.score !== undefined) {
               member[row.competitionName] = row.score;
             }
           }
         });
 
-        // Post-processing: Ensure all members have all competition columns, defaulting to 0
-        const competitionNamesArray = Array.from(allCompetitionNames);
+        const competitionNamesArray = Array.from(competitions.entries())
+          .sort(([, dateA], [, dateB]) => dateA.getTime() - dateB.getTime())
+          .map(([name]) => name);
+
         teamMap.forEach((team) => {
           team.members.forEach((member) => {
             competitionNamesArray.forEach((compName) => {
               if (!(compName in member)) {
-                // If a member doesn't have a score for a competition (either no entry or score was null), set it to 0.
                 member[compName] = 0;
               }
             });
@@ -129,6 +121,7 @@ export async function getKinchScoreboard(): Promise<TransformedTeam[]> {
             memberName: person.name,
             competitionId: sponsoredCompetitionScore.competitionId,
             competitionName: competition.name,
+            competitionDate: competition.startDate,
             score: sponsoredCompetitionScore.score,
           })
           .from(sponsoredTeam)
@@ -150,18 +143,46 @@ export async function getKinchScoreboard(): Promise<TransformedTeam[]> {
           .leftJoin(
             competition,
             eq(competition.id, sponsoredCompetitionScore.competitionId),
-          );
+          )
+          .orderBy(sponsoredTeam.name, person.name);
 
-        const teamMap = new Map<string, TransformedTeam>();
-        const allCompetitionNames = new Set<string>();
-
+        // Step 1: Collect all unique competitions and their details.
+        const competitionDetails = new Map<
+          string,
+          { id: string; name: string; date: Date }
+        >();
         rawData.forEach((row) => {
-          // Collect all unique competition names
-          if (row.competitionName) {
-            allCompetitionNames.add(row.competitionName);
+          if (row.competitionId && row.competitionName && row.competitionDate) {
+            competitionDetails.set(row.competitionId, {
+              id: row.competitionId,
+              name: row.competitionName,
+              date: row.competitionDate,
+            });
           }
+        });
 
-          // Ensure team exists in the map
+        // Step 2: Identify which competition names are used more than once.
+        const nameCounts = new Map<string, number>();
+        competitionDetails.forEach((comp) => {
+          nameCounts.set(comp.name, (nameCounts.get(comp.name) || 0) + 1);
+        });
+
+        // Step 3: Create a map from competition ID to a unique display name.
+        const compIdToDisplayName = new Map<string, string>();
+        competitionDetails.forEach((comp) => {
+          const isDuplicate = (nameCounts.get(comp.name) || 0) > 1;
+          // Disambiguate with the date (YYYY-MM-DD) if the name is not unique.
+          const displayName = isDuplicate
+            ? `${comp.name} (${comp.date.toISOString().split("T")[0]})`
+            : comp.name;
+          compIdToDisplayName.set(comp.id, displayName);
+        });
+
+        // Step 4: Build the scoreboard data structure.
+        const teamMap = new Map<string, TransformedTeam>();
+        rawData.forEach((row) => {
+          if (!row.teamId || !row.teamName) return;
+
           if (!teamMap.has(row.teamId)) {
             teamMap.set(row.teamId, {
               id: row.teamId,
@@ -169,27 +190,33 @@ export async function getKinchScoreboard(): Promise<TransformedTeam[]> {
               members: [],
             });
           }
+          const team = teamMap.get(row.teamId)!;
 
-          const team = teamMap.get(row.teamId)!; // Safe due to the check above
-
-          // Find or create member
           let member = team.members.find((m) => m.id === row.memberId);
           if (!member) {
+            if (!row.memberId || !row.memberName) return;
             member = {
               id: row.memberId,
-              name: row.memberName!,
+              name: row.memberName,
             };
             team.members.push(member);
           }
 
-          // Add score for the current competition if available
-          if (row.competitionName) {
-            member[row.competitionName] = row.score ?? 0;
+          // Use the unique display name for the score property.
+          if (row.competitionId) {
+            const displayName = compIdToDisplayName.get(row.competitionId);
+            if (displayName) {
+              member[displayName] = row.score ?? 0;
+            }
           }
         });
 
-        // Post-processing: Ensure all members have all competition columns, defaulting to 0
-        const competitionNamesArray = Array.from(allCompetitionNames);
+        // Step 5: Get the sorted list of unique competition column names.
+        const competitionNamesArray = Array.from(competitionDetails.values())
+          .sort((a, b) => a.date.getTime() - b.date.getTime())
+          .map((comp) => compIdToDisplayName.get(comp.id)!);
+
+        // Step 6: Ensure all members have a score for every competition.
         teamMap.forEach((team) => {
           team.members.forEach((member) => {
             competitionNamesArray.forEach((compName) => {
@@ -224,6 +251,7 @@ export async function getIndividualScoreboard(): Promise<Competitor[]> {
             memberName: person.name,
             competitionId: sponsoredCompetitionScore.competitionId,
             competitionName: competition.name,
+            competitionDate: competition.startDate,
             score: sponsoredCompetitionScore.score,
           })
           .from(sponsoredTeamMember)
@@ -244,20 +272,19 @@ export async function getIndividualScoreboard(): Promise<Competitor[]> {
           );
 
         const competitorMap = new Map<string, Competitor>();
-        const allCompetitionNames = new Set<string>();
+        const competitions = new Map<string, Date>();
 
         memberScores.forEach((row) => {
           if (!row.memberId || !row.memberName) {
-            // Skip if essential member data is missing
             return;
           }
 
-          // Collect all unique competition names
-          if (row.competitionName) {
-            allCompetitionNames.add(row.competitionName);
+          if (row.competitionName && row.competitionDate) {
+            if (!competitions.has(row.competitionName)) {
+              competitions.set(row.competitionName, row.competitionDate);
+            }
           }
 
-          // Ensure competitor exists in the map
           if (!competitorMap.has(row.memberId)) {
             competitorMap.set(row.memberId, {
               id: row.memberId,
@@ -265,20 +292,20 @@ export async function getIndividualScoreboard(): Promise<Competitor[]> {
             });
           }
 
-          const competitor = competitorMap.get(row.memberId)!; // Safe due to the check above
+          const competitor = competitorMap.get(row.memberId)!;
 
-          // Add score for the current competition if available
           if (row.competitionName) {
             competitor[row.competitionName] = row.score ?? 0;
           }
         });
 
-        // Post-processing: Ensure all competitors have all competition columns, defaulting to 0
-        const competitionNamesArray = Array.from(allCompetitionNames);
+        const competitionNamesArray = Array.from(competitions.entries())
+          .sort(([, dateA], [, dateB]) => dateA.getTime() - dateB.getTime())
+          .map(([name]) => name);
+
         competitorMap.forEach((competitor) => {
           competitionNamesArray.forEach((compName) => {
             if (!(compName in competitor)) {
-              // If a competitor doesn't have a score for a competition, set it to 0
               competitor[compName] = 0;
             }
           });

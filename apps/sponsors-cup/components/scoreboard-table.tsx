@@ -20,7 +20,7 @@ const calculateMemberTotal = (member: TransformedMember): number => {
     .filter((key) => key !== "id" && key !== "name")
     .reduce((sum, competition) => sum + (member[competition] as number), 0);
 
-  return total;
+  return parseFloat(total.toFixed(2));
 };
 
 const calculateTeamTotal = (team: TransformedTeam): number => {
@@ -54,7 +54,7 @@ export function ScoreboardTable({
         ),
       ),
     ),
-  ).sort();
+  );
 
   const sortedTeams = [...teams].sort((a, b) => {
     return calculateTeamTotal(b) - calculateTeamTotal(a);
@@ -170,7 +170,7 @@ export function IndividualScoreboardTable({
         Object.keys(competitor).filter((key) => key !== "id" && key !== "name"),
       ),
     ),
-  ).sort();
+  );
 
   // Sort competitors by their total score
   const sortedCompetitors = [...competitors].sort((a, b) => {

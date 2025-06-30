@@ -165,7 +165,8 @@ export async function findCompetitors(competitionId: string) {
 
   const dataMembers = await db
     .select({
-      id: sponsoredTeamMember.personId,
+      id: sponsoredTeamMember.id,
+      personId: sponsoredTeamMember.personId,
       name: person.name,
     })
     .from(sponsoredTeamMember)
@@ -173,14 +174,14 @@ export async function findCompetitors(competitionId: string) {
 
   const participatingMembers = dataMembers
     .filter((member) =>
-      wcif.persons.some((person) => person.wcaId === member.id),
+      wcif.persons.some((person) => person.wcaId === member.personId),
     )
     .map((member) => {
-      const person = wcif.persons.find((pers) => pers.wcaId === member.id);
+      const person = wcif.persons.find((pers) => pers.wcaId === member.personId);
       if (person) {
         return {
-          personId: person.registrantId,
           id: member.id,
+          personId: member.personId,
           name: member.name,
         };
       }

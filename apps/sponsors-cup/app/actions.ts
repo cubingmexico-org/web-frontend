@@ -177,7 +177,9 @@ export async function findCompetitors(competitionId: string) {
       wcif.persons.some((person) => person.wcaId === member.personId),
     )
     .map((member) => {
-      const person = wcif.persons.find((pers) => pers.wcaId === member.personId);
+      const person = wcif.persons.find(
+        (pers) => pers.wcaId === member.personId,
+      );
       if (person) {
         return {
           id: member.id,

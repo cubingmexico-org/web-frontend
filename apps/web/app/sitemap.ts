@@ -1,6 +1,56 @@
+import { getEvents, getPersons, getStates } from "@/db/queries";
 import type { MetadataRoute } from "next";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const states = await getStates();
+  const events = await getEvents();
+  const persons = await getPersons();
+
+  const teamUrls = states.map((state) => {
+    return {
+      url: `https://www.cubingmexico.net/teams/${state.id}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    };
+  });
+
+  const stateKinchUrls = states.map((state) => {
+    return {
+      url: `https://www.cubingmexico.net/kinch/${state.id}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    };
+  });
+
+  const singleRankingUrls = events.map((event) => {
+    return {
+      url: `https://www.cubingmexico.net/rankings/${event.id}/single`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    };
+  });
+
+  const averageRankingUrls = events.map((event) => {
+    return {
+      url: `https://www.cubingmexico.net/rankings/${event.id}/average`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    };
+  });
+
+  const personUrls = persons.map((person) => {
+    return {
+      url: `https://www.cubingmexico.net/persons/${person.id}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.5,
+    };
+  });
+
   return [
     {
       url: "https://www.cubingmexico.net",
@@ -9,16 +59,105 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      url: "https://www.cubingmexico.net/members",
+      url: "https://www.cubingmexico.net/teams",
       lastModified: new Date(),
       changeFrequency: "monthly",
-      priority: 0.8,
+      priority: 0.9,
     },
+    ...teamUrls,
     {
       url: "https://www.cubingmexico.net/competitions",
       lastModified: new Date(),
       changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: "https://www.cubingmexico.net/about",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    ...singleRankingUrls,
+    ...averageRankingUrls,
+    {
+      url: "https://www.cubingmexico.net/records",
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.6,
+    },
+    {
+      url: "https://www.cubingmexico.net/kinch",
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.6,
+    },
+    ...stateKinchUrls,
+    {
+      url: "https://www.cubingmexico.net/kinch/teams",
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.6,
+    },
+    {
+      url: "https://www.cubingmexico.net/sor/single",
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.6,
+    },
+    {
+      url: "https://www.cubingmexico.net/sor/average",
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.6,
+    },
+    {
+      url: "https://www.cubingmexico.net/sor/single/teams",
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.6,
+    },
+    {
+      url: "https://www.cubingmexico.net/sor/average/teams",
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.6,
+    },
+    {
+      url: "https://www.cubingmexico.net/persons",
+      lastModified: new Date(),
+      changeFrequency: "weekly",
       priority: 0.5,
+    },
+    ...personUrls,
+    {
+      url: "https://www.cubingmexico.net/organisers",
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.5,
+    },
+    {
+      url: "https://www.cubingmexico.net/delegates",
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.5,
+    },
+    {
+      url: "https://www.cubingmexico.net/members",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
+      url: "https://www.cubingmexico.net/logo",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.4,
+    },
+    {
+      url: "https://www.cubingmexico.net/tools",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
     },
   ];
 }

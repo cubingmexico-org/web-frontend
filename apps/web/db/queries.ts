@@ -65,6 +65,30 @@ export async function getStates() {
   )();
 }
 
+export async function getPersons() {
+  return unstable_cache(
+    async () => {
+      try {
+        return await db
+          .select({
+            id: person.id,
+            name: person.name,
+          })
+          .from(person)
+          .then((res) => res);
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    },
+    [],
+    {
+      revalidate: false,
+      tags: ["persons"],
+    },
+  )();
+}
+
 export async function getCurrentUserTeam({ userId }: { userId: Person["id"] }) {
   return await unstable_cache(
     async () => {

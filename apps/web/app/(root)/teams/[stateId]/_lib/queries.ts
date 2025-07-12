@@ -45,50 +45,16 @@ export async function getMembers(
                       : asc(teamMember.isAdmin);
                   case "stateRecords":
                     return item.desc
-                      ? desc(
-                          sql`(
-                        SELECT CAST((
-                          (SELECT COUNT(*)
-                            FROM "ranksSingle"
-                            WHERE "personId" = ${person.id}
-                            AND "stateRank" = 1)
-                          +
-                          (SELECT COUNT(*)
-                            FROM "ranksAverage"
-                            WHERE "personId" = ${person.id}
-                            AND "stateRank" = 1)
-                        ) AS INTEGER)`,
-                        )
-                      : asc(
-                          sql`(
-                        SELECT CAST((
-                          (SELECT COUNT(*)
-                            FROM "ranksSingle"
-                            WHERE "personId" = ${person.id}
-                            AND "stateRank" = 1)
-                          +
-                          (SELECT COUNT(*)
-                            FROM "ranksAverage"
-                            WHERE "personId" = ${person.id}
-                            AND "stateRank" = 1)
-                        ) AS INTEGER)`,
-                        );
+                      ? desc(sql`"stateRecords"`)
+                      : asc(sql`"stateRecords"`);
                   case "podiums":
                     return item.desc
-                      ? desc(
-                          sql`count(CASE WHEN ${result.roundTypeId} IN ('f', 'c') AND ${result.pos} IN (1, 2, 3) AND ${result.best} > 0 THEN 1 END)`,
-                        )
-                      : asc(
-                          sql`count(CASE WHEN ${result.roundTypeId} IN ('f', 'c') AND ${result.pos} IN (1, 2, 3) AND ${result.best} > 0 THEN 1 END)`,
-                        );
+                      ? desc(sql`"podiums"`)
+                      : asc(sql`"podiums"`);
                   case "specialties": // TODO: Fix this
                     return item.desc
                       ? desc(teamMember.specialties)
                       : asc(teamMember.specialties);
-                  // case "achievements":
-                  //   return item.desc
-                  //     ? desc(teamMember.achievements)
-                  //     : asc(teamMember.achievements);
                   default:
                     return item.desc
                       ? desc(person[item.id])
@@ -111,7 +77,7 @@ export async function getMembers(
                       AND ${result.best} > 0 
                       THEN 1 
                     END`,
-              ),
+              ).as("podiums"),
               stateRecords: sql`(
                 SELECT CAST((
                   (SELECT COUNT(*)
@@ -124,7 +90,7 @@ export async function getMembers(
                     WHERE "personId" = ${person.id}
                     AND "stateRank" = 1)
                 ) AS INTEGER) AS stateRecords
-              )`,
+              )`.as("stateRecords"),
               specialties: teamMember.specialties,
             })
             .from(person)

@@ -1,4 +1,4 @@
-import { Tier } from "@/types";
+import type { Tier } from "@/types";
 
 export function formatTime(centiseconds: number): string {
   if (centiseconds === -1) {

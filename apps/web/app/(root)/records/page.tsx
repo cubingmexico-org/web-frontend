@@ -263,8 +263,6 @@ export default async function Page(props: PageProps) {
                           const max = Math.max(...(array as number[]));
                           const formattedValue = formatTime(value as number);
 
-                          console.log(value);
-
                           return (
                             <span key={value}>
                               {value === 0 || value === undefined

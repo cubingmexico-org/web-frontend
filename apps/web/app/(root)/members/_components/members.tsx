@@ -58,6 +58,21 @@ export function Members({ members }: MembersProps) {
     }
   };
 
+  const tierOrder: Tier[] = [
+    "Bronce",
+    "Plata",
+    "Oro",
+    "Platino",
+    "Ópalo",
+    "Diamante",
+  ];
+
+  const sortedMembers = [...members].sort((a, b) => {
+    const tierA = getTier(a) ?? "Bronce";
+    const tierB = getTier(b) ?? "Bronce";
+    return tierOrder.indexOf(tierB) - tierOrder.indexOf(tierA);
+  });
+
   return (
     <main className="flex-grow container mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
@@ -189,7 +204,7 @@ export function Members({ members }: MembersProps) {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {members.map((member) => (
+                      {sortedMembers.map((member) => (
                         <TableRow key={member.id}>
                           <TableCell className="whitespace-nowrap">
                             <div className="flex">

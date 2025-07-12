@@ -18,8 +18,8 @@ export const searchParamsCache = createSearchParamsCache({
   ]),
   name: parseAsString.withDefault(""),
   gender: parseAsArrayOf(z.enum(person.gender.enumValues)).withDefault([]),
-  specialties: parseAsArrayOf(z.string()).withDefault([]),
-  achievements: parseAsArrayOf(z.string()).withDefault([]),
+  // specialties: parseAsArrayOf(z.string()).withDefault([]),
+  // achievements: parseAsArrayOf(z.string()).withDefault([]),
   // advanced filter
   filters: getFiltersStateParser().withDefault([]),
   joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),

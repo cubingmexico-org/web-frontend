@@ -114,7 +114,6 @@ export function getColumns({
         );
       },
       enableHiding: false,
-      enableSorting: false,
     },
     {
       accessorKey: "specialties",
@@ -148,7 +147,6 @@ export function getColumns({
         );
       },
       enableHiding: false,
-      enableSorting: false,
     },
     // {
     //   accessorKey: "achievements",

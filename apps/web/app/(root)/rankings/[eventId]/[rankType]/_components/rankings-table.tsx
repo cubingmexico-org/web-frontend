@@ -13,6 +13,11 @@ import type {
   getRankAveragesGenderCounts,
 } from "../_lib/queries";
 import { getColumns } from "./rankings-table-columns";
+import { parseAsArrayOf, parseAsString, useQueryStates } from "nuqs";
+
+const searchParams = {
+  state: parseAsArrayOf(parseAsString).withDefault([]),
+};
 
 interface RankSinglesTableProps {
   promises: Promise<
@@ -36,6 +41,8 @@ export function RankSinglesTable({ promises }: RankSinglesTableProps) {
     [stateCounts, genderCounts],
   );
 
+  const [{ state }] = useQueryStates(searchParams);
+
   const { table } = useDataTable({
     data,
     columns,
@@ -44,6 +51,7 @@ export function RankSinglesTable({ promises }: RankSinglesTableProps) {
       sorting: [{ id: "countryRank", desc: false }],
       columnVisibility: {
         gender: false,
+        stateRank: state.length > 0,
       },
     },
     getRowId: (originalRow) => originalRow.personId,
@@ -51,6 +59,13 @@ export function RankSinglesTable({ promises }: RankSinglesTableProps) {
     clearOnDefault: true,
     enableRowSelection: false,
   });
+
+  React.useEffect(() => {
+    table.setColumnVisibility((prev) => ({
+      ...prev,
+      stateRank: state.length > 0,
+    }));
+  }, [state, table]);
 
   return (
     <DataTable table={table}>
@@ -81,6 +96,8 @@ export function RankAveragesTable({ promises }: RankAveragesTableProps) {
     [stateCounts, genderCounts],
   );
 
+  const [{ state }] = useQueryStates(searchParams);
+
   const { table } = useDataTable({
     data,
     columns,
@@ -89,6 +106,7 @@ export function RankAveragesTable({ promises }: RankAveragesTableProps) {
       sorting: [{ id: "countryRank", desc: false }],
       columnVisibility: {
         gender: false,
+        stateRank: state.length > 0,
       },
     },
     getRowId: (originalRow) => originalRow.personId,
@@ -96,6 +114,13 @@ export function RankAveragesTable({ promises }: RankAveragesTableProps) {
     clearOnDefault: true,
     enableRowSelection: false,
   });
+
+  React.useEffect(() => {
+    table.setColumnVisibility((prev) => ({
+      ...prev,
+      stateRank: state.length > 0,
+    }));
+  }, [state, table]);
 
   return (
     <DataTable table={table}>

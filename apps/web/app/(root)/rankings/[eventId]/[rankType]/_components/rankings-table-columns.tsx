@@ -12,6 +12,7 @@ import Link from "next/link";
 interface GetColumnsProps {
   stateCounts: Record<string, number>;
   genderCounts: Record<string, number>;
+  isState?: boolean;
 }
 
 export function getColumns({
@@ -26,6 +27,17 @@ export function getColumns({
       ),
       cell: ({ row }) => {
         return <div>{row.getValue("countryRank")}</div>;
+      },
+      enableHiding: false,
+    },
+    {
+      id: "stateRank",
+      accessorKey: "stateRank",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="SR" />
+      ),
+      cell: ({ row }) => {
+        return <div>{row.getValue("stateRank")}</div>;
       },
       enableHiding: false,
     },

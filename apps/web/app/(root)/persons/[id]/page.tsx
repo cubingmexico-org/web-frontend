@@ -238,8 +238,10 @@ export default async function Page({
     }[];
   };
 
+  const statesNames = persons[0]?.statesNames as string[] | null;
+
   const filteredStatesData = statesData.features.filter((feature) =>
-    (persons[0]?.statesNames as string[]).includes(feature.properties.id),
+    statesNames?.includes(feature.properties.id),
   ) as unknown as GeoJSONProps["data"];
 
   const getTierClass = (tier: Tier): string => {
@@ -532,9 +534,9 @@ export default async function Page({
       <h2 className="flex items-center justify-center gap-2 text-lg font-semibold my-4">
         <span>Estados visitados</span>
         <Badge>
-          {(persons[0]?.statesNames as string[])[0] === null
+          {statesNames?.[0] === null || statesNames === null
             ? 0
-            : (persons[0]?.statesNames as string[]).length}
+            : statesNames?.length}
         </Badge>
       </h2>
       <div className="bg-white-700 mx-auto my-5 w-[98%] h-[480px]">

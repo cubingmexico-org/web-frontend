@@ -8,6 +8,8 @@ import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 import { Badge } from "@workspace/ui/components/badge";
 import { formatStatusName, getStatusIcon } from "../_lib/utils";
+import { ExternalLink } from "lucide-react";
+import { WcaMonochrome } from "@workspace/icons";
 
 interface GetColumnsProps {
   stateCounts: Record<string, number>;
@@ -128,6 +130,52 @@ export function getColumns({
         })),
       },
       enableColumnFilter: true,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "kinch",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Kinch Ranks" />
+      ),
+      cell: ({ row }) => {
+        return (
+          <div className="flex space-x-2">
+            <Link
+              className="flex items-center max-w-[31.25rem] truncate hover:underline"
+              href={`https://comp-kinch.sylvermyst.com/#/competition/${row.original.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Comp-Kinch
+              <ExternalLink className="ml-1 size-4" />
+            </Link>
+          </div>
+        );
+      },
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "wca-live",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="WCA Live" />
+      ),
+      cell: ({ row }) => {
+        return (
+          <div className="flex space-x-2">
+            <Link
+              className="flex items-center max-w-[31.25rem] truncate hover:underline"
+              href={`https://live.worldcubeassociation.org/link/competitions/${row.original.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <WcaMonochrome className="mr-1 size-4" />
+              WCA Live
+            </Link>
+          </div>
+        );
+      },
+      enableSorting: false,
       enableHiding: false,
     },
     {

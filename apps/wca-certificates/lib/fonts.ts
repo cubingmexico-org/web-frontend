@@ -44,6 +44,10 @@ export const fonts = [
     label: "Montserrat",
   },
   {
+    value: "Mulish",
+    label: "Mulish",
+  },
+  {
     value: "Noto Sans",
     label: "Noto Sans",
   },
@@ -179,6 +183,12 @@ export const fontDeclarations = {
     bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Montserrat/Montserrat-Bold.ttf`,
     italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Montserrat/Montserrat-Regular.ttf`,
     bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Montserrat/Montserrat-Regular.ttf`,
+  },
+  Mulish: {
+    normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Mulish/Mulish-Regular.ttf`,
+    bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Mulish/Mulish-Bold.ttf`,
+    italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Mulish/Mulish-Regular.ttf`,
+    bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Mulish/Mulish-Regular.ttf`,
   },
   "Noto Sans": {
     normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Noto_Sans/NotoSans-Regular.ttf`,

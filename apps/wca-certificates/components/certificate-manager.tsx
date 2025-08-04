@@ -34,6 +34,7 @@ import {
   ChevronRight,
   Home,
   Check,
+  X,
 } from "lucide-react";
 import { Competition } from "@/types/wca";
 import {
@@ -730,9 +731,16 @@ export function CertificateManager({
     setSelectedTemplate(value);
   };
 
-  const filteredPersons = persons.filter((person) =>
-    person.name.toLowerCase().includes(searchParticipant.toLowerCase()),
-  );
+  const removeAccents = (str: string) =>
+    str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  const filteredPersons = persons
+    .filter((person) =>
+      removeAccents(person.name.toLowerCase()).includes(
+        removeAccents(searchParticipant.toLowerCase()),
+      ),
+    )
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <div className="space-y-6">
@@ -951,7 +959,6 @@ export function CertificateManager({
                     <div className="space-y-2">
                       <Label htmlFor="podiumType">Tipo de podio</Label>
                       <Select
-                        disabled
                         value={selectedTemplate}
                         onValueChange={handleTemplateChange}
                       >
@@ -960,8 +967,12 @@ export function CertificateManager({
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="general">General</SelectItem>
-                          <SelectItem value="female">Femeniles</SelectItem>
-                          <SelectItem value="newcomers">Primera vez</SelectItem>
+                          <SelectItem value="female" disabled>
+                            Femeniles
+                          </SelectItem>
+                          <SelectItem value="newcomers" disabled>
+                            Primera vez
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -1131,15 +1142,16 @@ export function CertificateManager({
                           <>
                             {filteredPersons.map((person) => (
                               <div
-                                key={person.wcaId || person.name}
+                                key={person.registrantId}
                                 className="flex items-center space-x-2"
                               >
                                 <Checkbox
-                                  id={person.wcaId || person.name}
+                                  id={String(person.registrantId)}
                                   checked={
                                     selectedParticipants.filter(
                                       (participant) =>
-                                        participant.wcaId === person.wcaId,
+                                        participant.registrantId ===
+                                        person.registrantId,
                                     ).length > 0
                                   }
                                   onCheckedChange={(checked) => {
@@ -1147,7 +1159,8 @@ export function CertificateManager({
                                       const participant =
                                         participantsData?.filter(
                                           (participant) =>
-                                            participant.wcaId === person.wcaId,
+                                            participant.registrantId ===
+                                            person.registrantId,
                                         );
                                       if (participant) {
                                         setSelctedParticipants((prev) => [
@@ -1159,7 +1172,8 @@ export function CertificateManager({
                                       setSelctedParticipants((prev) =>
                                         prev.filter(
                                           (participant) =>
-                                            participant.wcaId !== person.wcaId,
+                                            participant.registrantId !==
+                                            person.registrantId,
                                         ),
                                       );
                                     }
@@ -1167,11 +1181,12 @@ export function CertificateManager({
                                   disabled={
                                     participantsData?.filter(
                                       (participant) =>
-                                        participant.wcaId === person.wcaId,
+                                        participant.registrantId ===
+                                        person.registrantId,
                                     ).length === 0
                                   }
                                 />
-                                <Label htmlFor={person.wcaId || person.name}>
+                                <Label htmlFor={String(person.registrantId)}>
                                   <p className="text-xs">{person.name}</p>
                                 </Label>
                               </div>
@@ -1182,29 +1197,34 @@ export function CertificateManager({
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-between">
-                    <Toggle
-                      aria-label="Seleccionar todos"
-                      onClick={() => {
-                        if (
+                    <div className="flex gap-2">
+                      <Button
+                        aria-label="Seleccionar todos"
+                        disabled={
                           selectedParticipants.length ===
                           participantsData?.length
-                        ) {
-                          setSelctedParticipants([]);
-                        } else {
-                          setSelctedParticipants(participantsData || []);
                         }
-                      }}
-                      pressed={
-                        selectedParticipants.length === participantsData?.length
-                          ? true
-                          : false
-                      }
-                    >
-                      <Check />
-                      {selectedParticipants.length === participantsData?.length
-                        ? "Desmarcar todos"
-                        : "Seleccionar todos"}
-                    </Toggle>
+                        onClick={() => {
+                          setSelctedParticipants(participantsData || []);
+                        }}
+                        variant="ghost"
+                      >
+                        <Check />
+                        Seleccionar todos
+                      </Button>
+                      {selectedParticipants.length > 0 && (
+                        <Button
+                          aria-label="Borrar selección"
+                          onClick={() => {
+                            setSelctedParticipants([]);
+                          }}
+                          variant="ghost"
+                        >
+                          <X />
+                          Borrar selección
+                        </Button>
+                      )}
+                    </div>
                     <Button
                       disabled={selectedParticipants.length === 0}
                       variant="outline"

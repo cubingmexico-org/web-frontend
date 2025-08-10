@@ -33,25 +33,30 @@ export function GenderSelector({ className, ...props }: GenderSelectorProps) {
 
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
-      <span className="font-bold">Género</span>
-      <div className="flex flex-wrap gap-2 text-muted-foreground">
-        <ToggleGroup type="single" value={memoizedGender}>
-          <ToggleGroupItem
-            value="m"
-            aria-label="Masculino"
-            onClick={() => handleToggle("m")}
-          >
-            Masculino
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="f"
-            aria-label="Femenino"
-            onClick={() => handleToggle("f")}
-          >
-            Femenino
-          </ToggleGroupItem>
-        </ToggleGroup>
-      </div>
+      <span className="font-semibold text-sm">Género</span>
+      <ToggleGroup
+        type="single"
+        variant="outline"
+        value={memoizedGender}
+        className="w-full"
+      >
+        <ToggleGroupItem
+          className="w-[50%]"
+          value="m"
+          aria-label="Masculino"
+          onClick={() => handleToggle("m")}
+        >
+          Masculino
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          className="w-[50%]"
+          value="f"
+          aria-label="Femenino"
+          onClick={() => handleToggle("f")}
+        >
+          Femenino
+        </ToggleGroupItem>
+      </ToggleGroup>
     </div>
   );
 }

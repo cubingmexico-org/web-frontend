@@ -299,7 +299,9 @@ export default async function Page(props: PageProps) {
           bajo indica un mejor desempeño. Este ranking refleja el rendimiento
           colectivo del equipo en competencias oficiales.
         </p>
-        <RankTypeSelector selectedRankType={rankType} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <RankTypeSelector selectedRankType={rankType} />
+        </div>
       </div>
       <Table>
         <TableHeader>

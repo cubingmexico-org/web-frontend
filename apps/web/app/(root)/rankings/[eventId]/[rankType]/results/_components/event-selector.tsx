@@ -12,7 +12,7 @@ import {
   useQueryStates,
 } from "nuqs";
 import { z } from "zod";
-// import { ResultTypeSelector } from "./result-type-selector";
+import { ResultTypeSelector } from "./result-type-selector";
 
 const searchParams = {
   name: parseAsString.withDefault(""),
@@ -53,16 +53,22 @@ export function EventSelector({
     state,
     gender,
   });
-  // const hrefPersons = serialize(`/rankings/${selectedEventId}/${selectedRankType}`, {
-  //   name,
-  //   state,
-  //   gender,
-  // });
-  // const hrefResults = serialize(`/rankings/${selectedEventId}/${selectedRankType}/results`, {
-  //   name,
-  //   state,
-  //   gender,
-  // });
+  const hrefPersons = serialize(
+    `/rankings/${selectedEventId}/${selectedRankType}`,
+    {
+      name,
+      state,
+      gender,
+    },
+  );
+  const hrefResults = serialize(
+    `/rankings/${selectedEventId}/${selectedRankType}/results`,
+    {
+      name,
+      state,
+      gender,
+    },
+  );
 
   return (
     <div className={cn("flex flex-col gap-4", className)} {...props}>
@@ -103,10 +109,10 @@ export function EventSelector({
           selectedEventId={selectedEventId}
           selectedRankType={selectedRankType}
         />
-        {/* <ResultTypeSelector
+        <ResultTypeSelector
           hrefResults={hrefResults}
           hrefPersons={hrefPersons}
-        /> */}
+        />
       </div>
     </div>
   );

@@ -34,6 +34,7 @@ export function getColumns({
         return <div>{row.getValue("rank")}</div>;
       },
       enableHiding: false,
+      size: 20,
     },
     {
       id: "name",

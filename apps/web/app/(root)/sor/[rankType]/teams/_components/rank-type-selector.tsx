@@ -22,25 +22,30 @@ export function RankTypeSelector({
 
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
-      <span className="font-bold">Tipo</span>
-      <div className="flex flex-wrap gap-2 text-muted-foreground">
-        <ToggleGroup type="single" value={selectedRankType}>
-          <ToggleGroupItem
-            value="single"
-            aria-label="single"
-            onClick={() => router.push(`/sor/single/teams`)}
-          >
-            Single
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="average"
-            aria-label="average"
-            onClick={() => router.push(`/sor/average/teams`)}
-          >
-            Average
-          </ToggleGroupItem>
-        </ToggleGroup>
-      </div>
+      <span className="font-semibold text-sm">Tipo</span>
+      <ToggleGroup
+        type="single"
+        variant="outline"
+        value={selectedRankType}
+        className="w-full"
+      >
+        <ToggleGroupItem
+          className="w-[50%]"
+          value="single"
+          aria-label="single"
+          onClick={() => router.push(`/sor/single/teams`)}
+        >
+          Single
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          className="w-[50%]"
+          value="average"
+          aria-label="average"
+          onClick={() => router.push(`/sor/average/teams`)}
+        >
+          Average
+        </ToggleGroupItem>
+      </ToggleGroup>
     </div>
   );
 }

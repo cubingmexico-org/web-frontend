@@ -348,20 +348,11 @@ export const kinchRanks = pgTable(
 
 export type KinchRanks = InferSelectModel<typeof kinchRanks>;
 
-export const exportMetadata = pgTable(
-  "exportMetadata",
-  {
-    id: varchar("id", { length: 32 }).primaryKey(),
-    date: timestamp("date").notNull(),
-  },
-  (table) => {
-    return [
-      {
-        pk: primaryKey({ columns: [table.id] }),
-      },
-    ];
-  },
-);
+export const exportMetadata = pgTable("exportMetadata", {
+  key: text("key").primaryKey(),
+  value: text("value"),
+  updatedAt: timestamp("updatedAt").defaultNow(),
+});
 
 export const sponsor = pgTable("sponsors", {
   id: varchar("id", { length: 32 }).primaryKey(),

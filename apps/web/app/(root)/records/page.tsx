@@ -47,9 +47,12 @@ export default async function Page(props: PageProps) {
             ? `(${search.gender === "m" ? "Masculinos" : "Femeniles"})`
             : undefined}
         </h1>
-        <div className="flex items-center justify-between">
-          <GenderSelector />
+        <div className="flex flex-col gap-2">
+          <span className="font-semibold text-sm">Estado</span>
           <StateSelector states={states} />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <GenderSelector />
         </div>
       </div>
       {records.map((record) => (

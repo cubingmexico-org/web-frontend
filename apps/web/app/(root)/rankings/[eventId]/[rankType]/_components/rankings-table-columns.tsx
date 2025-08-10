@@ -29,6 +29,7 @@ export function getColumns({
         return <div>{row.getValue("countryRank")}</div>;
       },
       enableHiding: false,
+      size: 20,
     },
     {
       id: "stateRank",
@@ -40,6 +41,7 @@ export function getColumns({
         return <div>{row.getValue("stateRank")}</div>;
       },
       enableHiding: false,
+      size: 20,
     },
     {
       id: "name",

@@ -52,8 +52,7 @@ export function StateSelector({ states }: StateSelecorProps) {
           aria-label="Seleccionar estado"
           variant="outline"
           role="combobox"
-          size="sm"
-          className="h-8 gap-2 focus:outline-none focus:ring-1 focus:ring-ring focus-visible:ring-0"
+          className="gap-2 focus:outline-none focus:ring-1 focus:ring-ring focus-visible:ring-0"
         >
           {memoizedState.length ? memoizedState : "Seleccionar estado"}
           <ChevronsUpDown className="ml-auto shrink-0 opacity-50" />
@@ -61,7 +60,7 @@ export function StateSelector({ states }: StateSelecorProps) {
       </PopoverTrigger>
       <PopoverContent
         align="end"
-        className="w-fit p-0"
+        className="p-0"
         onCloseAutoFocus={() => triggerRef.current?.focus()}
       >
         <Command>

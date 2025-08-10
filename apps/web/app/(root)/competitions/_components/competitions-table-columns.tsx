@@ -69,7 +69,7 @@ export function getColumns({
               {label}
             </Badge>
             <Link
-              className="max-w-[31.25rem] truncate font-medium hover:underline"
+              className="truncate font-medium hover:underline"
               href={`https://www.worldcubeassociation.org/competitions/${row.original.id}`}
               target="_blank"
               rel="noopener noreferrer"
@@ -113,7 +113,7 @@ export function getColumns({
       cell: ({ row }) => {
         return (
           <div className="flex space-x-2">
-            <span className="max-w-[31.25rem] truncate font-medium">
+            <span className="truncate font-medium">
               {row.getValue("state")}
             </span>
           </div>
@@ -141,7 +141,7 @@ export function getColumns({
         return (
           <div className="flex space-x-2">
             <Link
-              className="flex items-center max-w-[31.25rem] truncate hover:underline"
+              className="flex items-center truncate hover:underline"
               href={`https://comp-kinch.sylvermyst.com/#/competition/${row.original.id}`}
               target="_blank"
               rel="noopener noreferrer"
@@ -164,7 +164,7 @@ export function getColumns({
         return (
           <div className="flex space-x-2">
             <Link
-              className="flex items-center max-w-[31.25rem] truncate hover:underline"
+              className="flex items-center truncate hover:underline"
               href={`https://live.worldcubeassociation.org/link/competitions/${row.original.id}`}
               target="_blank"
               rel="noopener noreferrer"

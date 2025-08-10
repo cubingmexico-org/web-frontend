@@ -64,7 +64,9 @@ export default async function Page(props: PageProps) {
           un mejor rendimiento general, ya que significa que el cubero logró
           consistentemente rankings más altos en los eventos.
         </p>
-        <RankTypeSelector selectedRankType={rankType} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <RankTypeSelector selectedRankType={rankType} />
+        </div>
       </div>
       <div className="grid gap-6">
         <React.Suspense

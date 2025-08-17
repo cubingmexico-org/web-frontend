@@ -42,6 +42,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   });
 
+  const singleResultsRankingUrls = events.map((event) => {
+    return {
+      url: `https://www.cubingmexico.net/rankings/${event.id}/single/results`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    };
+  });
+
+  const averageResultsRankingUrls = events.map((event) => {
+    return {
+      url: `https://www.cubingmexico.net/rankings/${event.id}/average/results`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    };
+  });
+
   const personUrls = persons.map((person) => {
     return {
       url: `https://www.cubingmexico.net/persons/${person.id}`,
@@ -79,6 +97,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     ...singleRankingUrls,
     ...averageRankingUrls,
+    ...singleResultsRankingUrls,
+    ...averageResultsRankingUrls,
     {
       url: "https://www.cubingmexico.net/records",
       lastModified: new Date(),

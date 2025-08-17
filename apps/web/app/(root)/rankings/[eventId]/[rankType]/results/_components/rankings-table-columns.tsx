@@ -20,21 +20,17 @@ export function getSingleColumns({
   genderCounts,
 }: GetColumnsProps): ColumnDef<ResultSingle>[] {
   return [
-    // {
-    //   accessorKey: "index",
-    //   header: ({ column }) => (
-    //     <DataTableColumnHeader column={column} title="#" />
-    //   ),
-    //   cell: ({ row }) => {
-    //     return (
-    //       <div className="flex space-x-2">
-    //         {row.index + 1}
-    //       </div>
-    //     );
-    //   },
-    //   enableHiding: false,
-    //   size: 20,
-    // },
+    {
+      id: "index",
+      accessorKey: "index",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="#" />
+      ),
+      cell: ({ row }) => <div>{row.getValue("index")}</div>,
+      enableSorting: false,
+      enableHiding: false,
+      size: 20,
+    },
     {
       id: "name",
       accessorKey: "name",
@@ -60,6 +56,7 @@ export function getSingleColumns({
       enableHiding: false,
     },
     {
+      id: "best",
       accessorKey: "best",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Resultado" />
@@ -169,6 +166,17 @@ export function getAverageColumns({
 }: GetColumnsProps): ColumnDef<ResultAverage>[] {
   return [
     {
+      id: "index",
+      accessorKey: "index",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="#" />
+      ),
+      cell: ({ row }) => <div>{row.getValue("index")}</div>,
+      enableSorting: false,
+      enableHiding: false,
+      size: 20,
+    },
+    {
       id: "name",
       accessorKey: "name",
       header: ({ column }) => (
@@ -193,6 +201,7 @@ export function getAverageColumns({
       enableHiding: false,
     },
     {
+      id: "average",
       accessorKey: "average",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Resultado" />

@@ -1,4 +1,5 @@
 export interface Result {
+  index: number;
   personId: string;
   name: string | null;
   state: string | null;

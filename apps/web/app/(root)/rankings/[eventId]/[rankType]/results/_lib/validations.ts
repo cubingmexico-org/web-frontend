@@ -16,6 +16,7 @@ export const searchSingleParamsCache = createSearchParamsCache({
   sort: getSortingStateParser<ResultSingle>().withDefault([
     { id: "best", desc: false },
   ]),
+  index: parseAsInteger.withDefault(1),
   name: parseAsString.withDefault(""),
   state: parseAsArrayOf(parseAsString).withDefault([]),
   gender: parseAsArrayOf(z.enum(person.gender.enumValues)).withDefault([]),
@@ -34,6 +35,7 @@ export const searchAverageParamsCache = createSearchParamsCache({
   sort: getSortingStateParser<ResultAverage>().withDefault([
     { id: "average", desc: false },
   ]),
+  index: parseAsInteger.withDefault(1),
   name: parseAsString.withDefault(""),
   state: parseAsArrayOf(parseAsString).withDefault([]),
   gender: parseAsArrayOf(z.enum(person.gender.enumValues)).withDefault([]),

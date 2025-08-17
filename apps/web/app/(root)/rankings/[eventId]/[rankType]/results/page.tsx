@@ -18,7 +18,7 @@ import {
   searchAverageParamsCache,
   searchSingleParamsCache,
 } from "./_lib/validations";
-import { EventSelector } from "./_components/event-selector";
+import { EventSelector } from "../_components/event-selector";
 import { getEvents } from "@/db/queries";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
@@ -35,16 +35,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (rankType === "single") {
     return {
-      title: `Ranking de Singles | Cubing México`,
+      title: `Ranking de resultados de Singles | Cubing México`,
       description:
-        "Encuentra el ranking de los mejores cuberos de México en cada evento de la WCA. Filtra por estado, género y más.",
+        "Encuentra el ranking de los mejores resultados de México en cada evento de la WCA. Filtra por estado, género y más.",
     };
   }
 
   return {
-    title: `Ranking de Averages | Cubing México`,
+    title: `Ranking de resultados de Averages | Cubing México`,
     description:
-      "Encuentra el ranking de los mejores cuberos de México en cada evento de la WCA. Filtra por estado, género y más.",
+      "Encuentra el ranking de los mejores resultados de México en cada evento de la WCA. Filtra por estado, género y más.",
   };
 }
 

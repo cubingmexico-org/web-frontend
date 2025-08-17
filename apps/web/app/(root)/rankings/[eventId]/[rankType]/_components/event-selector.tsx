@@ -12,7 +12,8 @@ import {
   useQueryStates,
 } from "nuqs";
 import { z } from "zod";
-// import { ResultTypeSelector } from "./result-type-selector";
+import { ResultTypeSelector } from "./result-type-selector";
+import { usePathname } from "next/navigation";
 
 const searchParams = {
   name: parseAsString.withDefault(""),
@@ -43,26 +44,44 @@ export function EventSelector({
 
   const [{ name, state, gender }] = useQueryStates(searchParams);
 
-  const hrefSingle = serialize(`/rankings/${selectedEventId}/single`, {
-    name,
-    state,
-    gender,
-  });
-  const hrefAverage = serialize(`/rankings/${selectedEventId}/average`, {
-    name,
-    state,
-    gender,
-  });
-  // const hrefPersons = serialize(`/rankings/${selectedEventId}/${selectedRankType}`, {
-  //   name,
-  //   state,
-  //   gender,
-  // });
-  // const hrefResults = serialize(`/rankings/${selectedEventId}/${selectedRankType}/results`, {
-  //   name,
-  //   state,
-  //   gender,
-  // });
+  const pathname = usePathname();
+
+  const hrefSingle = serialize(
+    pathname.includes("results")
+      ? `/rankings/${selectedEventId}/single/results`
+      : `/rankings/${selectedEventId}/single`,
+    {
+      name,
+      state,
+      gender,
+    },
+  );
+  const hrefAverage = serialize(
+    pathname.includes("results")
+      ? `/rankings/${selectedEventId}/average/results`
+      : `/rankings/${selectedEventId}/average`,
+    {
+      name,
+      state,
+      gender,
+    },
+  );
+  const hrefPersons = serialize(
+    `/rankings/${selectedEventId}/${selectedRankType}`,
+    {
+      name,
+      state,
+      gender,
+    },
+  );
+  const hrefResults = serialize(
+    `/rankings/${selectedEventId}/${selectedRankType}/results`,
+    {
+      name,
+      state,
+      gender,
+    },
+  );
 
   return (
     <div className={cn("flex flex-col gap-4", className)} {...props}>
@@ -75,7 +94,9 @@ export function EventSelector({
         <div className="flex flex-wrap gap-2 text-muted-foreground">
           {events.map((event) => {
             const href = serialize(
-              `/rankings/${event.id}/${selectedRankType}`,
+              pathname.includes("results")
+                ? `/rankings/${event.id}/${selectedRankType}/results`
+                : `/rankings/${event.id}/${selectedRankType}`,
               {
                 name,
                 state,
@@ -103,10 +124,10 @@ export function EventSelector({
           selectedEventId={selectedEventId}
           selectedRankType={selectedRankType}
         />
-        {/* <ResultTypeSelector
+        <ResultTypeSelector
           hrefResults={hrefResults}
           hrefPersons={hrefPersons}
-        /> */}
+        />
       </div>
     </div>
   );

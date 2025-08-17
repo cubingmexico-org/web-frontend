@@ -8,7 +8,17 @@ import {
   result,
   competition,
 } from "@/db/schema";
-import { and, count, ilike, gt, inArray, eq, asc, desc } from "drizzle-orm";
+import {
+  and,
+  count,
+  ilike,
+  gt,
+  inArray,
+  eq,
+  asc,
+  desc,
+  sql,
+} from "drizzle-orm";
 import { unstable_cache } from "@/lib/unstable-cache";
 import type {
   GetResultAveragesSchema,
@@ -38,6 +48,10 @@ export async function getRankSingles(
           input.sort.length > 0
             ? input.sort.map((item) => {
                 switch (item.id) {
+                  case "index":
+                    return item.desc
+                      ? desc(sql<number>`row_number() over()`.mapWith(Number))
+                      : asc(sql<number>`row_number() over()`.mapWith(Number));
                   case "state":
                     return item.desc ? desc(state.name) : asc(state.name);
                   case "name":
@@ -59,6 +73,7 @@ export async function getRankSingles(
         const { data, total } = await db.transaction(async (tx) => {
           const data = await tx
             .select({
+              index: sql<number>`row_number() over()`.mapWith(Number),
               personId: result.personId,
               name: person.name,
               best: result.best,
@@ -198,7 +213,7 @@ export async function getRankAverages(
         const offset = (input.page - 1) * input.perPage;
 
         const where = and(
-          gt(result.best, 0),
+          gt(result.average, 0),
           eq(result.eventId, eventId),
           input.name ? ilike(person.name, `%${input.name}%`) : undefined,
           input.state.length > 0 ? inArray(state.name, input.state) : undefined,
@@ -211,6 +226,10 @@ export async function getRankAverages(
           input.sort.length > 0
             ? input.sort.map((item) => {
                 switch (item.id) {
+                  case "index":
+                    return item.desc
+                      ? desc(sql<number>`row_number() over()`.mapWith(Number))
+                      : asc(sql<number>`row_number() over()`.mapWith(Number));
                   case "state":
                     return item.desc ? desc(state.name) : asc(state.name);
                   case "name":
@@ -232,6 +251,7 @@ export async function getRankAverages(
         const { data, total } = await db.transaction(async (tx) => {
           const data = await tx
             .select({
+              index: sql<number>`row_number() over()`.mapWith(Number),
               personId: result.personId,
               name: person.name,
               average: result.average,

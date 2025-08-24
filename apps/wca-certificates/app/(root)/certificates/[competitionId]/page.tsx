@@ -14,9 +14,17 @@ export default async function Page({
     id: competitionId!,
   });
 
+  if (!competition) {
+    throw new Error("Competition not found");
+  }
+
   const wcif = await getWCIFByCompetitionId({
     competitionId: competitionId!,
   });
+
+  if (!wcif) {
+    throw new Error("WCIF not found");
+  }
 
   return (
     <main className="container mx-auto px-4 py-8">

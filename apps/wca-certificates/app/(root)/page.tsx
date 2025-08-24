@@ -13,19 +13,20 @@ export default async function Page(): Promise<JSX.Element> {
   const session = await auth();
 
   const competitions = await getCompetitionsManagedByUser({
-    token: session?.token || "",
+    token: session?.token,
   });
   const currentDate = new Date();
   const upcomingCompetitions = competitions.filter(
-    (competition) => new Date(competition.start_date) > currentDate,
+    (competition) =>
+      new Date(`${competition.start_date}T00:00:00`) > currentDate,
   );
   const onGoingCompetitions = competitions.filter(
     (competition) =>
-      new Date(competition.start_date) <= currentDate &&
-      new Date(competition.end_date) >= currentDate,
+      new Date(`${competition.start_date}T00:00:00`) <= currentDate &&
+      new Date(`${competition.end_date}T00:00:00`) >= currentDate,
   );
   const pastCompetitions = competitions.filter(
-    (competition) => new Date(competition.end_date) < currentDate,
+    (competition) => new Date(`${competition.end_date}T00:00:00`) < currentDate,
   );
 
   return (

@@ -19,9 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function RootLayout({
-  children,
-}: RootLayoutProps): Promise<JSX.Element> {
+export default function RootLayout({ children }: RootLayoutProps): JSX.Element {
   return (
     <html lang="es">
       <body className={inter.className}>

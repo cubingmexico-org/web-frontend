@@ -22,8 +22,8 @@ export function CompetitionCard({
   competition: Competition;
   status: "upcoming" | "ongoing" | "past";
 }) {
-  const startDate = new Date(competition.start_date);
-  const endDate = new Date(competition.end_date);
+  const startDate = new Date(`${competition.start_date}T00:00:00`);
+  const endDate = new Date(`${competition.end_date}T00:00:00`);
   const isSameDay = startDate.toDateString() === endDate.toDateString();
 
   const statusText = {

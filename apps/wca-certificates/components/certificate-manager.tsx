@@ -35,6 +35,7 @@ import {
   Home,
   Check,
   X,
+  Download,
 } from "lucide-react";
 import { Competition } from "@/types/wca";
 import {
@@ -81,6 +82,8 @@ import { Toggle } from "@workspace/ui/components/toggle";
 import { Input } from "@workspace/ui/components/input";
 import { FileUploader } from "./file-uploader";
 import { WcaMonochrome } from "@workspace/icons";
+import { ScrollArea } from "@workspace/ui/components/scroll-area";
+import { toast } from "sonner";
 
 export function CertificateManager({
   competition,
@@ -123,7 +126,9 @@ export function CertificateManager({
   const [backgroundParticipants, setBackgroundParticipants] =
     useState<string>();
 
-  const [selectedTemplate, setSelectedTemplate] = useState("general");
+  const [selectedTemplate, setSelectedTemplate] = useState<
+    "general" | "female" | "newcomer"
+  >("general");
   const [searchParticipant, setSearchParticipant] = useState("");
 
   useEffect(() => {
@@ -589,122 +594,147 @@ export function CertificateManager({
       .filter(Boolean);
   };
 
-  const generatePDF = () => {
-    const docDefinition = {
-      info: {
-        title: `Certificados - ${competition.name}`,
-        author: "Cubing México",
-      },
-      content: selectedPodiums?.map((data, index) => ({
-        stack: renderDocumentContent(content, data),
-        pageBreak: index < selectedPodiums.length - 1 ? "after" : "",
-      })),
-      background(currentPage, pageSize) {
-        if (background) {
-          return {
-            image: background,
-            width: pageSize.width,
-            height: pageSize.height,
-          };
-        }
-        return null;
-      },
-      pageMargins,
-      pageOrientation,
-      pageSize,
-      styles: {
-        header1: {
-          fontSize: 33.231,
-          lineHeight: 1,
+  const generatePDF = (action: "open" | "download") => {
+    try {
+      const docDefinition = {
+        info: {
+          title: `Certificados - ${competition.name}`,
+          author: "Cubing México",
         },
-        header2: {
-          fontSize: 24.923,
-          lineHeight: 1,
+        content: selectedPodiums?.map((data, index) => ({
+          stack: renderDocumentContent(content, data),
+          pageBreak: index < selectedPodiums.length - 1 ? "after" : "",
+        })),
+        background(currentPage, pageSize) {
+          if (background) {
+            return {
+              image: background,
+              width: pageSize.width,
+              height: pageSize.height,
+            };
+          }
+          return null;
         },
-        header3: {
-          fontSize: 20.769,
-          lineHeight: 1,
+        pageMargins,
+        pageOrientation,
+        pageSize,
+        styles: {
+          header1: {
+            fontSize: 33.231,
+            lineHeight: 1,
+          },
+          header2: {
+            fontSize: 24.923,
+            lineHeight: 1,
+          },
+          header3: {
+            fontSize: 20.769,
+            lineHeight: 1,
+          },
+          header4: {
+            fontSize: 16.615,
+            lineHeight: 1,
+          },
+          header5: {
+            fontSize: 14.538,
+            lineHeight: 1,
+          },
+          header6: {
+            fontSize: 12.462,
+            lineHeight: 1,
+          },
+          paragraph: {
+            fontSize: 12.462,
+            lineHeight: 1,
+          },
         },
-        header4: {
-          fontSize: 16.615,
-          lineHeight: 1,
-        },
-        header5: {
-          fontSize: 14.538,
-          lineHeight: 1,
-        },
-        header6: {
-          fontSize: 12.462,
-          lineHeight: 1,
-        },
-        paragraph: {
-          fontSize: 12.462,
-          lineHeight: 1,
-        },
-      },
-      language: "es",
-    } as TDocumentDefinitions;
+        language: "es",
+      } as TDocumentDefinitions;
 
-    pdfMake.createPdf(docDefinition, undefined, fontDeclarations).open();
+      const pdf = pdfMake.createPdf(docDefinition, undefined, fontDeclarations);
+
+      if (action === "open") {
+        pdf.open();
+      } else {
+        pdf.download(`Certificados Podio - ${competition.name}.pdf`);
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      toast.error("Error al generar el PDF", {
+        description: "Por favor, inténtalo de nuevo más tarde.",
+      });
+    }
   };
 
-  const generateParticipantPDF = () => {
-    const docDefinition = {
-      info: {
-        title: `Certificados - ${competition.name}`,
-        author: "Cubing México",
-      },
-      content: selectedParticipants?.map((data, index) => ({
-        stack: renderParticipantDocumentContent(participantsContent, data),
-        pageBreak: index < selectedParticipants.length - 1 ? "after" : "",
-      })),
-      background(currentPage, pageSize) {
-        if (backgroundParticipants) {
-          return {
-            image: backgroundParticipants,
-            width: pageSize.width,
-            height: pageSize.height,
-          };
-        }
-        return null;
-      },
-      pageMargins: pageMarginsParticipants,
-      pageOrientation: pageOrientationParticipants,
-      pageSize: pageSizeParticipants,
-      styles: {
-        header1: {
-          fontSize: 33.231,
-          lineHeight: 1,
+  const generateParticipantPDF = (action: "open" | "download") => {
+    try {
+      const docDefinition = {
+        info: {
+          title: `Certificados - ${competition.name}`,
+          author: "Cubing México",
         },
-        header2: {
-          fontSize: 24.923,
-          lineHeight: 1,
+        content: selectedParticipants?.map((data, index) => ({
+          stack: renderParticipantDocumentContent(participantsContent, data),
+          pageBreak: index < selectedParticipants.length - 1 ? "after" : "",
+        })),
+        background(currentPage, pageSize) {
+          if (backgroundParticipants) {
+            return {
+              image: backgroundParticipants,
+              width: pageSize.width,
+              height: pageSize.height,
+            };
+          }
+          return null;
         },
-        header3: {
-          fontSize: 20.769,
-          lineHeight: 1,
+        pageMargins: pageMarginsParticipants,
+        pageOrientation: pageOrientationParticipants,
+        pageSize: pageSizeParticipants,
+        styles: {
+          header1: {
+            fontSize: 33.231,
+            lineHeight: 1,
+          },
+          header2: {
+            fontSize: 24.923,
+            lineHeight: 1,
+          },
+          header3: {
+            fontSize: 20.769,
+            lineHeight: 1,
+          },
+          header4: {
+            fontSize: 16.615,
+            lineHeight: 1,
+          },
+          header5: {
+            fontSize: 14.538,
+            lineHeight: 1,
+          },
+          header6: {
+            fontSize: 12.462,
+            lineHeight: 1,
+          },
+          paragraph: {
+            fontSize: 12.462,
+            lineHeight: 1,
+          },
         },
-        header4: {
-          fontSize: 16.615,
-          lineHeight: 1,
-        },
-        header5: {
-          fontSize: 14.538,
-          lineHeight: 1,
-        },
-        header6: {
-          fontSize: 12.462,
-          lineHeight: 1,
-        },
-        paragraph: {
-          fontSize: 12.462,
-          lineHeight: 1,
-        },
-      },
-      language: "es",
-    } as TDocumentDefinitions;
+        language: "es",
+      } as TDocumentDefinitions;
 
-    pdfMake.createPdf(docDefinition, undefined, fontDeclarations).open();
+      const pdf = pdfMake.createPdf(docDefinition, undefined, fontDeclarations);
+      if (action === "open") {
+        pdf.open();
+      } else {
+        pdf.download(`Certificados Participacion - ${competition.name}.pdf`);
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      toast.error("Error al generar el PDF", {
+        description: "Por favor, inténtalo de nuevo más tarde.",
+      });
+    }
   };
 
   const eventNames: Record<string, string> = {
@@ -727,7 +757,7 @@ export function CertificateManager({
     "333mbf": "3x3x3 Multi-Blind",
   };
 
-  const handleTemplateChange = (value: string) => {
+  const handleTemplateChange = (value: "general" | "female" | "newcomer") => {
     setSelectedTemplate(value);
   };
 
@@ -822,7 +852,7 @@ export function CertificateManager({
               <div className="flex items-start gap-2">
                 <Users className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                 <span className="text-sm">
-                  {competition.competitor_limit} competidores
+                  {persons.length}/{competition.competitor_limit} competidores
                 </span>
               </div>
               <Separator />
@@ -857,7 +887,8 @@ export function CertificateManager({
                       Certificados de Podio
                     </h4>
                     <span className="text-xs text-muted-foreground">
-                      {Math.ceil((podiumsData?.length ?? 0) / 3)} generados
+                      {Math.ceil((podiumsData?.length ?? 0) / 3)} de{" "}
+                      {competition.event_ids.length} generados
                     </span>
                   </div>
                   <Progress
@@ -877,15 +908,14 @@ export function CertificateManager({
                       Certificados de Participación
                     </h4>
                     <span className="text-xs text-muted-foreground">
-                      {participantsData?.length || 0} generados
+                      {participantsData?.length || 0} de {persons.length}{" "}
+                      generados
                     </span>
                   </div>
                   <Progress
                     value={
                       participantsData
-                        ? (participantsData.length /
-                            competition.competitor_limit) *
-                          100
+                        ? (participantsData.length / persons.length) * 100
                         : 0
                     }
                     className="h-2"
@@ -933,17 +963,18 @@ export function CertificateManager({
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="podium">
               <Award className="size-4 mr-2" />
-              Certificados de Podio
+              Certificados de Podio ({Math.ceil((podiumsData?.length ?? 0) / 3)}
+              )
             </TabsTrigger>
             <TabsTrigger value="participation">
               <FileText className="size-4 mr-2" />
-              Certificados de Participación
+              Certificados de Participación ({participantsData?.length || 0})
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="podium" className="space-y-6 pt-6">
             <div className="grid gap-6">
-              <div className="grid gap-6 md:grid-cols-2">
+              <div className="grid gap-6 md:grid-cols-2 grid-cols-1">
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center">
@@ -978,7 +1009,7 @@ export function CertificateManager({
                     </div>
                     <div className="space-y-4">
                       <h4 className="text-sm font-medium">Eventos</h4>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid md:grid-cols-2 grid-cols-1 gap-2">
                         {competition.event_ids.map((eventId) => (
                           <div
                             key={eventId}
@@ -1032,35 +1063,58 @@ export function CertificateManager({
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <Toggle
-                      aria-label="Seleccionar todos"
-                      onClick={() => {
-                        if (selectedPodiums.length === podiumsData?.length) {
-                          setSelectedPodiums([]);
-                        } else {
-                          setSelectedPodiums(podiumsData || []);
+                  <CardFooter className="flex flex-col gap-2">
+                    <div className="flex justify-start gap-2 w-full">
+                      <Toggle
+                        aria-label="Seleccionar todos"
+                        onClick={() => {
+                          if (selectedPodiums.length === podiumsData?.length) {
+                            setSelectedPodiums([]);
+                          } else {
+                            setSelectedPodiums(podiumsData || []);
+                          }
+                        }}
+                        pressed={
+                          selectedPodiums.length === podiumsData?.length
+                            ? true
+                            : false
                         }
-                      }}
-                      pressed={
-                        selectedPodiums.length === podiumsData?.length
-                          ? true
-                          : false
-                      }
-                    >
-                      <Check />
-                      {selectedPodiums.length === podiumsData?.length
-                        ? "Desmarcar todos"
-                        : "Seleccionar todos"}
-                    </Toggle>
-                    <Button
-                      disabled={selectedPodiums.length === 0}
-                      onClick={generatePDF}
-                      variant="outline"
-                    >
-                      <Eye />
-                      Vista previa ({Math.ceil(selectedPodiums.length / 3)})
-                    </Button>
+                      >
+                        <Check />
+                        {selectedPodiums.length === podiumsData?.length
+                          ? "Desmarcar todos"
+                          : "Seleccionar todos"}
+                      </Toggle>
+                      {selectedPodiums.length > 0 && (
+                        <Button
+                          aria-label="Borrar selección"
+                          onClick={() => {
+                            setSelectedPodiums([]);
+                          }}
+                          variant="ghost"
+                        >
+                          <X />
+                          Borrar selección
+                        </Button>
+                      )}
+                    </div>
+                    <div className="flex justify-end gap-2 w-full">
+                      <Button
+                        disabled={selectedPodiums.length === 0}
+                        onClick={() => generatePDF("open")}
+                        variant="outline"
+                      >
+                        <Eye />
+                        Vista previa ({Math.ceil(selectedPodiums.length / 3)})
+                      </Button>
+                      <Button
+                        disabled={selectedPodiums.length === 0}
+                        onClick={() => generatePDF("download")}
+                      >
+                        <Download />
+                        Descargar ({Math.ceil(selectedPodiums.length / 3)})
+                      </Button>
+                    </div>
                   </CardFooter>
                 </Card>
 
@@ -1093,7 +1147,7 @@ export function CertificateManager({
                   pageOrientation={pageOrientation}
                   pageSize={pageSize}
                   pdfDisabled={selectedPodiums.length === 0}
-                  pdfOnClick={generatePDF}
+                  pdfOnClick={() => generatePDF("download")}
                   setPageMargins={(value: Margins) => {
                     setPageMargins(value);
                   }}
@@ -1133,71 +1187,73 @@ export function CertificateManager({
                     />
                     <div className="space-y-4">
                       <h4 className="text-sm font-medium">Participantes</h4>
-                      <div className="grid grid-cols-2 gap-2">
-                        {filteredPersons.length === 0 ? (
-                          <p className="text-sm text-muted-foreground">
-                            No se encontraron participantes
-                          </p>
-                        ) : (
-                          <>
-                            {filteredPersons.map((person) => (
-                              <div
-                                key={person.registrantId}
-                                className="flex items-center space-x-2"
-                              >
-                                <Checkbox
-                                  id={String(person.registrantId)}
-                                  checked={
-                                    selectedParticipants.filter(
-                                      (participant) =>
-                                        participant.registrantId ===
-                                        person.registrantId,
-                                    ).length > 0
-                                  }
-                                  onCheckedChange={(checked) => {
-                                    if (checked) {
-                                      const participant =
-                                        participantsData?.filter(
-                                          (participant) =>
-                                            participant.registrantId ===
-                                            person.registrantId,
-                                        );
-                                      if (participant) {
-                                        setSelctedParticipants((prev) => [
-                                          ...prev,
-                                          ...participant,
-                                        ]);
-                                      }
-                                    } else {
-                                      setSelctedParticipants((prev) =>
-                                        prev.filter(
-                                          (participant) =>
-                                            participant.registrantId !==
-                                            person.registrantId,
-                                        ),
-                                      );
+                      <ScrollArea className="h-96" type="always">
+                        <div className="grid grid-cols-2 gap-2">
+                          {filteredPersons.length === 0 ? (
+                            <p className="text-sm text-muted-foreground">
+                              No se encontraron participantes
+                            </p>
+                          ) : (
+                            <>
+                              {filteredPersons.map((person) => (
+                                <div
+                                  key={person.registrantId}
+                                  className="flex items-center space-x-2"
+                                >
+                                  <Checkbox
+                                    id={String(person.registrantId)}
+                                    checked={
+                                      selectedParticipants.filter(
+                                        (participant) =>
+                                          participant.registrantId ===
+                                          person.registrantId,
+                                      ).length > 0
                                     }
-                                  }}
-                                  disabled={
-                                    participantsData?.filter(
-                                      (participant) =>
-                                        participant.registrantId ===
-                                        person.registrantId,
-                                    ).length === 0
-                                  }
-                                />
-                                <Label htmlFor={String(person.registrantId)}>
-                                  <p className="text-xs">{person.name}</p>
-                                </Label>
-                              </div>
-                            ))}
-                          </>
-                        )}
-                      </div>
+                                    onCheckedChange={(checked) => {
+                                      if (checked) {
+                                        const participant =
+                                          participantsData?.filter(
+                                            (participant) =>
+                                              participant.registrantId ===
+                                              person.registrantId,
+                                          );
+                                        if (participant) {
+                                          setSelctedParticipants((prev) => [
+                                            ...prev,
+                                            ...participant,
+                                          ]);
+                                        }
+                                      } else {
+                                        setSelctedParticipants((prev) =>
+                                          prev.filter(
+                                            (participant) =>
+                                              participant.registrantId !==
+                                              person.registrantId,
+                                          ),
+                                        );
+                                      }
+                                    }}
+                                    disabled={
+                                      participantsData?.filter(
+                                        (participant) =>
+                                          participant.registrantId ===
+                                          person.registrantId,
+                                      ).length === 0
+                                    }
+                                  />
+                                  <Label htmlFor={String(person.registrantId)}>
+                                    <p className="text-xs">{person.name}</p>
+                                  </Label>
+                                </div>
+                              ))}
+                            </>
+                          )}
+                        </div>
+                      </ScrollArea>
                     </div>
                   </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <div className="flex gap-2">
+                  <CardFooter className="flex flex-col gap-2">
+                    <div className="flex justify-start gap-2 w-full">
                       <Button
                         aria-label="Seleccionar todos"
                         disabled={
@@ -1225,14 +1281,23 @@ export function CertificateManager({
                         </Button>
                       )}
                     </div>
-                    <Button
-                      disabled={selectedParticipants.length === 0}
-                      variant="outline"
-                      onClick={generateParticipantPDF}
-                    >
-                      <Eye />
-                      Vista previa ({selectedParticipants.length})
-                    </Button>
+                    <div className="flex justify-end gap-2 w-full">
+                      <Button
+                        disabled={selectedParticipants.length === 0}
+                        variant="outline"
+                        onClick={() => generateParticipantPDF("open")}
+                      >
+                        <Eye />
+                        Vista previa ({selectedParticipants.length})
+                      </Button>
+                      <Button
+                        disabled={selectedParticipants.length === 0}
+                        onClick={() => generateParticipantPDF("download")}
+                      >
+                        <Download />
+                        Descargar ({Math.ceil(selectedParticipants.length / 3)})
+                      </Button>
+                    </div>
                   </CardFooter>
                 </Card>
 
@@ -1268,7 +1333,7 @@ export function CertificateManager({
                   pageOrientation={pageOrientationParticipants}
                   pageSize={pageSizeParticipants}
                   pdfDisabled={selectedParticipants.length === 0}
-                  pdfOnClick={generateParticipantPDF}
+                  pdfOnClick={() => generateParticipantPDF("download")}
                   setPageMargins={(value: Margins) => {
                     setPageMarginsParticipants(value);
                   }}

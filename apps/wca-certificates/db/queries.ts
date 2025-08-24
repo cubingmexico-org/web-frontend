@@ -4,7 +4,7 @@ import type { Competition } from "@/types/wca";
 export async function getCompetitionsManagedByUser({
   token,
 }: {
-  token: string;
+  token: string | undefined;
 }): Promise<Competition[]> {
   try {
     const res = await fetch(
@@ -33,7 +33,7 @@ export async function getWCIFByCompetitionId({
   competitionId,
 }: {
   competitionId: string;
-}): Promise<WCIF> {
+}): Promise<WCIF | undefined> {
   try {
     const res = await fetch(
       `https://worldcubeassociation.org/api/v0/competitions/${competitionId}/wcif/public`,
@@ -48,7 +48,7 @@ export async function getWCIFByCompetitionId({
     return data;
   } catch (error) {
     console.error("Error fetching competition:", error);
-    return {} as WCIF;
+    return undefined;
   }
 }
 
@@ -56,7 +56,7 @@ export async function getCompetitionById({
   id,
 }: {
   id: string;
-}): Promise<Competition> {
+}): Promise<Competition | undefined> {
   try {
     const res = await fetch(
       `https://www.worldcubeassociation.org/api/v0/competitions/${id}`,
@@ -67,6 +67,6 @@ export async function getCompetitionById({
     return data;
   } catch (error) {
     console.error("Error fetching location:", error);
-    return {} as Competition;
+    return undefined;
   }
 }

@@ -7,8 +7,8 @@ export async function GET(request: Request): Promise<Response> {
   const wcif = await getWCIFByCompetitionId({
     competitionId: competitionId!,
   });
-  const people = wcif.persons;
-  const events = wcif.events;
+  const people = wcif?.persons || [];
+  const events = wcif?.events || [];
 
   const allResults: ParticipantData[] = [];
 

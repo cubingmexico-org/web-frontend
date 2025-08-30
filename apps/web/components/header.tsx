@@ -182,7 +182,7 @@ export function Header({
                   Acerca de
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem disabled>
+              <DropdownMenuItem>
                 <CircleHelp />
                 <Link href="/faq" className="w-full">
                   Preguntas frecuentes

@@ -23,34 +23,40 @@ const faqData = {
     {
       question: "¿Qué es Cubing México?",
       answer:
-        "Cubing México es la organización oficial que representa a la comunidad de speedcubing en México. Trabajamos en colaboración con la World Cube Association (WCA) para promover y organizar competencias oficiales de speedcubing en todo el país, así como para fomentar el crecimiento de la comunidad de cuberos mexicanos.",
+        "Cubing México es un sitio dedicado a la comunidad de speedcubing en México. Aquí se recopilan rankings y récords estatales basados en los resultados de la World Cube Association.",
     },
     {
       question: "¿Cuál es la relación entre Cubing México y la WCA?",
       answer:
-        "Cubing México trabaja en estrecha colaboración con la World Cube Association (WCA), que es el organismo internacional que regula las competencias oficiales de speedcubing a nivel mundial. Cubing México no es una filial oficial de la WCA, pero seguimos sus reglamentos y trabajamos con delegados WCA para organizar competencias oficiales en México.",
+        "Cubing México es una organización independiente que trabaja en colaboración con la World Cube Association (WCA) para promover el speedcubing en México.",
+    },
+    {
+      question:
+        "¿Es Cubing México una organización regional reconocida por la WCA?",
+      answer:
+        "Cubing México no es una organización regional reconocida por la WCA y no busca serlo. La única organización regional reconocida por la WCA en México es la Asociación Mexicana de Speedcubing (AMS).",
     },
     {
       question: "¿Cómo puedo contactar a Cubing México?",
       answer:
-        "Puedes contactarnos a través de nuestro correo electrónico oficial: contacto@cubingmexico.org. También puedes seguirnos en nuestras redes sociales (Instagram, Twitter, Facebook) donde respondemos mensajes regularmente. Para consultas específicas sobre competencias, te recomendamos contactar directamente al organizador o delegado de la competencia en cuestión.",
+        "Puedes contactarnos a través de nuestras redes sociales como Facebook o Instagram (@cubingmexico). Para consultas específicas sobre competencias, te recomendamos contactar directamente al organizador o delegado de la competencia en cuestión.",
     },
     {
       question: "¿Cubing México ofrece patrocinios o apoyo para competidores?",
       answer:
-        "Actualmente, Cubing México ofrece programas limitados de apoyo para competidores destacados que representan a México en competencias internacionales. También trabajamos con patrocinadores para ofrecer descuentos y premios en competencias oficiales. Si estás interesado en recibir apoyo o convertirte en patrocinador, contáctanos para más información.",
+        "Actualmente, Cubing México no ofrece programas de apoyo para competidores.",
     },
   ],
   competitions: [
     {
       question: "¿Cómo puedo participar en una competencia oficial?",
       answer:
-        "Para participar en una competencia oficial de la WCA, debes registrarte a través del sitio web oficial de la WCA (worldcubeassociation.org). Busca las competencias próximas en México, selecciona la que te interese y sigue el proceso de registro. Ten en cuenta que la mayoría de las competencias tienen un cupo limitado y una cuota de inscripción. Te recomendamos registrarte con anticipación ya que los lugares suelen agotarse rápidamente.",
+        "Para participar en una competencia oficial de la WCA, debes registrarte a través del sitio web oficial de la WCA (worldcubeassociation.org). Busca las competencias próximas en México, selecciona la que te interese y sigue el proceso de registro. Ten en cuenta que la mayoría de las competencias tienen un cupo limitado y una cuota de inscripción. Te recomendamos registrarte con anticipación ya que los lugares podrían agotarse.",
     },
     {
       question: "¿Cuánto cuesta participar en una competencia?",
       answer:
-        "El costo de inscripción varía según la competencia, generalmente entre 150 y 350 pesos mexicanos, dependiendo de la duración del evento, la sede y los eventos en los que participes. Este costo ayuda a cubrir gastos como el alquiler del local, equipamiento, premios y otros gastos organizativos. La información específica sobre el costo se encuentra en la página de registro de cada competencia.",
+        "El costo de inscripción varía según la competencia, generalmente entre 100 y 300 pesos mexicanos, dependiendo de la duración del evento, la sede y los eventos en los que participes. Este costo ayuda a cubrir gastos como el alquiler de la sede, equipamiento, premios y otros gastos organizativos. La información específica sobre el costo puedes consultarla contactando con los organizadores de dicha competencia.",
     },
     {
       question: "¿Necesito tener experiencia previa para competir?",
@@ -65,19 +71,19 @@ const faqData = {
     {
       question: "¿Qué debo llevar a una competencia?",
       answer:
-        "Debes llevar tus propios cubos para competir (al menos uno para cada evento en el que estés registrado, aunque es recomendable llevar cubos de repuesto). También necesitarás tu confirmación de registro (digital o impresa), el pago de la inscripción si no lo has realizado previamente, y una identificación si es tu primera competencia. Opcional pero recomendable: agua, snacks, un cronómetro para practicar, y un bolso para guardar tus pertenencias.",
+        "Debes llevar tus propios cubos para competir (al menos uno para cada evento en el que estés registrado, aunque es recomendable llevar cubos de repuesto). También necesitarás el pago de la inscripción si no lo has realizado previamente, y una identificación si es tu primera competencia. Opcional pero recomendable: agua, snacks, un cronómetro para practicar, y un bolso para guardar tus pertenencias.",
     },
   ],
   beginners: [
     {
       question: "¿Cómo puedo empezar a practicar speedcubing?",
       answer:
-        "Para empezar con el speedcubing, necesitarás un cubo de calidad (recomendamos marcas como GAN, MoYu, QiYi o YJ para principiantes). Luego, aprende un método básico como el método de principiantes o directamente CFOP. Hay muchos tutoriales en YouTube y recursos en nuestra sección de 'Aprendizaje'. Practica regularmente, cronometra tus tiempos, y gradualmente aprende algoritmos más avanzados. ¡La constancia es clave!",
+        "Para empezar con el speedcubing, necesitarás un cubo de calidad (recomendamos marcas como GAN, MoYu, QiYi o YJ para principiantes). Luego, aprende un método básico como el método de principiantes o directamente CFOP. Hay muchos tutoriales en YouTube y recursos en internet. Practica regularmente, cronometra tus tiempos, y gradualmente aprende algoritmos más avanzados. ¡La constancia es clave!",
     },
     {
       question: "¿Qué cubo me recomiendan para empezar?",
       answer:
-        "Para principiantes, recomendamos cubos económicos pero de buena calidad como el QiYi MS, RS3M 2020, o YJ YuLong V2M. Estos cubos ofrecen un buen rendimiento a un precio accesible (entre 150-300 pesos). Evita los cubos muy baratos de juguetería, ya que su mala calidad puede dificultar el aprendizaje. Si tienes un presupuesto mayor, cubos como el GAN 356 M o el MoYu WR M 2021 son excelentes opciones.",
+        "Para principiantes, recomendamos cubos económicos pero de buena calidad como el QiYi MS, RS3M 2020, o YJ YuLong V2M. Estos cubos ofrecen un buen rendimiento a un precio accesible (entre 150-300 pesos). Evita los cubos muy baratos de juguetería, ya que su mala calidad puede dificultar el aprendizaje. Si tienes un presupuesto mayor, cubos de marcas como MoYu o GAN son excelentes opciones.",
     },
     {
       question: "¿Cuál es el mejor método para resolver el cubo rápidamente?",
@@ -92,7 +98,7 @@ const faqData = {
     {
       question: "¿Dónde puedo comprar cubos de calidad en México?",
       answer:
-        "Existen varias tiendas especializadas en México como CubingMX, SpeedcubeShop México, y KubeKlub que ofrecen cubos de calidad y envíos nacionales. También puedes encontrar vendedores confiables en plataformas como Mercado Libre. Alternativamente, tiendas internacionales como SpeedCubeShop, TheCubicle y ZiiCube envían a México, aunque debes considerar los tiempos de envío y posibles costos de importación.",
+        "Existen varias tiendas especializadas en México que ofrecen cubos de calidad y envíos nacionales. Alternativamente, tiendas internacionales como AliExpress, SpeedCubeShop, TheCubicle y ZiiCube envían a México, aunque debes considerar los tiempos de envío y posibles costos de importación.",
     },
   ],
   rules: [
@@ -119,9 +125,9 @@ const faqData = {
   ],
   community: [
     {
-      question: "¿Cómo puedo unirme a un equipo de speedcubing?",
+      question: "¿Cómo puedo unirme a un Team de speedcubing?",
       answer:
-        "Para unirte a un equipo existente, puedes contactar directamente a sus representantes en competencias o a través de redes sociales. Muchos equipos organizan reuniones abiertas o tienen procesos de aplicación. Alternativamente, puedes formar tu propio equipo con amigos o cuberos de tu localidad. Registra tu equipo en nuestra plataforma para aparecer en el directorio oficial de equipos de Cubing México.",
+        "Para unirte a un Team existente, puedes contactar directamente a sus representantes en competencias o a través de redes sociales. Muchos Teams organizan reuniones abiertas. Alternativamente, puedes formar tu propio Team con amigos o cuberos de tu localidad. Registra tu Team en nuestro sitio para aparecer en el directorio oficial de Teams de Cubing México.",
     },
     {
       question: "¿Existen grupos de práctica o reuniones informales?",
@@ -131,12 +137,12 @@ const faqData = {
     {
       question: "¿Cómo puedo convertirme en un delegado WCA?",
       answer:
-        "Para convertirte en delegado WCA, primero debes tener experiencia significativa en competencias, idealmente como competidor y como parte del staff organizador. Los delegados son seleccionados por la WCA basándose en su conocimiento del reglamento, habilidades organizativas, integridad y compromiso con la comunidad. Si estás interesado, comienza por involucrarte activamente en la organización de competencias y contacta a un delegado actual para expresar tu interés y recibir orientación.",
+        "Para convertirte en delegado WCA, primero debes tener experiencia significativa en competencias, idealmente como competidor y como parte del staff organizador. Los delegados son seleccionados por otros delegados de la WCA basándose en su conocimiento del reglamento, habilidades organizativas, integridad y compromiso con la comunidad. Si estás interesado, comienza por involucrarte activamente en la organización de competencias y contacta a un delegado actual para expresar tu interés y recibir orientación.",
     },
     {
       question: "¿Existen becas o apoyos para competidores destacados?",
       answer:
-        "Cubing México, en colaboración con patrocinadores, ocasionalmente ofrece apoyos limitados para competidores destacados que representan a México en competencias internacionales como campeonatos continentales o mundiales. Estos apoyos varían según los fondos disponibles y pueden incluir subsidios para viajes o inscripciones. Para más información sobre los programas actuales, contacta directamente a Cubing México.",
+        "Cubing México no ofrece becas o apoyos para competidores destacados.",
     },
   ],
 };
@@ -164,8 +170,12 @@ export function FAQ() {
     );
   };
 
-  // Get filtered questions for the active tab
-  const filteredQuestions = filterQuestions(faqData[activeTab as Tab] || []);
+  // Get all questions if searching, otherwise get questions for the active tab
+  const displayedQuestions = searchQuery
+    ? Object.values(faqData).flat()
+    : faqData[activeTab as Tab] || [];
+
+  const filteredQuestions = filterQuestions(displayedQuestions);
 
   // Count total questions
   const totalQuestions = Object.values(faqData).reduce(
@@ -199,16 +209,18 @@ export function FAQ() {
           className="w-full"
           onValueChange={setActiveTab}
         >
-          <TabsList className="w-full justify-start mb-6 overflow-x-auto flex-nowrap">
-            <TabsTrigger value="general">General</TabsTrigger>
-            <TabsTrigger value="competitions">Competencias</TabsTrigger>
-            <TabsTrigger value="beginners">Principiantes</TabsTrigger>
-            <TabsTrigger value="rules">Reglamento WCA</TabsTrigger>
-            <TabsTrigger value="community">Comunidad</TabsTrigger>
-          </TabsList>
+          {!searchQuery && (
+            <TabsList className="w-full justify-start mb-6 overflow-x-auto flex-nowrap">
+              <TabsTrigger value="general">General</TabsTrigger>
+              <TabsTrigger value="competitions">Competencias</TabsTrigger>
+              <TabsTrigger value="beginners">Principiantes</TabsTrigger>
+              <TabsTrigger value="rules">Reglamento WCA</TabsTrigger>
+              <TabsTrigger value="community">Comunidad</TabsTrigger>
+            </TabsList>
+          )}
 
-          {Object.keys(faqData).map((category) => (
-            <TabsContent key={category} value={category}>
+          {searchQuery ? (
+            <div>
               {filteredQuestions.length > 0 ? (
                 <Accordion type="single" collapsible className="w-full">
                   {filteredQuestions.map((faq, index) => (
@@ -236,8 +248,27 @@ export function FAQ() {
                   </p>
                 </div>
               )}
-            </TabsContent>
-          ))}
+            </div>
+          ) : (
+            Object.keys(faqData).map((category) => (
+              <TabsContent key={category} value={category}>
+                <Accordion type="single" collapsible className="w-full">
+                  {(faqData[category as Tab] || []).map((faq, index) => (
+                    <AccordionItem key={index} value={`item-${index}`}>
+                      <AccordionTrigger className="text-left">
+                        {faq.question}
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className="prose max-w-none">
+                          <p>{faq.answer}</p>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </TabsContent>
+            ))
+          )}
         </Tabs>
 
         <div className="mt-12 bg-muted/30 rounded-lg p-6">
@@ -270,11 +301,16 @@ export function FAQ() {
         </div>
 
         <div className="mt-8 text-center text-sm text-muted-foreground">
-          <p>
-            Actualmente mostrando {totalQuestions} preguntas frecuentes en{" "}
-            {Object.keys(faqData).length} categorías.
+          {!searchQuery && (
+            <p>
+              Actualmente mostrando {totalQuestions} preguntas frecuentes en{" "}
+              {Object.keys(faqData).length} categorías.
+            </p>
+          )}
+          <p className="mt-1">
+            Última actualización:{" "}
+            {new Date("2025-08-30T00:00:00").toLocaleDateString()}
           </p>
-          {/* <p className="mt-1">Última actualización: {new Date().toLocaleDateString()}</p> */}
         </div>
       </div>
     </main>

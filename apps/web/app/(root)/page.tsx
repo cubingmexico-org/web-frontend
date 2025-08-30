@@ -18,33 +18,13 @@ import {
   AlertTitle,
   AlertDescription,
 } from "@workspace/ui/components/alert";
-import { Copa, Discord } from "@workspace/icons";
+import { Discord } from "@workspace/icons";
+import { Notification } from "@/components/notification";
 
 export default function Page() {
   return (
     <main className="flex-grow">
-      {/* <div className="bg-accent border-b">
-        <div className="container mx-auto px-5 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <Trophy className="h-5 w-5 text-accent-foreground mr-2 flex-shrink-0" />
-              <div className="text-sm">
-                <span className="font-semibold">¡Atención!</span> Las inscripciones para el Mexican Championship 2025
-                abre en 3 días.{" "}
-                <a href="/competitions?id=national-2024" className="underline font-medium hover:text-accent-foreground/50">
-                  Regístrate ahora →
-                </a>
-              </div>
-            </div>
-            <button
-              className="ml-4 text-yellow-600 hover:text-yellow-800 focus:outline-none"
-              aria-label="Cerrar notificación"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      </div> */}
+      <Notification />
 
       <section className="text-muted-foreground body-font">
         <div className="container mx-auto py-8 px-4">
@@ -100,29 +80,6 @@ export default function Page() {
       <section className="text-muted-foreground body-font">
         <div className="container px-5 py-24 mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-            <Link
-              className="col-span-1 md:col-span-3 text-center"
-              href="https://copa.cubingmexico.net/"
-            >
-              <Card className="transition-all hover:border-primary hover:shadow-md">
-                <CardHeader>
-                  <div className="w-full flex justify-center">
-                    <Copa className="w-32 h-32 mb-4" />
-                  </div>
-                  <CardTitle className="text-lg text-primary font-medium title-font mb-4">
-                    Copa Inter-Patrocinadores
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="leading-relaxed text-base">
-                    La Copa Inter-Patrocinadores es una competencia donde los
-                    patrocinadores de speedcubing en México registran a sus
-                    mejores speedcubers para ver quién consigue más récords
-                    personales
-                  </p>
-                </CardContent>
-              </Card>
-            </Link>
             <Link href="/rankings/333/single">
               <Card className="p-4 transition-all hover:border-primary hover:shadow-md">
                 <CardHeader>

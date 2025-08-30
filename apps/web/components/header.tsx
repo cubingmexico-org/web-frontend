@@ -13,7 +13,6 @@ import {
   ChevronDown,
   UserIcon,
   UserCheck,
-  Trophy,
   ChartNoAxesColumnIncreasing,
   Medal,
   ChartBarBig,
@@ -31,7 +30,7 @@ import {
 import { Button } from "@workspace/ui/components/button";
 import { SignIn, SignOut } from "./auth-components";
 import type { User } from "next-auth";
-import { Copa, CubingMexico } from "@workspace/icons";
+import { CubingMexico } from "@workspace/icons";
 
 export function Header({
   user,
@@ -54,27 +53,12 @@ export function Header({
           <span className="ml-3 text-2xl">Cubing México</span>
         </Link>
         <nav className="md:ml-auto flex flex-wrap items-center text-base justify-center">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="mr-2 hover:bg-primary hover:text-muted-foreground text-base dark:shadow-none">
-                Competencias <ChevronDown />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem>
-                <Trophy />
-                <Link href="/competitions" className="w-full">
-                  Oficiales
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Copa />
-                <Link href="https://copa.cubingmexico.net" className="w-full">
-                  Copa Inter-Patrocinadores
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Link
+            className="mr-2 hover:text-muted-foreground font-medium"
+            href="/competitions"
+          >
+            Competencias
+          </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button className="mr-2 hover:bg-primary hover:text-muted-foreground text-base dark:shadow-none">

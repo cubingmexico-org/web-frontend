@@ -75,6 +75,7 @@ interface TiptapProps {
   onChange: (newContent: JSONContent) => void;
   variant: "podium" | "participation";
   competitionId: string;
+  background: string | undefined;
 }
 
 export default function Tiptap({
@@ -90,6 +91,7 @@ export default function Tiptap({
   onChange,
   variant,
   competitionId,
+  background,
 }: TiptapProps): JSX.Element {
   const handleChange = (newContent: JSONContent) => {
     onChange(newContent);
@@ -170,6 +172,9 @@ export default function Tiptap({
               pageSize === "A4" && pageOrientation === "landscape",
           },
         ),
+        style: background
+          ? `background-image: url(${background}); background-size: contain; background-repeat: no-repeat; background-position: center;`
+          : "",
       },
     },
     content,

@@ -1157,6 +1157,7 @@ export function CertificateManager({
                   setPageSize={(value: PageSize) => {
                     setPageSize(value);
                   }}
+                  background={background}
                   variant="podium"
                 />
               </form>
@@ -1343,6 +1344,7 @@ export function CertificateManager({
                   setPageSize={(value: PageSize) => {
                     setPageSizeParticipants(value);
                   }}
+                  background={backgroundParticipants}
                   variant="participation"
                 />
               </form>

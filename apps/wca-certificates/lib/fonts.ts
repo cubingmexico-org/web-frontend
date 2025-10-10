@@ -4,6 +4,10 @@ export const fonts = [
     label: "Allura",
   },
   {
+    value: "Chau Philomene",
+    label: "Chau Philomene",
+  },
+  {
     value: "Cookie",
     label: "Cookie",
   },
@@ -123,6 +127,12 @@ export const fontDeclarations = {
     bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Allura/Allura-Regular.ttf`,
     italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Allura/Allura-Regular.ttf`,
     bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Allura/Allura-Regular.ttf`,
+  },
+  "Chau Philomene": {
+    normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Chau_Philome/ChauPhilomeneOne-Regular.ttf`,
+    bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Chau_Philome/ChauPhilomeneOne-Regular.ttf`,
+    italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Chau_Philome/ChauPhilomeneOne-Regular.ttf`,
+    bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Chau_Philome/ChauPhilomeneOne-Regular.ttf`,
   },
   Cookie: {
     normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Cookie/Cookie-Regular.ttf`,
@@ -296,6 +306,7 @@ export const fontDeclarations = {
 
 export const fontFamilies = [
   "Allura",
+  "Chau Philomene",
   "Cookie",
   "Dancing Script",
   "Great Vibes",

@@ -129,10 +129,10 @@ export const fontDeclarations = {
     bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Allura/Allura-Regular.ttf`,
   },
   "Chau Philomene": {
-    normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Chau_Philome/ChauPhilomeneOne-Regular.ttf`,
-    bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Chau_Philome/ChauPhilomeneOne-Regular.ttf`,
-    italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Chau_Philome/ChauPhilomeneOne-Regular.ttf`,
-    bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Chau_Philome/ChauPhilomeneOne-Regular.ttf`,
+    normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Chau_Philomene/ChauPhilomeneOne-Regular.ttf`,
+    bold: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Chau_Philomene/ChauPhilomeneOne-Regular.ttf`,
+    italics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Chau_Philomene/ChauPhilomeneOne-Regular.ttf`,
+    bolditalics: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Chau_Philomene/ChauPhilomeneOne-Regular.ttf`,
   },
   Cookie: {
     normal: `${process.env.NEXT_PUBLIC_APP_URL}/fonts/Cookie/Cookie-Regular.ttf`,

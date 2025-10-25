@@ -24,6 +24,154 @@ importers:
         specifier: 5.5.4
         version: 5.5.4
 
+  apps/badges:
+    dependencies:
+      '@cubing/icons':
+        specifier: ^1.1.2
+        version: 1.1.3
+      '@react-pdf/renderer':
+        specifier: ^3.4.4
+        version: 3.4.5(react@19.0.0)
+      '@tanstack/react-table':
+        specifier: ^8.15.3
+        version: 8.20.6(react-dom@19.0.0)(react@19.0.0)
+      '@tiptap/core':
+        specifier: ^2.4.0
+        version: 2.11.5(@tiptap/pm@2.11.5)
+      '@tiptap/extension-character-count':
+        specifier: ^2.4.0
+        version: 2.11.5(@tiptap/core@2.11.5)(@tiptap/pm@2.11.5)
+      '@tiptap/extension-color':
+        specifier: ^2.4.0
+        version: 2.11.5(@tiptap/core@2.11.5)(@tiptap/extension-text-style@2.11.5)
+      '@tiptap/extension-font-family':
+        specifier: ^2.4.0
+        version: 2.11.5(@tiptap/core@2.11.5)(@tiptap/extension-text-style@2.11.5)
+      '@tiptap/extension-list-item':
+        specifier: ^2.4.0
+        version: 2.11.5(@tiptap/core@2.11.5)
+      '@tiptap/extension-mention':
+        specifier: ^2.4.0
+        version: 2.11.5(@tiptap/core@2.11.5)(@tiptap/pm@2.11.5)(@tiptap/suggestion@2.11.5)
+      '@tiptap/extension-table':
+        specifier: ^2.4.0
+        version: 2.11.5(@tiptap/core@2.11.5)(@tiptap/pm@2.11.5)
+      '@tiptap/extension-table-cell':
+        specifier: ^2.4.0
+        version: 2.11.5(@tiptap/core@2.11.5)
+      '@tiptap/extension-table-header':
+        specifier: ^2.4.0
+        version: 2.11.5(@tiptap/core@2.11.5)
+      '@tiptap/extension-table-row':
+        specifier: ^2.4.0
+        version: 2.11.5(@tiptap/core@2.11.5)
+      '@tiptap/extension-text-align':
+        specifier: ^2.4.0
+        version: 2.11.5(@tiptap/core@2.11.5)
+      '@tiptap/extension-text-style':
+        specifier: ^2.4.0
+        version: 2.11.5(@tiptap/core@2.11.5)
+      '@tiptap/pm':
+        specifier: ^2.4.0
+        version: 2.11.5
+      '@tiptap/react':
+        specifier: ^2.4.0
+        version: 2.11.5(@tiptap/core@2.11.5)(@tiptap/pm@2.11.5)(react-dom@19.0.0)(react@19.0.0)
+      '@tiptap/starter-kit':
+        specifier: ^2.4.0
+        version: 2.11.5
+      '@vercel/analytics':
+        specifier: ^1.2.2
+        version: 1.4.1(next@15.1.6)(react@19.0.0)
+      '@workspace/icons':
+        specifier: workspace:*
+        version: link:../../packages/icons
+      '@workspace/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      date-fns:
+        specifier: ^4.1.0
+        version: 4.1.0
+      html2canvas:
+        specifier: 1.4.1
+        version: 1.4.1
+      lucide-react:
+        specifier: 0.456.0
+        version: 0.456.0(react@19.0.0)
+      next:
+        specifier: ^15.1.0
+        version: 15.1.6(react-dom@19.0.0)(react@19.0.0)
+      next-auth:
+        specifier: ^5.0.0-beta.25
+        version: 5.0.0-beta.25(next@15.1.6)(react@19.0.0)
+      next-themes:
+        specifier: ^0.4.3
+        version: 0.4.4(react-dom@19.0.0)(react@19.0.0)
+      pdfmake:
+        specifier: ^0.2.10
+        version: 0.2.18
+      react:
+        specifier: ^19.0.0
+        version: 19.0.0
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.0.0(react@19.0.0)
+      react-dropzone:
+        specifier: ^14.2.3
+        version: 14.3.5(react@19.0.0)
+      sonner:
+        specifier: ^1.7.4
+        version: 1.7.4(react-dom@19.0.0)(react@19.0.0)
+      swr:
+        specifier: ^2.3.3
+        version: 2.3.3(react@19.0.0)
+      tippy.js:
+        specifier: ^6.3.7
+        version: 6.3.7
+      webfontloader:
+        specifier: ^1.6.28
+        version: 1.6.28
+      zod:
+        specifier: ^3.22.4
+        version: 3.24.1
+    devDependencies:
+      '@faker-js/faker':
+        specifier: ^8.4.1
+        version: 8.4.1
+      '@types/node':
+        specifier: ^20
+        version: 20.17.17
+      '@types/pdfmake':
+        specifier: ^0.2.9
+        version: 0.2.11
+      '@types/react':
+        specifier: 18.3.0
+        version: 18.3.0
+      '@types/react-dom':
+        specifier: 18.3.1
+        version: 18.3.1
+      '@types/webfontloader':
+        specifier: ^1.6.38
+        version: 1.6.38
+      '@workspace/eslint-config':
+        specifier: workspace:^
+        version: link:../../packages/eslint-config
+      '@workspace/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
+      autoprefixer:
+        specifier: ^10.0.1
+        version: 10.4.20(postcss@8.5.1)
+      postcss:
+        specifier: ^8
+        version: 8.5.1
+      tailwindcss:
+        specifier: ^3.4.1
+        version: 3.4.17
+      typescript:
+        specifier: ^5
+        version: 5.7.3
+
   apps/sponsors-cup:
     dependencies:
       '@vercel/analytics':
@@ -4236,7 +4384,7 @@ packages:
   /@types/pdfmake@0.2.11:
     resolution: {integrity: sha512-gglgMQhnG6C2kco13DJlvokqTxL+XKxHwCejElH8fSCNF9ZCkRK6Mzo011jQ0zuug+YlIgn6BpcpZrARyWdW3Q==}
     dependencies:
-      '@types/node': 20.17.17
+      '@types/node': 22.13.1
       '@types/pdfkit': 0.13.9
     dev: true
 
@@ -4754,6 +4902,11 @@ packages:
   /balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
 
+  /base64-arraybuffer@1.0.2:
+    resolution: {integrity: sha512-I3yl4r9QB5ZRY3XuJVEPfc2XhZO6YweFPI+UovAzn+8/hb3oJ6lnysaFcjVpkCPfVWFUDvoZ8kmVDP7WyRtYtQ==}
+    engines: {node: '>= 0.6.0'}
+    dev: false
+
   /base64-js@1.3.1:
     resolution: {integrity: sha512-mLQ4i2QO1ytvGWFWmcngKO//JXAQueZvwEKtjgQFM4jIK0kU+ytMfplL8j+n5mspOfjHwoAg+9yhb7BwAHm36g==}
     dev: false
@@ -5151,6 +5304,12 @@ packages:
 
   /crypto-js@4.2.0:
     resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
+    dev: false
+
+  /css-line-break@2.1.0:
+    resolution: {integrity: sha512-FHcKFCZcAha3LwfVBhCQbW2nCNbkZXn7KVUJcsT5/P8YmfsVja0FMPJr0B903j/E69HUphKiV9iQArX8SDYA4w==}
+    dependencies:
+      utrie: 1.0.2
     dev: false
 
   /cssesc@3.0.0:
@@ -6499,6 +6658,14 @@ packages:
 
   /html-url-attributes@3.0.1:
     resolution: {integrity: sha512-ol6UPyBWqsrO6EJySPz2O7ZSr856WDrEzM5zMqp+FJJLGMW35cLYmmZnl0vztAZxRUoNZJFTCohfjuIJ8I4QBQ==}
+    dev: false
+
+  /html2canvas@1.4.1:
+    resolution: {integrity: sha512-fPU6BHNpsyIhr8yyMpTLLxAbkaK8ArIBcmZIRiBLiDhjeqvXolaEmDGmELFuX9I4xDcaKKcJl+TKZLqruBbmWA==}
+    engines: {node: '>=8.0.0'}
+    dependencies:
+      css-line-break: 2.1.0
+      text-segmentation: 1.0.3
     dev: false
 
   /http-proxy-agent@7.0.2:
@@ -9344,6 +9511,12 @@ packages:
     transitivePeerDependencies:
       - ts-node
 
+  /text-segmentation@1.0.3:
+    resolution: {integrity: sha512-iOiPUo/BGnZ6+54OsWxZidGCsdU8YbE4PSpdPinp7DeMtUJNJBoJ/ouUSTJjHkh1KntHaltHl/gDs2FC4i5+Nw==}
+    dependencies:
+      utrie: 1.0.2
+    dev: false
+
   /thenify-all@1.6.0:
     resolution: {integrity: sha512-RNxQH/qI8/t3thXJDwcstUO4zeqo64+Uy/+sNVRBx4Xn2OX+OZ9oP+iJnNFqplFra2ZUVeKCSa2oVWi3T4uVmA==}
     engines: {node: '>=0.8'}
@@ -9824,6 +9997,12 @@ packages:
 
   /util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
+
+  /utrie@1.0.2:
+    resolution: {integrity: sha512-1MLa5ouZiOmQzUbjbu9VmjLzn1QLXBhwpUa7kdLUQK+KQ5KA9I1vk5U4YHe/X2Ch7PYnJfWuWT+VbuxbGwljhw==}
+    dependencies:
+      base64-arraybuffer: 1.0.2
+    dev: false
 
   /v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}

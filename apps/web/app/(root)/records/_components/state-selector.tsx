@@ -52,7 +52,7 @@ export function StateSelector({ states }: StateSelecorProps) {
           aria-label="Seleccionar estado"
           variant="outline"
           role="combobox"
-          className="gap-2 focus:outline-none focus:ring-1 focus:ring-ring focus-visible:ring-0"
+          className="gap-2 focus:outline-none focus:ring-1 focus:ring-ring focus-visible:ring-0 w-full"
         >
           {memoizedState.length ? memoizedState : "Seleccionar estado"}
           <ChevronsUpDown className="ml-auto shrink-0 opacity-50" />

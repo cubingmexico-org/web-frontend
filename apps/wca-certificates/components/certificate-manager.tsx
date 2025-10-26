@@ -922,7 +922,7 @@ export function CertificateManager({
                   />
                 </div>
               </div>
-              <div className="rounded-md bg-muted p-4">
+              <div className="rounded-md bg-muted/50 p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="text-sm font-medium">
@@ -944,6 +944,7 @@ export function CertificateManager({
                       void mutatePodiums();
                       setLastUpdate(new Date());
                     }}
+                    className="dark:bg-background"
                   >
                     <RefreshCw />
                     Actualizar

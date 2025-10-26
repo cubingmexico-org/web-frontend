@@ -38,7 +38,7 @@ export default async function Page(props: PageProps) {
   ]);
 
   return (
-    <main className="flex-grow container mx-auto px-4 py-8">
+    <main className="grow container mx-auto px-4 py-8">
       <div className="flex flex-col gap-4 mb-6">
         <h1 className="text-3xl font-bold">Kinch Ranks nacionales</h1>
         <p>

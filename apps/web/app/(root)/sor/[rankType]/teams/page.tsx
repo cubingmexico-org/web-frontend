@@ -117,7 +117,7 @@ export default async function Page(props: PageProps) {
     const teams = data.rows as unknown as TeamData[];
 
     return (
-      <main className="flex-grow container mx-auto px-4 py-8">
+      <main className="grow container mx-auto px-4 py-8">
         <div className="flex flex-col gap-4 mb-6">
           <h1 className="text-3xl font-bold">
             Sum of Ranks de Teams (Average)
@@ -290,7 +290,7 @@ export default async function Page(props: PageProps) {
   const teams = data.rows as unknown as TeamData[];
 
   return (
-    <main className="flex-grow container mx-auto px-4 py-8">
+    <main className="grow container mx-auto px-4 py-8">
       <div className="flex flex-col gap-4 mb-6">
         <h1 className="text-3xl font-bold">Sum of Ranks de Teams (Single)</h1>
         <p>

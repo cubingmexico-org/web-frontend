@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { type NextAuthResult } from "next-auth";
 
 interface WCAProfile {
   me: {
@@ -33,7 +33,7 @@ interface WCAProfile {
   };
 }
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+const result = NextAuth({
   providers: [
     {
       id: "wca",
@@ -80,3 +80,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
 });
+
+export const handlers: NextAuthResult["handlers"] = result.handlers;
+export const auth: NextAuthResult["auth"] = result.auth;
+export const signIn: NextAuthResult["signIn"] = result.signIn;
+export const signOut: NextAuthResult["signOut"] = result.signOut;

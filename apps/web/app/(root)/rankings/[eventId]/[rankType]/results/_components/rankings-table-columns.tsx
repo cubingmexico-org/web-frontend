@@ -100,7 +100,7 @@ export function getSingleColumns({
                 row.getValue("state") === null
                   ? "text-muted-foreground"
                   : "font-medium",
-                "max-w-[31.25rem] truncate",
+                "max-w-125 truncate",
               )}
             >
               {row.getValue("state") ?? "N/A"}
@@ -241,7 +241,7 @@ export function getAverageColumns({
                 row.getValue("state") === null
                   ? "text-muted-foreground"
                   : "font-medium",
-                "max-w-[31.25rem] truncate",
+                "max-w-125 truncate",
               )}
             >
               {row.getValue("state") ?? "N/A"}

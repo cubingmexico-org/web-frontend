@@ -226,7 +226,7 @@ export default async function Page(props: {
   const activeYears = currentYear - foundedYear;
 
   return (
-    <main className="flex-grow">
+    <main className="grow">
       <div className="relative h-[400px] bg-gray-200">
         <Image
           src={teamData?.coverImage || "/placeholder.svg"}
@@ -236,7 +236,7 @@ export default async function Page(props: {
           height={400}
           priority
         />
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-6">
+        <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/60 to-transparent p-6">
           <div className="container mx-auto flex flex-col sm:flex-row items-end gap-6">
             <div className="flex gap-6 w-full">
               <Avatar className="h-24 w-24 border-4 border-white">
@@ -681,7 +681,7 @@ export default async function Page(props: {
                         className="flex items-start gap-4 p-4 rounded-lg border"
                       >
                         <Calendar className="w-6 h-6" />
-                        <div className="flex-grow">
+                        <div className="grow">
                           <h3 className="font-semibold">{competition.name}</h3>
                           <div className="text-sm text-muted-foreground mt-2">
                             <div className="flex items-center">
@@ -747,7 +747,7 @@ export default async function Page(props: {
                         className="flex items-start gap-4 p-4 rounded-lg border"
                       >
                         <Calendar className="w-6 h-6" />
-                        <div className="flex-grow">
+                        <div className="grow">
                           <h3 className="font-semibold">{competition.name}</h3>
                           <div className="text-sm text-muted-foreground mt-2">
                             <div className="flex items-center">

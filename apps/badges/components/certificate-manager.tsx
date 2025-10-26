@@ -40,11 +40,7 @@ import {
 import Link from "next/link";
 import useSWR from "swr";
 import { notFound } from "next/navigation";
-import {
-  fetcher,
-  formatDates,
-  transformString,
-} from "@/lib/utils";
+import { fetcher, formatDates, transformString } from "@/lib/utils";
 import type { Person } from "@/types/wcif";
 import Tiptap from "./editor/tiptap";
 import { badges } from "@/data/certificates";
@@ -73,28 +69,24 @@ export function CertificateManager({
 }) {
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
 
-  const [selectedPersons, setSelectedPersons] = useState<
-    Person[]
-  >([]);
+  const [selectedPersons, setSelectedPersons] = useState<Person[]>([]);
 
-  const [content, setContent] =
-    useState<JSONContent>(badges);
+  const [content, setContent] = useState<JSONContent>(badges);
 
-  const [pageMargins, setPageMargins] =
-    useState<Margins>([20, 20, 20, 20]);
+  const [pageMargins, setPageMargins] = useState<Margins>([20, 20, 20, 20]);
 
   const [pageOrientation, setPageOrientation] =
     useState<PageOrientation>("portrait");
 
-  const [pageSize, setPageSize] =
-    useState<PageSize>("LETTER");
+  const [pageSize, setPageSize] = useState<PageSize>("LETTER");
 
   const [files, setFiles] = useState<File[]>([]);
 
-  const [background, setBackground] =
-    useState<string>();
+  const [background, setBackground] = useState<string>();
 
   const [search, setSearch] = useState("");
+
+  const badgeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (files.length > 0) {
@@ -108,11 +100,7 @@ export function CertificateManager({
     }
   }, [files]);
 
-  const {
-    data,
-    isLoading,
-    mutate,
-  } = useSWR<Person[]>(
+  const { data, isLoading, mutate } = useSWR<Person[]>(
     `/api/certificate/participation?competitionId=${competition.id}`,
     fetcher,
     {
@@ -143,13 +131,11 @@ export function CertificateManager({
     ? format(startDate, "d 'de' MMMM 'de' yyyy", { locale: es })
     : `${format(startDate, "d 'de' MMM", { locale: es })} - ${format(endDate, "d 'de' MMM 'de' yyyy", { locale: es })}`;
 
-  const badgeRef = useRef<HTMLDivElement>(null)
-
   const downloadPNG = async () => {
-    if (!badgeRef.current) return
+    if (!badgeRef.current) return;
 
     // Import html2canvas dynamically
-    const html2canvas = (await import("html2canvas")).default
+    const html2canvas = (await import("html2canvas")).default;
 
     const canvas = await html2canvas(badgeRef.current, {
       backgroundColor: "#ffffff",
@@ -158,19 +144,19 @@ export function CertificateManager({
       height: 600,
       useCORS: true,
       allowTaint: true,
-    })
+    });
 
-    const link = document.createElement("a")
-    link.download = `${selectedPersons[0]?.name.replace(/\s+/g, "_")}_badge.png`
-    link.href = canvas.toDataURL()
-    link.click()
-  }
+    const link = document.createElement("a");
+    link.download = `${selectedPersons[0]?.name.replace(/\s+/g, "_")}_badge.png`;
+    link.href = canvas.toDataURL();
+    link.click();
+  };
 
   const previewImage = async () => {
-    if (!badgeRef.current) return
+    if (!badgeRef.current) return;
 
     // Import html2canvas dynamically
-    const html2canvas = (await import("html2canvas")).default
+    const html2canvas = (await import("html2canvas")).default;
 
     const canvas = await html2canvas(badgeRef.current, {
       backgroundColor: "#ffffff",
@@ -179,11 +165,11 @@ export function CertificateManager({
       height: 600,
       useCORS: true,
       allowTaint: true,
-    })
+    });
 
-    const dataURL = canvas.toDataURL()
-    window.open(dataURL, "_blank")
-  }
+    const dataURL = canvas.toDataURL();
+    window.open(dataURL, "_blank");
+  };
 
   const renderParticipantTextContent = (
     content: JSONContent["content"],
@@ -304,33 +290,33 @@ export function CertificateManager({
                         row.content?.some((cell) => cell.type === "tableCell"),
                       )
                         ? data.assignments.map(() => {
-                          const cell = item.content?.find((row) =>
-                            row.content?.some(
-                              (cell) => cell.type === "tableCell",
-                            ),
-                          );
+                            const cell = item.content?.find((row) =>
+                              row.content?.some(
+                                (cell) => cell.type === "tableCell",
+                              ),
+                            );
 
-                          let event;
-                          let average;
-                          let ranking;
+                            let event;
+                            let average;
+                            let ranking;
 
-                          for (const row of cell?.content || []) {
-                            for (const cell of row.content || []) {
-                              if (
-                                cell.content?.some(
-                                  (content) => content.type === "mention",
-                                )
-                              ) {
-                                switch (cell.content[0]?.attrs?.id) {
-                                  default:
-                                    break;
+                            for (const row of cell?.content || []) {
+                              for (const cell of row.content || []) {
+                                if (
+                                  cell.content?.some(
+                                    (content) => content.type === "mention",
+                                  )
+                                ) {
+                                  switch (cell.content[0]?.attrs?.id) {
+                                    default:
+                                      break;
+                                  }
                                 }
                               }
                             }
-                          }
 
-                          return [event || {}, average || {}, ranking || {}];
-                        })
+                            return [event || {}, average || {}, ranking || {}];
+                          })
                         : []),
                     ],
                   },
@@ -470,8 +456,7 @@ export function CertificateManager({
           Gafetes: {competition.name}
         </h1>
         <p className="text-muted-foreground">
-          Gestiona los gafetes para esta
-          competencia.
+          Gestiona los gafetes para esta competencia.
         </p>
       </div>
       <div className="space-y-6">
@@ -543,16 +528,11 @@ export function CertificateManager({
                     Certificados de Participación
                   </h4>
                   <span className="text-xs text-muted-foreground">
-                    {data?.length || 0} de {persons.length}{" "}
-                    generados
+                    {data?.length || 0} de {persons.length} generados
                   </span>
                 </div>
                 <Progress
-                  value={
-                    data
-                      ? (data.length / persons.length) * 100
-                      : 0
-                  }
+                  value={data ? (data.length / persons.length) * 100 : 0}
                   className="h-2"
                 />
               </div>
@@ -634,12 +614,11 @@ export function CertificateManager({
                                 }
                                 onCheckedChange={(checked) => {
                                   if (checked) {
-                                    const participant =
-                                      data?.filter(
-                                        (participant) =>
-                                          participant.registrantId ===
-                                          person.registrantId,
-                                      );
+                                    const participant = data?.filter(
+                                      (participant) =>
+                                        participant.registrantId ===
+                                        person.registrantId,
+                                    );
                                     if (participant) {
                                       setSelectedPersons((prev) => [
                                         ...prev,
@@ -672,9 +651,7 @@ export function CertificateManager({
                 <div className="flex justify-start gap-2 w-full">
                   <Button
                     aria-label="Seleccionar todos"
-                    disabled={
-                      selectedPersons.length === data?.length
-                    }
+                    disabled={selectedPersons.length === data?.length}
                     onClick={() => {
                       setSelectedPersons(data || []);
                     }}
@@ -724,10 +701,7 @@ export function CertificateManager({
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <FileUploader
-                  files={files}
-                  setFiles={setFiles}
-                />
+                <FileUploader files={files} setFiles={setFiles} />
               </CardContent>
             </Card>
           </div>

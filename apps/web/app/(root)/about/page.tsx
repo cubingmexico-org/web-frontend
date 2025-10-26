@@ -9,13 +9,13 @@ export const metadata: Metadata = {
     "Cubing México es un sitio web de apasionados por el speedcubing y diseñado con el propósito de unir a la comunidad de speedcubers en México.",
 };
 
-export default async function Page(): Promise<JSX.Element> {
+export default async function Page(): Promise<React.JSX.Element> {
   const competitions = await getCompetitions();
 
   const persons = await getPersons();
 
   return (
-    <main className="flex-grow container mx-auto px-4 py-8">
+    <main className="grow container mx-auto px-4 py-8">
       <h1 className="text-center text-4xl pb-4 font-semibold">
         Acerca de Cubing México
       </h1>

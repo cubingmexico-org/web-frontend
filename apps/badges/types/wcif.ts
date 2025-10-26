@@ -67,7 +67,13 @@ export interface Event {
 export interface Assignment {
   activityId: number;
   stationNumber: number | null;
-  assignmentCode: "competitor" | "staff-judge" | "staff-scrambler" | "staff-runner" | "staff-dataentry" | "staff-other";
+  assignmentCode:
+    | "competitor"
+    | "staff-judge"
+    | "staff-scrambler"
+    | "staff-runner"
+    | "staff-dataentry"
+    | "staff-other";
 }
 
 export interface WCIF {

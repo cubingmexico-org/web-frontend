@@ -91,7 +91,7 @@ export default async function Page(props: PageProps) {
   const events = await getEvents();
 
   return (
-    <main className="flex-grow container mx-auto px-4 py-8">
+    <main className="grow container mx-auto px-4 py-8">
       <EventSelector
         className="mb-6"
         events={events}

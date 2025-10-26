@@ -1,11 +1,12 @@
 import { auth } from "@/auth";
 import { createUploadthing } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
+import type { FileRouter } from "uploadthing/next";
 
 const f = createUploadthing();
 
 // FileRouter for your app, can contain multiple FileRoutes
-export const ourFileRouter = {
+export const ourFileRouter: FileRouter = {
   // Define as many FileRoutes as you like, each with a unique routeSlug
   imageUploader: f({
     image: {

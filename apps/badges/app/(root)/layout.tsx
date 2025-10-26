@@ -17,7 +17,7 @@ export default async function Layout({
   children,
 }: {
   children: React.ReactNode;
-}): Promise<JSX.Element> {
+}): Promise<React.JSX.Element> {
   const session = await auth();
   const headersList = await headers();
   const host = headersList.get("host");

@@ -42,7 +42,7 @@ export function DialogDocumentSettings({
   setPageSize,
   pageMargins,
   setPageMargins,
-}: DialogDocumentSettingsProps): JSX.Element {
+}: DialogDocumentSettingsProps): React.JSX.Element {
   const [open, setOpen] = useState(false);
   const [tempPageOrientation, setTempPageOrientation] =
     useState(pageOrientation);

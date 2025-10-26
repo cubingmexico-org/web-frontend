@@ -5,7 +5,7 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Switch } from "@workspace/ui/components/switch";
 
-export function ModeToggle(): JSX.Element {
+export function ModeToggle(): React.JSX.Element {
   const { theme, setTheme } = useTheme();
   const isDarkMode = theme === "dark";
 

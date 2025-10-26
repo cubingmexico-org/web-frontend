@@ -15,7 +15,7 @@ import {
 import { auth } from "@/auth";
 import { SignOut } from "./auth-components";
 
-export async function UserButton(): Promise<JSX.Element> {
+export async function UserButton(): Promise<React.JSX.Element> {
   const session = await auth();
 
   return (

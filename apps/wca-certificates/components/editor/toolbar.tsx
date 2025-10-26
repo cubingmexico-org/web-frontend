@@ -80,7 +80,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
             ) || "12"
           }
         >
-          <SelectTrigger className="!w-20">
+          <SelectTrigger className="w-20!">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -92,7 +92,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
           </SelectContent>
         </Select>
         <Input
-          className="h-9 w-32 p-0 border-0"
+          className="h-9 w-9 p-0 border-0"
           data-testid="setColor"
           onChange={(event) =>
             editor.chain().focus().setColor(event.target.value).run()

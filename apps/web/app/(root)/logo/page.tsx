@@ -11,9 +11,9 @@ export const metadata: Metadata = {
     "Encuentra el logotipo de Cubing México en diferentes formatos y resoluciones. Descarga el logotipo para su uso en eventos, redes sociales y más.",
 };
 
-export default function Page(): JSX.Element {
+export default function Page(): React.JSX.Element {
   return (
-    <main className="flex-grow container mx-auto px-4 py-12">
+    <main className="grow container mx-auto px-4 py-12">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold mb-6 text-center">
           Logotipo de Cubing México

@@ -29,7 +29,7 @@ export function ComboboxFont({
   value,
   setValue,
   disabled,
-}: ComboboxFontProps): JSX.Element {
+}: ComboboxFontProps): React.JSX.Element {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -37,7 +37,7 @@ export function ComboboxFont({
       <PopoverTrigger asChild>
         <Button
           aria-expanded={open}
-          className="w-full justify-between"
+          className="w-40 justify-between"
           disabled={disabled}
           role="combobox"
           variant="outline"

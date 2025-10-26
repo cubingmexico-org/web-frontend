@@ -52,7 +52,6 @@ import {
   RemoveFormatting,
   Heading,
 } from "lucide-react";
-import { Button } from "@workspace/ui/components/button";
 import { DialogDocumentSettings } from "@/components/editor/dialog-document-settings";
 import { TextTransform } from "@/components/editor/extensions/text-transform";
 import { FontSize } from "@/components/editor/extensions/font-size";
@@ -92,7 +91,7 @@ export default function Tiptap({
   variant,
   competitionId,
   background,
-}: TiptapProps): JSX.Element {
+}: TiptapProps): React.JSX.Element {
   const handleChange = (newContent: JSONContent) => {
     onChange(newContent);
   };
@@ -241,41 +240,31 @@ export default function Tiptap({
                 handleChange(newContent);
               }}
             >
-              <RotateCcw className="h-4 w-4 mr-2" />
+              <RotateCcw />
               Reiniciar
             </MenubarItem>
             <MenubarItem onClick={saveContent}>
-              <Save className="h-4 w-4 mr-2" />
+              <Save />
               Guardar
             </MenubarItem>
             <MenubarItem onClick={loadContent}>
-              <Loader className="h-4 w-4 mr-2" />
+              <Loader />
               Cargar
             </MenubarItem>
             <MenubarSeparator />
-            <MenubarItem asChild>
-              <Button
-                className="w-full px-2 py-1.5 justify-start font-normal h-8"
-                disabled={pdfDisabled}
-                onClick={pdfOnClick}
-                type="submit"
-                variant="ghost"
-              >
-                <FileDown />
-                Exportar como PDF
-              </Button>
+            <MenubarItem disabled={pdfDisabled} onClick={pdfOnClick}>
+              <FileDown />
+              Exportar como PDF
             </MenubarItem>
             <MenubarSeparator />
-            <MenubarItem asChild>
-              <DialogDocumentSettings
-                pageMargins={pageMargins}
-                pageOrientation={pageOrientation}
-                pageSize={pageSize}
-                setPageMargins={setPageMargins}
-                setPageOrientation={setPageOrientation}
-                setPageSize={setPageSize}
-              />
-            </MenubarItem>
+            <DialogDocumentSettings
+              pageMargins={pageMargins}
+              pageOrientation={pageOrientation}
+              pageSize={pageSize}
+              setPageMargins={setPageMargins}
+              setPageOrientation={setPageOrientation}
+              setPageSize={setPageSize}
+            />
           </MenubarContent>
         </MenubarMenu>
         <MenubarMenu>
@@ -285,7 +274,7 @@ export default function Tiptap({
               disabled={!editor.can().chain().focus().undo().run()}
               onClick={() => editor.chain().focus().undo().run()}
             >
-              <Undo className="h-4 w-4 mr-2" />
+              <Undo />
               Deshacer
               <MenubarShortcut>Ctrl+Y</MenubarShortcut>
             </MenubarItem>
@@ -293,29 +282,29 @@ export default function Tiptap({
               disabled={!editor.can().chain().focus().redo().run()}
               onClick={() => editor.chain().focus().redo().run()}
             >
-              <Redo className="h-4 w-4 mr-2" />
+              <Redo />
               Rehacer
               <MenubarShortcut>Ctrl+Z</MenubarShortcut>
             </MenubarItem>
             <MenubarSeparator />
             <MenubarItem disabled>
-              <Scissors className="h-4 w-4 mr-2" />
+              <Scissors />
               Cortar
               <MenubarShortcut>Ctrl+X</MenubarShortcut>
             </MenubarItem>
             <MenubarItem disabled>
-              <Files className="h-4 w-4 mr-2" />
+              <Files />
               Copiar
               <MenubarShortcut>Ctrl+C</MenubarShortcut>
             </MenubarItem>
             <MenubarItem disabled>
-              <Clipboard className="h-4 w-4 mr-2" />
+              <Clipboard />
               Pegar
               <MenubarShortcut>Ctrl+V</MenubarShortcut>
             </MenubarItem>
             <MenubarSeparator />
             <MenubarItem disabled>
-              <TextSelect className="h-4 w-4 mr-2" />
+              <TextSelect />
               Seleccionar todo
               <MenubarShortcut>Ctrl+A</MenubarShortcut>
             </MenubarItem>
@@ -333,7 +322,7 @@ export default function Tiptap({
                   .run()
               }
             >
-              <Sheet className="h-4 w-4 mr-2" />
+              <Sheet />
               Tabla
             </MenubarItem>
           </MenubarContent>
@@ -342,15 +331,15 @@ export default function Tiptap({
           <MenubarTrigger>Formato</MenubarTrigger>
           <MenubarContent>
             <MenubarSub>
-              <MenubarSubTrigger>
-                <Bold className="h-4 w-4 mr-2" />
+              <MenubarSubTrigger className="[&_svg:not([class*='size-'])]:size-4 gap-2">
+                <Bold />
                 Texto
               </MenubarSubTrigger>
               <MenubarSubContent>
                 <MenubarItem
                   onClick={() => editor.chain().focus().toggleBold().run()}
                 >
-                  <Bold className="h-4 w-4 mr-2" />
+                  <Bold />
                   Negrita
                 </MenubarItem>
                 <MenubarSeparator />
@@ -358,8 +347,8 @@ export default function Tiptap({
               </MenubarSubContent>
             </MenubarSub>
             <MenubarSub>
-              <MenubarSubTrigger>
-                <AlignJustify className="h-4 w-4 mr-2" />
+              <MenubarSubTrigger className="[&_svg:not([class*='size-'])]:size-4 gap-2">
+                <AlignJustify />
                 Estilos de párrafo
               </MenubarSubTrigger>
               <MenubarSubContent>
@@ -421,8 +410,8 @@ export default function Tiptap({
               </MenubarSubContent>
             </MenubarSub>
             <MenubarSub>
-              <MenubarSubTrigger>
-                <AlignLeft className="h-4 w-4 mr-2" />
+              <MenubarSubTrigger className="[&_svg:not([class*='size-'])]:size-4 gap-2">
+                <AlignLeft />
                 Alinear
               </MenubarSubTrigger>
               <MenubarSubContent>
@@ -431,7 +420,7 @@ export default function Tiptap({
                     editor.chain().focus().setTextAlign("left").run()
                   }
                 >
-                  <AlignLeft className="h-4 w-4 mr-2" />
+                  <AlignLeft />
                   Izquierda
                 </MenubarItem>
                 <MenubarItem
@@ -439,7 +428,7 @@ export default function Tiptap({
                     editor.chain().focus().setTextAlign("center").run()
                   }
                 >
-                  <AlignCenter className="h-4 w-4 mr-2" />
+                  <AlignCenter />
                   Centro
                 </MenubarItem>
                 <MenubarItem
@@ -447,7 +436,7 @@ export default function Tiptap({
                     editor.chain().focus().setTextAlign("right").run()
                   }
                 >
-                  <AlignRight className="h-4 w-4 mr-2" />
+                  <AlignRight />
                   Derecha
                 </MenubarItem>
                 <MenubarItem
@@ -455,15 +444,15 @@ export default function Tiptap({
                     editor.chain().focus().setTextAlign("justify").run()
                   }
                 >
-                  <AlignJustify className="h-4 w-4 mr-2" />
+                  <AlignJustify />
                   Justificado
                 </MenubarItem>
               </MenubarSubContent>
             </MenubarSub>
             <MenubarSeparator />
             <MenubarSub>
-              <MenubarSubTrigger>
-                <Sheet className="h-4 w-4 mr-2" />
+              <MenubarSubTrigger className="[&_svg:not([class*='size-'])]:size-4 gap-2">
+                <Sheet />
                 Tabla
               </MenubarSubTrigger>
               <MenubarSubContent>
@@ -471,28 +460,28 @@ export default function Tiptap({
                   disabled={!editor.can().addRowBefore()}
                   onClick={() => editor.chain().focus().addRowBefore().run()}
                 >
-                  <Plus className="h-4 w-4 mr-2" />
+                  <Plus />
                   Inertar fila arriba
                 </MenubarItem>
                 <MenubarItem
                   disabled={!editor.can().addRowAfter()}
                   onClick={() => editor.chain().focus().addRowAfter().run()}
                 >
-                  <Plus className="h-4 w-4 mr-2" />
+                  <Plus />
                   Insertar fila abajo
                 </MenubarItem>
                 <MenubarItem
                   disabled={!editor.can().addColumnBefore()}
                   onClick={() => editor.chain().focus().addColumnBefore().run()}
                 >
-                  <Plus className="h-4 w-4 mr-2" />
+                  <Plus />
                   Insertar columna a la izquierda
                 </MenubarItem>
                 <MenubarItem
                   disabled={!editor.can().addColumnAfter()}
                   onClick={() => editor.chain().focus().addColumnAfter().run()}
                 >
-                  <Plus className="h-4 w-4 mr-2" />
+                  <Plus />
                   Insertar columna a la derecha
                 </MenubarItem>
                 <MenubarSeparator />
@@ -500,21 +489,21 @@ export default function Tiptap({
                   disabled={!editor.can().deleteRow()}
                   onClick={() => editor.chain().focus().deleteRow().run()}
                 >
-                  <Trash2 className="h-4 w-4 mr-2" />
+                  <Trash2 />
                   Eliminar fila
                 </MenubarItem>
                 <MenubarItem
                   disabled={!editor.can().deleteColumn()}
                   onClick={() => editor.chain().focus().deleteColumn().run()}
                 >
-                  <Trash2 className="h-4 w-4 mr-2" />
+                  <Trash2 />
                   Eliminar columna
                 </MenubarItem>
                 <MenubarItem
                   disabled={!editor.can().deleteTable()}
                   onClick={() => editor.chain().focus().deleteTable().run()}
                 >
-                  <Trash2 className="h-4 w-4 mr-2" />
+                  <Trash2 />
                   Eliminar tabla
                 </MenubarItem>
                 <MenubarSeparator />
@@ -522,7 +511,7 @@ export default function Tiptap({
                   disabled={!editor.can().toggleHeaderRow()}
                   onClick={() => editor.chain().focus().toggleHeaderRow().run()}
                 >
-                  <Heading className="h-4 w-4 mr-2" />
+                  <Heading />
                   Alternar fila de encabezado
                 </MenubarItem>
                 <MenubarSeparator />
@@ -530,14 +519,14 @@ export default function Tiptap({
                   disabled={!editor.can().mergeCells()}
                   onClick={() => editor.chain().focus().mergeCells().run()}
                 >
-                  <TableCellsMerge className="h-4 w-4 mr-2" />
+                  <TableCellsMerge />
                   Combinar celdas
                 </MenubarItem>
                 <MenubarItem
                   disabled={!editor.can().splitCell()}
                   onClick={() => editor.chain().focus().splitCell().run()}
                 >
-                  <TableCellsSplit className="h-4 w-4 mr-2" />
+                  <TableCellsSplit />
                   Separar celdas
                 </MenubarItem>
               </MenubarSubContent>
@@ -549,7 +538,7 @@ export default function Tiptap({
                 editor.chain().focus().clearNodes().run();
               }}
             >
-              <RemoveFormatting className="h-4 w-4 mr-2" />
+              <RemoveFormatting />
               Borrar formato
             </MenubarItem>
           </MenubarContent>

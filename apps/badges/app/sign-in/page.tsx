@@ -3,7 +3,7 @@ import Link from "next/link";
 import { UserAuthForm } from "@/components/user-auth-form";
 import { CubingMexico } from "@workspace/icons";
 
-export default function Page(): JSX.Element {
+export default function Page(): React.JSX.Element {
   return (
     <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
       <div className="flex items-center justify-center py-12">

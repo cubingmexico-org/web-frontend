@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import "next-auth/jwt";
-import type { NextAuthConfig } from "next-auth";
+import type { NextAuthConfig, NextAuthResult } from "next-auth";
 
 interface WCAProfile {
   me: {
@@ -84,7 +84,12 @@ export const config = {
   debug: process.env.NODE_ENV !== "production" ? true : false,
 } as NextAuthConfig;
 
-export const { handlers, auth, signIn, signOut } = NextAuth(config);
+const result = NextAuth(config);
+
+export const handlers: NextAuthResult["handlers"] = result.handlers;
+export const auth: NextAuthResult["auth"] = result.auth;
+export const signIn: NextAuthResult["signIn"] = result.signIn;
+export const signOut: NextAuthResult["signOut"] = result.signOut;
 
 declare module "next-auth" {
   interface Session {

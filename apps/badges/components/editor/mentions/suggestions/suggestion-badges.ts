@@ -6,10 +6,9 @@ import { MentionList } from "../mention-list";
 
 export default {
   items: ({ query }: any) => {
-    return [
-      "Nombre",
-      "WCA ID",
-    ].filter((item) => item.toLowerCase().startsWith(query.toLowerCase()));
+    return ["Nombre", "WCA ID"].filter((item) =>
+      item.toLowerCase().startsWith(query.toLowerCase()),
+    );
   },
 
   render: () => {

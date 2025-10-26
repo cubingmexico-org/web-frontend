@@ -19,7 +19,7 @@ export function Notification() {
       <div className="container mx-auto px-5 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <Trophy className="h-5 w-5 text-accent-foreground mr-2 flex-shrink-0" />
+            <Trophy className="h-5 w-5 text-accent-foreground mr-2 shrink-0" />
             {registrationOpen < new Date() ? (
               <div className="text-sm">
                 <span className="font-semibold">¡Atención!</span> Las

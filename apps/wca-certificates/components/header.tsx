@@ -11,7 +11,6 @@ import {
 } from "@workspace/ui/components/avatar";
 import { User } from "next-auth";
 import { SignOut } from "./auth-components";
-import { ThemeSwitcher } from "./theme-switcher";
 import { CubingMexico } from "@workspace/icons";
 
 export function Header({ user }: { user: User }) {
@@ -34,7 +33,6 @@ export function Header({ user }: { user: User }) {
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent sideOffset={10}>
-              <ThemeSwitcher />
               <SignOut />
             </DropdownMenuContent>
           </DropdownMenu>

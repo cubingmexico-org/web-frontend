@@ -7,7 +7,7 @@ export default async function Page({
   params,
 }: {
   params: Params;
-}): Promise<JSX.Element> {
+}): Promise<React.JSX.Element> {
   const { competitionId } = await params;
 
   const competition = await getCompetitionById({

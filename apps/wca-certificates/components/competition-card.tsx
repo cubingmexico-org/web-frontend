@@ -33,7 +33,7 @@ export function CompetitionCard({
   };
 
   return (
-    <Card className="overflow-hidden transition-all hover:shadow-md">
+    <Card className="overflow-hidden transition-all hover:shadow-md py-0">
       <div className="relative h-48 w-full overflow-hidden bg-gray-100">
         <Image
           src="/placeholder.svg?height=192&width=384"
@@ -42,7 +42,7 @@ export function CompetitionCard({
           width={384}
           height={192}
         />
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+        <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/60 to-transparent p-4">
           <Badge
             variant={
               status === "upcoming"

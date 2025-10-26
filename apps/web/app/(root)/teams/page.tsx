@@ -14,7 +14,7 @@ export default async function Page() {
   const teams = await getTeams();
 
   return (
-    <main className="flex-grow container mx-auto px-4 py-8">
+    <main className="grow container mx-auto px-4 py-8">
       <Teams teams={teams} />
 
       <div className="mt-12 bg-muted/50 rounded-lg p-6">

@@ -7,7 +7,7 @@ import { LoaderCircle, LogOut } from "lucide-react";
 import { useFormStatus } from "react-dom";
 import { WcaMonochrome } from "@workspace/icons";
 
-export function SignIn(): JSX.Element {
+export function SignIn(): React.JSX.Element {
   const { pending } = useFormStatus();
 
   return (
@@ -18,7 +18,7 @@ export function SignIn(): JSX.Element {
   );
 }
 
-export function SignOut(): JSX.Element {
+export function SignOut(): React.JSX.Element {
   return (
     <DropdownMenuItem
       onClick={() => {

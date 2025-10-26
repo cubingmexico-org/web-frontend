@@ -56,7 +56,7 @@ import { Button } from "@workspace/ui/components/button";
 import { DialogDocumentSettings } from "@/components/editor/dialog-document-settings";
 import { TextTransform } from "@/components/editor/extensions/text-transform";
 import { FontSize } from "@/components/editor/extensions/font-size";
-import { badges } from "@/data/certificates";
+import { badges } from "@/data/badges";
 import Toolbar from "./toolbar";
 import suggestionBadges from "./mentions/suggestions/suggestion-badges";
 import Submenu from "./submenu";

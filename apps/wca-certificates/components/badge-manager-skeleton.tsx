@@ -7,7 +7,7 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
 
-export function CertificateManagerSkeleton() {
+export function BadgeManagerSkeleton() {
   return (
     <div className="space-y-6">
       <div className="grid gap-6 md:grid-cols-3">

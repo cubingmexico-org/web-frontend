@@ -1,4 +1,4 @@
-import { CertificateManager } from "@/components/certificate-manager";
+import { BadgeManager } from "@/components/badge-manager";
 import { getCompetitionById, getWCIFByCompetitionId } from "@/db/queries";
 
 type Params = Promise<{ competitionId: string }>;
@@ -28,7 +28,7 @@ export default async function Page({
 
   return (
     <main className="container mx-auto px-4 py-8">
-      <CertificateManager competition={competition} persons={wcif.persons} />
+      <BadgeManager competition={competition} persons={wcif.persons} />
     </main>
   );
 }

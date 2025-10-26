@@ -24,7 +24,7 @@ importers:
         specifier: 5.7.3
         version: 5.7.3
 
-  apps/badges:
+  apps/wca-certificates:
     dependencies:
       '@cubing/icons':
         specifier: ^1.1.2
@@ -95,142 +95,6 @@ importers:
       html2canvas:
         specifier: 1.4.1
         version: 1.4.1
-      lucide-react:
-        specifier: ^0.544.0
-        version: 0.544.0(react@19.2.0)
-      next:
-        specifier: ^15.4.5
-        version: 15.5.6(react-dom@19.2.0)(react@19.2.0)
-      next-auth:
-        specifier: ^5.0.0-beta.29
-        version: 5.0.0-beta.29(next@15.5.6)(react@19.2.0)
-      next-themes:
-        specifier: ^0.4.6
-        version: 0.4.6(react-dom@19.2.0)(react@19.2.0)
-      pdfmake:
-        specifier: ^0.2.10
-        version: 0.2.20
-      react:
-        specifier: ^19.1.1
-        version: 19.2.0
-      react-dom:
-        specifier: ^19.1.1
-        version: 19.2.0(react@19.2.0)
-      react-dropzone:
-        specifier: ^14.2.3
-        version: 14.3.8(react@19.2.0)
-      sonner:
-        specifier: ^1.7.4
-        version: 1.7.4(react-dom@19.2.0)(react@19.2.0)
-      swr:
-        specifier: ^2.3.3
-        version: 2.3.6(react@19.2.0)
-      tippy.js:
-        specifier: ^6.3.7
-        version: 6.3.7
-      webfontloader:
-        specifier: ^1.6.28
-        version: 1.6.28
-      zod:
-        specifier: ^3.25.76
-        version: 3.25.76
-    devDependencies:
-      '@faker-js/faker':
-        specifier: ^8.4.1
-        version: 8.4.1
-      '@types/node':
-        specifier: ^20.19.9
-        version: 20.19.23
-      '@types/pdfmake':
-        specifier: ^0.2.9
-        version: 0.2.12
-      '@types/react':
-        specifier: ^19.1.9
-        version: 19.2.2
-      '@types/react-dom':
-        specifier: ^19.1.7
-        version: 19.2.2(@types/react@19.2.2)
-      '@types/webfontloader':
-        specifier: ^1.6.38
-        version: 1.6.38
-      '@workspace/eslint-config':
-        specifier: workspace:^
-        version: link:../../packages/eslint-config
-      '@workspace/typescript-config':
-        specifier: workspace:*
-        version: link:../../packages/typescript-config
-      typescript:
-        specifier: ^5.9.2
-        version: 5.9.3
-
-  apps/wca-certificates:
-    dependencies:
-      '@cubing/icons':
-        specifier: ^1.1.2
-        version: 1.1.3
-      '@react-pdf/renderer':
-        specifier: ^3.4.4
-        version: 3.4.5(react@19.2.0)
-      '@tanstack/react-table':
-        specifier: ^8.15.3
-        version: 8.21.3(react-dom@19.2.0)(react@19.2.0)
-      '@tiptap/core':
-        specifier: ^2.4.0
-        version: 2.26.4(@tiptap/pm@2.26.4)
-      '@tiptap/extension-character-count':
-        specifier: ^2.4.0
-        version: 2.26.4(@tiptap/core@2.26.4)(@tiptap/pm@2.26.4)
-      '@tiptap/extension-color':
-        specifier: ^2.4.0
-        version: 2.26.4(@tiptap/core@2.26.4)(@tiptap/extension-text-style@2.26.4)
-      '@tiptap/extension-font-family':
-        specifier: ^2.4.0
-        version: 2.26.4(@tiptap/core@2.26.4)(@tiptap/extension-text-style@2.26.4)
-      '@tiptap/extension-list-item':
-        specifier: ^2.4.0
-        version: 2.26.4(@tiptap/core@2.26.4)
-      '@tiptap/extension-mention':
-        specifier: ^2.4.0
-        version: 2.26.4(@tiptap/core@2.26.4)(@tiptap/pm@2.26.4)(@tiptap/suggestion@2.26.4)
-      '@tiptap/extension-table':
-        specifier: ^2.4.0
-        version: 2.26.4(@tiptap/core@2.26.4)(@tiptap/pm@2.26.4)
-      '@tiptap/extension-table-cell':
-        specifier: ^2.4.0
-        version: 2.26.4(@tiptap/core@2.26.4)
-      '@tiptap/extension-table-header':
-        specifier: ^2.4.0
-        version: 2.26.4(@tiptap/core@2.26.4)
-      '@tiptap/extension-table-row':
-        specifier: ^2.4.0
-        version: 2.26.4(@tiptap/core@2.26.4)
-      '@tiptap/extension-text-align':
-        specifier: ^2.4.0
-        version: 2.26.4(@tiptap/core@2.26.4)
-      '@tiptap/extension-text-style':
-        specifier: ^2.4.0
-        version: 2.26.4(@tiptap/core@2.26.4)
-      '@tiptap/pm':
-        specifier: ^2.4.0
-        version: 2.26.4
-      '@tiptap/react':
-        specifier: ^2.4.0
-        version: 2.26.4(@tiptap/core@2.26.4)(@tiptap/pm@2.26.4)(react-dom@19.2.0)(react@19.2.0)
-      '@tiptap/starter-kit':
-        specifier: ^2.4.0
-        version: 2.26.4
-      '@vercel/analytics':
-        specifier: ^1.3.2
-        version: 1.5.0(next@15.5.6)(react@19.2.0)
-      '@workspace/icons':
-        specifier: workspace:*
-        version: link:../../packages/icons
-      '@workspace/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
-      date-fns:
-        specifier: ^4.1.0
-        version: 4.1.0
       lucide-react:
         specifier: ^0.544.0
         version: 0.544.0(react@19.2.0)
@@ -396,7 +260,7 @@ importers:
         version: 7.7.4(next@15.5.6)
       validator:
         specifier: ^13.15.0
-        version: 13.15.15
+        version: 13.15.20
       vaul:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@19.2.2)(@types/react@19.2.2)(react-dom@19.2.0)(react@19.2.0)
@@ -514,7 +378,7 @@ importers:
     dependencies:
       '@diceui/combobox':
         specifier: ^1.1.0
-        version: 1.2.0(@types/react-dom@19.2.2)(@types/react@19.2.2)(react-dom@19.2.0)(react@19.2.0)
+        version: 1.2.2(@types/react-dom@19.2.2)(@types/react@19.2.2)(react-dom@19.2.0)(react@19.2.0)
       '@dnd-kit/core':
         specifier: ^6.3.1
         version: 6.3.1(react-dom@19.2.0)(react@19.2.0)
@@ -637,7 +501,7 @@ importers:
         version: 19.2.0
       react-day-picker:
         specifier: ^9.9.0
-        version: 9.11.1(react@19.2.0)
+        version: 9.11.0(react@19.2.0)
       react-dom:
         specifier: ^19.1.1
         version: 19.2.0(react@19.2.0)
@@ -749,8 +613,8 @@ packages:
     resolution: {integrity: sha512-P5LUNhtbj6YfI3iJjw5EL9eUAG6OitD0W3fWQcpQjDRc/QIsL0tRNuO1PcDvPccWL1fSTXXdE1ds+l95DV/OFA==}
     dev: false
 
-  /@diceui/combobox@1.2.0(@types/react-dom@19.2.2)(@types/react@19.2.2)(react-dom@19.2.0)(react@19.2.0):
-    resolution: {integrity: sha512-Q4Q/fRs1orvTSh0uG/fl7q3mPMsxcyhwxkClsT0NLs5ZdGgMJrGk8/x9ysTSEp6Z5Z1lwlCed/FWnpqAOguf8A==}
+  /@diceui/combobox@1.2.2(@types/react-dom@19.2.2)(@types/react@19.2.2)(react-dom@19.2.0)(react@19.2.0):
+    resolution: {integrity: sha512-eLagbQr+1u1xGW/YSmTqjvxJ/lBAU1RLUYn1SsI0T9Wnzi3D9fbXTVuhoRYx29Z2ne/+RzVZXzcu3HdqdMHo1A==}
     peerDependencies:
       '@types/react': '*'
       '@types/react-dom': '*'
@@ -8535,18 +8399,6 @@ packages:
       react: 19.2.0
     dev: false
 
-  /react-day-picker@9.11.1(react@19.2.0):
-    resolution: {integrity: sha512-l3ub6o8NlchqIjPKrRFUCkTUEq6KwemQlfv3XZzzwpUeGwmDJ+0u0Upmt38hJyd7D/vn2dQoOoLV/qAp0o3uUw==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      react: '>=16.8.0'
-    dependencies:
-      '@date-fns/tz': 1.4.1
-      date-fns: 4.1.0
-      date-fns-jalali: 4.1.0-0
-      react: 19.2.0
-    dev: false
-
   /react-dom@19.2.0(react@19.2.0):
     resolution: {integrity: sha512-UlbRu4cAiGaIewkPyiRGJk0imDN2T3JjieT6spoL2UeSf5od4n5LB/mQ4ejmxhCFT1tYe8IvaFulzynWovsEFQ==}
     peerDependencies:
@@ -9874,8 +9726,8 @@ packages:
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
     dev: true
 
-  /validator@13.15.15:
-    resolution: {integrity: sha512-BgWVbCI72aIQy937xbawcs+hrVaN/CZ2UwutgaJ36hGqRrLNM+f5LUT/YPRbo8IV/ASeFzXszezV+y2+rq3l8A==}
+  /validator@13.15.20:
+    resolution: {integrity: sha512-KxPOq3V2LmfQPP4eqf3Mq/zrT0Dqp2Vmx2Bn285LwVahLc+CsxOM0crBHczm8ijlcjZ0Q5Xd6LW3z3odTPnlrw==}
     engines: {node: '>= 0.10'}
     dev: false
 

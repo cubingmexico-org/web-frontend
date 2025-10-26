@@ -42,8 +42,8 @@ import useSWR from "swr";
 import { notFound } from "next/navigation";
 import { fetcher, formatDates, transformString } from "@/lib/utils";
 import type { Person } from "@/types/wcif";
-import Tiptap from "./editor/tiptap";
-import { badges } from "@/data/certificates";
+import Tiptap from "./editor/badges-tiptap";
+import { badges } from "@/data/badges";
 import { JSONContent } from "@tiptap/react";
 import {
   Margins,
@@ -53,14 +53,14 @@ import {
 } from "pdfmake/interfaces";
 import { fontDeclarations } from "@/lib/fonts";
 import * as pdfMake from "pdfmake/build/pdfmake";
-import { CertificateManagerSkeleton } from "./certificate-manager-skeleton";
+import { BadgeManagerSkeleton } from "./badge-manager-skeleton";
 import { Input } from "@workspace/ui/components/input";
 import { FileUploader } from "./file-uploader";
 import { WcaMonochrome } from "@workspace/icons";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
 import { toast } from "sonner";
 
-export function CertificateManager({
+export function BadgeManager({
   competition,
   persons,
 }: {
@@ -101,7 +101,7 @@ export function CertificateManager({
   }, [files]);
 
   const { data, isLoading, mutate } = useSWR<Person[]>(
-    `/api/certificate/participation?competitionId=${competition.id}`,
+    `/api/badges?competitionId=${competition.id}`,
     fetcher,
     {
       fallbackData: [],
@@ -109,7 +109,7 @@ export function CertificateManager({
   );
 
   if (isLoading) {
-    return <CertificateManagerSkeleton />;
+    return <BadgeManagerSkeleton />;
   }
 
   if (!competition) {
@@ -525,7 +525,7 @@ export function CertificateManager({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-medium">
-                    Certificados de Participación
+                    Gafetes de Participantes
                   </h4>
                   <span className="text-xs text-muted-foreground">
                     {data?.length || 0} de {persons.length} generados

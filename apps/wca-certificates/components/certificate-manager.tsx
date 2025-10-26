@@ -160,7 +160,7 @@ export function CertificateManager({
     isLoading: isLoadingParticipants,
     mutate: mutateParticipants,
   } = useSWR<ParticipantData[]>(
-    `/api/certificate/participation?competitionId=${competition.id}`,
+    `/api/certificates/participation?competitionId=${competition.id}`,
     fetcher,
     {
       fallbackData: [],
@@ -172,7 +172,7 @@ export function CertificateManager({
     isLoading: isLoadingPodiums,
     mutate: mutatePodiums,
   } = useSWR<PodiumData[]>(
-    `/api/certificate/podium?competitionId=${competition.id}`,
+    `/api/certificates/podium?competitionId=${competition.id}`,
     fetcher,
     {
       fallbackData: [],

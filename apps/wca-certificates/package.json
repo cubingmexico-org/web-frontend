@@ -45,7 +45,8 @@
     "swr": "^2.3.3",
     "tippy.js": "^6.3.7",
     "webfontloader": "^1.6.28",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76",
+    "zustand": "5.0.8"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",

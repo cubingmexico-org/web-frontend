@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { format, formatDistance } from "date-fns";
 import { es } from "date-fns/locale";
 import {
@@ -40,25 +40,15 @@ import {
 import Link from "next/link";
 import useSWR from "swr";
 import { notFound } from "next/navigation";
-import { fetcher, formatDates, transformString } from "@/lib/utils";
+import { fetcher } from "@/lib/utils";
 import type { Person } from "@/types/wcif";
-import Tiptap from "./editor/badges-tiptap";
-import { badges } from "@/data/badges";
-import { JSONContent } from "@tiptap/react";
-import {
-  Margins,
-  PageOrientation,
-  PageSize,
-  TDocumentDefinitions,
-} from "pdfmake/interfaces";
-import { fontDeclarations } from "@/lib/fonts";
-import * as pdfMake from "pdfmake/build/pdfmake";
 import { BadgeManagerSkeleton } from "./badge-manager-skeleton";
 import { Input } from "@workspace/ui/components/input";
 import { FileUploader } from "./file-uploader";
 import { WcaMonochrome } from "@workspace/icons";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
-import { toast } from "sonner";
+import { Canvas } from "./canvas/canvas";
+import { useCanvasStore } from "@/lib/canvas-store";
 
 export function BadgeManager({
   competition,
@@ -71,33 +61,23 @@ export function BadgeManager({
 
   const [selectedPersons, setSelectedPersons] = useState<Person[]>([]);
 
-  const [content, setContent] = useState<JSONContent>(badges);
-
-  const [pageMargins, setPageMargins] = useState<Margins>([20, 20, 20, 20]);
-
-  const [pageOrientation, setPageOrientation] =
-    useState<PageOrientation>("portrait");
-
-  const [pageSize, setPageSize] = useState<PageSize>("LETTER");
-
   const [files, setFiles] = useState<File[]>([]);
-
-  const [background, setBackground] = useState<string>();
 
   const [search, setSearch] = useState("");
 
-  const badgeRef = useRef<HTMLDivElement>(null);
+  const { setBackgroundImage } = useCanvasStore();
 
   useEffect(() => {
     if (files.length > 0) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setBackground(e.target?.result as string);
+        setBackgroundImage(e.target?.result as string);
       };
       reader.readAsDataURL(files[0]!);
     } else {
-      setBackground(undefined);
+      setBackgroundImage(undefined);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [files]);
 
   const { data, isLoading, mutate } = useSWR<Person[]>(
@@ -130,279 +110,6 @@ export function BadgeManager({
   const formattedDate = isSameDay
     ? format(startDate, "d 'de' MMMM 'de' yyyy", { locale: es })
     : `${format(startDate, "d 'de' MMM", { locale: es })} - ${format(endDate, "d 'de' MMM 'de' yyyy", { locale: es })}`;
-
-  const downloadPNG = async () => {
-    if (!badgeRef.current) return;
-
-    // Import html2canvas dynamically
-    const html2canvas = (await import("html2canvas")).default;
-
-    const canvas = await html2canvas(badgeRef.current, {
-      backgroundColor: "#ffffff",
-      scale: 2,
-      width: 400,
-      height: 600,
-      useCORS: true,
-      allowTaint: true,
-    });
-
-    const link = document.createElement("a");
-    link.download = `${selectedPersons[0]?.name.replace(/\s+/g, "_")}_badge.png`;
-    link.href = canvas.toDataURL();
-    link.click();
-  };
-
-  const previewImage = async () => {
-    if (!badgeRef.current) return;
-
-    // Import html2canvas dynamically
-    const html2canvas = (await import("html2canvas")).default;
-
-    const canvas = await html2canvas(badgeRef.current, {
-      backgroundColor: "#ffffff",
-      scale: 2,
-      width: 400,
-      height: 600,
-      useCORS: true,
-      allowTaint: true,
-    });
-
-    const dataURL = canvas.toDataURL();
-    window.open(dataURL, "_blank");
-  };
-
-  const renderParticipantTextContent = (
-    content: JSONContent["content"],
-    data: Person,
-  ) => {
-    return content
-      ?.map((contentItem) => {
-        const bold = contentItem.marks?.some((mark) => mark.type === "bold");
-        const font =
-          contentItem.marks?.find((mark) => mark.type === "textStyle")?.attrs
-            ?.fontFamily || "Roboto";
-        const fontSize =
-          contentItem.marks?.find((mark) => mark.type === "textStyle")?.attrs
-            ?.fontSize || "12pt";
-        const color =
-          contentItem.marks?.find((mark) => mark.type === "textStyle")?.attrs
-            ?.color || "#000000";
-        const transform =
-          (contentItem.marks?.find((mark) => mark.type === "textStyle")?.attrs
-            ?.transform as
-            | "lowercase"
-            | "capitalize"
-            | "uppercase"
-            | "none"
-            | undefined) || "none";
-
-        const textObject = (text: string | undefined) => ({
-          text,
-          bold,
-          font,
-          fontSize: parseInt(fontSize as string) * 1.039,
-          color,
-        });
-
-        switch (contentItem.type) {
-          case "text":
-            return textObject(
-              transformString(contentItem.text || "", transform),
-            );
-          case "mention":
-            switch (contentItem.attrs?.id) {
-              case "Nombre":
-                return textObject(transformString(data.name, transform));
-              case "Competencia":
-                return textObject(transformString(competition.name, transform));
-              case "Fecha":
-                return textObject(
-                  transformString(formatDates(startDate, endDate), transform),
-                );
-              case "Ciudad":
-                return textObject(transformString(competition.city, transform));
-              default:
-                return null;
-            }
-          default:
-            return null;
-        }
-      })
-      .filter(Boolean);
-  };
-
-  const renderParticipantDocumentContent = (
-    content: JSONContent,
-    data: Person,
-  ): unknown => {
-    return content.content
-      ?.map((item) => {
-        const text =
-          item.content && item.content.length > 0
-            ? renderParticipantTextContent(item.content, data)
-            : "\u00A0";
-        const alignment = item.attrs?.textAlign || "left";
-        switch (item.type) {
-          case "paragraph":
-            return {
-              text,
-              style: "paragraph",
-              alignment,
-            };
-          case "heading":
-            return {
-              text,
-              style: `header${item.attrs?.level}`,
-              alignment,
-            };
-          case "table":
-            return {
-              columns: [
-                { width: "*", text: "" },
-                {
-                  table: {
-                    headerRows: 1,
-                    // widths: item.attrs?.widths,
-                    body: [
-                      ...(item.content || [])
-                        .map((row) => {
-                          const headerCells =
-                            row.content?.filter(
-                              (cell) => cell.type === "tableHeader",
-                            ) || [];
-                          if (row.type === "tableRow") {
-                            if (headerCells.length === 0) {
-                              return null;
-                            }
-                            return headerCells.map((cell) =>
-                              cell.content?.map((contentCell) =>
-                                renderParticipantDocumentContent(
-                                  { content: [contentCell] },
-                                  data,
-                                ),
-                              ),
-                            );
-                          }
-                          return null;
-                        })
-                        .filter(Boolean),
-                      ...(item.content?.some((row) =>
-                        row.content?.some((cell) => cell.type === "tableCell"),
-                      )
-                        ? data.assignments.map(() => {
-                            const cell = item.content?.find((row) =>
-                              row.content?.some(
-                                (cell) => cell.type === "tableCell",
-                              ),
-                            );
-
-                            let event;
-                            let average;
-                            let ranking;
-
-                            for (const row of cell?.content || []) {
-                              for (const cell of row.content || []) {
-                                if (
-                                  cell.content?.some(
-                                    (content) => content.type === "mention",
-                                  )
-                                ) {
-                                  switch (cell.content[0]?.attrs?.id) {
-                                    default:
-                                      break;
-                                  }
-                                }
-                              }
-                            }
-
-                            return [event || {}, average || {}, ranking || {}];
-                          })
-                        : []),
-                    ],
-                  },
-                  layout: "lightHorizontalLines",
-                  width: "auto",
-                },
-                { width: "*", text: "" },
-              ],
-            };
-          default:
-            return null;
-        }
-      })
-      .filter(Boolean);
-  };
-
-  const generateParticipantPDF = (action: "open" | "download") => {
-    try {
-      const docDefinition = {
-        info: {
-          title: `Certificados - ${competition.name}`,
-          author: "Cubing México",
-        },
-        content: selectedPersons?.map((data, index) => ({
-          stack: renderParticipantDocumentContent(content, data),
-          pageBreak: index < selectedPersons.length - 1 ? "after" : "",
-        })),
-        background(currentPage, pageSize) {
-          if (background) {
-            return {
-              image: background,
-              width: pageSize.width,
-              height: pageSize.height,
-            };
-          }
-          return null;
-        },
-        pageMargins: pageMargins,
-        pageOrientation: pageOrientation,
-        pageSize: pageSize,
-        styles: {
-          header1: {
-            fontSize: 33.231,
-            lineHeight: 1,
-          },
-          header2: {
-            fontSize: 24.923,
-            lineHeight: 1,
-          },
-          header3: {
-            fontSize: 20.769,
-            lineHeight: 1,
-          },
-          header4: {
-            fontSize: 16.615,
-            lineHeight: 1,
-          },
-          header5: {
-            fontSize: 14.538,
-            lineHeight: 1,
-          },
-          header6: {
-            fontSize: 12.462,
-            lineHeight: 1,
-          },
-          paragraph: {
-            fontSize: 12.462,
-            lineHeight: 1,
-          },
-        },
-        language: "es",
-      } as TDocumentDefinitions;
-
-      const pdf = pdfMake.createPdf(docDefinition, undefined, fontDeclarations);
-      if (action === "open") {
-        pdf.open();
-      } else {
-        pdf.download(`Certificados Participacion - ${competition.name}.pdf`);
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      toast.error("Error al generar el PDF", {
-        description: "Por favor, inténtalo de nuevo más tarde.",
-      });
-    }
-  };
 
   const removeAccents = (str: string) =>
     str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -677,14 +384,14 @@ export function BadgeManager({
                   <Button
                     disabled={selectedPersons.length === 0}
                     variant="outline"
-                    onClick={previewImage}
+                    // onClick={previewImage}
                   >
                     <Eye />
                     Vista previa ({selectedPersons.length})
                   </Button>
                   <Button
                     disabled={selectedPersons.length === 0}
-                    onClick={downloadPNG}
+                    // onClick={downloadPNG}
                   >
                     <Download />
                     Descargar ({Math.ceil(selectedPersons.length / 3)})
@@ -706,36 +413,7 @@ export function BadgeManager({
             </Card>
           </div>
 
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-            }}
-          >
-            <Tiptap
-              competitionId={competition.id}
-              content={content}
-              key={`${pageSize}-${pageOrientation}-${pageMargins}`}
-              onChange={(newContent: JSONContent) => {
-                setContent(newContent);
-              }}
-              pageMargins={pageMargins}
-              pageOrientation={pageOrientation}
-              pageSize={pageSize}
-              pdfDisabled={selectedPersons.length === 0}
-              pdfOnClick={() => generateParticipantPDF("download")}
-              setPageMargins={(value: Margins) => {
-                setPageMargins(value);
-              }}
-              setPageOrientation={(value: PageOrientation) => {
-                setPageOrientation(value);
-              }}
-              setPageSize={(value: PageSize) => {
-                setPageSize(value);
-              }}
-              background={background}
-              badgeRef={badgeRef}
-            />
-          </form>
+          <Canvas />
         </div>
       </div>
     </div>

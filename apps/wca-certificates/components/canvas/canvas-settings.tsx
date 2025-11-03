@@ -29,24 +29,24 @@ export function CanvasSettings() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" title="Canvas Settings">
+        <Button variant="ghost" size="icon" title="Configuración del lienzo">
           <Settings />
         </Button>
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>Canvas Settings</SheetTitle>
+          <SheetTitle>Configuración del lienzo</SheetTitle>
           <SheetDescription>
-            Customize your canvas size and background
+            Personaliza el tamaño del lienzo para tus gafetes.
           </SheetDescription>
         </SheetHeader>
 
         <div className="space-y-6 px-4">
           <div className="space-y-4">
-            <h3 className="font-medium">Canvas Size</h3>
+            <h3 className="font-medium">Tamaño del lienzo</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="width">Width (px)</Label>
+                <Label htmlFor="width">Ancho (px)</Label>
                 <Input
                   id="width"
                   type="number"
@@ -57,7 +57,7 @@ export function CanvasSettings() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="height">Height (px)</Label>
+                <Label htmlFor="height">Altura (px)</Label>
                 <Input
                   id="height"
                   type="number"
@@ -69,11 +69,11 @@ export function CanvasSettings() {
               </div>
             </div>
             <Button onClick={handleApplySize} className="w-full">
-              Apply Size
+              Aplicar
             </Button>
 
             <div className="space-y-2">
-              <Label>Presets</Label>
+              <Label>Preajustes</Label>
               <div className="grid grid-cols-2 gap-2">
                 <Button
                   variant="outline"

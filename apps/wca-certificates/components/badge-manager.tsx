@@ -87,6 +87,211 @@ export function BadgeManager({
   }, [files]);
 
   const exportToPNG = async () => {
+    // Helper function to measure text and calculate optimal font size with multi-line support
+    const measureTextAndAdjustFontSize = (
+      ctx: CanvasRenderingContext2D,
+      text: string,
+      maxWidth: number,
+      maxHeight: number,
+      baseFontSize: number,
+      fontFamily: string,
+      fontWeight: string,
+    ): { fontSize: number; lines: string[] } => {
+      let fontSize = baseFontSize;
+      ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+
+      const splitIntoLines = (text: string, maxWidth: number): string[] => {
+        const words = text.split(" ");
+        const lines: string[] = [];
+        let currentLine = words[0] || "";
+
+        for (let i = 1; i < words.length; i++) {
+          const word = words[i]!;
+          const testLine = currentLine + " " + word;
+          const metrics = ctx.measureText(testLine);
+
+          if (metrics.width > maxWidth) {
+            lines.push(currentLine);
+            currentLine = word;
+          } else {
+            currentLine = testLine;
+          }
+        }
+        lines.push(currentLine);
+        return lines;
+      };
+
+      // Try to fit text in 2 lines maximum
+      let lines = splitIntoLines(text, maxWidth);
+      const lineHeight = fontSize * 1.2;
+      let totalHeight = lines.length * lineHeight;
+
+      // Reduce font size until text fits within bounds (max 2 lines)
+      while ((totalHeight > maxHeight || lines.length > 2) && fontSize > 8) {
+        fontSize -= 0.5;
+        ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+        lines = splitIntoLines(text, maxWidth);
+        totalHeight = lines.length * fontSize * 1.2;
+      }
+
+      // If still more than 2 lines, force into 2 lines
+      if (lines.length > 2) {
+        const words = text.split(" ");
+        const midPoint = Math.ceil(words.length / 2);
+        lines = [
+          words.slice(0, midPoint).join(" "),
+          words.slice(midPoint).join(" "),
+        ];
+      }
+
+      return { fontSize, lines };
+    };
+
+    if (selectedPersons.length === 1) {
+      const person = selectedPersons[0]!;
+      const canvas = document.createElement("canvas");
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      const processCanvas = () => {
+        drawElements(person);
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${person.name.replace(/\s/g, "_")}_badge.png`;
+            a.click();
+            URL.revokeObjectURL(url);
+          }
+        });
+      };
+
+      if (backgroundImage) {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.src = backgroundImage;
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          processCanvas();
+        };
+      } else {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        processCanvas();
+      }
+
+      function drawElements(currentPerson: Person) {
+        if (!ctx) return;
+
+        // Draw all elements
+        elements.forEach((element) => {
+          ctx.save();
+
+          const centerX = element.x + element.width / 2;
+          const centerY = element.y + element.height / 2;
+          ctx.translate(centerX, centerY);
+          ctx.rotate((element.rotation * Math.PI) / 180);
+          ctx.translate(-centerX, -centerY);
+
+          switch (element.type) {
+            case "rectangle":
+              ctx.fillStyle = element.backgroundColor || "#3b82f6";
+              ctx.fillRect(element.x, element.y, element.width, element.height);
+              break;
+            case "circle":
+              ctx.fillStyle = element.backgroundColor || "#8b5cf6";
+              ctx.beginPath();
+              ctx.arc(
+                element.x + element.width / 2,
+                element.y + element.height / 2,
+                element.width / 2,
+                0,
+                2 * Math.PI,
+              );
+              ctx.fill();
+              break;
+            case "text": {
+              const baseFontSize = element.fontSize || 24;
+              const fontFamily = element.fontFamily || "sans-serif";
+              const fontWeight = element.fontWeight || "normal";
+
+              // Replace placeholder text with person's data
+              let content = element.content || "Text";
+              content = content.replace(/\{name\}/gi, currentPerson.name);
+              content = content.replace(
+                /\{wcaId\}/gi,
+                currentPerson.wcaId || "",
+              );
+              content = content.replace(/@nombre/gi, currentPerson.name);
+
+              // Calculate optimal font size and split into lines
+              const { fontSize: optimalFontSize, lines } =
+                measureTextAndAdjustFontSize(
+                  ctx,
+                  content,
+                  element.width,
+                  element.height,
+                  baseFontSize,
+                  fontFamily,
+                  fontWeight,
+                );
+
+              ctx.fillStyle = element.color || "#000000";
+              ctx.font = `${fontWeight} ${optimalFontSize}px ${fontFamily}`;
+              ctx.textAlign = element.textAlign || "left";
+
+              const lineHeight = optimalFontSize * 1.2;
+              const totalTextHeight = lines.length * lineHeight;
+              const startY =
+                element.y +
+                (element.height - totalTextHeight) / 2 +
+                optimalFontSize;
+
+              // Draw each line
+              lines.forEach((line, index) => {
+                let textX = element.x;
+                // Adjust x position based on alignment
+                if (element.textAlign === "center") {
+                  textX = element.x + element.width / 2;
+                } else if (element.textAlign === "right") {
+                  textX = element.x + element.width;
+                }
+
+                ctx.fillText(line, textX, startY + index * lineHeight);
+              });
+
+              // Reset text align to prevent affecting other drawings
+              ctx.textAlign = "left";
+              break;
+            }
+            case "image":
+              if (element.imageUrl) {
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.src = element.imageUrl;
+                if (img.complete) {
+                  ctx.drawImage(
+                    img,
+                    element.x,
+                    element.y,
+                    element.width,
+                    element.height,
+                  );
+                }
+              }
+              break;
+          }
+
+          ctx.restore();
+        });
+      }
+
+      return;
+    }
+
     const zip = new JSZip();
 
     // Process all persons and add to zip
@@ -162,17 +367,9 @@ export function BadgeManager({
                 ctx.fill();
                 break;
               case "text": {
-                ctx.fillStyle = element.color || "#000000";
-                ctx.font = `${element.fontWeight || "normal"} ${element.fontSize || 24}px ${element.fontFamily || "sans-serif"}`;
-                ctx.textAlign = element.textAlign || "left";
-
-                let textX = element.x;
-                // Adjust x position based on alignment
-                if (element.textAlign === "center") {
-                  textX = element.x + element.width / 2;
-                } else if (element.textAlign === "right") {
-                  textX = element.x + element.width;
-                }
+                const baseFontSize = element.fontSize || 24;
+                const fontFamily = element.fontFamily || "sans-serif";
+                const fontWeight = element.fontWeight || "normal";
 
                 // Replace placeholder text with person's data
                 let content = element.content || "Text";
@@ -183,11 +380,41 @@ export function BadgeManager({
                 );
                 content = content.replace(/@nombre/gi, currentPerson.name);
 
-                ctx.fillText(
-                  content,
-                  textX,
-                  element.y + (element.fontSize || 24),
-                );
+                // Calculate optimal font size and split into lines
+                const { fontSize: optimalFontSize, lines } =
+                  measureTextAndAdjustFontSize(
+                    ctx,
+                    content,
+                    element.width,
+                    element.height,
+                    baseFontSize,
+                    fontFamily,
+                    fontWeight,
+                  );
+
+                ctx.fillStyle = element.color || "#000000";
+                ctx.font = `${fontWeight} ${optimalFontSize}px ${fontFamily}`;
+                ctx.textAlign = element.textAlign || "left";
+
+                const lineHeight = optimalFontSize * 1.2;
+                const totalTextHeight = lines.length * lineHeight;
+                const startY =
+                  element.y +
+                  (element.height - totalTextHeight) / 2 +
+                  optimalFontSize;
+
+                // Draw each line
+                lines.forEach((line, index) => {
+                  let textX = element.x;
+                  // Adjust x position based on alignment
+                  if (element.textAlign === "center") {
+                    textX = element.x + element.width / 2;
+                  } else if (element.textAlign === "right") {
+                    textX = element.x + element.width;
+                  }
+
+                  ctx.fillText(line, textX, startY + index * lineHeight);
+                });
 
                 // Reset text align to prevent affecting other drawings
                 ctx.textAlign = "left";

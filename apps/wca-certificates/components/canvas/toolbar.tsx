@@ -71,7 +71,7 @@ export function Toolbar() {
         title="Add Text"
       >
         <Type className="h-5 w-5" />
-        <span className="text-xs">Text</span>
+        <span className="text-xs">Texto</span>
       </Button>
 
       <Button
@@ -82,7 +82,7 @@ export function Toolbar() {
         title="Add Rectangle"
       >
         <Square className="h-5 w-5" />
-        <span className="text-xs">Box</span>
+        <span className="text-xs">Cuadro</span>
       </Button>
 
       <Button
@@ -93,7 +93,7 @@ export function Toolbar() {
         title="Add Circle"
       >
         <Circle className="h-5 w-5" />
-        <span className="text-xs">Circle</span>
+        <span className="text-xs">Círculo</span>
       </Button>
 
       <Button
@@ -104,7 +104,7 @@ export function Toolbar() {
         title="Add Image"
       >
         <ImageIcon className="h-5 w-5" />
-        <span className="text-xs">Image</span>
+        <span className="text-xs">Imagen</span>
       </Button>
     </div>
   );

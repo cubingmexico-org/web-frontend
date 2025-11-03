@@ -29,6 +29,7 @@ export function CanvasEditor() {
     y: 0,
     width: 0,
     height: 0,
+    fontSize: 0, // Add fontSize to resize start state
   });
   const [isEditingText, setIsEditingText] = useState(false);
   const [editingText, setEditingText] = useState("");
@@ -50,6 +51,26 @@ export function CanvasEditor() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [backgroundImage]);
+
+  const measureText = (
+    text: string,
+    fontSize: number,
+    fontFamily: string,
+    fontWeight: string,
+  ) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { width: 0, height: fontSize };
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return { width: 0, height: fontSize };
+
+    ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+    const metrics = ctx.measureText(text);
+    return {
+      width: metrics.width,
+      height: fontSize * 1.2, // Add some padding for height
+    };
+  };
 
   const drawCanvas = () => {
     const canvas = canvasRef.current;
@@ -107,8 +128,13 @@ export function CanvasEditor() {
           break;
 
         case "text": {
+          const fontSize = element.fontSize || 24;
+          const fontFamily = element.fontFamily || "sans-serif";
+          const fontWeight = element.fontWeight || "normal";
+          const content = element.content || "Text";
+
           ctx.fillStyle = element.color || "#000000";
-          ctx.font = `${element.fontWeight || "normal"} ${element.fontSize || 24}px ${element.fontFamily || "sans-serif"}`;
+          ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
           ctx.textAlign = element.textAlign || "left";
 
           let textX = element.x;
@@ -119,11 +145,7 @@ export function CanvasEditor() {
             textX = element.x + element.width;
           }
 
-          ctx.fillText(
-            element.content || "Text",
-            textX,
-            element.y + (element.fontSize || 24),
-          );
+          ctx.fillText(content, textX, element.y + fontSize);
 
           // Reset text align to prevent affecting other drawings
           ctx.textAlign = "left";
@@ -320,6 +342,7 @@ export function CanvasEditor() {
         y: selectedElement.y,
         width: selectedElement.width,
         height: selectedElement.height,
+        fontSize: selectedElement.fontSize || 24,
       });
     } else {
       setIsDragging(true);
@@ -368,8 +391,33 @@ export function CanvasEditor() {
           break;
       }
 
-      // Minimum size constraints
-      if (newWidth > 20 && newHeight > 20) {
+      // For text elements, adjust font size based on resize
+      if (selectedElement.type === "text" && newWidth > 20 && newHeight > 20) {
+        const widthRatio = newWidth / resizeStart.width;
+        const heightRatio = newHeight / resizeStart.height;
+        const scaleRatio = Math.min(widthRatio, heightRatio);
+        const newFontSize = Math.max(
+          8,
+          (resizeStart.fontSize || 24) * scaleRatio,
+        );
+
+        const content = selectedElement.content || "Text";
+        const dimensions = measureText(
+          content,
+          newFontSize,
+          selectedElement.fontFamily || "sans-serif",
+          selectedElement.fontWeight || "normal",
+        );
+
+        updateElement(selectedElementId, {
+          x: newX,
+          y: newY,
+          width: dimensions.width,
+          height: dimensions.height,
+          fontSize: newFontSize,
+        });
+      } else if (newWidth > 20 && newHeight > 20) {
+        // For non-text elements, maintain minimum size constraints
         updateElement(selectedElementId, {
           x: newX,
           y: newY,
@@ -397,7 +445,27 @@ export function CanvasEditor() {
 
   const handleTextEditComplete = () => {
     if (selectedElementId && isEditingText) {
-      updateElement(selectedElementId, { content: editingText });
+      const selectedElement = elements.find(
+        (el) => el.id === selectedElementId,
+      );
+      if (selectedElement) {
+        const fontSize = selectedElement.fontSize || 24;
+        const fontFamily = selectedElement.fontFamily || "sans-serif";
+        const fontWeight = selectedElement.fontWeight || "normal";
+
+        const dimensions = measureText(
+          editingText || "Text",
+          fontSize,
+          fontFamily,
+          fontWeight,
+        );
+
+        updateElement(selectedElementId, {
+          content: editingText,
+          width: dimensions.width,
+          height: dimensions.height,
+        });
+      }
     }
     setIsEditingText(false);
     setEditingText("");

@@ -5,14 +5,14 @@ import { Toolbar } from "@/components/canvas/toolbar";
 import { PropertiesPanel } from "@/components/canvas/properties-panel";
 import { CanvasSettings } from "@/components/canvas/canvas-settings";
 import { Button } from "@workspace/ui/components/button";
-import { Download } from "lucide-react";
+import { Download, Eye } from "lucide-react";
 import { useCanvasStore } from "@/lib/canvas-store";
 
 export function Canvas() {
   const { elements, canvasWidth, canvasHeight, backgroundImage } =
     useCanvasStore();
 
-  const exportToPNG = () => {
+  const previewCanvas = () => {
     const canvas = document.createElement("canvas");
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
@@ -26,13 +26,13 @@ export function Canvas() {
       img.onload = () => {
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         drawElements();
-        downloadCanvas();
+        openCanvas();
       };
     } else {
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       drawElements();
-      downloadCanvas();
+      openCanvas();
     }
 
     function drawElements() {
@@ -65,15 +65,27 @@ export function Canvas() {
             );
             ctx.fill();
             break;
-          case "text":
+          case "text": {
             ctx.fillStyle = element.color || "#000000";
-            ctx.font = `${element.fontWeight || "normal"} ${element.fontSize || 24}px sans-serif`;
+            ctx.font = `${element.fontWeight || "normal"} ${element.fontSize || 24}px ${element.fontFamily || "sans-serif"}`;
+            ctx.textAlign = element.textAlign || "left";
+
+            let textX = element.x;
+            if (element.textAlign === "center") {
+              textX = element.x + element.width / 2;
+            } else if (element.textAlign === "right") {
+              textX = element.x + element.width;
+            }
+
             ctx.fillText(
               element.content || "Text",
-              element.x,
+              textX,
               element.y + (element.fontSize || 24),
             );
+
+            ctx.textAlign = "left";
             break;
+          }
           case "image":
             if (element.imageUrl) {
               const img = new Image();
@@ -96,15 +108,18 @@ export function Canvas() {
       });
     }
 
-    function downloadCanvas() {
+    function openCanvas() {
       canvas.toBlob((blob) => {
         if (!blob) return;
         const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "design.png";
-        a.click();
-        URL.revokeObjectURL(url);
+        const newWindow = window.open(url, "_blank");
+
+        // Clean up the URL after the window loads
+        if (newWindow) {
+          newWindow.onload = () => {
+            URL.revokeObjectURL(url);
+          };
+        }
       });
     }
   };
@@ -128,7 +143,7 @@ export function Canvas() {
     <div className="h-screen w-[calc(100vw-4rem)] flex flex-col bg-background border">
       <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4">
         <div className="flex items-center gap-4">
-          <h1 className="text-lg font-semibold text-foreground">Badges</h1>
+          <h1 className="text-lg font-semibold text-foreground">Gafetes</h1>
           <span className="text-sm text-muted-foreground">
             {canvasWidth} × {canvasHeight}px
           </span>
@@ -137,11 +152,11 @@ export function Canvas() {
           <CanvasSettings />
           <Button variant="outline" size="sm" onClick={exportToJSON}>
             <Download />
-            Export JSON
+            Exportar JSON
           </Button>
-          <Button variant="default" size="sm" onClick={exportToPNG}>
-            <Download />
-            Export PNG
+          <Button variant="default" size="sm" onClick={previewCanvas}>
+            <Eye />
+            Previsualizar
           </Button>
         </div>
       </header>

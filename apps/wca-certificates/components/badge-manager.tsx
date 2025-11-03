@@ -19,7 +19,6 @@ import { Separator } from "@workspace/ui/components/separator";
 import {
   RefreshCw,
   Settings,
-  Eye,
   Users,
   Calendar,
   MapPin,
@@ -49,6 +48,7 @@ import { WcaMonochrome } from "@workspace/icons";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
 import { Canvas } from "./canvas/canvas";
 import { useCanvasStore } from "@/lib/canvas-store";
+import JSZip from "jszip";
 
 export function BadgeManager({
   competition,
@@ -65,7 +65,13 @@ export function BadgeManager({
 
   const [search, setSearch] = useState("");
 
-  const { setBackgroundImage } = useCanvasStore();
+  const {
+    setBackgroundImage,
+    elements,
+    canvasWidth,
+    canvasHeight,
+    backgroundImage,
+  } = useCanvasStore();
 
   useEffect(() => {
     if (files.length > 0) {
@@ -79,6 +85,150 @@ export function BadgeManager({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [files]);
+
+  const exportToPNG = async () => {
+    const zip = new JSZip();
+
+    // Process all persons and add to zip
+    const promises = selectedPersons.map((person) => {
+      return new Promise<void>((resolve) => {
+        const canvas = document.createElement("canvas");
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve();
+          return;
+        }
+
+        const processCanvas = () => {
+          drawElements(person);
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const filename = `${person.name.replace(/\s/g, "_")}_badge.png`;
+              zip.file(filename, blob);
+            }
+            resolve();
+          });
+        };
+
+        if (backgroundImage) {
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          img.src = backgroundImage;
+          img.onload = () => {
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            processCanvas();
+          };
+        } else {
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          processCanvas();
+        }
+
+        function drawElements(currentPerson: Person) {
+          if (!ctx) return;
+
+          // Draw all elements
+          elements.forEach((element) => {
+            ctx.save();
+
+            const centerX = element.x + element.width / 2;
+            const centerY = element.y + element.height / 2;
+            ctx.translate(centerX, centerY);
+            ctx.rotate((element.rotation * Math.PI) / 180);
+            ctx.translate(-centerX, -centerY);
+
+            switch (element.type) {
+              case "rectangle":
+                ctx.fillStyle = element.backgroundColor || "#3b82f6";
+                ctx.fillRect(
+                  element.x,
+                  element.y,
+                  element.width,
+                  element.height,
+                );
+                break;
+              case "circle":
+                ctx.fillStyle = element.backgroundColor || "#8b5cf6";
+                ctx.beginPath();
+                ctx.arc(
+                  element.x + element.width / 2,
+                  element.y + element.height / 2,
+                  element.width / 2,
+                  0,
+                  2 * Math.PI,
+                );
+                ctx.fill();
+                break;
+              case "text": {
+                ctx.fillStyle = element.color || "#000000";
+                ctx.font = `${element.fontWeight || "normal"} ${element.fontSize || 24}px ${element.fontFamily || "sans-serif"}`;
+                ctx.textAlign = element.textAlign || "left";
+
+                let textX = element.x;
+                // Adjust x position based on alignment
+                if (element.textAlign === "center") {
+                  textX = element.x + element.width / 2;
+                } else if (element.textAlign === "right") {
+                  textX = element.x + element.width;
+                }
+
+                // Replace placeholder text with person's data
+                let content = element.content || "Text";
+                content = content.replace(/\{name\}/gi, currentPerson.name);
+                content = content.replace(
+                  /\{wcaId\}/gi,
+                  currentPerson.wcaId || "",
+                );
+                content = content.replace(/@nombre/gi, currentPerson.name);
+
+                ctx.fillText(
+                  content,
+                  textX,
+                  element.y + (element.fontSize || 24),
+                );
+
+                // Reset text align to prevent affecting other drawings
+                ctx.textAlign = "left";
+                break;
+              }
+              case "image":
+                if (element.imageUrl) {
+                  const img = new Image();
+                  img.crossOrigin = "anonymous";
+                  img.src = element.imageUrl;
+                  if (img.complete) {
+                    ctx.drawImage(
+                      img,
+                      element.x,
+                      element.y,
+                      element.width,
+                      element.height,
+                    );
+                  }
+                }
+                break;
+            }
+
+            ctx.restore();
+          });
+        }
+      });
+    });
+
+    // Wait for all badges to be processed
+    await Promise.all(promises);
+
+    // Generate and download the ZIP file
+    const content = await zip.generateAsync({ type: "blob" });
+    const url = URL.createObjectURL(content);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${competition.name.replace(/\s/g, "_")}_badges.zip`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const { data, isLoading, mutate } = useSWR<Person[]>(
     `/api/badges?competitionId=${competition.id}`,
@@ -383,18 +533,10 @@ export function BadgeManager({
                 <div className="flex justify-end gap-2 w-full">
                   <Button
                     disabled={selectedPersons.length === 0}
-                    variant="outline"
-                    // onClick={previewImage}
-                  >
-                    <Eye />
-                    Vista previa ({selectedPersons.length})
-                  </Button>
-                  <Button
-                    disabled={selectedPersons.length === 0}
-                    // onClick={downloadPNG}
+                    onClick={exportToPNG}
                   >
                     <Download />
-                    Descargar ({Math.ceil(selectedPersons.length / 3)})
+                    Descargar ({selectedPersons.length})
                   </Button>
                 </div>
               </CardFooter>

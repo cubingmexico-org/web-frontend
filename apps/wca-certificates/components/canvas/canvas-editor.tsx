@@ -106,15 +106,29 @@ export function CanvasEditor() {
           ctx.fill();
           break;
 
-        case "text":
+        case "text": {
           ctx.fillStyle = element.color || "#000000";
-          ctx.font = `${element.fontWeight || "normal"} ${element.fontSize || 24}px sans-serif`;
+          ctx.font = `${element.fontWeight || "normal"} ${element.fontSize || 24}px ${element.fontFamily || "sans-serif"}`;
+          ctx.textAlign = element.textAlign || "left";
+
+          let textX = element.x;
+          // Adjust x position based on alignment
+          if (element.textAlign === "center") {
+            textX = element.x + element.width / 2;
+          } else if (element.textAlign === "right") {
+            textX = element.x + element.width;
+          }
+
           ctx.fillText(
             element.content || "Text",
-            element.x,
+            textX,
             element.y + (element.fontSize || 24),
           );
+
+          // Reset text align to prevent affecting other drawings
+          ctx.textAlign = "left";
           break;
+        }
 
         case "image":
           if (element.imageUrl) {

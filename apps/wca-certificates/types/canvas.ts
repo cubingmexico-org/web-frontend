@@ -9,8 +9,10 @@ export interface CanvasElement {
   height: number;
   rotation: number;
   content?: string;
+  fontFamily?: string;
   fontSize?: number;
   fontWeight?: string;
+  textAlign?: "center" | "end" | "left" | "right" | "start";
   color?: string;
   backgroundColor?: string;
   imageUrl?: string;

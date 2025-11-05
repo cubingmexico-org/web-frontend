@@ -54,3 +54,11 @@
 .selectedCell {
   background: #BAD3FC;
 }
+
+@font-face {
+  font-family: 'Santa Monday';
+  src: url('/fonts/SantaMonday/SantaMonday-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}

@@ -13,11 +13,13 @@ export function Toolbar() {
       type: "text",
       x: 100,
       y: 100,
-      width: 200,
-      height: 40,
+      width: 231,
+      height: 30,
       rotation: 0,
-      content: "Double click to edit",
+      content: "Doble clic para editar",
       fontSize: 24,
+      textAlign: "left",
+      fontFamily: "Arial",
       color: "#000000",
     });
   };

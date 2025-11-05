@@ -101,6 +101,9 @@ importers:
       lucide-react:
         specifier: ^0.544.0
         version: 0.544.0(react@19.2.0)
+      match-sorter:
+        specifier: ^8.1.0
+        version: 8.1.0
       next:
         specifier: ^15.4.5
         version: 15.5.6(react-dom@19.2.0)(react@19.2.0)
@@ -383,7 +386,7 @@ importers:
   packages/ui:
     dependencies:
       '@diceui/combobox':
-        specifier: ^1.1.0
+        specifier: ^1.2.2
         version: 1.2.2(@types/react-dom@19.2.2)(@types/react@19.2.2)(react-dom@19.2.0)(react@19.2.0)
       '@dnd-kit/core':
         specifier: ^6.3.1
@@ -7157,6 +7160,13 @@ packages:
       uc.micro: 2.1.0
     dev: false
 
+  /match-sorter@8.1.0:
+    resolution: {integrity: sha512-0HX3BHPixkbECX+Vt7nS1vJ6P2twPgGTU3PMXjWrl1eyVCL24tFHeyYN1FN5RKLzve0TyzNI9qntqQGbebnfPQ==}
+    dependencies:
+      '@babel/runtime': 7.28.4
+      remove-accents: 0.5.0
+    dev: false
+
   /math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
@@ -8675,6 +8685,10 @@ packages:
       mdast-util-to-hast: 13.2.0
       unified: 11.0.5
       vfile: 6.0.3
+    dev: false
+
+  /remove-accents@0.5.0:
+    resolution: {integrity: sha512-8g3/Otx1eJaVD12e31UbJj1YzdtVvzH85HV7t+9MJYk/u3XmkOUJ5Ys9wQrf9PCPK8+xn4ymzqYCiZl6QWKn+A==}
     dev: false
 
   /require-from-string@2.0.2:

@@ -140,7 +140,7 @@ export function Canvas() {
   };
 
   return (
-    <div className="h-screen w-[calc(100vw-4rem)] flex flex-col bg-background border">
+    <div className="h-screen w-full flex flex-col bg-background border">
       <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4">
         <div className="flex items-center gap-4">
           <h1 className="text-lg font-semibold text-foreground">Gafetes</h1>

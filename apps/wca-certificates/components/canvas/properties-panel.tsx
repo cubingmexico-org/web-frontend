@@ -4,13 +4,6 @@ import { useCanvasStore } from "@/lib/canvas-store";
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@workspace/ui/components/select";
 import { Slider } from "@workspace/ui/components/slider";
 import { AlignCenter, AlignLeft, AlignRight, Trash2 } from "lucide-react";
 import {
@@ -25,6 +18,7 @@ import {
   ColorPickerSwatch,
   ColorPickerTrigger,
 } from "@workspace/ui/components/color-picker";
+import { FontsCombobox } from "./fonts-combobox";
 
 export function PropertiesPanel() {
   const { elements, selectedElementId, updateElement, deleteElement } =
@@ -36,7 +30,7 @@ export function PropertiesPanel() {
     return (
       <div className="w-80 bg-card border-l border-border p-4">
         <p className="text-sm text-muted-foreground">
-          Select an element to edit its properties
+          Selecciona un elemento para editar sus propiedades.
         </p>
       </div>
     );
@@ -45,12 +39,12 @@ export function PropertiesPanel() {
   return (
     <div className="w-80 bg-card border-l border-border p-4 overflow-y-auto">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold">Properties</h3>
+        <h3 className="font-semibold">Propiedades</h3>
         <Button
           variant="ghost"
           size="icon"
           onClick={() => deleteElement(selectedElement.id)}
-          title="Delete element"
+          title="Eliminar elemento"
         >
           <Trash2 />
         </Button>
@@ -58,7 +52,7 @@ export function PropertiesPanel() {
 
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label className="text-xs text-muted-foreground">Position</Label>
+          <Label className="text-xs text-muted-foreground">Posición</Label>
           <div className="grid grid-cols-2 gap-2">
             <div>
               <Label htmlFor="x" className="text-xs">
@@ -96,11 +90,11 @@ export function PropertiesPanel() {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-xs text-muted-foreground">Size</Label>
+          <Label className="text-xs text-muted-foreground">Tamaño</Label>
           <div className="grid grid-cols-2 gap-2">
             <div>
               <Label htmlFor="width" className="text-xs">
-                Width
+                Ancho
               </Label>
               <Input
                 id="width"
@@ -116,7 +110,7 @@ export function PropertiesPanel() {
             </div>
             <div>
               <Label htmlFor="height" className="text-xs">
-                Height
+                Altura
               </Label>
               <Input
                 id="height"
@@ -135,7 +129,7 @@ export function PropertiesPanel() {
 
         <div className="space-y-2">
           <Label htmlFor="rotation" className="text-xs">
-            Rotation: {selectedElement.rotation}°
+            Rotación: {selectedElement.rotation}°
           </Label>
           <Slider
             id="rotation"
@@ -153,7 +147,7 @@ export function PropertiesPanel() {
           <>
             <div className="space-y-2">
               <Label htmlFor="content" className="text-xs">
-                Text Content
+                Contenido del texto
               </Label>
               <Input
                 id="content"
@@ -165,35 +159,16 @@ export function PropertiesPanel() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="fontFamily" className="text-xs">
-                Font Family
-              </Label>
-              <Select
+              <FontsCombobox
                 value={selectedElement.fontFamily || "Arial"}
-                onValueChange={(value) =>
-                  updateElement(selectedElement.id, { fontFamily: value })
+                onValueChange={(fontFamily) =>
+                  updateElement(selectedElement.id, { fontFamily })
                 }
-              >
-                <SelectTrigger className="h-8">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Arial">Arial</SelectItem>
-                  <SelectItem value="Helvetica">Helvetica</SelectItem>
-                  <SelectItem value="Times New Roman">
-                    Times New Roman
-                  </SelectItem>
-                  <SelectItem value="Georgia">Georgia</SelectItem>
-                  <SelectItem value="Courier New">Courier New</SelectItem>
-                  <SelectItem value="Verdana">Verdana</SelectItem>
-                  <SelectItem value="Comic Sans MS">Comic Sans MS</SelectItem>
-                  <SelectItem value="Impact">Impact</SelectItem>
-                </SelectContent>
-              </Select>
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="fontSize" className="text-xs">
-                Font Size
+                Tamaño de fuente
               </Label>
               <Input
                 id="fontSize"
@@ -208,7 +183,7 @@ export function PropertiesPanel() {
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs">Text Alignment</Label>
+              <Label className="text-xs">Alineación de texto</Label>
               <div className="flex gap-1">
                 <Button
                   variant={
@@ -254,7 +229,7 @@ export function PropertiesPanel() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="textColor" className="text-xs">
-                Text Color
+                Color del texto
               </Label>
               <ColorPicker
                 value={selectedElement.color || "#000000"}
@@ -301,7 +276,7 @@ export function PropertiesPanel() {
           selectedElement.type === "circle") && (
           <div className="space-y-2">
             <Label htmlFor="bgColor" className="text-xs">
-              Fill Color
+              Color de relleno
             </Label>
             <Input
               id="bgColor"
@@ -320,7 +295,7 @@ export function PropertiesPanel() {
         {selectedElement.type === "image" && (
           <div className="space-y-2">
             <Label htmlFor="imageUrl" className="text-xs">
-              Image URL
+              URL de la imagen
             </Label>
             <Input
               id="imageUrl"
@@ -329,7 +304,7 @@ export function PropertiesPanel() {
                 updateElement(selectedElement.id, { imageUrl: e.target.value })
               }
               className="h-8"
-              placeholder="Enter image URL"
+              placeholder="Ingrese la URL de la imagen"
             />
           </div>
         )}

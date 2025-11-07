@@ -26,6 +26,7 @@ const SYSTEM_FONTS = [
   "Impact",
   // Custom fonts
   "Santa Monday",
+  "Basically A Sans Serif Font",
 ];
 
 interface FontsComboboxProps {

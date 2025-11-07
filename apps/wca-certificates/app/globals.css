@@ -62,3 +62,11 @@
   font-style: normal;
   font-display: swap;
 }
+
+@font-face {
+  font-family: 'Basically A Sans Serif Font';
+  src: url('/fonts/BasicallyASansSerif/BasicallyASansSerif-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}

@@ -9,5 +9,9 @@ export async function GET(request: Request): Promise<Response> {
 
   const persons = wcif?.persons || [];
 
-  return Response.json(persons);
+  const personsWithRegistrantId = persons.filter(
+    (person) => person.registrantId !== null,
+  );
+
+  return Response.json(personsWithRegistrantId);
 }

@@ -26,9 +26,11 @@ export default async function Page({
     throw new Error("WCIF not found");
   }
 
+  const persons = wcif.persons.filter((person) => person.registrantId !== null);
+
   return (
     <main className="container mx-auto px-4 py-8">
-      <BadgeManager competition={competition} persons={wcif.persons} />
+      <BadgeManager competition={competition} persons={persons} />
     </main>
   );
 }

@@ -7,12 +7,17 @@ export async function GET(request: Request): Promise<Response> {
   const wcif = await getWCIFByCompetitionId({
     competitionId: competitionId!,
   });
-  const people = wcif?.persons || [];
+  const persons = wcif?.persons || [];
+
+  const personsWithRegistrantId = persons.filter(
+    (person) => person.registrantId !== null,
+  );
+
   const events = wcif?.events || [];
 
   const allResults: ParticipantData[] = [];
 
-  for (const person of people) {
+  for (const person of personsWithRegistrantId) {
     const results = [];
     for (const event of events) {
       if (

@@ -83,7 +83,7 @@ export interface WCIF {
 export interface ParticipantData {
   name: string;
   wcaId: string | null;
-  registrantId: number;
+  registrantId: number | null;
   results: {
     event: EventId;
     average: number;

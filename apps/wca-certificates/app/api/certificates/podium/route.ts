@@ -10,8 +10,12 @@ export async function GET(request: Request): Promise<Response> {
   const events = wcif?.events || [];
   const persons = wcif?.persons || [];
 
+  const personsWithRegistrantId = persons.filter(
+    (person) => person.registrantId !== null,
+  );
+
   const personIdToName: Record<string, string> = {};
-  persons.forEach((person: Person) => {
+  personsWithRegistrantId.forEach((person: Person) => {
     personIdToName[person.registrantId] = person.name;
   });
 

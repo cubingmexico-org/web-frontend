@@ -19,6 +19,7 @@ import {
   ColorPickerTrigger,
 } from "@workspace/ui/components/color-picker";
 import { FontsCombobox } from "./fonts-combobox";
+import { Switch } from "@workspace/ui/components/switch";
 
 export function PropertiesPanel() {
   const { elements, selectedElementId, updateElement, deleteElement } =
@@ -274,39 +275,58 @@ export function PropertiesPanel() {
 
         {(selectedElement.type === "rectangle" ||
           selectedElement.type === "circle") && (
-          <div className="space-y-2">
-            <Label htmlFor="bgColor" className="text-xs">
-              Color de relleno
-            </Label>
-            <Input
-              id="bgColor"
-              type="color"
-              value={selectedElement.backgroundColor || "#3b82f6"}
-              onChange={(e) =>
-                updateElement(selectedElement.id, {
-                  backgroundColor: e.target.value,
-                })
-              }
-              className="h-10"
-            />
-          </div>
-        )}
+            <div className="space-y-2">
+              <Label htmlFor="bgColor" className="text-xs">
+                Color de relleno
+              </Label>
+              <Input
+                id="bgColor"
+                type="color"
+                value={selectedElement.backgroundColor || "#3b82f6"}
+                onChange={(e) =>
+                  updateElement(selectedElement.id, {
+                    backgroundColor: e.target.value,
+                  })
+                }
+                className="h-10"
+              />
+            </div>
+          )}
 
         {selectedElement.type === "image" && (
-          <div className="space-y-2">
-            <Label htmlFor="imageUrl" className="text-xs">
-              URL de la imagen
-            </Label>
-            <Input
-              id="imageUrl"
-              value={selectedElement.imageUrl || ""}
-              onChange={(e) =>
-                updateElement(selectedElement.id, { imageUrl: e.target.value })
-              }
-              className="h-8"
-              placeholder="Ingrese la URL de la imagen"
-            />
-          </div>
+          <>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="useCompetitorAvatar" className="text-xs">
+                  Usar avatar del competidor
+                </Label>
+                <Switch
+                  id="useCompetitorAvatar"
+                  checked={selectedElement.imageUrl === "/avatar.png"}
+                  onCheckedChange={(checked) =>
+                    updateElement(selectedElement.id, {
+                      imageUrl: checked ? "/avatar.png" : "",
+                    })
+                  }
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="imageUrl" className="text-xs">
+                URL de la imagen
+              </Label>
+              <Input
+                id="imageUrl"
+                value={selectedElement.imageUrl === "/avatar.png" ? "" : selectedElement.imageUrl || ""}
+                onChange={(e) =>
+                  updateElement(selectedElement.id, { imageUrl: e.target.value })
+                }
+                className="h-8"
+                placeholder="Ingrese la URL de la imagen"
+                disabled={selectedElement.imageUrl === "/avatar.png"}
+              />
+            </div>
+          </>
         )}
       </div>
     </div>

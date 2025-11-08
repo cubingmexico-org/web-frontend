@@ -237,7 +237,7 @@ export function BadgeManager({
             if (element.imageUrl) {
               const img = new Image();
               img.crossOrigin = "anonymous";
-              img.src = element.imageUrl;
+              img.src = element.imageUrl === "/avatar.png" ? currentPerson.avatar.url : element.imageUrl;
               if (img.complete) {
                 ctx.drawImage(
                   img,

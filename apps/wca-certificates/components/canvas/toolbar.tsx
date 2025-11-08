@@ -56,10 +56,10 @@ export function Toolbar() {
       type: "image",
       x: 250,
       y: 250,
-      width: 300,
+      width: 200,
       height: 200,
       rotation: 0,
-      imageUrl: "/abstract-geometric-shapes.png",
+      imageUrl: "/avatar.png",
     });
   };
 

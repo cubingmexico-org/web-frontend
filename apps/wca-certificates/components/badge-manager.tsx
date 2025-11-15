@@ -148,11 +148,11 @@ export function BadgeManager({
     };
 
     // Shared function to draw all elements on a canvas
-    const drawElements = (
+    const drawElements = async (
       ctx: CanvasRenderingContext2D,
       currentPerson: Person,
     ) => {
-      elements.forEach((element) => {
+      for (const element of elements) {
         ctx.save();
 
         const centerX = element.x + element.width / 2;
@@ -185,13 +185,21 @@ export function BadgeManager({
 
             // Replace placeholder text with person's data
             let content = element.content || "Text";
-            content = content.replace(/\{name\}/gi, currentPerson.name);
-            content = content.replace(/\{wcaId\}/gi, currentPerson.wcaId || "");
             content = content.replace(/@nombre/gi, currentPerson.name);
             content = content.replace(
               /@wcaid/gi,
               currentPerson.wcaId || "Nuevo",
             );
+
+            const rol = currentPerson.roles.includes("delegate")
+              ? "Delegado"
+              : currentPerson.roles.includes("organizer")
+                ? "Organizador"
+                : currentPerson.roles.find((r) => r.startsWith("staff-"))
+                  ? "Staff"
+                  : "Competidor";
+
+            content = content.replace(/@rol/gi, rol);
 
             // Calculate optimal font size and split into lines
             const { fontSize: optimalFontSize, lines } =
@@ -236,23 +244,41 @@ export function BadgeManager({
           case "image":
             if (element.imageUrl) {
               const img = new Image();
-              img.crossOrigin = "anonymous";
-              img.src = element.imageUrl === "/avatar.png" ? currentPerson.avatar.url : element.imageUrl;
-              if (img.complete) {
-                ctx.drawImage(
-                  img,
-                  element.x,
-                  element.y,
-                  element.width,
-                  element.height,
-                );
+
+              const isWcaAvatar = element.imageUrl === "/avatar.png";
+              const imageUrl =
+                isWcaAvatar && currentPerson.avatar
+                  ? `/api/image-proxy?url=${encodeURIComponent(currentPerson.avatar.url)}`
+                  : element.imageUrl;
+
+              // Only set crossOrigin for external URLs
+              if (imageUrl.startsWith("http")) {
+                img.crossOrigin = "anonymous";
               }
+
+              await new Promise<void>((resolve) => {
+                img.onload = () => {
+                  ctx.drawImage(
+                    img,
+                    element.x,
+                    element.y,
+                    element.width,
+                    element.height,
+                  );
+                  resolve();
+                };
+                img.onerror = (error) => {
+                  console.error("Failed to load image:", imageUrl, error);
+                  resolve();
+                };
+                img.src = imageUrl;
+              });
             }
             break;
         }
 
         ctx.restore();
-      });
+      }
     };
 
     // Shared function to create and process canvas
@@ -266,8 +292,8 @@ export function BadgeManager({
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
-      const processCanvas = () => {
-        drawElements(ctx, person);
+      const processCanvas = async () => {
+        await drawElements(ctx, person);
         onComplete(canvas);
       };
 
@@ -277,12 +303,12 @@ export function BadgeManager({
         img.src = backgroundImage;
         img.onload = () => {
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          processCanvas();
+          void processCanvas();
         };
       } else {
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        processCanvas();
+        void processCanvas();
       }
     };
 

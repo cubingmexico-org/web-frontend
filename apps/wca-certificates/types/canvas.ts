@@ -16,6 +16,7 @@ export interface CanvasElement {
   color?: string;
   backgroundColor?: string;
   imageUrl?: string;
+  keepAspectRatio?: boolean;
 }
 
 export interface CanvasState {

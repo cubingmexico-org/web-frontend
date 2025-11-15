@@ -391,6 +391,24 @@ export function CanvasEditor() {
           break;
       }
 
+      // For images with aspect ratio locked, maintain 1:1 ratio
+      if (selectedElement.type === "image" && selectedElement.keepAspectRatio) {
+        const size = Math.max(newWidth, newHeight);
+        newWidth = size;
+        newHeight = size;
+
+        // Adjust position based on which handle is being dragged
+        if (resizeHandle === "top-left") {
+          newX = resizeStart.x + resizeStart.width - size;
+          newY = resizeStart.y + resizeStart.height - size;
+        } else if (resizeHandle === "top-right") {
+          newY = resizeStart.y + resizeStart.height - size;
+        } else if (resizeHandle === "bottom-left") {
+          newX = resizeStart.x + resizeStart.width - size;
+        }
+        // bottom-right doesn't need position adjustment
+      }
+
       // For text elements, adjust font size based on resize
       if (selectedElement.type === "text" && newWidth > 20 && newHeight > 20) {
         const widthRatio = newWidth / resizeStart.width;

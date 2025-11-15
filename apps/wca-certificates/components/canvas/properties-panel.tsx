@@ -20,6 +20,18 @@ import {
 } from "@workspace/ui/components/color-picker";
 import { FontsCombobox } from "./fonts-combobox";
 import { Switch } from "@workspace/ui/components/switch";
+import {
+  Mention,
+  MentionContent,
+  MentionInput,
+  MentionItem,
+} from "@workspace/ui/components/mention";
+
+const mentions = [
+  { id: "1", name: "nombre" },
+  { id: "2", name: "wcaid" },
+  { id: "3", name: "rol" },
+];
 
 export function PropertiesPanel() {
   const { elements, selectedElementId, updateElement, deleteElement } =
@@ -101,11 +113,22 @@ export function PropertiesPanel() {
                 id="width"
                 type="number"
                 value={Math.round(selectedElement.width)}
-                onChange={(e) =>
-                  updateElement(selectedElement.id, {
-                    width: Number(e.target.value),
-                  })
-                }
+                onChange={(e) => {
+                  const newWidth = Number(e.target.value);
+                  const updates: Partial<typeof selectedElement> = {
+                    width: newWidth,
+                  };
+
+                  // Always sync height when aspect ratio is locked for images
+                  if (
+                    selectedElement.type === "image" &&
+                    selectedElement.keepAspectRatio
+                  ) {
+                    updates.height = newWidth;
+                  }
+
+                  updateElement(selectedElement.id, updates);
+                }}
                 className="h-8"
               />
             </div>
@@ -117,12 +140,27 @@ export function PropertiesPanel() {
                 id="height"
                 type="number"
                 value={Math.round(selectedElement.height)}
-                onChange={(e) =>
-                  updateElement(selectedElement.id, {
-                    height: Number(e.target.value),
-                  })
-                }
+                onChange={(e) => {
+                  const newHeight = Number(e.target.value);
+                  const updates: Partial<typeof selectedElement> = {
+                    height: newHeight,
+                  };
+
+                  // Always sync width when aspect ratio is locked for images
+                  if (
+                    selectedElement.type === "image" &&
+                    selectedElement.keepAspectRatio
+                  ) {
+                    updates.width = newHeight;
+                  }
+
+                  updateElement(selectedElement.id, updates);
+                }}
                 className="h-8"
+                disabled={
+                  selectedElement.type === "image" &&
+                  selectedElement.keepAspectRatio
+                }
               />
             </div>
           </div>
@@ -150,14 +188,31 @@ export function PropertiesPanel() {
               <Label htmlFor="content" className="text-xs">
                 Contenido del texto
               </Label>
-              <Input
-                id="content"
-                value={selectedElement.content || ""}
-                onChange={(e) =>
-                  updateElement(selectedElement.id, { content: e.target.value })
+              <Mention
+                className="w-full max-w-[400px]"
+                inputValue={selectedElement.content || ""}
+                onInputValueChange={(value) =>
+                  updateElement(selectedElement.id, { content: value })
                 }
-                className="h-8"
-              />
+              >
+                <MentionInput
+                  placeholder="Escribe @ para mencionar un dato dinámico..."
+                  value={selectedElement.content || ""}
+                  id="content"
+                  className="h-8"
+                />
+                <MentionContent>
+                  {mentions.map((mention) => (
+                    <MentionItem
+                      key={mention.id}
+                      value={mention.name}
+                      className="flex-col items-start gap-0.5"
+                    >
+                      <span className="text-sm">{mention.name}</span>
+                    </MentionItem>
+                  ))}
+                </MentionContent>
+              </Mention>
             </div>
             <div className="space-y-2">
               <FontsCombobox
@@ -297,6 +352,23 @@ export function PropertiesPanel() {
           <>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
+                <Label htmlFor="keepAspectRatio" className="text-xs">
+                  Mantener relación 1:1
+                </Label>
+                <Switch
+                  id="keepAspectRatio"
+                  checked={selectedElement.keepAspectRatio ?? false}
+                  onCheckedChange={(checked) =>
+                    updateElement(selectedElement.id, {
+                      keepAspectRatio: checked,
+                      ...(checked && { height: selectedElement.width }),
+                    })
+                  }
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
                 <Label htmlFor="useCompetitorAvatar" className="text-xs">
                   Usar avatar del competidor
                 </Label>
@@ -311,21 +383,28 @@ export function PropertiesPanel() {
                 />
               </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="imageUrl" className="text-xs">
-                URL de la imagen
-              </Label>
-              <Input
-                id="imageUrl"
-                value={selectedElement.imageUrl === "/avatar.png" ? "" : selectedElement.imageUrl || ""}
-                onChange={(e) =>
-                  updateElement(selectedElement.id, { imageUrl: e.target.value })
-                }
-                className="h-8"
-                placeholder="Ingrese la URL de la imagen"
-                disabled={selectedElement.imageUrl === "/avatar.png"}
-              />
-            </div>
+            {selectedElement.imageUrl === "/avatar.png" ? null : (
+              <div className="space-y-2">
+                <Label htmlFor="imageUrl" className="text-xs">
+                  URL de la imagen
+                </Label>
+                <Input
+                  id="imageUrl"
+                  value={
+                    selectedElement.imageUrl === "/avatar.png"
+                      ? ""
+                      : selectedElement.imageUrl || ""
+                  }
+                  onChange={(e) =>
+                    updateElement(selectedElement.id, {
+                      imageUrl: e.target.value,
+                    })
+                  }
+                  className="h-8"
+                  placeholder="Ingrese la URL de la imagen"
+                />
+              </div>
+            )}
           </>
         )}
       </div>

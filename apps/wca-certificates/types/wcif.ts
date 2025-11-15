@@ -23,6 +23,14 @@ export interface Avatar {
   thumbUrl: string;
 }
 
+type Roles =
+  | "staff-other"
+  | "staff-judge"
+  | "staff-scrambler"
+  | "staff-judge"
+  | "delegate"
+  | "organizer";
+
 export interface Person {
   name: string;
   wcaUserId: number;
@@ -31,8 +39,8 @@ export interface Person {
   countryIso2: string;
   gender: string;
   registration: { eventIds: string[] };
-  avatar: Avatar;
-  roles: unknown[];
+  avatar: Avatar | null;
+  roles: Roles[];
   assignments: unknown[];
   personalBests: unknown[];
   extensions: unknown[];

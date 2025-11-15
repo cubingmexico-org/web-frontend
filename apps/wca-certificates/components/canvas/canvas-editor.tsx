@@ -70,7 +70,7 @@ export function CanvasEditor() {
         imageCache.current.delete(url);
       }
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [elements]);
 
   useEffect(() => {
@@ -383,6 +383,7 @@ export function CanvasEditor() {
     const selectedElement = elements.find((el) => el.id === selectedElementId);
     if (!selectedElement) return;
 
+    // Check if clicking on a resize handle first
     const handle = getResizeHandle(x, y, selectedElement);
     if (handle) {
       setIsResizing(true);
@@ -394,7 +395,17 @@ export function CanvasEditor() {
         height: selectedElement.height,
         fontSize: selectedElement.fontSize || 24,
       });
-    } else {
+      return;
+    }
+
+    // Only start dragging if clicking within the element's bounds
+    const isWithinElement =
+      x >= selectedElement.x &&
+      x <= selectedElement.x + selectedElement.width &&
+      y >= selectedElement.y &&
+      y <= selectedElement.y + selectedElement.height;
+
+    if (isWithinElement) {
       setIsDragging(true);
     }
   };

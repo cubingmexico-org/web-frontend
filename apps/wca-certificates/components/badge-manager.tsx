@@ -49,6 +49,7 @@ import { ScrollArea } from "@workspace/ui/components/scroll-area";
 import { Canvas } from "./canvas/canvas";
 import { useCanvasStore } from "@/lib/canvas-store";
 import JSZip from "jszip";
+import QRCode from "qrcode";
 
 export function BadgeManager({
   competition,
@@ -227,7 +228,6 @@ export function BadgeManager({
             // Draw each line
             lines.forEach((line, index) => {
               let textX = element.x;
-              // Adjust x position based on alignment
               if (element.textAlign === "center") {
                 textX = element.x + element.width / 2;
               } else if (element.textAlign === "right") {
@@ -237,7 +237,6 @@ export function BadgeManager({
               ctx.fillText(line, textX, startY + index * lineHeight);
             });
 
-            // Reset text align to prevent affecting other drawings
             ctx.textAlign = "left";
             break;
           }
@@ -251,7 +250,6 @@ export function BadgeManager({
                   ? `/api/image-proxy?url=${encodeURIComponent(currentPerson.avatar.url)}`
                   : element.imageUrl;
 
-              // Only set crossOrigin for external URLs
               if (imageUrl.startsWith("http")) {
                 img.crossOrigin = "anonymous";
               }
@@ -275,6 +273,48 @@ export function BadgeManager({
               });
             }
             break;
+          case "qrcode": {
+            // Replace placeholder text with person's data
+            const qrData = `${element.qrData || ""}/${currentPerson.wcaId}`;
+
+            if (qrData) {
+              try {
+                // Generate QR code as data URL
+                const qrDataUrl = await QRCode.toDataURL(qrData, {
+                  errorCorrectionLevel: element.qrErrorCorrection || "M",
+                  margin: 1,
+                  width: element.width,
+                  color: {
+                    dark: element.qrForeground || "#000000",
+                    light: element.qrBackground || "#ffffff",
+                  },
+                });
+
+                // Draw QR code
+                const qrImg = new Image();
+                await new Promise<void>((resolve) => {
+                  qrImg.onload = () => {
+                    ctx.drawImage(
+                      qrImg,
+                      element.x,
+                      element.y,
+                      element.width,
+                      element.height,
+                    );
+                    resolve();
+                  };
+                  qrImg.onerror = () => {
+                    console.error("Failed to load QR code");
+                    resolve();
+                  };
+                  qrImg.src = qrDataUrl;
+                });
+              } catch (error) {
+                console.error("Failed to generate QR code:", error);
+              }
+            }
+            break;
+          }
         }
 
         ctx.restore();

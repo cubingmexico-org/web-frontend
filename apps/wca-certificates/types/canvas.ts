@@ -1,4 +1,4 @@
-export type ElementType = "text" | "rectangle" | "circle" | "image";
+export type ElementType = "text" | "rectangle" | "circle" | "image" | "qrcode";
 
 export interface CanvasElement {
   id: string;
@@ -17,6 +17,10 @@ export interface CanvasElement {
   backgroundColor?: string;
   imageUrl?: string;
   keepAspectRatio?: boolean;
+  qrData?: string;
+  qrForeground?: string;
+  qrBackground?: string;
+  qrErrorCorrection?: "L" | "M" | "Q" | "H";
 }
 
 export interface CanvasState {

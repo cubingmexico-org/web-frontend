@@ -26,6 +26,13 @@ import {
   MentionInput,
   MentionItem,
 } from "@workspace/ui/components/mention";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@workspace/ui/components/select";
 
 const mentions = [
   { id: "1", name: "nombre" },
@@ -121,7 +128,8 @@ export function PropertiesPanel() {
 
                   // Always sync height when aspect ratio is locked for images
                   if (
-                    selectedElement.type === "image" &&
+                    (selectedElement.type === "image" ||
+                      selectedElement.type === "qrcode") &&
                     selectedElement.keepAspectRatio
                   ) {
                     updates.height = newWidth;
@@ -148,7 +156,8 @@ export function PropertiesPanel() {
 
                   // Always sync width when aspect ratio is locked for images
                   if (
-                    selectedElement.type === "image" &&
+                    (selectedElement.type === "image" ||
+                      selectedElement.type === "qrcode") &&
                     selectedElement.keepAspectRatio
                   ) {
                     updates.width = newHeight;
@@ -158,7 +167,8 @@ export function PropertiesPanel() {
                 }}
                 className="h-8"
                 disabled={
-                  selectedElement.type === "image" &&
+                  (selectedElement.type === "image" ||
+                    selectedElement.type === "qrcode") &&
                   selectedElement.keepAspectRatio
                 }
               />
@@ -330,23 +340,23 @@ export function PropertiesPanel() {
 
         {(selectedElement.type === "rectangle" ||
           selectedElement.type === "circle") && (
-            <div className="space-y-2">
-              <Label htmlFor="bgColor" className="text-xs">
-                Color de relleno
-              </Label>
-              <Input
-                id="bgColor"
-                type="color"
-                value={selectedElement.backgroundColor || "#3b82f6"}
-                onChange={(e) =>
-                  updateElement(selectedElement.id, {
-                    backgroundColor: e.target.value,
-                  })
-                }
-                className="h-10"
-              />
-            </div>
-          )}
+          <div className="space-y-2">
+            <Label htmlFor="bgColor" className="text-xs">
+              Color de relleno
+            </Label>
+            <Input
+              id="bgColor"
+              type="color"
+              value={selectedElement.backgroundColor || "#3b82f6"}
+              onChange={(e) =>
+                updateElement(selectedElement.id, {
+                  backgroundColor: e.target.value,
+                })
+              }
+              className="h-10"
+            />
+          </div>
+        )}
 
         {selectedElement.type === "image" && (
           <>
@@ -405,6 +415,146 @@ export function PropertiesPanel() {
                 />
               </div>
             )}
+          </>
+        )}
+        {selectedElement.type === "qrcode" && (
+          <>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="keepAspectRatio" className="text-xs">
+                  Mantener relación 1:1
+                </Label>
+                <Switch
+                  id="keepAspectRatio"
+                  checked={selectedElement.keepAspectRatio ?? false}
+                  onCheckedChange={(checked) =>
+                    updateElement(selectedElement.id, {
+                      keepAspectRatio: checked,
+                      ...(checked && { height: selectedElement.width }),
+                    })
+                  }
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="qrData" className="text-xs">
+                Contenido del QR
+              </Label>
+              <Input
+                id="qrData"
+                value={selectedElement.qrData || ""}
+                onChange={(e) =>
+                  updateElement(selectedElement.id, { qrData: e.target.value })
+                }
+                placeholder="Contenido del QR"
+                className="h-8"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="qrForeground" className="text-xs">
+                Color del QR
+              </Label>
+              <ColorPicker
+                value={selectedElement.qrForeground || "#000000"}
+                onValueChange={(color) => {
+                  if (color !== selectedElement.qrForeground) {
+                    updateElement(selectedElement.id, { qrForeground: color });
+                  }
+                }}
+                defaultFormat="hex"
+                className="w-full"
+              >
+                <div className="flex items-center gap-3">
+                  <ColorPickerTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="flex items-center gap-2 px-3"
+                    >
+                      <ColorPickerSwatch className="size-4" />
+                      {selectedElement.qrForeground || "#000000"}
+                    </Button>
+                  </ColorPickerTrigger>
+                </div>
+                <ColorPickerContent>
+                  <ColorPickerArea />
+                  <div className="flex items-center gap-2">
+                    <ColorPickerEyeDropper />
+                    <div className="flex flex-1 flex-col gap-2">
+                      <ColorPickerHueSlider />
+                      <ColorPickerAlphaSlider />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <ColorPickerFormatSelect />
+                    <ColorPickerInput />
+                  </div>
+                </ColorPickerContent>
+              </ColorPicker>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="qrBackground" className="text-xs">
+                Color de fondo
+              </Label>
+              <ColorPicker
+                value={selectedElement.qrBackground || "#ffffff"}
+                onValueChange={(color) => {
+                  if (color !== selectedElement.qrBackground) {
+                    updateElement(selectedElement.id, { qrBackground: color });
+                  }
+                }}
+                defaultFormat="hex"
+                className="w-full"
+              >
+                <div className="flex items-center gap-3">
+                  <ColorPickerTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="flex items-center gap-2 px-3"
+                    >
+                      <ColorPickerSwatch className="size-4" />
+                      {selectedElement.qrBackground || "#ffffff"}
+                    </Button>
+                  </ColorPickerTrigger>
+                </div>
+                <ColorPickerContent>
+                  <ColorPickerArea />
+                  <div className="flex items-center gap-2">
+                    <ColorPickerEyeDropper />
+                    <div className="flex flex-1 flex-col gap-2">
+                      <ColorPickerHueSlider />
+                      <ColorPickerAlphaSlider />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <ColorPickerFormatSelect />
+                    <ColorPickerInput />
+                  </div>
+                </ColorPickerContent>
+              </ColorPicker>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="qrErrorCorrection" className="text-xs">
+                Nivel de corrección de errores
+              </Label>
+              <Select
+                value={selectedElement.qrErrorCorrection || "M"}
+                onValueChange={(value) =>
+                  updateElement(selectedElement.id, {
+                    qrErrorCorrection: value as "L" | "M" | "Q" | "H",
+                  })
+                }
+              >
+                <SelectTrigger id="qrErrorCorrection" className="w-full">
+                  <SelectValue placeholder="Nivel de corrección" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="L">Bajo (L) - 7%</SelectItem>
+                  <SelectItem value="M">Medio (M) - 15%</SelectItem>
+                  <SelectItem value="Q">Alto (Q) - 25%</SelectItem>
+                  <SelectItem value="H">Muy Alto (H) - 30%</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </>
         )}
       </div>

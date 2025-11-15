@@ -62,7 +62,7 @@ export function CanvasEditor() {
     const currentUrls = new Set(
       elements
         .filter((el) => el.type === "image" && el.imageUrl)
-        .map((el) => el.imageUrl!)
+        .map((el) => el.imageUrl!),
     );
 
     imageCache.current.forEach((_, url) => {
@@ -231,6 +231,44 @@ export function CanvasEditor() {
             ctx.textAlign = "left";
           }
           break;
+
+        case "qrcode": {
+          // Draw QR code placeholder
+          ctx.fillStyle = element.qrBackground || "#ffffff";
+          ctx.fillRect(element.x, element.y, element.width, element.height);
+
+          // Draw border
+          ctx.strokeStyle = element.qrForeground || "#000000";
+          ctx.lineWidth = 2;
+          ctx.strokeRect(element.x, element.y, element.width, element.height);
+
+          // Draw QR code text
+          ctx.fillStyle = element.qrForeground || "#000000";
+          ctx.font = "14px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(
+            "QR Code",
+            element.x + element.width / 2,
+            element.y + element.height / 2 - 10,
+          );
+
+          // Draw QR data preview
+          if (element.qrData) {
+            ctx.font = "10px sans-serif";
+            const maxLength = 20;
+            const displayText =
+              element.qrData.length > maxLength
+                ? element.qrData.substring(0, maxLength) + "..."
+                : element.qrData;
+            ctx.fillText(
+              displayText,
+              element.x + element.width / 2,
+              element.y + element.height / 2 + 10,
+            );
+          }
+          ctx.textAlign = "left";
+          break;
+        }
       }
 
       // Draw selection border
@@ -453,7 +491,11 @@ export function CanvasEditor() {
       }
 
       // For images with aspect ratio locked, maintain 1:1 ratio
-      if (selectedElement.type === "image" && selectedElement.keepAspectRatio) {
+      if (
+        (selectedElement.type === "image" ||
+          selectedElement.type === "qrcode") &&
+        selectedElement.keepAspectRatio
+      ) {
         const size = Math.max(newWidth, newHeight);
         newWidth = size;
         newHeight = size;

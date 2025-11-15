@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@workspace/ui/components/button";
-import { Type, Square, Circle, ImageIcon } from "lucide-react";
+import { Type, Square, Circle, ImageIcon, QrCode } from "lucide-react";
 import { useCanvasStore } from "@/lib/canvas-store";
 
 export function Toolbar() {
@@ -63,6 +63,22 @@ export function Toolbar() {
     });
   };
 
+  const addQRCode = () => {
+    addElement({
+      id: `qrcode-${Date.now()}`,
+      type: "qrcode",
+      x: 300,
+      y: 300,
+      width: 150,
+      height: 150,
+      rotation: 0,
+      qrData: "https://example.com",
+      qrForeground: "#000000",
+      qrBackground: "#ffffff",
+      qrErrorCorrection: "M",
+    });
+  };
+
   return (
     <div className="w-20 bg-card border-r border-border flex flex-col items-center gap-2 py-4">
       <Button
@@ -107,6 +123,17 @@ export function Toolbar() {
       >
         <ImageIcon className="h-5 w-5" />
         <span className="text-xs">Imagen</span>
+      </Button>
+
+      <Button
+        variant="ghost"
+        size="icon"
+        className="w-14 h-14 flex flex-col gap-1"
+        onClick={addQRCode}
+        title="Add QR Code"
+      >
+        <QrCode className="h-5 w-5" />
+        <span className="text-xs">QR</span>
       </Button>
     </div>
   );

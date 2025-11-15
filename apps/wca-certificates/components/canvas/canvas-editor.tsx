@@ -9,6 +9,9 @@ export function CanvasEditor() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const backgroundImageRef = useRef<HTMLImageElement | null>(null);
+  // Add cache for element images
+  const imageCache = useRef<Map<string, HTMLImageElement>>(new Map());
+
   const {
     elements,
     selectedElementId,
@@ -34,6 +37,41 @@ export function CanvasEditor() {
   const [isEditingText, setIsEditingText] = useState(false);
   const [editingText, setEditingText] = useState("");
   const textInputRef = useRef<HTMLInputElement>(null);
+
+  // Preload and cache images
+  useEffect(() => {
+    elements.forEach((element) => {
+      if (element.type === "image" && element.imageUrl) {
+        // Only create new image if not already cached
+        if (!imageCache.current.has(element.imageUrl)) {
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          img.src = element.imageUrl;
+          img.onload = () => {
+            imageCache.current.set(element.imageUrl!, img);
+            drawCanvas(); // Redraw when image loads
+          };
+          img.onerror = () => {
+            console.error(`Failed to load image: ${element.imageUrl}`);
+          };
+        }
+      }
+    });
+
+    // Clean up unused images from cache
+    const currentUrls = new Set(
+      elements
+        .filter((el) => el.type === "image" && el.imageUrl)
+        .map((el) => el.imageUrl!)
+    );
+
+    imageCache.current.forEach((_, url) => {
+      if (!currentUrls.has(url)) {
+        imageCache.current.delete(url);
+      }
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [elements]);
 
   useEffect(() => {
     if (backgroundImage) {
@@ -154,17 +192,29 @@ export function CanvasEditor() {
 
         case "image":
           if (element.imageUrl) {
-            const img = new Image();
-            img.crossOrigin = "anonymous";
-            img.src = element.imageUrl;
-            if (img.complete) {
+            // Use cached image instead of creating new one
+            const cachedImg = imageCache.current.get(element.imageUrl);
+            if (cachedImg && cachedImg.complete) {
               ctx.drawImage(
-                img,
+                cachedImg,
                 element.x,
                 element.y,
                 element.width,
                 element.height,
               );
+            } else {
+              // Show placeholder while loading
+              ctx.fillStyle = "#e5e7eb";
+              ctx.fillRect(element.x, element.y, element.width, element.height);
+              ctx.fillStyle = "#9ca3af";
+              ctx.font = "16px sans-serif";
+              ctx.textAlign = "center";
+              ctx.fillText(
+                "Loading...",
+                element.x + element.width / 2,
+                element.y + element.height / 2,
+              );
+              ctx.textAlign = "left";
             }
           } else {
             // Placeholder for images without URL

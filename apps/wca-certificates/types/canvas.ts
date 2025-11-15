@@ -21,6 +21,7 @@ export interface CanvasElement {
   qrForeground?: string;
   qrBackground?: string;
   qrErrorCorrection?: "L" | "M" | "Q" | "H";
+  qrDataSource?: "wca-live" | "competition-groups" | "custom";
 }
 
 export interface CanvasState {

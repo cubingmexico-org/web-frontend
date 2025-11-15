@@ -275,7 +275,12 @@ export function BadgeManager({
             break;
           case "qrcode": {
             // Replace placeholder text with person's data
-            const qrData = `${element.qrData || ""}/${currentPerson.wcaId}`;
+            const qrData =
+              element.qrDataSource === "wca-live"
+                ? `https://live.worldcubeassociation.org/link/competitions/${competition.id}`
+                : element.qrDataSource === "competition-groups"
+                  ? `https://www.competitiongroups.com/competitions/${competition.id}/persons/${currentPerson.registrantId}`
+                  : element.qrData;
 
             if (qrData) {
               try {

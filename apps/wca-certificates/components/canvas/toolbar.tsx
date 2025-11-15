@@ -60,6 +60,7 @@ export function Toolbar() {
       height: 200,
       rotation: 0,
       imageUrl: "/avatar.png",
+      keepAspectRatio: true,
     });
   };
 
@@ -76,6 +77,7 @@ export function Toolbar() {
       qrForeground: "#000000",
       qrBackground: "#ffffff",
       qrErrorCorrection: "M",
+      keepAspectRatio: true,
     });
   };
 

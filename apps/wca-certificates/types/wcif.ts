@@ -23,7 +23,7 @@ export interface Avatar {
   thumbUrl: string;
 }
 
-type Roles =
+export type Role =
   | "staff-other"
   | "staff-judge"
   | "staff-scrambler"
@@ -40,7 +40,7 @@ export interface Person {
   gender: string;
   registration: { eventIds: string[] };
   avatar: Avatar | null;
-  roles: Roles[];
+  roles: Role[];
   assignments: unknown[];
   personalBests: unknown[];
   extensions: unknown[];

@@ -33,6 +33,11 @@ import {
   SelectContent,
   SelectItem,
 } from "@workspace/ui/components/select";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@workspace/ui/components/radio-group";
+import { WcaMonochrome } from "@workspace/icons";
 
 const mentions = [
   { id: "1", name: "nombre" },
@@ -48,7 +53,7 @@ export function PropertiesPanel() {
 
   if (!selectedElement) {
     return (
-      <div className="w-80 bg-card border-l border-border p-4">
+      <div className="w-100 bg-card border-l border-border p-4">
         <p className="text-sm text-muted-foreground">
           Selecciona un elemento para editar sus propiedades.
         </p>
@@ -57,7 +62,7 @@ export function PropertiesPanel() {
   }
 
   return (
-    <div className="w-80 bg-card border-l border-border p-4 overflow-y-auto">
+    <div className="w-100 bg-card border-l border-border p-4 overflow-y-auto">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold">Propiedades</h3>
         <Button
@@ -437,19 +442,70 @@ export function PropertiesPanel() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="qrData" className="text-xs">
-                Contenido del QR
-              </Label>
-              <Input
-                id="qrData"
-                value={selectedElement.qrData || ""}
-                onChange={(e) =>
-                  updateElement(selectedElement.id, { qrData: e.target.value })
+              <Label className="text-xs">Fuente de datos del QR</Label>
+              <RadioGroup
+                value={selectedElement.qrDataSource || "custom"}
+                onValueChange={(value) =>
+                  updateElement(selectedElement.id, {
+                    qrDataSource: value as
+                      | "wca-live"
+                      | "competition-groups"
+                      | "custom",
+                  })
                 }
-                placeholder="Contenido del QR"
-                className="h-8"
-              />
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="wca-live" id="wca-live" />
+                  <Label
+                    htmlFor="wca-live"
+                    className="text-xs font-normal cursor-pointer"
+                  >
+                    <WcaMonochrome className="size-4" />
+                    WCA Live de la competencia
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="competition-groups"
+                    id="competition-groups"
+                  />
+                  <Label
+                    htmlFor="competition-groups"
+                    className="text-xs font-normal cursor-pointer"
+                  >
+                    <WcaMonochrome className="size-4" />
+                    Tareas del competidor en Competition Groups
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="custom" id="custom" />
+                  <Label
+                    htmlFor="custom"
+                    className="text-xs font-normal cursor-pointer"
+                  >
+                    Personalizado
+                  </Label>
+                </div>
+              </RadioGroup>
             </div>
+            {selectedElement.qrDataSource !== "custom" ? null : (
+              <div className="space-y-2">
+                <Label htmlFor="qrData" className="text-xs">
+                  Contenido del QR
+                </Label>
+                <Input
+                  id="qrData"
+                  value={selectedElement.qrData || ""}
+                  onChange={(e) =>
+                    updateElement(selectedElement.id, {
+                      qrData: e.target.value,
+                    })
+                  }
+                  placeholder="Contenido del QR"
+                  className="h-8"
+                />
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="qrForeground" className="text-xs">
                 Color del QR

@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import type { Event, Person, Result, EventId, Round } from "@/types/wcif";
+import type { Event, Person, Result, EventId, Round, Role } from "@/types/wcif";
 
 interface ApplicationError extends Error {
   info: string;
@@ -24,7 +24,7 @@ export const fetcher = async (url: string) => {
 };
 
 export function processPersons(persons: Person[]) {
-  const getRole = (role: string) => (person: Person) =>
+  const getRole = (role: Role) => (person: Person) =>
     person.roles.includes(role);
   const getName = (person: Person) => person.name;
 

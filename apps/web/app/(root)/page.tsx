@@ -19,12 +19,12 @@ import {
   AlertDescription,
 } from "@workspace/ui/components/alert";
 import { Discord } from "@workspace/icons";
-import { Notification } from "@/components/notification";
+// import { Notification } from "@/components/notification";
 
 export default function Page() {
   return (
     <main className="grow">
-      <Notification />
+      {/* <Notification /> */}
 
       <section className="text-muted-foreground body-font">
         <div className="container mx-auto py-8 px-4">

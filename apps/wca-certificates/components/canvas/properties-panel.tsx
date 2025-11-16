@@ -451,6 +451,10 @@ export function PropertiesPanel() {
                       | "wca-live"
                       | "competition-groups"
                       | "custom",
+                    qrData: value === "wca-live"
+                      ? "https://live.worldcubeassociation.org/" : value === "competition-groups"
+                      ? "https://www.competitiongroups.com/"
+                      : "",
                   })
                 }
               >

@@ -9,6 +9,7 @@ export function CanvasEditor() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const backgroundImageRef = useRef<HTMLImageElement | null>(null);
+  const backgroundImageBackRef = useRef<HTMLImageElement | null>(null);
   // Add cache for element images
   const imageCache = useRef<Map<string, HTMLImageElement>>(new Map());
 
@@ -20,8 +21,14 @@ export function CanvasEditor() {
     canvasWidth,
     canvasHeight,
     backgroundImage,
+    backgroundImageBack,
     zoom,
+    activeSide,
   } = useCanvasStore();
+
+  // Get elements for the active side
+  const currentElements = elements[activeSide] || [];
+
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(1);
@@ -40,7 +47,7 @@ export function CanvasEditor() {
 
   // Preload and cache images
   useEffect(() => {
-    elements.forEach((element) => {
+    currentElements.forEach((element) => {
       if (element.type === "image" && element.imageUrl) {
         // Only create new image if not already cached
         if (!imageCache.current.has(element.imageUrl)) {
@@ -60,7 +67,7 @@ export function CanvasEditor() {
 
     // Clean up unused images from cache
     const currentUrls = new Set(
-      elements
+      currentElements
         .filter((el) => el.type === "image" && el.imageUrl)
         .map((el) => el.imageUrl!),
     );
@@ -71,24 +78,30 @@ export function CanvasEditor() {
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [elements]);
+  }, [currentElements]);
 
   useEffect(() => {
-    if (backgroundImage) {
+    // Load the appropriate background image based on active side
+    const currentBackground =
+      activeSide === "front" ? backgroundImage : backgroundImageBack;
+    const targetRef =
+      activeSide === "front" ? backgroundImageRef : backgroundImageBackRef;
+
+    if (currentBackground) {
       const img = new Image();
       img.crossOrigin = "anonymous";
-      img.src = backgroundImage;
+      img.src = currentBackground;
       img.onload = () => {
-        backgroundImageRef.current = img;
+        targetRef.current = img;
         // Trigger a redraw after image loads
         drawCanvas();
       };
     } else {
-      backgroundImageRef.current = null;
+      targetRef.current = null;
       drawCanvas();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [backgroundImage]);
+  }, [backgroundImage, backgroundImageBack, activeSide]);
 
   const measureText = (
     text: string,
@@ -120,10 +133,13 @@ export function CanvasEditor() {
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw background
-    if (backgroundImageRef.current && backgroundImageRef.current.complete) {
+    // Draw background based on active side
+    const currentBackgroundRef =
+      activeSide === "front" ? backgroundImageRef : backgroundImageBackRef;
+
+    if (currentBackgroundRef.current && currentBackgroundRef.current.complete) {
       ctx.drawImage(
-        backgroundImageRef.current,
+        currentBackgroundRef.current,
         0,
         0,
         canvas.width,
@@ -135,7 +151,7 @@ export function CanvasEditor() {
     }
 
     // Draw elements
-    elements.forEach((element) => {
+    currentElements.forEach((element) => {
       ctx.save();
 
       // Apply transformations
@@ -314,7 +330,13 @@ export function CanvasEditor() {
   useEffect(() => {
     drawCanvas();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [elements, selectedElementId, canvasWidth, canvasHeight]);
+  }, [
+    currentElements,
+    selectedElementId,
+    canvasWidth,
+    canvasHeight,
+    activeSide,
+  ]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getResizeHandle = (x: number, y: number, element: any) => {
@@ -363,7 +385,7 @@ export function CanvasEditor() {
     const x = (e.clientX - rect.left) / (scale * zoom);
     const y = (e.clientY - rect.top) / (scale * zoom);
 
-    const clickedElement = [...elements].reverse().find((element) => {
+    const clickedElement = [...currentElements].reverse().find((element) => {
       return (
         x >= element.x &&
         x <= element.x + element.width &&
@@ -388,7 +410,7 @@ export function CanvasEditor() {
     const y = (e.clientY - rect.top) / (scale * zoom);
 
     // Find clicked element (reverse order to check top elements first)
-    const clickedElement = [...elements].reverse().find((element) => {
+    const clickedElement = [...currentElements].reverse().find((element) => {
       return (
         x >= element.x &&
         x <= element.x + element.width &&
@@ -417,8 +439,9 @@ export function CanvasEditor() {
     const rect = canvas.getBoundingClientRect();
     const x = (e.clientX - rect.left) / (scale * zoom);
     const y = (e.clientY - rect.top) / (scale * zoom);
-
-    const selectedElement = elements.find((el) => el.id === selectedElementId);
+    const selectedElement = currentElements.find(
+      (el) => el.id === selectedElementId,
+    );
     if (!selectedElement) return;
 
     // Check if clicking on a resize handle first
@@ -457,7 +480,7 @@ export function CanvasEditor() {
     const y = (e.clientY - rect.top) / (scale * zoom);
 
     if (isResizing && selectedElementId && resizeHandle) {
-      const selectedElement = elements.find(
+      const selectedElement = currentElements.find(
         (el) => el.id === selectedElementId,
       );
       if (!selectedElement) return;
@@ -566,7 +589,7 @@ export function CanvasEditor() {
 
   const handleTextEditComplete = () => {
     if (selectedElementId && isEditingText) {
-      const selectedElement = elements.find(
+      const selectedElement = currentElements.find(
         (el) => el.id === selectedElementId,
       );
       if (selectedElement) {

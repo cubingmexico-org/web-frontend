@@ -46,10 +46,19 @@ const mentions = [
 ];
 
 export function PropertiesPanel() {
-  const { elements, selectedElementId, updateElement, deleteElement } =
-    useCanvasStore();
+  const {
+    elements,
+    selectedElementId,
+    updateElement,
+    deleteElement,
+    activeSide,
+  } = useCanvasStore();
 
-  const selectedElement = elements.find((el) => el.id === selectedElementId);
+  // Get elements for the active side
+  const currentElements = elements[activeSide] || [];
+  const selectedElement = currentElements.find(
+    (el) => el.id === selectedElementId,
+  );
 
   if (!selectedElement) {
     return (
@@ -451,10 +460,12 @@ export function PropertiesPanel() {
                       | "wca-live"
                       | "competition-groups"
                       | "custom",
-                    qrData: value === "wca-live"
-                      ? "https://live.worldcubeassociation.org/" : value === "competition-groups"
-                      ? "https://www.competitiongroups.com/"
-                      : "",
+                    qrData:
+                      value === "wca-live"
+                        ? "https://live.worldcubeassociation.org/"
+                        : value === "competition-groups"
+                          ? "https://www.competitiongroups.com/"
+                          : "",
                   })
                 }
               >

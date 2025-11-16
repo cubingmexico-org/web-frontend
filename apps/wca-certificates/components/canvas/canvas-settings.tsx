@@ -16,9 +16,17 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@workspace/ui/components/sheet";
+import { Switch } from "@workspace/ui/components/switch";
+import { Separator } from "@workspace/ui/components/separator";
 
 export function CanvasSettings() {
-  const { canvasWidth, canvasHeight, setCanvasSize } = useCanvasStore();
+  const {
+    canvasWidth,
+    canvasHeight,
+    setCanvasSize,
+    enableBackSide,
+    setEnableBackSide,
+  } = useCanvasStore();
   const [width, setWidth] = useState(canvasWidth);
   const [height, setHeight] = useState(canvasHeight);
 
@@ -116,6 +124,25 @@ export function CanvasSettings() {
                   CR-79 (991×615)
                 </Button>
               </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          <div className="space-y-4">
+            <h3 className="font-medium">Opciones del gafete</h3>
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="enable-back-side">Habilitar reverso</Label>
+                <p className="text-xs text-muted-foreground">
+                  Permite diseñar ambos lados del gafete
+                </p>
+              </div>
+              <Switch
+                id="enable-back-side"
+                checked={enableBackSide}
+                onCheckedChange={setEnableBackSide}
+              />
             </div>
           </div>
         </div>

@@ -63,15 +63,19 @@ export function BadgeManager({
   const [selectedPersons, setSelectedPersons] = useState<Person[]>([]);
 
   const [files, setFiles] = useState<File[]>([]);
+  const [backFiles, setBackFiles] = useState<File[]>([]);
 
   const [search, setSearch] = useState("");
 
   const {
     setBackgroundImage,
+    setBackgroundImageBack,
     elements,
     canvasWidth,
     canvasHeight,
     backgroundImage,
+    backgroundImageBack,
+    enableBackSide,
   } = useCanvasStore();
 
   useEffect(() => {
@@ -86,6 +90,19 @@ export function BadgeManager({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [files]);
+
+  useEffect(() => {
+    if (backFiles.length > 0) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setBackgroundImageBack(e.target?.result as string);
+      };
+      reader.readAsDataURL(backFiles[0]!);
+    } else {
+      setBackgroundImageBack(undefined);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [backFiles]);
 
   const exportToPNG = async () => {
     // Helper function to measure text and calculate optimal font size with multi-line support
@@ -152,8 +169,9 @@ export function BadgeManager({
     const drawElements = async (
       ctx: CanvasRenderingContext2D,
       currentPerson: Person,
+      side: "front" | "back" = "front",
     ) => {
-      for (const element of elements) {
+      for (const element of elements[side]) {
         ctx.save();
 
         const centerX = element.x + element.width / 2;
@@ -329,6 +347,7 @@ export function BadgeManager({
     // Shared function to create and process canvas
     const createAndProcessCanvas = (
       person: Person,
+      side: "front" | "back",
       onComplete: (canvas: HTMLCanvasElement) => void,
     ) => {
       const canvas = document.createElement("canvas");
@@ -338,14 +357,22 @@ export function BadgeManager({
       if (!ctx) return;
 
       const processCanvas = async () => {
-        await drawElements(ctx, person);
+        await drawElements(ctx, person, side);
         onComplete(canvas);
       };
 
-      if (backgroundImage) {
+      if (backgroundImage && side === "front") {
         const img = new Image();
         img.crossOrigin = "anonymous";
         img.src = backgroundImage;
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          void processCanvas();
+        };
+      } else if (backgroundImageBack && side === "back") {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.src = backgroundImageBack;
         img.onload = () => {
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
           void processCanvas();
@@ -360,36 +387,71 @@ export function BadgeManager({
     // Single badge export
     if (selectedPersons.length === 1) {
       const person = selectedPersons[0]!;
-      createAndProcessCanvas(person, (canvas) => {
+
+      // Export front side
+      createAndProcessCanvas(person, "front", (canvas) => {
         canvas.toBlob((blob) => {
           if (blob) {
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `${person.name.replace(/\s/g, "_")}_badge.png`;
+            a.download = `${person.name.replace(/\s/g, "_")}_badge_front.png`;
             a.click();
             URL.revokeObjectURL(url);
           }
         });
       });
+
+      // Export back side if enabled
+      if (enableBackSide) {
+        createAndProcessCanvas(person, "back", (canvas) => {
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = `${person.name.replace(/\s/g, "_")}_badge_back.png`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }
+          });
+        });
+      }
       return;
     }
 
     // Multiple badges export
     const zip = new JSZip();
 
-    const promises = selectedPersons.map((person) => {
-      return new Promise<void>((resolve) => {
-        createAndProcessCanvas(person, (canvas) => {
+    const promises = selectedPersons.flatMap((person) => {
+      const frontPromise = new Promise<void>((resolve) => {
+        createAndProcessCanvas(person, "front", (canvas) => {
           canvas.toBlob((blob) => {
             if (blob) {
-              const filename = `${person.name.replace(/\s/g, "_")}_badge.png`;
+              const filename = `${person.name.replace(/\s/g, "_")}_badge_front.png`;
               zip.file(filename, blob);
             }
             resolve();
           });
         });
       });
+
+      if (enableBackSide) {
+        const backPromise = new Promise<void>((resolve) => {
+          createAndProcessCanvas(person, "back", (canvas) => {
+            canvas.toBlob((blob) => {
+              if (blob) {
+                const filename = `${person.name.replace(/\s/g, "_")}_badge_back.png`;
+                zip.file(filename, blob);
+              }
+              resolve();
+            });
+          });
+        });
+        return [frontPromise, backPromise];
+      }
+
+      return [frontPromise];
     });
 
     // Wait for all badges to be processed
@@ -719,13 +781,24 @@ export function BadgeManager({
 
             <Card>
               <CardHeader>
-                <CardTitle>Fondo</CardTitle>
+                <CardTitle>
+                  {enableBackSide ? "Fondos del Gafete" : "Fondo del Gafete"}
+                </CardTitle>
                 <CardDescription>
-                  Personaliza el fondo del gafete
+                  {enableBackSide
+                    ? "Sube las imágenes de fondo para el anverso y reverso del gafete."
+                    : "Sube una imagen de fondo para el gafete."}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                {enableBackSide && <Label>Fondo Anverso</Label>}
                 <FileUploader files={files} setFiles={setFiles} />
+                {enableBackSide && (
+                  <>
+                    <Label>Fondo Reverso</Label>
+                    <FileUploader files={backFiles} setFiles={setBackFiles} />
+                  </>
+                )}
               </CardContent>
             </Card>
           </div>

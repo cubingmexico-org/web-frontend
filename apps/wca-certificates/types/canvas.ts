@@ -25,9 +25,17 @@ export interface CanvasElement {
 }
 
 export interface CanvasState {
-  elements: CanvasElement[];
+  elements: {
+    front: CanvasElement[];
+    back: CanvasElement[];
+  };
+  enableBackSide: boolean;
+  setEnableBackSide: (enable: boolean) => void;
+  activeSide: "front" | "back";
+  setActiveSide: (side: "front" | "back") => void;
   selectedElementId: string | null;
   canvasWidth: number;
   canvasHeight: number;
   backgroundImage?: string;
+  backgroundImageBack?: string;
 }

@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { competition, result } from "@/db/schema";
-import { GitHub } from "@workspace/icons";
+import { Discord, Facebook, GitHub, Instagram } from "@workspace/icons";
 import {
   Tooltip,
   TooltipContent,
@@ -50,7 +50,7 @@ export async function Footer() {
               Cubing México
             </span>
           </Link>
-          <p className="text-sm text-gray-500 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">
+          <p className="text-sm text-muted-foreground sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">
             <span>
               © {new Date().getFullYear()} Cubing México —
               <Link
@@ -63,7 +63,35 @@ export async function Footer() {
               </Link>
             </span>
           </p>
-          <p className="inline-flex sm:ml-auto sm:mt-0 mt-4 justify-center sm:justify-start flex-col sm:flex-row sm:items-center gap-2 text-sm">
+          <span className="inline-flex sm:ml-auto sm:mt-0 mt-4 justify-center sm:justify-start gap-3">
+            <Link
+              href="https://facebook.com/cubingmexico"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-primary"
+            >
+              <Facebook className="h-5 w-5" />
+            </Link>
+            <Link
+              href="https://instagram.com/cubingmexico"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-primary"
+            >
+              <Instagram className="h-5 w-5" />
+            </Link>
+            <Link
+              href="https://discord.gg/cubingmexico"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-primary"
+            >
+              <Discord className="h-5 w-5" />
+            </Link>
+          </span>
+        </div>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-4">
+          <p className="inline-flex justify-center sm:justify-start flex-col sm:flex-row sm:items-center gap-2 text-sm">
             <span className="text-muted-foreground flex items-center">
               <Trophy className="h-4 w-4 mr-1" />
               Último: {lastCompetitionWithResults[0]?.name}

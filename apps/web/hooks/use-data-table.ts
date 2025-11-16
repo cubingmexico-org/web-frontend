@@ -62,6 +62,7 @@ interface UseDataTableProps<TData>
   throttleMs?: number;
   clearOnDefault?: boolean;
   enableAdvancedFilter?: boolean;
+  enableRowSelection?: boolean;
   scroll?: boolean;
   shallow?: boolean;
   startTransition?: React.TransitionStartFunction;
@@ -283,7 +284,7 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
       ...tableProps.defaultColumn,
       enableColumnFilter: false,
     },
-    enableRowSelection: true,
+    enableRowSelection: props.enableRowSelection ?? false,
     onRowSelectionChange: setRowSelection,
     onPaginationChange,
     onSortingChange,

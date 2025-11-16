@@ -79,7 +79,7 @@ export function Header({
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
+                <DropdownMenuSubTrigger className="[&_svg:not([class*='size-'])]:size-4 gap-2">
                   <PlusCircle />
                   Sum of Ranks
                 </DropdownMenuSubTrigger>
@@ -101,7 +101,7 @@ export function Header({
                 </DropdownMenuPortal>
               </DropdownMenuSub>
               <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
+                <DropdownMenuSubTrigger className="[&_svg:not([class*='size-'])]:size-4 gap-2">
                   <ChartBarBig />
                   Kinch Ranks
                 </DropdownMenuSubTrigger>
@@ -115,7 +115,7 @@ export function Header({
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <ChartBarBig />
-                      <Link href="/kinch/PUE" className="w-full">
+                      <Link href="/kinch/MEX" className="w-full">
                         Kinch Ranks estatales
                       </Link>
                     </DropdownMenuItem>

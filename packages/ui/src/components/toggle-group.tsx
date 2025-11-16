@@ -39,6 +39,7 @@ function ToggleGroup({
     </ToggleGroupPrimitive.Root>
   );
 }
+
 function ToggleGroupItem({
   className,
   children,
@@ -48,6 +49,7 @@ function ToggleGroupItem({
 }: React.ComponentProps<typeof ToggleGroupPrimitive.Item> &
   VariantProps<typeof toggleVariants>) {
   const context = React.useContext(ToggleGroupContext);
+
   return (
     <ToggleGroupPrimitive.Item
       data-slot="toggle-group-item"

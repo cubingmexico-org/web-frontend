@@ -3,13 +3,13 @@ import { person, state, team, teamMember } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 import { ManageTeam } from "./_components/manage-team";
 import { auth } from "@/auth";
-import { UnauthorizedView } from "@/components/unauthorized-view";
 import { getValidFilters } from "@/lib/data-table";
 import { SearchParams } from "@/types";
 import { searchParamsCache } from "../_lib/validations";
 import { getMembers, getMembersGenderCounts } from "../_lib/queries";
 import { getTeam } from "@/db/queries";
 import { Metadata } from "next";
+import { unauthorized } from "next/navigation";
 
 type Props = {
   params: Promise<{ stateId: string }>;
@@ -47,7 +47,7 @@ export default async function Page(props: {
   });
 
   if (!currentUserIsAdmin) {
-    return <UnauthorizedView />;
+    unauthorized();
   }
 
   const teamsData = await db

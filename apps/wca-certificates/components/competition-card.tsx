@@ -33,7 +33,7 @@ export function CompetitionCard({
   };
 
   return (
-    <Card className="overflow-hidden transition-all hover:shadow-md">
+    <Card className="overflow-hidden transition-all hover:shadow-md pt-0">
       <div className="relative h-48 w-full overflow-hidden bg-gray-100">
         <Image
           src="/placeholder.svg?height=192&width=384"
@@ -42,7 +42,7 @@ export function CompetitionCard({
           width={384}
           height={192}
         />
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+        <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/60 to-transparent p-4">
           <Badge
             variant={
               status === "upcoming"
@@ -57,22 +57,22 @@ export function CompetitionCard({
           </Badge>
         </div>
       </div>
-      <CardHeader className="p-4 pb-2">
+      <CardHeader>
         <CardTitle className="line-clamp-2 text-xl">
           {competition.name}
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 pt-0">
+      <CardContent>
         <div className="space-y-2">
           <div className="flex items-start gap-2">
-            <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gray-500" />
-            <span className="text-sm text-gray-700">
+            <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">
               {competition.city}, {competition.country_iso2}
             </span>
           </div>
           <div className="flex items-start gap-2">
-            <Calendar className="mt-0.5 h-4 w-4 shrink-0 text-gray-500" />
-            <span className="text-sm text-gray-700">
+            <Calendar className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">
               {isSameDay
                 ? format(startDate, "d 'de' MMMM 'de' yyyy", { locale: es })
                 : `${format(startDate, "d 'de' MMM", { locale: es })} - ${format(endDate, "d 'de' MMM 'de' yyyy", { locale: es })}`}
@@ -85,12 +85,18 @@ export function CompetitionCard({
           </div>
         </div>
       </CardContent>
-      <CardFooter className="p-4 pt-0">
+      <CardFooter className="flex-col gap-2">
+        <Link
+          className={cn("w-full", buttonVariants({ variant: "outline" }))}
+          href={`/badges/${competition.id}`}
+        >
+          Administrar Gafetes
+        </Link>
         <Link
           className={cn("w-full", buttonVariants({ variant: "outline" }))}
           href={`/certificates/${competition.id}`}
         >
-          Ver Detalles
+          Administrar Certificados
         </Link>
       </CardFooter>
     </Card>

@@ -68,8 +68,6 @@ import type {
   JoinOperator,
 } from "@/types/data-table";
 
-const FILTERS_KEY = "filters";
-const JOIN_OPERATOR_KEY = "joinOperator";
 const DEBOUNCE_MS = 300;
 const THROTTLE_MS = 50;
 const OPEN_MENU_SHORTCUT = "f";
@@ -103,7 +101,7 @@ export function DataTableFilterList<TData>({
   }, [table]);
 
   const [filters, setFilters] = useQueryState(
-    FILTERS_KEY,
+    table.options.meta?.queryKeys?.filters ?? "filters",
     getFiltersStateParser<TData>(columns.map((field) => field.id))
       .withDefault([])
       .withOptions({
@@ -115,7 +113,7 @@ export function DataTableFilterList<TData>({
   const debouncedSetFilters = useDebouncedCallback(setFilters, debounceMs);
 
   const [joinOperator, setJoinOperator] = useQueryState(
-    JOIN_OPERATOR_KEY,
+    table.options.meta?.queryKeys?.joinOperator ?? "",
     parseAsStringEnum(["and", "or"]).withDefault("and").withOptions({
       clearOnDefault: true,
       shallow,
@@ -247,7 +245,7 @@ export function DataTableFilterList<TData>({
         <PopoverContent
           aria-describedby={descriptionId}
           aria-labelledby={labelId}
-          className="flex w-full max-w-[var(--radix-popover-content-available-width)] origin-[var(--radix-popover-content-transform-origin)] flex-col gap-3.5 p-4 sm:min-w-[380px]"
+          className="flex w-full max-w-(--radix-popover-content-available-width) origin-(--radix-popover-content-transform-origin) flex-col gap-3.5 p-4 sm:min-w-[380px]"
           {...props}
         >
           <div className="flex flex-col gap-1">
@@ -268,10 +266,7 @@ export function DataTableFilterList<TData>({
           </div>
           {filters.length > 0 ? (
             <SortableContent asChild>
-              <div
-                role="list"
-                className="flex max-h-[300px] flex-col gap-2 overflow-y-auto p-1"
-              >
+              <ul className="flex max-h-[300px] flex-col gap-2 overflow-y-auto p-1">
                 {filters.map((filter, index) => (
                   <DataTableFilterItem<TData>
                     key={filter.filterId}
@@ -285,7 +280,7 @@ export function DataTableFilterList<TData>({
                     onFilterRemove={onFilterRemove}
                   />
                 ))}
-              </div>
+              </ul>
             </SortableContent>
           ) : null}
           <div className="flex w-full items-center gap-2">
@@ -353,19 +348,17 @@ function DataTableFilterItem<TData>({
   const [showValueSelector, setShowValueSelector] = React.useState(false);
 
   const column = columns.find((column) => column.id === filter.id);
-  if (!column) return null;
 
   const joinOperatorListboxId = `${filterItemId}-join-operator-listbox`;
   const fieldListboxId = `${filterItemId}-field-listbox`;
   const operatorListboxId = `${filterItemId}-operator-listbox`;
   const inputId = `${filterItemId}-input`;
 
-  const columnMeta = column.columnDef.meta;
+  const columnMeta = column?.columnDef.meta;
   const filterOperators = getFilterOperators(filter.variant);
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const onItemKeyDown = React.useCallback(
-    (event: React.KeyboardEvent<HTMLDivElement>) => {
+    (event: React.KeyboardEvent<HTMLLIElement>) => {
       if (
         event.target instanceof HTMLInputElement ||
         event.target instanceof HTMLTextAreaElement
@@ -391,10 +384,11 @@ function DataTableFilterItem<TData>({
     ],
   );
 
+  if (!column) return null;
+
   return (
     <SortableItem value={filter.filterId} asChild>
-      <div
-        role="listitem"
+      <li
         id={filterItemId}
         tabIndex={-1}
         className="flex items-center gap-2"
@@ -402,7 +396,7 @@ function DataTableFilterItem<TData>({
       >
         <div className="min-w-[72px] text-center">
           {index === 0 ? (
-            <span className="text-muted-foreground text-sm">Donde</span>
+            <span className="text-muted-foreground text-sm">Where</span>
           ) : index === 1 ? (
             <Select
               value={joinOperator}
@@ -411,7 +405,7 @@ function DataTableFilterItem<TData>({
               <SelectTrigger
                 aria-label="Select join operator"
                 aria-controls={joinOperatorListboxId}
-                className="h-8 rounded lowercase [&[data-size]]:h-8"
+                className="h-8 rounded lowercase data-size:h-8"
               >
                 <SelectValue placeholder={joinOperator} />
               </SelectTrigger>
@@ -436,7 +430,6 @@ function DataTableFilterItem<TData>({
         <Popover open={showFieldSelector} onOpenChange={setShowFieldSelector}>
           <PopoverTrigger asChild>
             <Button
-              role="combobox"
               aria-controls={fieldListboxId}
               variant="outline"
               size="sm"
@@ -452,12 +445,12 @@ function DataTableFilterItem<TData>({
           <PopoverContent
             id={fieldListboxId}
             align="start"
-            className="w-40 origin-[var(--radix-popover-content-transform-origin)] p-0"
+            className="w-40 origin-(--radix-popover-content-transform-origin) p-0"
           >
             <Command>
-              <CommandInput placeholder="Buscar campos..." />
+              <CommandInput placeholder="Search fields..." />
               <CommandList>
-                <CommandEmpty>No se encontraton campos.</CommandEmpty>
+                <CommandEmpty>No fields found.</CommandEmpty>
                 <CommandGroup>
                   {columns.map((column) => (
                     <CommandItem
@@ -508,7 +501,7 @@ function DataTableFilterItem<TData>({
         >
           <SelectTrigger
             aria-controls={operatorListboxId}
-            className="h-8 w-32 rounded lowercase [&[data-size]]:h-8"
+            className="h-8 w-32 rounded lowercase data-size:h-8"
           >
             <div className="truncate">
               <SelectValue placeholder={filter.operator} />
@@ -516,7 +509,7 @@ function DataTableFilterItem<TData>({
           </SelectTrigger>
           <SelectContent
             id={operatorListboxId}
-            className="origin-[var(--radix-select-content-transform-origin)]"
+            className="origin-(--radix-select-content-transform-origin)"
           >
             {filterOperators.map((operator) => (
               <SelectItem
@@ -554,7 +547,7 @@ function DataTableFilterItem<TData>({
             <GripVertical />
           </Button>
         </SortableItemHandle>
-      </div>
+      </li>
     </SortableItem>
   );
 }
@@ -655,13 +648,13 @@ function onFilterInputRender<TData>({
             id={inputId}
             aria-controls={inputListboxId}
             aria-label={`${columnMeta?.label} boolean filter`}
-            className="h-8 w-full rounded [&[data-size]]:h-8"
+            className="h-8 w-full rounded data-size:h-8"
           >
-            <SelectValue placeholder={filter.value ? "Verdadero" : "Falso"} />
+            <SelectValue placeholder={filter.value ? "True" : "False"} />
           </SelectTrigger>
           <SelectContent id={inputListboxId}>
-            <SelectItem value="true">Verdadero</SelectItem>
-            <SelectItem value="false">Falso</SelectItem>
+            <SelectItem value="true">True</SelectItem>
+            <SelectItem value="false">False</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -705,21 +698,21 @@ function onFilterInputRender<TData>({
                 options={columnMeta?.options}
                 placeholder={
                   columnMeta?.placeholder ??
-                  `Selecciona ${multiple ? "opciones" : "una opción"}...`
+                  `Select option${multiple ? "s" : ""}...`
                 }
               />
             </Button>
           </FacetedTrigger>
           <FacetedContent
             id={inputListboxId}
-            className="w-[200px] origin-[var(--radix-popover-content-transform-origin)]"
+            className="w-[200px] origin-(--radix-popover-content-transform-origin)"
           >
             <FacetedInput
-              aria-label={`Busca ${columnMeta?.label} opciones`}
-              placeholder={columnMeta?.placeholder ?? "Busca opciones..."}
+              aria-label={`Search ${columnMeta?.label} options`}
+              placeholder={columnMeta?.placeholder ?? "Search options..."}
             />
             <FacetedList>
-              <FacetedEmpty>No se encontraron opciones.</FacetedEmpty>
+              <FacetedEmpty>No options found.</FacetedEmpty>
               <FacetedGroup>
                 {columnMeta?.options?.map((option) => (
                   <FacetedItem key={option.value} value={option.value}>
@@ -777,13 +770,13 @@ function onFilterInputRender<TData>({
           <PopoverContent
             id={inputListboxId}
             align="start"
-            className="w-auto origin-[var(--radix-popover-content-transform-origin)] p-0"
+            className="w-auto origin-(--radix-popover-content-transform-origin) p-0"
           >
             {filter.operator === "isBetween" ? (
               <Calendar
                 aria-label={`Select ${columnMeta?.label} date range`}
                 mode="range"
-                initialFocus
+                captionLayout="dropdown"
                 selected={
                   dateValue.length === 2
                     ? {
@@ -810,7 +803,7 @@ function onFilterInputRender<TData>({
               <Calendar
                 aria-label={`Select ${columnMeta?.label} date`}
                 mode="single"
-                initialFocus
+                captionLayout="dropdown"
                 selected={
                   dateValue[0] ? new Date(Number(dateValue[0])) : undefined
                 }

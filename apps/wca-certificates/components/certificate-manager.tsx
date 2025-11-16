@@ -160,7 +160,7 @@ export function CertificateManager({
     isLoading: isLoadingParticipants,
     mutate: mutateParticipants,
   } = useSWR<ParticipantData[]>(
-    `/api/certificate/participation?competitionId=${competition.id}`,
+    `/api/certificates/participation?competitionId=${competition.id}`,
     fetcher,
     {
       fallbackData: [],
@@ -172,7 +172,7 @@ export function CertificateManager({
     isLoading: isLoadingPodiums,
     mutate: mutatePodiums,
   } = useSWR<PodiumData[]>(
-    `/api/certificate/podium?competitionId=${competition.id}`,
+    `/api/certificates/podium?competitionId=${competition.id}`,
     fetcher,
     {
       fallbackData: [],
@@ -922,7 +922,7 @@ export function CertificateManager({
                   />
                 </div>
               </div>
-              <div className="rounded-md bg-muted p-4">
+              <div className="rounded-md bg-muted/50 p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="text-sm font-medium">
@@ -944,6 +944,7 @@ export function CertificateManager({
                       void mutatePodiums();
                       setLastUpdate(new Date());
                     }}
+                    className="dark:bg-background"
                   >
                     <RefreshCw />
                     Actualizar

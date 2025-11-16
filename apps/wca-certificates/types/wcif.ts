@@ -23,6 +23,14 @@ export interface Avatar {
   thumbUrl: string;
 }
 
+export type Role =
+  | "staff-other"
+  | "staff-judge"
+  | "staff-scrambler"
+  | "staff-judge"
+  | "delegate"
+  | "organizer";
+
 export interface Person {
   name: string;
   wcaUserId: number;
@@ -31,8 +39,8 @@ export interface Person {
   countryIso2: string;
   gender: string;
   registration: { eventIds: string[] };
-  avatar: Avatar;
-  roles: unknown[];
+  avatar: Avatar | null;
+  roles: Role[];
   assignments: unknown[];
   personalBests: unknown[];
   extensions: unknown[];
@@ -83,7 +91,7 @@ export interface WCIF {
 export interface ParticipantData {
   name: string;
   wcaId: string | null;
-  registrantId: number;
+  registrantId: number | null;
   results: {
     event: EventId;
     average: number;

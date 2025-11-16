@@ -23,7 +23,7 @@ export function CertificateManagerSkeleton() {
                 <Skeleton className="h-4 w-full" />
               </div>
             ))}
-            <Skeleton className="h-[1px] w-full" />
+            <Skeleton className="h-px w-full" />
             <div className="space-y-2">
               <Skeleton className="h-4 w-[100px]" />
               <div className="flex flex-wrap gap-2">
@@ -56,7 +56,7 @@ export function CertificateManagerSkeleton() {
               <div className="flex items-center justify-between">
                 <div>
                   <Skeleton className="h-4 w-[120px]" />
-                  <Skeleton className="h-3 w-[80px] mt-1" />
+                  <Skeleton className="h-3 w-20 mt-1" />
                 </div>
                 <Skeleton className="h-8 w-[100px]" />
               </div>

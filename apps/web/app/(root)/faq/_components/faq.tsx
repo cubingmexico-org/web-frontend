@@ -184,7 +184,7 @@ export function FAQ() {
   );
 
   return (
-    <main className="flex-grow container mx-auto px-4 py-8">
+    <main className="grow container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-2 text-center">
           Preguntas Frecuentes
@@ -195,7 +195,7 @@ export function FAQ() {
         </p>
 
         <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
           <Input
             placeholder="Buscar preguntas..."
             className="pl-10"

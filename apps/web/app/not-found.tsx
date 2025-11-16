@@ -4,7 +4,7 @@ import { Home, RotateCcw } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <main className="flex-grow flex items-center justify-center">
+    <main className="grow flex items-center justify-center">
       <div className="container max-w-3xl px-4 py-16 text-center">
         <div className="mb-8 relative">
           <div className="flex justify-center">

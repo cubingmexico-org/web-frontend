@@ -10,7 +10,6 @@ import {
   doublePrecision,
   boolean,
   jsonb,
-  real,
 } from "drizzle-orm/pg-core";
 
 // WCA
@@ -367,61 +366,7 @@ export const sponsor = pgTable("sponsors", {
     twitter?: string;
     tiktok?: string;
   }>(),
-  inCup: boolean("inCup").notNull().default(false),
   active: boolean("active").notNull().default(false),
 });
 
 export type Sponsor = InferSelectModel<typeof sponsor>;
-
-export const sponsoredTeam = pgTable("sponsoredTeams", {
-  id: varchar("id", { length: 32 }).primaryKey(),
-  sponsorId: varchar("sponsorId", { length: 32 })
-    .notNull()
-    .references(() => sponsor.id, { onDelete: "cascade" }),
-  name: varchar("name", { length: 50 }).notNull(),
-});
-
-export type SponsoredTeam = InferSelectModel<typeof sponsoredTeam>;
-
-export const sponsoredTeamMember = pgTable("sponsored_team_members", {
-  id: varchar("id", { length: 32 }).primaryKey(),
-  sponsoredTeamId: varchar("sponsoredTeamId", { length: 32 })
-    .notNull()
-    .references(() => sponsoredTeam.id, { onDelete: "cascade" }),
-  personId: varchar("personId", { length: 10 })
-    .notNull()
-    .references(() => person.id, { onDelete: "cascade" }),
-});
-
-export type SponsoredTeamMember = InferSelectModel<typeof sponsoredTeamMember>;
-
-export const sponsoredCompetitionScore = pgTable(
-  "sponsored_competition_scores",
-  {
-    sponsoredTeamMemberId: varchar("sponsoredTeamMemberId", { length: 32 })
-      .notNull()
-      .references(() => sponsoredTeamMember.id, { onDelete: "cascade" }),
-    competitionId: varchar("competitionId", { length: 32 })
-      .notNull()
-      .references(() => competition.id, { onDelete: "cascade" }),
-    score: real("score").notNull().default(0),
-    type: varchar("type", { length: 10, enum: ["pr", "kinch"] }).notNull(),
-  },
-  (table) => {
-    return [
-      {
-        pk: primaryKey({
-          columns: [
-            table.sponsoredTeamMemberId,
-            table.competitionId,
-            table.type,
-          ],
-        }),
-      },
-    ];
-  },
-);
-
-export type SponsoredCompetitionScore = InferSelectModel<
-  typeof sponsoredCompetitionScore
->;

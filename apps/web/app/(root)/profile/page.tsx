@@ -7,8 +7,8 @@ import { eq } from "drizzle-orm";
 import { Profile } from "./_components/profile";
 import { getPerson, getStates } from "@/db/queries";
 import { unstable_cache } from "@/lib/unstable-cache";
-import { UnauthorizedView } from "@/components/unauthorized-view";
 import type { Metadata } from "next";
+import { unauthorized } from "next/navigation";
 
 export async function generateMetadata(): Promise<Metadata> {
   const session = await auth();
@@ -25,7 +25,7 @@ export default async function Page() {
   const session = await auth();
 
   if (!session?.user) {
-    return <UnauthorizedView />;
+    unauthorized();
   }
 
   const persons = await unstable_cache(

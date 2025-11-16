@@ -9,7 +9,7 @@ import "@cubing/icons";
 import { getCompetitionsManagedByUser } from "@/db/queries";
 import { CompetitionList } from "@/components/competition-list";
 
-export default async function Page(): Promise<JSX.Element> {
+export default async function Page(): Promise<React.JSX.Element> {
   const session = await auth();
 
   const competitions = await getCompetitionsManagedByUser({

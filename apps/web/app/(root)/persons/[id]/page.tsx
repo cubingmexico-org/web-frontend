@@ -263,7 +263,7 @@ export default async function Page({
   };
 
   return (
-    <main className="flex-grow container mx-auto px-4 py-8">
+    <main className="grow container mx-auto px-4 py-8">
       <h1 className="text-center font-semibold text-2xl mb-4 hover:underline">
         <Link
           href={`https://www.worldcubeassociation.org/persons/${id}`}

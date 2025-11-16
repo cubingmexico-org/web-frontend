@@ -2,7 +2,7 @@ import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { z } from "zod";
 
 export function getErrorMessage(err: unknown) {
-  const unknownError = "Something went wrong, please try again later.";
+  const unknownError = "Un error desconocido ha ocurrido. Inténtalo más tarde.";
 
   if (err instanceof z.ZodError) {
     const errors = err.issues.map((issue) => {

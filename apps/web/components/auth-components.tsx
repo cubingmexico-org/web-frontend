@@ -9,7 +9,7 @@ export function SignIn({
   ...props
 }: {
   provider?: string;
-} & React.ComponentPropsWithRef<typeof Button>): JSX.Element {
+} & React.ComponentPropsWithRef<typeof Button>): React.JSX.Element {
   return (
     <form
       action={async () => {
@@ -28,7 +28,7 @@ export function SignIn({
 
 export function SignOut({
   ...props
-}: React.ComponentPropsWithRef<typeof DropdownMenuItem>): JSX.Element {
+}: React.ComponentPropsWithRef<typeof DropdownMenuItem>): React.JSX.Element {
   return (
     <form
       action={async () => {

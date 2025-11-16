@@ -36,7 +36,7 @@ export function TeamCard({
 }: TeamCardProps) {
   return (
     <Link href={`/teams/${id}`}>
-      <Card className="overflow-hidden transition-all hover:border-primary hover:shadow-md">
+      <Card className="overflow-hidden transition-all hover:border-primary hover:shadow-md py-0">
         <div className="h-32 w-full overflow-hidden">
           <div className="relative h-full w-full">
             <Image

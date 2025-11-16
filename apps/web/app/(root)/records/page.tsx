@@ -37,7 +37,7 @@ export default async function Page(props: PageProps) {
   const states = await getStates();
 
   return (
-    <main className="flex-grow container mx-auto px-4 py-8">
+    <main className="grow container mx-auto px-4 py-8">
       <div className="flex flex-col gap-4">
         <h1 className="text-3xl font-bold">
           {search.state
@@ -47,9 +47,11 @@ export default async function Page(props: PageProps) {
             ? `(${search.gender === "m" ? "Masculinos" : "Femeniles"})`
             : undefined}
         </h1>
-        <div className="flex flex-col gap-2">
-          <span className="font-semibold text-sm">Estado</span>
-          <StateSelector states={states} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="flex flex-col gap-2">
+            <span className="font-semibold text-sm">Estado</span>
+            <StateSelector states={states} />
+          </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <GenderSelector />

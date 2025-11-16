@@ -166,7 +166,7 @@ export default async function Page(props: {
   const stateName = states.find((state) => state.id === stateId)?.name;
 
   return (
-    <main className="flex-grow container mx-auto px-4 py-8">
+    <main className="grow container mx-auto px-4 py-8">
       <div className="flex flex-col gap-4 mb-6">
         <h1 className="text-3xl font-bold">
           Kinch Ranks estatales de {stateName}

@@ -8,7 +8,7 @@ import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 import { Badge } from "@workspace/ui/components/badge";
 import { formatStatusName, getStatusIcon } from "../_lib/utils";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Trophy } from "lucide-react";
 import { WcaMonochrome } from "@workspace/icons";
 
 interface GetColumnsProps {
@@ -55,7 +55,10 @@ export function getColumns({
         return (
           <div className="flex space-x-2">
             {(row.original.isChampionship as boolean) && (
-              <Badge>Campeonato</Badge>
+              <Badge className="bg-green-600 text-white dark:bg-green-700">
+                <Trophy />
+                Campeonato
+              </Badge>
             )}
             <Badge
               variant={

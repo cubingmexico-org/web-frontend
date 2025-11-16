@@ -3,7 +3,12 @@ import type { FilterItemSchema } from "@/lib/parsers";
 import type { ColumnSort, Row, RowData } from "@tanstack/react-table";
 
 declare module "@tanstack/react-table" {
-  // biome-ignore lint/correctness/noUnusedVariables: <explanation>
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface TableMeta<TData extends RowData> {
+    queryKeys?: QueryKeys;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     label?: string;
     placeholder?: string;
@@ -13,6 +18,14 @@ declare module "@tanstack/react-table" {
     unit?: string;
     icon?: React.FC<React.SVGProps<SVGSVGElement>>;
   }
+}
+
+export interface QueryKeys {
+  page: string;
+  perPage: string;
+  sort: string;
+  filters: string;
+  joinOperator: string;
 }
 
 export interface Option {

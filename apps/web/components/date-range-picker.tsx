@@ -6,13 +6,14 @@ import { CalendarIcon } from "lucide-react";
 import { parseAsString, useQueryStates } from "nuqs";
 import { type DateRange } from "react-day-picker";
 import { cn } from "@workspace/ui/lib/utils";
-import { Button, type ButtonProps } from "@workspace/ui/components/button";
+import { Button } from "@workspace/ui/components/button";
 import { Calendar } from "@workspace/ui/components/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover";
+import { es } from "react-day-picker/locale";
 
 interface DateRangePickerProps
   extends React.ComponentPropsWithoutRef<typeof PopoverContent> {
@@ -36,14 +37,14 @@ interface DateRangePickerProps
    * @default "outline"
    * @type "default" | "outline" | "secondary" | "ghost"
    */
-  triggerVariant?: Exclude<ButtonProps["variant"], "destructive" | "link">;
+  triggerVariant?: "default" | "outline" | "secondary" | "ghost";
 
   /**
    * The size of the calendar trigger button.
    * @default "default"
    * @type "default" | "sm" | "lg"
    */
-  triggerSize?: Exclude<ButtonProps["size"], "icon">;
+  triggerSize?: "default" | "sm" | "lg";
 
   /**
    * The class name of the calendar trigger button.
@@ -137,6 +138,7 @@ export function DateRangePicker({
               });
             }}
             numberOfMonths={2}
+            locale={es}
           />
         </PopoverContent>
       </Popover>

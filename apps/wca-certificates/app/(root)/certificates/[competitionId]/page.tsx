@@ -7,7 +7,7 @@ export default async function Page({
   params,
 }: {
   params: Params;
-}): Promise<JSX.Element> {
+}): Promise<React.JSX.Element> {
   const { competitionId } = await params;
 
   const competition = await getCompetitionById({
@@ -26,9 +26,11 @@ export default async function Page({
     throw new Error("WCIF not found");
   }
 
+  const persons = wcif.persons.filter((person) => person.registrantId !== null);
+
   return (
     <main className="container mx-auto px-4 py-8">
-      <CertificateManager competition={competition} persons={wcif.persons} />
+      <CertificateManager competition={competition} persons={persons} />
     </main>
   );
 }

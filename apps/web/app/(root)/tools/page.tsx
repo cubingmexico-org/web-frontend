@@ -10,9 +10,9 @@ export const metadata: Metadata = {
     "Encuentra herramientas útiles para speedcubers y organizadores de competencias. Explora generadores de certificados, visualizadores de mezclas y más.",
 };
 
-export default function Page(): JSX.Element {
+export default function Page(): React.JSX.Element {
   return (
-    <main className="flex-grow container mx-auto px-4 py-8">
+    <main className="grow container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-4">
         Herramientas Externas para Cubing
       </h1>

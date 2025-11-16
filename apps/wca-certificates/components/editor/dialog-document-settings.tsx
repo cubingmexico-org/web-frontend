@@ -8,7 +8,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@workspace/ui/components/dialog";
 import {
   Select,
@@ -25,6 +24,7 @@ import { Input } from "@workspace/ui/components/input";
 import type { Margins, PageOrientation, PageSize } from "pdfmake/interfaces";
 import { FileText } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
+import { MenubarItem } from "@workspace/ui/components/menubar";
 
 interface DialogDocumentSettingsProps {
   pageOrientation: PageOrientation;
@@ -42,7 +42,7 @@ export function DialogDocumentSettings({
   setPageSize,
   pageMargins,
   setPageMargins,
-}: DialogDocumentSettingsProps): JSX.Element {
+}: DialogDocumentSettingsProps): React.JSX.Element {
   const [open, setOpen] = useState(false);
   const [tempPageOrientation, setTempPageOrientation] =
     useState(pageOrientation);
@@ -62,11 +62,16 @@ export function DialogDocumentSettings({
   };
 
   return (
-    <Dialog onOpenChange={(value) => setOpen(value)} open={open}>
-      <DialogTrigger className="flex text-sm hover:bg-accent px-2 py-1.5 cursor-default rounded-sm w-full">
-        <FileText className="h-4 w-4 mr-2" />
+    <Dialog onOpenChange={setOpen} open={open}>
+      <MenubarItem
+        onClick={(event) => {
+          event.preventDefault();
+          setOpen(true);
+        }}
+      >
+        <FileText />
         Configuración de página
-      </DialogTrigger>
+      </MenubarItem>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Configuración de página</DialogTitle>

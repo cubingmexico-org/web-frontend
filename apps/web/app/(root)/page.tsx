@@ -13,12 +13,6 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card";
 import Link from "next/link";
-import {
-  Alert,
-  AlertTitle,
-  AlertDescription,
-} from "@workspace/ui/components/alert";
-import { Discord } from "@workspace/icons";
 // import { Notification } from "@/components/notification";
 
 export default function Page() {
@@ -26,53 +20,28 @@ export default function Page() {
     <main className="grow">
       {/* <Notification /> */}
 
-      <section className="text-muted-foreground body-font">
-        <div className="container mx-auto py-8 px-4">
-          <Alert>
-            <Discord className="size-4" />
-            <AlertTitle>¡Ahora tenemos servidor de Discord!</AlertTitle>
-            <AlertDescription className="inline">
-              Únete a nuestra comunidad en{" "}
-              <Link
-                className="hover:underline text-muted-foreground"
-                href="https://discord.gg/N9KcpWngz7"
-              >
-                Discord
-              </Link>{" "}
-              para discutir sobre speedcubing, compartir tus tiempos y conocer a
-              otros cuberos mexicanos.
-            </AlertDescription>
-          </Alert>
-        </div>
-        <div className="container mx-auto flex px-5 pb-24 md:flex-row flex-col items-center">
-          <div className="lg:grow md:w-1/2 lg:pr-24 md:pr-16 flex flex-col md:items-start md:text-left mb-16 md:mb-0 items-center text-center">
-            <h1 className="title-font sm:text-4xl text-3xl mb-4 font-medium text-primary">
-              Rankings y Récords Estatales Mexicanos
+      <section className="relative h-[500px] md:h-[600px] lg:h-[700px] w-full overflow-hidden">
+        <Image
+          alt="Competidores de speedcubing"
+          className="object-cover object-center"
+          fill
+          src="/competidores.jpg"
+          priority
+        />
+        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+          <div className="text-center text-white px-4">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
+              Cubing México
             </h1>
-            <p className="mb-8 leading-relaxed">
-              Descubre a los mejores speedcubers en México, sigue los récords
-              estatales y mantente actualizado con las últimas competencias de
-              la WCA.
+            <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto">
+              Descubre los mejores cuberos, récords y competencias de México
             </p>
-            <div className="flex justify-center">
-              <Link
-                className={buttonVariants({ variant: "default" })}
-                href="/rankings/333/single"
-              >
-                Explorar Rankings
-                <ArrowRight />
-              </Link>
-            </div>
-          </div>
-          <div className="lg:max-w-lg lg:w-full md:w-1/2 w-5/6">
-            <Image
-              alt="Competidores de speedcubing"
-              className="object-cover object-center rounded"
-              height={900}
-              src="/competidores.jpg"
-              width={1080}
-              priority
-            />
+            <Link
+              href="/rankings/333/single"
+              className={buttonVariants({ size: "lg" })}
+            >
+              Ver Rankings <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
           </div>
         </div>
       </section>

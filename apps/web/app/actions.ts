@@ -1,5 +1,6 @@
 "use server";
 
+import { signIn, signOut } from "@/auth";
 import {
   addMember,
   deleteTeamCover,
@@ -16,6 +17,14 @@ import {
 } from "@/lib/validations";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
+
+export async function signInAction(provider?: string) {
+  await signIn(provider);
+}
+
+export async function signOutAction() {
+  await signOut();
+}
 
 export async function profileFormAction(
   _prevState: unknown,

@@ -241,9 +241,25 @@ export function PropertiesPanel() {
             <div className="space-y-2">
               <FontsCombobox
                 value={selectedElement.fontFamily || "Arial"}
-                onValueChange={(fontFamily) =>
-                  updateElement(selectedElement.id, { fontFamily })
-                }
+                onValueChange={(fontFamily) => {
+                  // Measure text dimensions
+                  const canvas = document.createElement("canvas");
+                  const ctx = canvas.getContext("2d");
+                  if (ctx) {
+                    ctx.font = `${selectedElement.fontSize || 24}px ${fontFamily}`;
+                    const metrics = ctx.measureText(
+                      selectedElement.content || "",
+                    );
+                    const width = metrics.width;
+                    const height = (selectedElement.fontSize || 24) * 1.2;
+
+                    updateElement(selectedElement.id, {
+                      fontFamily,
+                      width,
+                      height,
+                    });
+                  }
+                }}
               />
             </div>
             <div className="space-y-2">
@@ -253,12 +269,28 @@ export function PropertiesPanel() {
               <Input
                 id="fontSize"
                 type="number"
-                value={selectedElement.fontSize || 24}
-                onChange={(e) =>
-                  updateElement(selectedElement.id, {
-                    fontSize: Number(e.target.value),
-                  })
-                }
+                value={Number((selectedElement.fontSize || 24).toFixed(2))}
+                onChange={(e) => {
+                  const fontSize = Number(e.target.value);
+
+                  // Measure text dimensions
+                  const canvas = document.createElement("canvas");
+                  const ctx = canvas.getContext("2d");
+                  if (ctx) {
+                    ctx.font = `${fontSize}px ${selectedElement.fontFamily || "Arial"}`;
+                    const metrics = ctx.measureText(
+                      selectedElement.content || "",
+                    );
+                    const width = metrics.width;
+                    const height = fontSize * 1.2;
+
+                    updateElement(selectedElement.id, {
+                      fontSize,
+                      width,
+                      height,
+                    });
+                  }
+                }}
                 className="h-8"
               />
             </div>
@@ -375,6 +407,21 @@ export function PropertiesPanel() {
         {selectedElement.type === "image" && (
           <>
             <div className="space-y-2">
+              <Label htmlFor="borderRadius" className="text-xs">
+                Radio de borde: {selectedElement.borderRadius || 0}%
+              </Label>
+              <Slider
+                id="borderRadius"
+                min={0}
+                max={50}
+                step={1}
+                value={[selectedElement.borderRadius || 0]}
+                onValueChange={([value]) =>
+                  updateElement(selectedElement.id, { borderRadius: value })
+                }
+              />
+            </div>
+            <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="keepAspectRatio" className="text-xs">
                   Mantener relación 1:1
@@ -431,6 +478,7 @@ export function PropertiesPanel() {
             )}
           </>
         )}
+
         {selectedElement.type === "qrcode" && (
           <>
             <div className="space-y-2">

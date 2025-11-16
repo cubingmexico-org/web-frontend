@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@workspace/ui/components/button";
-import { Type, Square, Circle, ImageIcon, QrCode } from "lucide-react";
+import { Type, ImageIcon, QrCode } from "lucide-react";
 import { useCanvasStore } from "@/lib/canvas-store";
 
 export function Toolbar() {
@@ -24,31 +24,31 @@ export function Toolbar() {
     });
   };
 
-  const addRectangle = () => {
-    addElement({
-      id: `rect-${Date.now()}`,
-      type: "rectangle",
-      x: 150,
-      y: 150,
-      width: 200,
-      height: 150,
-      rotation: 0,
-      backgroundColor: "#3b82f6",
-    });
-  };
+  // const addRectangle = () => {
+  //   addElement({
+  //     id: `rect-${Date.now()}`,
+  //     type: "rectangle",
+  //     x: 150,
+  //     y: 150,
+  //     width: 200,
+  //     height: 150,
+  //     rotation: 0,
+  //     backgroundColor: "#3b82f6",
+  //   });
+  // };
 
-  const addCircle = () => {
-    addElement({
-      id: `circle-${Date.now()}`,
-      type: "circle",
-      x: 200,
-      y: 200,
-      width: 150,
-      height: 150,
-      rotation: 0,
-      backgroundColor: "#8b5cf6",
-    });
-  };
+  // const addCircle = () => {
+  //   addElement({
+  //     id: `circle-${Date.now()}`,
+  //     type: "circle",
+  //     x: 200,
+  //     y: 200,
+  //     width: 150,
+  //     height: 150,
+  //     rotation: 0,
+  //     backgroundColor: "#8b5cf6",
+  //   });
+  // };
 
   const addImage = () => {
     addElement({
@@ -95,7 +95,7 @@ export function Toolbar() {
         <span className="text-xs">Texto</span>
       </Button>
 
-      <Button
+      {/* <Button
         variant="ghost"
         size="icon"
         className="w-14 h-14 flex flex-col gap-1"
@@ -115,7 +115,7 @@ export function Toolbar() {
       >
         <Circle className="h-5 w-5" />
         <span className="text-xs">Círculo</span>
-      </Button>
+      </Button> */}
 
       <Button
         variant="ghost"

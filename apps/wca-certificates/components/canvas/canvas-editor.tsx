@@ -211,6 +211,64 @@ export function CanvasEditor() {
             // Use cached image instead of creating new one
             const cachedImg = imageCache.current.get(element.imageUrl);
             if (cachedImg && cachedImg.complete) {
+              // Apply border radius if specified
+              if (element.borderRadius && element.borderRadius > 0) {
+                ctx.save();
+                ctx.beginPath();
+
+                // For 50% border radius, draw a circle
+                if (element.borderRadius === 50) {
+                  const centerX = element.x + element.width / 2;
+                  const centerY = element.y + element.height / 2;
+                  const radius = Math.min(element.width, element.height) / 2;
+                  ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                } else {
+                  // For other values, draw rounded rectangle
+                  // Cap the radius to prevent overlapping corners
+                  const maxRadius = Math.min(element.width, element.height) / 2;
+                  const radius = Math.min(
+                    (element.borderRadius / 100) * maxRadius * 2,
+                    maxRadius,
+                  );
+
+                  ctx.moveTo(element.x + radius, element.y);
+                  ctx.lineTo(element.x + element.width - radius, element.y);
+                  ctx.quadraticCurveTo(
+                    element.x + element.width,
+                    element.y,
+                    element.x + element.width,
+                    element.y + radius,
+                  );
+                  ctx.lineTo(
+                    element.x + element.width,
+                    element.y + element.height - radius,
+                  );
+                  ctx.quadraticCurveTo(
+                    element.x + element.width,
+                    element.y + element.height,
+                    element.x + element.width - radius,
+                    element.y + element.height,
+                  );
+                  ctx.lineTo(element.x + radius, element.y + element.height);
+                  ctx.quadraticCurveTo(
+                    element.x,
+                    element.y + element.height,
+                    element.x,
+                    element.y + element.height - radius,
+                  );
+                  ctx.lineTo(element.x, element.y + radius);
+                  ctx.quadraticCurveTo(
+                    element.x,
+                    element.y,
+                    element.x + radius,
+                    element.y,
+                  );
+                }
+
+                ctx.closePath();
+                ctx.clip();
+              }
+
               ctx.drawImage(
                 cachedImg,
                 element.x,
@@ -218,6 +276,10 @@ export function CanvasEditor() {
                 element.width,
                 element.height,
               );
+
+              if (element.borderRadius && element.borderRadius > 0) {
+                ctx.restore();
+              }
             } else {
               // Show placeholder while loading
               ctx.fillStyle = "#e5e7eb";

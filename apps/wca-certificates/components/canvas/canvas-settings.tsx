@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
@@ -26,9 +26,17 @@ export function CanvasSettings() {
     setCanvasSize,
     enableBackSide,
     setEnableBackSide,
+    activeSide,
+    setActiveSide,
   } = useCanvasStore();
   const [width, setWidth] = useState(canvasWidth);
   const [height, setHeight] = useState(canvasHeight);
+
+  useEffect(() => {
+    if (!enableBackSide && activeSide === "back") {
+      setActiveSide("front");
+    }
+  }, [enableBackSide, activeSide, setActiveSide]);
 
   const handleApplySize = () => {
     setCanvasSize(width, height);

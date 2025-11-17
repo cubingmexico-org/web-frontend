@@ -5,12 +5,24 @@ import { Toolbar } from "@/components/canvas/toolbar";
 import { PropertiesPanel } from "@/components/canvas/properties-panel";
 import { CanvasSettings } from "@/components/canvas/canvas-settings";
 import { Button } from "@workspace/ui/components/button";
-import { Download, Eye, FlipHorizontal } from "lucide-react";
+import { Download, Eye, FlipHorizontal, RotateCcw, Upload } from "lucide-react";
 import { useCanvasStore } from "@/lib/canvas-store";
 import type { CanvasElement } from "@/types/canvas";
 import { useSession } from "next-auth/react";
 import QRCode from "qrcode";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+  DialogFooter,
+} from "@workspace/ui/components/dialog";
+import { useState } from "react";
 
 export function Canvas() {
   const {
@@ -22,7 +34,14 @@ export function Canvas() {
     activeSide,
     setActiveSide,
     enableBackSide,
+    setElements,
+    setCanvasSize,
+    setBackgroundImage,
+    setBackgroundImageBack,
+    setEnableBackSide,
   } = useCanvasStore();
+
+  const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
 
   const session = useSession();
 
@@ -440,6 +459,45 @@ export function Canvas() {
     URL.revokeObjectURL(url);
   };
 
+  const importFromJSON = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "application/json";
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+
+        if (data.elements) setElements(data.elements);
+        if (data.canvasWidth && data.canvasHeight)
+          setCanvasSize(data.canvasWidth, data.canvasHeight);
+        if (data.backgroundImage) setBackgroundImage(data.backgroundImage);
+        if (data.backgroundImageBack)
+          setBackgroundImageBack(data.backgroundImageBack);
+        if (data.enableBackSide !== undefined)
+          setEnableBackSide(data.enableBackSide);
+      } catch (error) {
+        console.error("Failed to import design:", error);
+        toast.error(
+          "Error al importar el diseño. Verifica que el archivo sea válido.",
+        );
+      }
+    };
+    input.click();
+  };
+
+  const resetCanvas = () => {
+    setElements({ front: [], back: [] });
+    setCanvasSize(638, 1012);
+    setBackgroundImage(undefined);
+    setBackgroundImageBack(undefined);
+    setEnableBackSide(false);
+    setIsResetDialogOpen(false);
+  };
+
   return (
     <div className="h-screen w-full flex flex-col bg-background border">
       <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4">
@@ -470,6 +528,36 @@ export function Canvas() {
         </div>
         <div className="flex items-center gap-2">
           <CanvasSettings />
+          <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm">
+                <RotateCcw />
+                Reiniciar
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>¿Estás seguro de reiniciar el lienzo?</DialogTitle>
+                <DialogDescription>
+                  Esta acción eliminará todos los elementos y restablecerá el
+                  lienzo a su estado predeterminado. Esta acción no se puede
+                  deshacer.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button type="button" variant="secondary">
+                    Cerrar
+                  </Button>
+                </DialogClose>
+                <Button onClick={resetCanvas}>Reiniciar lienzo</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          <Button variant="outline" size="sm" onClick={importFromJSON}>
+            <Upload />
+            Importar JSON
+          </Button>
           <Button variant="outline" size="sm" onClick={exportToJSON}>
             <Download />
             Exportar JSON

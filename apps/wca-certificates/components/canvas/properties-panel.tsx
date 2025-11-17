@@ -215,9 +215,25 @@ export function PropertiesPanel() {
               <Mention
                 className="w-full max-w-[400px]"
                 inputValue={selectedElement.content || ""}
-                onInputValueChange={(value) =>
-                  updateElement(selectedElement.id, { content: value })
-                }
+                onInputValueChange={(value) => {
+                  // Measure text dimensions
+                  const canvas = document.createElement("canvas");
+                  const ctx = canvas.getContext("2d");
+                  if (ctx) {
+                    ctx.font = `${selectedElement.fontSize || 24}px ${selectedElement.fontFamily || "Arial"}`;
+                    const metrics = ctx.measureText(value);
+                    const width = metrics.width;
+                    const height = (selectedElement.fontSize || 24) * 1.2;
+
+                    updateElement(selectedElement.id, {
+                      content: value,
+                      width,
+                      height,
+                    });
+                  } else {
+                    updateElement(selectedElement.id, { content: value });
+                  }
+                }}
               >
                 <MentionInput
                   placeholder="Escribe @ para mencionar un dato dinámico..."

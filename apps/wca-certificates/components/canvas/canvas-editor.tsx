@@ -185,7 +185,7 @@ export function CanvasEditor() {
           const fontSize = element.fontSize || 24;
           const fontFamily = element.fontFamily || "sans-serif";
           const fontWeight = element.fontWeight || "normal";
-          const content = element.content || "Text";
+          const content = element.content || "";
 
           ctx.fillStyle = element.color || "#000000";
           ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
@@ -325,7 +325,7 @@ export function CanvasEditor() {
           ctx.font = "14px sans-serif";
           ctx.textAlign = "center";
           ctx.fillText(
-            "QR Code",
+            "Código QR",
             element.x + element.width / 2,
             element.y + element.height / 2 - 10,
           );
@@ -607,7 +607,7 @@ export function CanvasEditor() {
           (resizeStart.fontSize || 24) * scaleRatio,
         );
 
-        const content = selectedElement.content || "Text";
+        const content = selectedElement.content || "";
         const dimensions = measureText(
           content,
           newFontSize,
@@ -660,7 +660,7 @@ export function CanvasEditor() {
         const fontWeight = selectedElement.fontWeight || "normal";
 
         const dimensions = measureText(
-          editingText || "Text",
+          editingText || "",
           fontSize,
           fontFamily,
           fontWeight,

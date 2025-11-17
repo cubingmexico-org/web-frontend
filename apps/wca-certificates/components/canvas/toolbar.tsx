@@ -89,7 +89,7 @@ export function Toolbar() {
         size="icon"
         className="w-14 h-14 flex flex-col gap-1"
         onClick={addText}
-        title="Add Text"
+        title="Añadir Texto"
       >
         <Type className="h-5 w-5" />
         <span className="text-xs">Texto</span>
@@ -122,7 +122,7 @@ export function Toolbar() {
         size="icon"
         className="w-14 h-14 flex flex-col gap-1"
         onClick={addImage}
-        title="Add Image"
+        title="Añadir Imagen"
       >
         <ImageIcon className="h-5 w-5" />
         <span className="text-xs">Imagen</span>
@@ -133,7 +133,7 @@ export function Toolbar() {
         size="icon"
         className="w-14 h-14 flex flex-col gap-1"
         onClick={addQRCode}
-        title="Add QR Code"
+        title="Añadir Código QR"
       >
         <QrCode className="h-5 w-5" />
         <span className="text-xs">QR</span>

@@ -12,6 +12,10 @@ interface CanvasStore extends CanvasState {
   setCanvasSize: (width: number, height: number) => void;
   setBackgroundImage: (imageUrl: string | undefined) => void;
   setBackgroundImageBack: (imageUrl: string | undefined) => void;
+  setElements: (elements: {
+    front: CanvasElement[];
+    back: CanvasElement[];
+  }) => void;
   zoom: number;
   setZoom: (zoom: number) => void;
   setActiveSide: (side: "front" | "back") => void;
@@ -80,6 +84,8 @@ export const useCanvasStore = create<CanvasStore>((set) => ({
   setBackgroundImage: (imageUrl) => set({ backgroundImage: imageUrl }),
 
   setBackgroundImageBack: (imageUrl) => set({ backgroundImageBack: imageUrl }),
+
+  setElements: (elements) => set({ elements, selectedElementId: null }),
 
   setZoom: (zoom) => set({ zoom: Math.max(0.1, Math.min(3, zoom)) }),
 

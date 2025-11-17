@@ -8,6 +8,9 @@ import { Button } from "@workspace/ui/components/button";
 import { Download, Eye, FlipHorizontal } from "lucide-react";
 import { useCanvasStore } from "@/lib/canvas-store";
 import type { CanvasElement } from "@/types/canvas";
+import { useSession } from "next-auth/react";
+import QRCode from "qrcode";
+import { useParams } from "next/navigation";
 
 export function Canvas() {
   const {
@@ -15,23 +18,38 @@ export function Canvas() {
     canvasWidth,
     canvasHeight,
     backgroundImage,
+    backgroundImageBack,
     activeSide,
     setActiveSide,
     enableBackSide,
   } = useCanvasStore();
 
-  const previewCanvas = () => {
-    // Preview front side
-    const frontCanvas = createCanvasForSide("front");
-    // Preview back side
-    const backCanvas = createCanvasForSide("back");
+  const session = useSession();
 
-    if (frontCanvas && backCanvas) {
-      openBothCanvases(frontCanvas, backCanvas);
-    }
+  const params = useParams();
+
+  const competitionId = params.competitionId;
+
+  const currentPerson = {
+    name: session.data?.user?.name || "Leonardo Del Toro",
+    wcaId: session.data?.user?.id || null,
+    avatar: {
+      url: session.data?.user?.image || "/avatar.png",
+      thumbUrl: session.data?.user?.image || "/avatar.png",
+    },
+    roles: [] as string[],
+    registrantId: 1,
   };
 
-  const createCanvasForSide = (side: "front" | "back") => {
+  const previewCanvas = async () => {
+    const canvas = await createCanvasForSide(activeSide);
+
+    if (!canvas) return;
+
+    openCanvas(canvas);
+  };
+
+  const createCanvasForSide = async (side: "front" | "back") => {
     const canvas = document.createElement("canvas");
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
@@ -40,28 +58,97 @@ export function Canvas() {
 
     const sideElements = elements[side] || [];
 
-    if (backgroundImage) {
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.src = backgroundImage;
-      img.onload = () => {
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        drawElements(ctx, sideElements);
-      };
+    const backgroundImageUrl =
+      side === "front" ? backgroundImage : backgroundImageBack;
+
+    if (backgroundImageUrl) {
+      await new Promise<void>((resolve) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.src = backgroundImageUrl;
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve();
+        };
+        img.onerror = () => {
+          console.error("Failed to load background image");
+          resolve();
+        };
+      });
     } else {
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      drawElements(ctx, sideElements);
     }
+
+    await drawElements(ctx, sideElements);
 
     return canvas;
   };
 
-  function drawElements(
+  const measureTextAndAdjustFontSize = (
+    ctx: CanvasRenderingContext2D,
+    text: string,
+    maxWidth: number,
+    maxHeight: number,
+    baseFontSize: number,
+    fontFamily: string,
+    fontWeight: string,
+  ): { fontSize: number; lines: string[] } => {
+    let fontSize = baseFontSize;
+    ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+
+    const splitIntoLines = (text: string, maxWidth: number): string[] => {
+      const words = text.split(" ");
+      const lines: string[] = [];
+      let currentLine = words[0] || "";
+
+      for (let i = 1; i < words.length; i++) {
+        const word = words[i]!;
+        const testLine = currentLine + " " + word;
+        const metrics = ctx.measureText(testLine);
+
+        if (metrics.width > maxWidth) {
+          lines.push(currentLine);
+          currentLine = word;
+        } else {
+          currentLine = testLine;
+        }
+      }
+      lines.push(currentLine);
+      return lines;
+    };
+
+    // Try to fit text in 2 lines maximum
+    let lines = splitIntoLines(text, maxWidth);
+    const lineHeight = fontSize * 1.2;
+    let totalHeight = lines.length * lineHeight;
+
+    // Reduce font size until text fits within bounds (max 2 lines)
+    while ((totalHeight > maxHeight || lines.length > 2) && fontSize > 8) {
+      fontSize -= 0.5;
+      ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+      lines = splitIntoLines(text, maxWidth);
+      totalHeight = lines.length * fontSize * 1.2;
+    }
+
+    // If still more than 2 lines, force into 2 lines
+    if (lines.length > 2) {
+      const words = text.split(" ");
+      const midPoint = Math.ceil(words.length / 2);
+      lines = [
+        words.slice(0, midPoint).join(" "),
+        words.slice(midPoint).join(" "),
+      ];
+    }
+
+    return { fontSize, lines };
+  };
+
+  async function drawElements(
     ctx: CanvasRenderingContext2D,
     elementsArray: CanvasElement[],
   ) {
-    elementsArray.forEach((element) => {
+    for (const element of elementsArray) {
       ctx.save();
 
       const centerX = element.x + element.width / 2;
@@ -88,22 +175,59 @@ export function Canvas() {
           ctx.fill();
           break;
         case "text": {
+          const baseFontSize = element.fontSize || 24;
+          const fontFamily = element.fontFamily || "sans-serif";
+          const fontWeight = element.fontWeight || "normal";
+
+          // Replace placeholder text with person's data
+          let content = element.content || "";
+          content = content.replace(/@nombre/gi, currentPerson.name);
+          content = content.replace(/@wcaid/gi, currentPerson.wcaId || "Nuevo");
+
+          const rol = currentPerson.roles.includes("delegate")
+            ? "Delegado"
+            : currentPerson.roles.includes("organizer")
+              ? "Organizador"
+              : currentPerson.roles.find((r) => r.startsWith("staff-"))
+                ? "Staff"
+                : "Competidor";
+
+          content = content.replace(/@rol/gi, rol);
+
+          // Calculate optimal font size and split into lines
+          const { fontSize: optimalFontSize, lines } =
+            measureTextAndAdjustFontSize(
+              ctx,
+              content,
+              element.width,
+              element.height,
+              baseFontSize,
+              fontFamily,
+              fontWeight,
+            );
+
           ctx.fillStyle = element.color || "#000000";
-          ctx.font = `${element.fontWeight || "normal"} ${element.fontSize || 24}px ${element.fontFamily || "sans-serif"}`;
+          ctx.font = `${fontWeight} ${optimalFontSize}px ${fontFamily}`;
           ctx.textAlign = element.textAlign || "left";
 
-          let textX = element.x;
-          if (element.textAlign === "center") {
-            textX = element.x + element.width / 2;
-          } else if (element.textAlign === "right") {
-            textX = element.x + element.width;
-          }
+          const lineHeight = optimalFontSize * 1.2;
+          const totalTextHeight = lines.length * lineHeight;
+          const startY =
+            element.y +
+            (element.height - totalTextHeight) / 2 +
+            optimalFontSize;
 
-          ctx.fillText(
-            element.content || "Text",
-            textX,
-            element.y + (element.fontSize || 24),
-          );
+          // Draw each line
+          lines.forEach((line, index) => {
+            let textX = element.x;
+            if (element.textAlign === "center") {
+              textX = element.x + element.width / 2;
+            } else if (element.textAlign === "right") {
+              textX = element.x + element.width;
+            }
+
+            ctx.fillText(line, textX, startY + index * lineHeight);
+          });
 
           ctx.textAlign = "left";
           break;
@@ -111,46 +235,199 @@ export function Canvas() {
         case "image":
           if (element.imageUrl) {
             const img = new Image();
-            img.crossOrigin = "anonymous";
-            img.src = element.imageUrl;
-            if (img.complete) {
-              ctx.drawImage(
-                img,
-                element.x,
-                element.y,
-                element.width,
-                element.height,
-              );
+
+            const isWcaAvatar = element.imageUrl === "/avatar.png";
+            const imageUrl =
+              isWcaAvatar && currentPerson.avatar
+                ? `/api/image-proxy?url=${encodeURIComponent(currentPerson.avatar.url)}`
+                : element.imageUrl;
+
+            if (imageUrl.startsWith("http")) {
+              img.crossOrigin = "anonymous";
+            }
+
+            await new Promise<void>((resolve) => {
+              img.onload = () => {
+                // Apply border radius if specified
+                if (element.borderRadius && element.borderRadius > 0) {
+                  ctx.save();
+                  ctx.beginPath();
+
+                  // For 50% border radius, draw a circle
+                  if (element.borderRadius === 50) {
+                    const centerX = element.x + element.width / 2;
+                    const centerY = element.y + element.height / 2;
+                    const radius = Math.min(element.width, element.height) / 2;
+                    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                  } else {
+                    // For other values, draw rounded rectangle
+                    // Cap the radius to prevent overlapping corners
+                    const maxRadius =
+                      Math.min(element.width, element.height) / 2;
+                    const radius = Math.min(
+                      (element.borderRadius / 100) * maxRadius * 2,
+                      maxRadius,
+                    );
+
+                    ctx.moveTo(element.x + radius, element.y);
+                    ctx.lineTo(element.x + element.width - radius, element.y);
+                    ctx.quadraticCurveTo(
+                      element.x + element.width,
+                      element.y,
+                      element.x + element.width,
+                      element.y + radius,
+                    );
+                    ctx.lineTo(
+                      element.x + element.width,
+                      element.y + element.height - radius,
+                    );
+                    ctx.quadraticCurveTo(
+                      element.x + element.width,
+                      element.y + element.height,
+                      element.x + element.width - radius,
+                      element.y + element.height,
+                    );
+                    ctx.lineTo(element.x + radius, element.y + element.height);
+                    ctx.quadraticCurveTo(
+                      element.x,
+                      element.y + element.height,
+                      element.x,
+                      element.y + element.height - radius,
+                    );
+                    ctx.lineTo(element.x, element.y + radius);
+                    ctx.quadraticCurveTo(
+                      element.x,
+                      element.y,
+                      element.x + radius,
+                      element.y,
+                    );
+                  }
+
+                  ctx.closePath();
+                  ctx.clip();
+                }
+
+                if (element.keepAspectRatio) {
+                  // Calculate dimensions for 1:1 crop
+                  const size = Math.min(img.width, img.height);
+                  const sx = (img.width - size) / 2;
+                  const sy = (img.height - size) / 2;
+
+                  // Draw cropped image to 1:1 aspect ratio
+                  ctx.drawImage(
+                    img,
+                    sx,
+                    sy,
+                    size,
+                    size,
+                    element.x,
+                    element.y,
+                    element.width,
+                    element.height,
+                  );
+                } else {
+                  // Draw image normally, stretching to fit
+                  ctx.drawImage(
+                    img,
+                    element.x,
+                    element.y,
+                    element.width,
+                    element.height,
+                  );
+                }
+
+                if (element.borderRadius && element.borderRadius > 0) {
+                  ctx.restore();
+                }
+
+                resolve();
+              };
+              img.onerror = (error) => {
+                console.error("Failed to load image:", imageUrl, error);
+                resolve();
+              };
+              img.src = imageUrl;
+            });
+          }
+          break;
+        case "qrcode": {
+          // Replace placeholder text with person's data
+          const qrData =
+            element.qrDataSource === "wca-live"
+              ? `https://live.worldcubeassociation.org/link/competitions/${competitionId}`
+              : element.qrDataSource === "competition-groups"
+                ? `https://www.competitiongroups.com/competitions/${competitionId}/persons/${currentPerson.registrantId}`
+                : element.qrData;
+
+          if (qrData) {
+            try {
+              // Generate QR code as data URL
+              const qrDataUrl = await QRCode.toDataURL(qrData, {
+                errorCorrectionLevel: element.qrErrorCorrection || "M",
+                margin: 1,
+                width: element.width,
+                color: {
+                  dark: element.qrForeground || "#000000",
+                  light: element.qrBackground || "#ffffff",
+                },
+              });
+
+              // Draw QR code
+              const qrImg = new Image();
+              await new Promise<void>((resolve) => {
+                qrImg.onload = () => {
+                  ctx.drawImage(
+                    qrImg,
+                    element.x,
+                    element.y,
+                    element.width,
+                    element.height,
+                  );
+                  resolve();
+                };
+                qrImg.onerror = () => {
+                  console.error("Failed to load QR code");
+                  resolve();
+                };
+                qrImg.src = qrDataUrl;
+              });
+            } catch (error) {
+              console.error("Failed to generate QR code:", error);
             }
           }
           break;
+        }
       }
 
       ctx.restore();
-    });
+    }
   }
 
-  function openBothCanvases(
-    frontCanvas: HTMLCanvasElement,
-    backCanvas: HTMLCanvasElement,
-  ) {
-    frontCanvas.toBlob((frontBlob) => {
-      if (!frontBlob) return;
-      backCanvas.toBlob((backBlob) => {
-        if (!backBlob) return;
+  function openCanvas(canvas: HTMLCanvasElement) {
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const newWindow = window.open(url, "_blank");
 
-        const frontUrl = URL.createObjectURL(frontBlob);
-        const backUrl = URL.createObjectURL(backBlob);
-
-        window.open(frontUrl, "_blank");
-        window.open(backUrl, "_blank");
-      });
+      // Clean up the URL after the window loads
+      if (newWindow) {
+        newWindow.onload = () => {
+          URL.revokeObjectURL(url);
+        };
+      }
     });
   }
 
   const exportToJSON = () => {
     const data = JSON.stringify(
-      { elements, canvasWidth, canvasHeight, backgroundImage },
+      {
+        elements,
+        canvasWidth,
+        canvasHeight,
+        backgroundImage,
+        backgroundImageBack,
+        enableBackSide,
+      },
       null,
       2,
     );

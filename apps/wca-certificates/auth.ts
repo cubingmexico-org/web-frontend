@@ -43,7 +43,7 @@ export const config = {
   ],
   session: {
     strategy: "jwt",
-    maxAge: 60 * 60 * 24, // 1 day
+    maxAge: 60 * 60 * 1, // 1 hour
   },
   pages: {
     signIn: "/sign-in",
@@ -68,15 +68,22 @@ export const config = {
 
       return true;
     },
-    jwt({ token, account }) {
+    jwt({ token, account, profile }) {
       if (account) {
         token.access_token = account.access_token;
+      }
+      if (profile) {
+        const wcaProfile = profile as unknown as WCAProfile;
+        token.wca_id = wcaProfile.me.wca_id;
       }
 
       return token;
     },
     async session({ session, token }) {
       session.token = token.access_token as string;
+      if (session.user) {
+        session.user.id = token.wca_id as string;
+      }
 
       return session;
     },
@@ -94,17 +101,18 @@ export const signOut: NextAuthResult["signOut"] = result.signOut;
 declare module "next-auth" {
   interface Session {
     token?: string;
-    /**
-     * By default, TypeScript merges new interface properties and overwrites existing ones.
-     * In this case, the default session user properties will be overwritten,
-     * with the new ones defined above. To keep the default session user properties,
-     * you need to add them back into the newly declared interface.
-     */
+    user?: {
+      id?: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+    };
   }
 }
 
-// declare module "next-auth/jwt" {
-//   interface JWT {
-//     token?: string
-//   }
-// }
+declare module "next-auth/jwt" {
+  interface JWT {
+    wca_id?: string;
+    access_token?: string;
+  }
+}

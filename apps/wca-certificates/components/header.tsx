@@ -9,7 +9,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@workspace/ui/components/avatar";
-import { User } from "next-auth";
+import type { User } from "next-auth";
 import { SignOut } from "./auth-components";
 import { CubingMexico } from "@workspace/icons";
 
@@ -27,12 +27,12 @@ export function Header({ user }: { user: User }) {
         <nav className="md:ml-auto flex flex-wrap items-center text-base justify-center">
           <DropdownMenu>
             <DropdownMenuTrigger className="rounded-full">
-              <Avatar>
+              <Avatar className="size-12">
                 <AvatarImage src={user.image ?? undefined} />
                 <AvatarFallback>U</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
-            <DropdownMenuContent sideOffset={10}>
+            <DropdownMenuContent align="end" alignOffset={-20}>
               <SignOut />
             </DropdownMenuContent>
           </DropdownMenu>

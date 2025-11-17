@@ -81,7 +81,7 @@ export async function Footer() {
               <Instagram className="h-5 w-5" />
             </Link>
             <Link
-              href="https://discord.gg/cubingmexico"
+              href="https://discord.gg/N9KcpWngz7"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-primary"

@@ -203,7 +203,7 @@ export function BadgeManager({
             const fontWeight = element.fontWeight || "normal";
 
             // Replace placeholder text with person's data
-            let content = element.content || "Text";
+            let content = element.content || "";
             content = content.replace(/@nombre/gi, currentPerson.name);
             content = content.replace(
               /@wcaid/gi,

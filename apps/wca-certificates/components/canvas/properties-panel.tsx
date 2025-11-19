@@ -43,6 +43,10 @@ const mentions = [
   { id: "1", name: "nombre" },
   { id: "2", name: "wcaid" },
   { id: "3", name: "rol" },
+  { id: "4", name: "id" },
+  { id: "5", name: "país" },
+  { id: "6", name: "estado" },
+  { id: "7", name: "team" },
 ];
 
 export function PropertiesPanel() {

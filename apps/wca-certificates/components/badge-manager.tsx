@@ -40,7 +40,7 @@ import Link from "next/link";
 import useSWR from "swr";
 import { notFound } from "next/navigation";
 import { fetcher } from "@/lib/utils";
-import type { Person } from "@/types/wcif";
+import type { ExtendedPerson } from "@/types/wcif";
 import { BadgeManagerSkeleton } from "./badge-manager-skeleton";
 import { Input } from "@workspace/ui/components/input";
 import { FileUploader } from "./file-uploader";
@@ -50,17 +50,24 @@ import { Canvas } from "./canvas/canvas";
 import { useCanvasStore } from "@/lib/canvas-store";
 import JSZip from "jszip";
 import QRCode from "qrcode";
+import type { State, Team } from "@/db/queries";
+
+interface BadgeManagerProps {
+  competition: Competition;
+  persons: ExtendedPerson[];
+  states: State[];
+  teams: Team[];
+}
 
 export function BadgeManager({
   competition,
   persons,
-}: {
-  competition: Competition;
-  persons: Person[];
-}) {
+  states,
+  teams,
+}: BadgeManagerProps) {
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
 
-  const [selectedPersons, setSelectedPersons] = useState<Person[]>([]);
+  const [selectedPersons, setSelectedPersons] = useState<ExtendedPerson[]>([]);
 
   const [files, setFiles] = useState<File[]>([]);
   const [backFiles, setBackFiles] = useState<File[]>([]);
@@ -168,7 +175,7 @@ export function BadgeManager({
     // Shared function to draw all elements on a canvas
     const drawElements = async (
       ctx: CanvasRenderingContext2D,
-      currentPerson: Person,
+      currentPerson: ExtendedPerson,
       side: "front" | "back" = "front",
     ) => {
       for (const element of elements[side]) {
@@ -219,6 +226,28 @@ export function BadgeManager({
                   : "Competidor";
 
             content = content.replace(/@rol/gi, rol);
+
+            content = content.replace(
+              /@id/gi,
+              String(currentPerson.registrantId) || "Desconocido",
+            );
+
+            content = content.replace(
+              /@país/gi,
+              currentPerson.countryIso2 || "Desconocido",
+            );
+
+            const stateName = states.find(
+              (s) => s.id === currentPerson.stateId,
+            )?.name;
+
+            content = content.replace(/@estado/gi, stateName || "Desconocido");
+
+            const teamName = teams.find(
+              (t) => t.stateId === currentPerson.stateId,
+            )?.name;
+
+            content = content.replace(/@team/gi, teamName || "Desconocido");
 
             // Calculate optimal font size and split into lines
             const { fontSize: optimalFontSize, lines } =
@@ -435,7 +464,7 @@ export function BadgeManager({
 
     // Shared function to create and process canvas
     const createAndProcessCanvas = (
-      person: Person,
+      person: ExtendedPerson,
       side: "front" | "back",
       onComplete: (canvas: HTMLCanvasElement) => void,
     ) => {
@@ -556,7 +585,7 @@ export function BadgeManager({
     URL.revokeObjectURL(url);
   };
 
-  const { data, isLoading, mutate } = useSWR<Person[]>(
+  const { data, isLoading, mutate } = useSWR<ExtendedPerson[]>(
     `/api/badges?competitionId=${competition.id}`,
     fetcher,
     {
@@ -892,7 +921,7 @@ export function BadgeManager({
             </Card>
           </div>
 
-          <Canvas />
+          <Canvas states={states} teams={teams} />
         </div>
       </div>
     </div>

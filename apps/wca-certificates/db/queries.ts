@@ -70,3 +70,79 @@ export async function getCompetitionById({
     return undefined;
   }
 }
+
+export interface Team {
+  name: string;
+  stateId: string;
+  description: string | null;
+  image: string | null;
+  coverImage: string | null;
+  founded: Date | null;
+  socialLinks: {
+    email?: string | undefined;
+    whatsapp?: string | undefined;
+    facebook?: string | undefined;
+    instagram?: string | undefined;
+    twitter?: string | undefined;
+    tiktok?: string | undefined;
+  } | null;
+  isActive: boolean;
+}
+
+export async function getTeams(): Promise<Team[]> {
+  try {
+    const res = await fetch(`${process.env.API_ENDPOINT}/teams`, {
+      next: { revalidate: 3600 },
+    });
+
+    const data = await res.json();
+
+    return data.teams;
+  } catch (error) {
+    console.error("Error fetching teams:", error);
+    return [];
+  }
+}
+
+export interface State {
+  id: string;
+  name: string;
+}
+
+export async function getStates(): Promise<State[]> {
+  try {
+    const res = await fetch(`${process.env.API_ENDPOINT}/states`, {
+      next: { revalidate: false },
+    });
+
+    const data = await res.json();
+
+    return data.states;
+  } catch (error) {
+    console.error("Error fetching states:", error);
+    return [];
+  }
+}
+
+export async function getCompetitorStates(competitionId: string): Promise<
+  {
+    id: string;
+    stateId: string | null;
+  }[]
+> {
+  try {
+    const res = await fetch(
+      `${process.env.API_ENDPOINT}/competitor-states/${competitionId}`,
+      {
+        next: { revalidate: 3600 },
+      },
+    );
+
+    const data = await res.json();
+
+    return data.competitors;
+  } catch (error) {
+    console.error("Error fetching competitors:", error);
+    return [];
+  }
+}

@@ -1,5 +1,11 @@
 import { BadgeManager } from "@/components/badge-manager";
-import { getCompetitionById, getWCIFByCompetitionId } from "@/db/queries";
+import {
+  getCompetitionById,
+  getCompetitorStates,
+  getStates,
+  getTeams,
+  getWCIFByCompetitionId,
+} from "@/db/queries";
 
 type Params = Promise<{ competitionId: string }>;
 
@@ -11,7 +17,7 @@ export default async function Page({
   const { competitionId } = await params;
 
   const competition = await getCompetitionById({
-    id: competitionId!,
+    id: competitionId,
   });
 
   if (!competition) {
@@ -19,18 +25,38 @@ export default async function Page({
   }
 
   const wcif = await getWCIFByCompetitionId({
-    competitionId: competitionId!,
+    competitionId,
   });
 
   if (!wcif) {
     throw new Error("WCIF not found");
   }
 
+  const states = await getStates();
+
+  const teams = await getTeams();
+
+  const competitorStates = await getCompetitorStates(competitionId);
+
   const persons = wcif.persons.filter((person) => person.registrantId !== null);
+
+  const extendedPersons = persons.map((person) => {
+    const state = competitorStates.find((state) => state.id === person.wcaId);
+
+    return {
+      ...person,
+      stateId: state ? state.stateId : null,
+    };
+  });
 
   return (
     <main className="container mx-auto px-4 py-8">
-      <BadgeManager competition={competition} persons={persons} />
+      <BadgeManager
+        competition={competition}
+        persons={extendedPersons}
+        states={states}
+        teams={teams}
+      />
     </main>
   );
 }

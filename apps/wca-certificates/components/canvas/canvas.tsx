@@ -23,8 +23,15 @@ import {
   DialogFooter,
 } from "@workspace/ui/components/dialog";
 import { useState } from "react";
+import type { ExtendedPerson } from "@/types/wcif";
+import { State, Team } from "@/db/queries";
 
-export function Canvas() {
+interface CanvasProps {
+  states: State[];
+  teams: Team[];
+}
+
+export function Canvas({ states, teams }: CanvasProps): React.JSX.Element {
   const {
     elements,
     canvasWidth,
@@ -58,7 +65,9 @@ export function Canvas() {
     },
     roles: [] as string[],
     registrantId: 1,
-  };
+    countryIso2: "MX",
+    stateId: "NAY",
+  } as ExtendedPerson;
 
   const previewCanvas = async () => {
     const canvas = await createCanvasForSide(activeSide);
@@ -212,6 +221,28 @@ export function Canvas() {
                 : "Competidor";
 
           content = content.replace(/@rol/gi, rol);
+
+          content = content.replace(
+            /@id/gi,
+            String(currentPerson.registrantId) || "Desconocido",
+          );
+
+          content = content.replace(
+            /@país/gi,
+            currentPerson.countryIso2 || "Desconocido",
+          );
+
+          const stateName = states.find(
+            (s) => s.id === currentPerson.stateId,
+          )?.name;
+
+          content = content.replace(/@estado/gi, stateName || "Desconocido");
+
+          const teamName = teams.find(
+            (t) => t.stateId === currentPerson.stateId,
+          )?.name;
+
+          content = content.replace(/@team/gi, teamName || "Desconocido");
 
           // Calculate optimal font size and split into lines
           const { fontSize: optimalFontSize, lines } =

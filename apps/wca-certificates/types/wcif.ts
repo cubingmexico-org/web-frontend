@@ -37,13 +37,35 @@ export interface Person {
   wcaId: string | null;
   registrantId: number;
   countryIso2: string;
-  gender: string;
-  registration: { eventIds: string[] };
+  gender: "m" | "f" | "o" | null;
+  registration: Registration;
   avatar: Avatar | null;
   roles: Role[];
-  assignments: unknown[];
-  personalBests: unknown[];
+  assignments: Assignment[];
+  personalBests: PersonalBest[];
   extensions: unknown[];
+}
+
+interface Registration {
+  wcaRegistrationId: number;
+  eventIds: string[];
+  status: string; // "accepted"
+  isCompeting: boolean;
+}
+
+interface Assignment {
+  activityId: number;
+  stationNumber: number;
+  assignmentCode: "competidor" | Role;
+}
+
+interface PersonalBest {
+  eventId: EventId;
+  best: number;
+  worldRanking: number | null;
+  continentalRanking: number | null;
+  nationalRanking: number | null;
+  type: "single" | "average";
 }
 
 export interface Result {
@@ -75,17 +97,21 @@ export interface Event {
 export interface WCIF {
   id: string;
   name: string;
-  schedule: {
-    startDate: string;
-    numberOfDays: number;
-    venues: {
-      latitudeMicrodegrees: number;
-      longitudeMicrodegrees: number;
-    }[];
-  };
+  schedule: Schedule;
   competitorLimit: number;
   events: Event[];
   persons: Person[];
+}
+
+interface Schedule {
+  startDate: string;
+  numberOfDays: number;
+  venues: Venue[];
+}
+
+interface Venue {
+  latitudeMicrodegrees: number;
+  longitudeMicrodegrees: number;
 }
 
 export interface ParticipantData {
@@ -104,4 +130,8 @@ export interface PodiumData {
   place: number;
   event: EventId;
   result: number;
+}
+
+export interface ExtendedPerson extends Person {
+  stateId: string | null;
 }

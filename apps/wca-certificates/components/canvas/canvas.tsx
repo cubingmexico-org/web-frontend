@@ -227,10 +227,13 @@ export function Canvas({ states, teams }: CanvasProps): React.JSX.Element {
             String(currentPerson.registrantId) || "Desconocido",
           );
 
-          content = content.replace(
-            /@país/gi,
-            currentPerson.countryIso2 || "Desconocido",
-          );
+          const regionNames = new Intl.DisplayNames(["es"], { type: "region" });
+          const countryName =
+            regionNames.of(currentPerson.countryIso2) || "Desconocido";
+
+          content = content.replace(/@país/gi, countryName);
+
+          content = content.replace(/@país/gi, countryName);
 
           const stateName = states.find(
             (s) => s.id === currentPerson.stateId,
@@ -287,10 +290,21 @@ export function Canvas({ states, teams }: CanvasProps): React.JSX.Element {
             const img = new Image();
 
             const isWcaAvatar = element.imageUrl === "/avatar.png";
+            const isTeamLogo = element.imageUrl === "/team-logo.svg";
+            const isCountryFlag = element.imageUrl === "/country.svg";
+
+            const teamImage = teams.find(
+              (t) => t.stateId === currentPerson.stateId,
+            )?.image;
+
             const imageUrl =
               isWcaAvatar && currentPerson.avatar
                 ? `/api/image-proxy?url=${encodeURIComponent(currentPerson.avatar.url)}`
-                : element.imageUrl;
+                : isTeamLogo
+                  ? teamImage || element.imageUrl
+                  : isCountryFlag
+                    ? `https://flagcdn.com/h240/${currentPerson.countryIso2.toLowerCase()}.png`
+                    : element.imageUrl;
 
             if (imageUrl.startsWith("http")) {
               img.crossOrigin = "anonymous";

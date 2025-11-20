@@ -59,7 +59,7 @@ export function Toolbar() {
       width: 200,
       height: 200,
       rotation: 0,
-      imageUrl: "/avatar.png",
+      imageUrl: "/placeholder.svg",
       keepAspectRatio: true,
     });
   };

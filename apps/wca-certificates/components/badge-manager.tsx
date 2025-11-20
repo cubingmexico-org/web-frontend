@@ -27,6 +27,7 @@ import {
   Check,
   X,
   Download,
+  Loader2,
 } from "lucide-react";
 import { Competition } from "@/types/wca";
 import {
@@ -40,7 +41,7 @@ import Link from "next/link";
 import useSWR from "swr";
 import { notFound } from "next/navigation";
 import { fetcher } from "@/lib/utils";
-import type { ExtendedPerson } from "@/types/wcif";
+import type { ExtendedPerson, Person } from "@/types/wcif";
 import { BadgeManagerSkeleton } from "./badge-manager-skeleton";
 import { Input } from "@workspace/ui/components/input";
 import { FileUploader } from "./file-uploader";
@@ -51,10 +52,11 @@ import { useCanvasStore } from "@/lib/canvas-store";
 import JSZip from "jszip";
 import QRCode from "qrcode";
 import type { State, Team } from "@/db/queries";
+import { toast } from "sonner";
 
 interface BadgeManagerProps {
   competition: Competition;
-  persons: ExtendedPerson[];
+  persons: Person[];
   states: State[];
   teams: Team[];
 }
@@ -73,6 +75,8 @@ export function BadgeManager({
   const [backFiles, setBackFiles] = useState<File[]>([]);
 
   const [search, setSearch] = useState("");
+
+  const [isExporting, setIsExporting] = useState(false);
 
   const {
     setBackgroundImage,
@@ -112,477 +116,521 @@ export function BadgeManager({
   }, [backFiles]);
 
   const exportToPNG = async () => {
-    // Helper function to measure text and calculate optimal font size with multi-line support
-    const measureTextAndAdjustFontSize = (
-      ctx: CanvasRenderingContext2D,
-      text: string,
-      maxWidth: number,
-      maxHeight: number,
-      baseFontSize: number,
-      fontFamily: string,
-      fontWeight: string,
-    ): { fontSize: number; lines: string[] } => {
-      let fontSize = baseFontSize;
-      ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+    setIsExporting(true);
 
-      const splitIntoLines = (text: string, maxWidth: number): string[] => {
-        const words = text.split(" ");
-        const lines: string[] = [];
-        let currentLine = words[0] || "";
+    // Wrap the entire export logic in toast.promise
+    toast.promise(
+      (async () => {
+        // Helper function to measure text and calculate optimal font size with multi-line support
+        const measureTextAndAdjustFontSize = (
+          ctx: CanvasRenderingContext2D,
+          text: string,
+          maxWidth: number,
+          maxHeight: number,
+          baseFontSize: number,
+          fontFamily: string,
+          fontWeight: string,
+        ): { fontSize: number; lines: string[] } => {
+          let fontSize = baseFontSize;
+          ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
 
-        for (let i = 1; i < words.length; i++) {
-          const word = words[i]!;
-          const testLine = currentLine + " " + word;
-          const metrics = ctx.measureText(testLine);
+          const splitIntoLines = (text: string, maxWidth: number): string[] => {
+            const words = text.split(" ");
+            const lines: string[] = [];
+            let currentLine = words[0] || "";
 
-          if (metrics.width > maxWidth) {
+            for (let i = 1; i < words.length; i++) {
+              const word = words[i]!;
+              const testLine = currentLine + " " + word;
+              const metrics = ctx.measureText(testLine);
+
+              if (metrics.width > maxWidth) {
+                lines.push(currentLine);
+                currentLine = word;
+              } else {
+                currentLine = testLine;
+              }
+            }
             lines.push(currentLine);
-            currentLine = word;
+            return lines;
+          };
+
+          // Try to fit text in 2 lines maximum
+          let lines = splitIntoLines(text, maxWidth);
+          const lineHeight = fontSize * 1.2;
+          let totalHeight = lines.length * lineHeight;
+
+          // Reduce font size until text fits within bounds (max 2 lines)
+          while (
+            (totalHeight > maxHeight || lines.length > 2) &&
+            fontSize > 8
+          ) {
+            fontSize -= 0.5;
+            ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+            lines = splitIntoLines(text, maxWidth);
+            totalHeight = lines.length * fontSize * 1.2;
+          }
+
+          // If still more than 2 lines, force into 2 lines
+          if (lines.length > 2) {
+            const words = text.split(" ");
+            const midPoint = Math.ceil(words.length / 2);
+            lines = [
+              words.slice(0, midPoint).join(" "),
+              words.slice(midPoint).join(" "),
+            ];
+          }
+
+          return { fontSize, lines };
+        };
+
+        // Shared function to draw all elements on a canvas
+        const drawElements = async (
+          ctx: CanvasRenderingContext2D,
+          currentPerson: ExtendedPerson,
+          side: "front" | "back" = "front",
+        ) => {
+          for (const element of elements[side]) {
+            ctx.save();
+
+            const centerX = element.x + element.width / 2;
+            const centerY = element.y + element.height / 2;
+            ctx.translate(centerX, centerY);
+            ctx.rotate((element.rotation * Math.PI) / 180);
+            ctx.translate(-centerX, -centerY);
+
+            switch (element.type) {
+              case "rectangle":
+                ctx.fillStyle = element.backgroundColor || "#3b82f6";
+                ctx.fillRect(
+                  element.x,
+                  element.y,
+                  element.width,
+                  element.height,
+                );
+                break;
+              case "circle":
+                ctx.fillStyle = element.backgroundColor || "#8b5cf6";
+                ctx.beginPath();
+                ctx.arc(
+                  element.x + element.width / 2,
+                  element.y + element.height / 2,
+                  element.width / 2,
+                  0,
+                  2 * Math.PI,
+                );
+                ctx.fill();
+                break;
+              case "text": {
+                const baseFontSize = element.fontSize || 24;
+                const fontFamily = element.fontFamily || "sans-serif";
+                const fontWeight = element.fontWeight || "normal";
+
+                // Replace placeholder text with person's data
+                let content = element.content || "";
+                content = content.replace(/@nombre/gi, currentPerson.name);
+                content = content.replace(
+                  /@wcaid/gi,
+                  currentPerson.wcaId || "Nuevo",
+                );
+
+                const rol = currentPerson.roles.includes("delegate")
+                  ? "Delegado"
+                  : currentPerson.roles.includes("organizer")
+                    ? "Organizador"
+                    : currentPerson.roles.find((r) => r.startsWith("staff-"))
+                      ? "Staff"
+                      : "Competidor";
+
+                content = content.replace(/@rol/gi, rol);
+
+                content = content.replace(
+                  /@id/gi,
+                  String(currentPerson.registrantId) || "Desconocido",
+                );
+
+                const regionNames = new Intl.DisplayNames(["es"], {
+                  type: "region",
+                });
+                const countryName =
+                  regionNames.of(currentPerson.countryIso2) || "Desconocido";
+
+                content = content.replace(/@país/gi, countryName);
+
+                content = content.replace(/@país/gi, countryName);
+
+                const stateName = states.find(
+                  (s) => s.id === currentPerson.stateId,
+                )?.name;
+
+                content = content.replace(
+                  /@estado/gi,
+                  stateName || "Desconocido",
+                );
+
+                const teamName = teams.find(
+                  (t) => t.stateId === currentPerson.stateId,
+                )?.name;
+
+                content = content.replace(/@team/gi, teamName || "Desconocido");
+
+                // Calculate optimal font size and split into lines
+                const { fontSize: optimalFontSize, lines } =
+                  measureTextAndAdjustFontSize(
+                    ctx,
+                    content,
+                    element.width,
+                    element.height,
+                    baseFontSize,
+                    fontFamily,
+                    fontWeight,
+                  );
+
+                ctx.fillStyle = element.color || "#000000";
+                ctx.font = `${fontWeight} ${optimalFontSize}px ${fontFamily}`;
+                ctx.textAlign = element.textAlign || "left";
+
+                const lineHeight = optimalFontSize * 1.2;
+                const totalTextHeight = lines.length * lineHeight;
+                const startY =
+                  element.y +
+                  (element.height - totalTextHeight) / 2 +
+                  optimalFontSize;
+
+                // Draw each line
+                lines.forEach((line, index) => {
+                  let textX = element.x;
+                  if (element.textAlign === "center") {
+                    textX = element.x + element.width / 2;
+                  } else if (element.textAlign === "right") {
+                    textX = element.x + element.width;
+                  }
+
+                  ctx.fillText(line, textX, startY + index * lineHeight);
+                });
+
+                ctx.textAlign = "left";
+                break;
+              }
+              case "image":
+                if (element.imageUrl) {
+                  const img = new Image();
+
+                  const isWcaAvatar = element.imageUrl === "/avatar.png";
+                  const isTeamLogo = element.imageUrl === "/team-logo.svg";
+                  const isCountryFlag = element.imageUrl === "/country.svg";
+
+                  const teamImage = teams.find(
+                    (t) => t.stateId === currentPerson.stateId,
+                  )?.image;
+
+                  const imageUrl =
+                    isWcaAvatar && currentPerson.avatar
+                      ? `/api/image-proxy?url=${encodeURIComponent(currentPerson.avatar.url)}`
+                      : isTeamLogo
+                        ? teamImage || element.imageUrl
+                        : isCountryFlag
+                          ? `https://flagcdn.com/h240/${currentPerson.countryIso2.toLowerCase()}.png`
+                          : element.imageUrl;
+
+                  if (imageUrl.startsWith("http")) {
+                    img.crossOrigin = "anonymous";
+                  }
+
+                  await new Promise<void>((resolve) => {
+                    img.onload = () => {
+                      // Apply border radius if specified
+                      if (element.borderRadius && element.borderRadius > 0) {
+                        ctx.save();
+                        ctx.beginPath();
+
+                        // For 50% border radius, draw a circle
+                        if (element.borderRadius === 50) {
+                          const centerX = element.x + element.width / 2;
+                          const centerY = element.y + element.height / 2;
+                          const radius =
+                            Math.min(element.width, element.height) / 2;
+                          ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                        } else {
+                          // For other values, draw rounded rectangle
+                          // Cap the radius to prevent overlapping corners
+                          const maxRadius =
+                            Math.min(element.width, element.height) / 2;
+                          const radius = Math.min(
+                            (element.borderRadius / 100) * maxRadius * 2,
+                            maxRadius,
+                          );
+
+                          ctx.moveTo(element.x + radius, element.y);
+                          ctx.lineTo(
+                            element.x + element.width - radius,
+                            element.y,
+                          );
+                          ctx.quadraticCurveTo(
+                            element.x + element.width,
+                            element.y,
+                            element.x + element.width,
+                            element.y + radius,
+                          );
+                          ctx.lineTo(
+                            element.x + element.width,
+                            element.y + element.height - radius,
+                          );
+                          ctx.quadraticCurveTo(
+                            element.x + element.width,
+                            element.y + element.height,
+                            element.x + element.width - radius,
+                            element.y + element.height,
+                          );
+                          ctx.lineTo(
+                            element.x + radius,
+                            element.y + element.height,
+                          );
+                          ctx.quadraticCurveTo(
+                            element.x,
+                            element.y + element.height,
+                            element.x,
+                            element.y + element.height - radius,
+                          );
+                          ctx.lineTo(element.x, element.y + radius);
+                          ctx.quadraticCurveTo(
+                            element.x,
+                            element.y,
+                            element.x + radius,
+                            element.y,
+                          );
+                        }
+
+                        ctx.closePath();
+                        ctx.clip();
+                      }
+
+                      if (element.keepAspectRatio) {
+                        // Calculate dimensions for 1:1 crop
+                        const size = Math.min(img.width, img.height);
+                        const sx = (img.width - size) / 2;
+                        const sy = (img.height - size) / 2;
+
+                        // Draw cropped image to 1:1 aspect ratio
+                        ctx.drawImage(
+                          img,
+                          sx,
+                          sy,
+                          size,
+                          size,
+                          element.x,
+                          element.y,
+                          element.width,
+                          element.height,
+                        );
+                      } else {
+                        // Draw image normally, stretching to fit
+                        ctx.drawImage(
+                          img,
+                          element.x,
+                          element.y,
+                          element.width,
+                          element.height,
+                        );
+                      }
+
+                      if (element.borderRadius && element.borderRadius > 0) {
+                        ctx.restore();
+                      }
+
+                      resolve();
+                    };
+                    img.onerror = (error) => {
+                      console.error("Failed to load image:", imageUrl, error);
+                      resolve();
+                    };
+                    img.src = imageUrl;
+                  });
+                }
+                break;
+              case "qrcode": {
+                // Replace placeholder text with person's data
+                const qrData =
+                  element.qrDataSource === "wca-live"
+                    ? `https://live.worldcubeassociation.org/link/competitions/${competition.id}`
+                    : element.qrDataSource === "competition-groups"
+                      ? `https://www.competitiongroups.com/competitions/${competition.id}/persons/${currentPerson.registrantId}`
+                      : element.qrData;
+
+                if (qrData) {
+                  try {
+                    // Generate QR code as data URL
+                    const qrDataUrl = await QRCode.toDataURL(qrData, {
+                      errorCorrectionLevel: element.qrErrorCorrection || "M",
+                      margin: 1,
+                      width: element.width,
+                      color: {
+                        dark: element.qrForeground || "#000000",
+                        light: element.qrBackground || "#ffffff",
+                      },
+                    });
+
+                    // Draw QR code
+                    const qrImg = new Image();
+                    await new Promise<void>((resolve) => {
+                      qrImg.onload = () => {
+                        ctx.drawImage(
+                          qrImg,
+                          element.x,
+                          element.y,
+                          element.width,
+                          element.height,
+                        );
+                        resolve();
+                      };
+                      qrImg.onerror = () => {
+                        console.error("Failed to load QR code");
+                        resolve();
+                      };
+                      qrImg.src = qrDataUrl;
+                    });
+                  } catch (error) {
+                    console.error("Failed to generate QR code:", error);
+                  }
+                }
+                break;
+              }
+            }
+
+            ctx.restore();
+          }
+        };
+
+        // Shared function to create and process canvas
+        const createAndProcessCanvas = (
+          person: ExtendedPerson,
+          side: "front" | "back",
+          onComplete: (canvas: HTMLCanvasElement) => void,
+        ) => {
+          const canvas = document.createElement("canvas");
+          canvas.width = canvasWidth;
+          canvas.height = canvasHeight;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) return;
+
+          const processCanvas = async () => {
+            await drawElements(ctx, person, side);
+            onComplete(canvas);
+          };
+
+          if (backgroundImage && side === "front") {
+            const img = new Image();
+            img.crossOrigin = "anonymous";
+            img.src = backgroundImage;
+            img.onload = () => {
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              void processCanvas();
+            };
+          } else if (backgroundImageBack && side === "back") {
+            const img = new Image();
+            img.crossOrigin = "anonymous";
+            img.src = backgroundImageBack;
+            img.onload = () => {
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              void processCanvas();
+            };
           } else {
-            currentLine = testLine;
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            void processCanvas();
           }
-        }
-        lines.push(currentLine);
-        return lines;
-      };
-
-      // Try to fit text in 2 lines maximum
-      let lines = splitIntoLines(text, maxWidth);
-      const lineHeight = fontSize * 1.2;
-      let totalHeight = lines.length * lineHeight;
-
-      // Reduce font size until text fits within bounds (max 2 lines)
-      while ((totalHeight > maxHeight || lines.length > 2) && fontSize > 8) {
-        fontSize -= 0.5;
-        ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
-        lines = splitIntoLines(text, maxWidth);
-        totalHeight = lines.length * fontSize * 1.2;
-      }
-
-      // If still more than 2 lines, force into 2 lines
-      if (lines.length > 2) {
-        const words = text.split(" ");
-        const midPoint = Math.ceil(words.length / 2);
-        lines = [
-          words.slice(0, midPoint).join(" "),
-          words.slice(midPoint).join(" "),
-        ];
-      }
-
-      return { fontSize, lines };
-    };
-
-    // Shared function to draw all elements on a canvas
-    const drawElements = async (
-      ctx: CanvasRenderingContext2D,
-      currentPerson: ExtendedPerson,
-      side: "front" | "back" = "front",
-    ) => {
-      for (const element of elements[side]) {
-        ctx.save();
-
-        const centerX = element.x + element.width / 2;
-        const centerY = element.y + element.height / 2;
-        ctx.translate(centerX, centerY);
-        ctx.rotate((element.rotation * Math.PI) / 180);
-        ctx.translate(-centerX, -centerY);
-
-        switch (element.type) {
-          case "rectangle":
-            ctx.fillStyle = element.backgroundColor || "#3b82f6";
-            ctx.fillRect(element.x, element.y, element.width, element.height);
-            break;
-          case "circle":
-            ctx.fillStyle = element.backgroundColor || "#8b5cf6";
-            ctx.beginPath();
-            ctx.arc(
-              element.x + element.width / 2,
-              element.y + element.height / 2,
-              element.width / 2,
-              0,
-              2 * Math.PI,
-            );
-            ctx.fill();
-            break;
-          case "text": {
-            const baseFontSize = element.fontSize || 24;
-            const fontFamily = element.fontFamily || "sans-serif";
-            const fontWeight = element.fontWeight || "normal";
-
-            // Replace placeholder text with person's data
-            let content = element.content || "";
-            content = content.replace(/@nombre/gi, currentPerson.name);
-            content = content.replace(
-              /@wcaid/gi,
-              currentPerson.wcaId || "Nuevo",
-            );
-
-            const rol = currentPerson.roles.includes("delegate")
-              ? "Delegado"
-              : currentPerson.roles.includes("organizer")
-                ? "Organizador"
-                : currentPerson.roles.find((r) => r.startsWith("staff-"))
-                  ? "Staff"
-                  : "Competidor";
-
-            content = content.replace(/@rol/gi, rol);
-
-            content = content.replace(
-              /@id/gi,
-              String(currentPerson.registrantId) || "Desconocido",
-            );
-
-            content = content.replace(
-              /@país/gi,
-              currentPerson.countryIso2 || "Desconocido",
-            );
-
-            const stateName = states.find(
-              (s) => s.id === currentPerson.stateId,
-            )?.name;
-
-            content = content.replace(/@estado/gi, stateName || "Desconocido");
-
-            const teamName = teams.find(
-              (t) => t.stateId === currentPerson.stateId,
-            )?.name;
-
-            content = content.replace(/@team/gi, teamName || "Desconocido");
-
-            // Calculate optimal font size and split into lines
-            const { fontSize: optimalFontSize, lines } =
-              measureTextAndAdjustFontSize(
-                ctx,
-                content,
-                element.width,
-                element.height,
-                baseFontSize,
-                fontFamily,
-                fontWeight,
-              );
-
-            ctx.fillStyle = element.color || "#000000";
-            ctx.font = `${fontWeight} ${optimalFontSize}px ${fontFamily}`;
-            ctx.textAlign = element.textAlign || "left";
-
-            const lineHeight = optimalFontSize * 1.2;
-            const totalTextHeight = lines.length * lineHeight;
-            const startY =
-              element.y +
-              (element.height - totalTextHeight) / 2 +
-              optimalFontSize;
-
-            // Draw each line
-            lines.forEach((line, index) => {
-              let textX = element.x;
-              if (element.textAlign === "center") {
-                textX = element.x + element.width / 2;
-              } else if (element.textAlign === "right") {
-                textX = element.x + element.width;
-              }
-
-              ctx.fillText(line, textX, startY + index * lineHeight);
-            });
-
-            ctx.textAlign = "left";
-            break;
-          }
-          case "image":
-            if (element.imageUrl) {
-              const img = new Image();
-
-              const isWcaAvatar = element.imageUrl === "/avatar.png";
-              const imageUrl =
-                isWcaAvatar && currentPerson.avatar
-                  ? `/api/image-proxy?url=${encodeURIComponent(currentPerson.avatar.url)}`
-                  : element.imageUrl;
-
-              if (imageUrl.startsWith("http")) {
-                img.crossOrigin = "anonymous";
-              }
-
-              await new Promise<void>((resolve) => {
-                img.onload = () => {
-                  // Apply border radius if specified
-                  if (element.borderRadius && element.borderRadius > 0) {
-                    ctx.save();
-                    ctx.beginPath();
-
-                    // For 50% border radius, draw a circle
-                    if (element.borderRadius === 50) {
-                      const centerX = element.x + element.width / 2;
-                      const centerY = element.y + element.height / 2;
-                      const radius =
-                        Math.min(element.width, element.height) / 2;
-                      ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-                    } else {
-                      // For other values, draw rounded rectangle
-                      // Cap the radius to prevent overlapping corners
-                      const maxRadius =
-                        Math.min(element.width, element.height) / 2;
-                      const radius = Math.min(
-                        (element.borderRadius / 100) * maxRadius * 2,
-                        maxRadius,
-                      );
-
-                      ctx.moveTo(element.x + radius, element.y);
-                      ctx.lineTo(element.x + element.width - radius, element.y);
-                      ctx.quadraticCurveTo(
-                        element.x + element.width,
-                        element.y,
-                        element.x + element.width,
-                        element.y + radius,
-                      );
-                      ctx.lineTo(
-                        element.x + element.width,
-                        element.y + element.height - radius,
-                      );
-                      ctx.quadraticCurveTo(
-                        element.x + element.width,
-                        element.y + element.height,
-                        element.x + element.width - radius,
-                        element.y + element.height,
-                      );
-                      ctx.lineTo(
-                        element.x + radius,
-                        element.y + element.height,
-                      );
-                      ctx.quadraticCurveTo(
-                        element.x,
-                        element.y + element.height,
-                        element.x,
-                        element.y + element.height - radius,
-                      );
-                      ctx.lineTo(element.x, element.y + radius);
-                      ctx.quadraticCurveTo(
-                        element.x,
-                        element.y,
-                        element.x + radius,
-                        element.y,
-                      );
-                    }
-
-                    ctx.closePath();
-                    ctx.clip();
-                  }
-
-                  if (element.keepAspectRatio) {
-                    // Calculate dimensions for 1:1 crop
-                    const size = Math.min(img.width, img.height);
-                    const sx = (img.width - size) / 2;
-                    const sy = (img.height - size) / 2;
-
-                    // Draw cropped image to 1:1 aspect ratio
-                    ctx.drawImage(
-                      img,
-                      sx,
-                      sy,
-                      size,
-                      size,
-                      element.x,
-                      element.y,
-                      element.width,
-                      element.height,
-                    );
-                  } else {
-                    // Draw image normally, stretching to fit
-                    ctx.drawImage(
-                      img,
-                      element.x,
-                      element.y,
-                      element.width,
-                      element.height,
-                    );
-                  }
-
-                  if (element.borderRadius && element.borderRadius > 0) {
-                    ctx.restore();
-                  }
-
-                  resolve();
-                };
-                img.onerror = (error) => {
-                  console.error("Failed to load image:", imageUrl, error);
-                  resolve();
-                };
-                img.src = imageUrl;
-              });
-            }
-            break;
-          case "qrcode": {
-            // Replace placeholder text with person's data
-            const qrData =
-              element.qrDataSource === "wca-live"
-                ? `https://live.worldcubeassociation.org/link/competitions/${competition.id}`
-                : element.qrDataSource === "competition-groups"
-                  ? `https://www.competitiongroups.com/competitions/${competition.id}/persons/${currentPerson.registrantId}`
-                  : element.qrData;
-
-            if (qrData) {
-              try {
-                // Generate QR code as data URL
-                const qrDataUrl = await QRCode.toDataURL(qrData, {
-                  errorCorrectionLevel: element.qrErrorCorrection || "M",
-                  margin: 1,
-                  width: element.width,
-                  color: {
-                    dark: element.qrForeground || "#000000",
-                    light: element.qrBackground || "#ffffff",
-                  },
-                });
-
-                // Draw QR code
-                const qrImg = new Image();
-                await new Promise<void>((resolve) => {
-                  qrImg.onload = () => {
-                    ctx.drawImage(
-                      qrImg,
-                      element.x,
-                      element.y,
-                      element.width,
-                      element.height,
-                    );
-                    resolve();
-                  };
-                  qrImg.onerror = () => {
-                    console.error("Failed to load QR code");
-                    resolve();
-                  };
-                  qrImg.src = qrDataUrl;
-                });
-              } catch (error) {
-                console.error("Failed to generate QR code:", error);
-              }
-            }
-            break;
-          }
-        }
-
-        ctx.restore();
-      }
-    };
-
-    // Shared function to create and process canvas
-    const createAndProcessCanvas = (
-      person: ExtendedPerson,
-      side: "front" | "back",
-      onComplete: (canvas: HTMLCanvasElement) => void,
-    ) => {
-      const canvas = document.createElement("canvas");
-      canvas.width = canvasWidth;
-      canvas.height = canvasHeight;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      const processCanvas = async () => {
-        await drawElements(ctx, person, side);
-        onComplete(canvas);
-      };
-
-      if (backgroundImage && side === "front") {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.src = backgroundImage;
-        img.onload = () => {
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          void processCanvas();
         };
-      } else if (backgroundImageBack && side === "back") {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.src = backgroundImageBack;
-        img.onload = () => {
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          void processCanvas();
-        };
-      } else {
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        void processCanvas();
-      }
-    };
 
-    // Single badge export
-    if (selectedPersons.length === 1) {
-      const person = selectedPersons[0]!;
+        // Single badge export
+        if (selectedPersons.length === 1) {
+          const person = selectedPersons[0]!;
 
-      // Export front side
-      createAndProcessCanvas(person, "front", (canvas) => {
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `${person.name.replace(/\s/g, "_")}_badge_front.png`;
-            a.click();
-            URL.revokeObjectURL(url);
-          }
-        });
-      });
-
-      // Export back side if enabled
-      if (enableBackSide) {
-        createAndProcessCanvas(person, "back", (canvas) => {
-          canvas.toBlob((blob) => {
-            if (blob) {
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement("a");
-              a.href = url;
-              a.download = `${person.name.replace(/\s/g, "_")}_badge_back.png`;
-              a.click();
-              URL.revokeObjectURL(url);
-            }
-          });
-        });
-      }
-      return;
-    }
-
-    // Multiple badges export
-    const zip = new JSZip();
-
-    const promises = selectedPersons.flatMap((person) => {
-      const frontPromise = new Promise<void>((resolve) => {
-        createAndProcessCanvas(person, "front", (canvas) => {
-          canvas.toBlob((blob) => {
-            if (blob) {
-              const filename = `${person.name.replace(/\s/g, "_")}_badge_front.png`;
-              zip.file(filename, blob);
-            }
-            resolve();
-          });
-        });
-      });
-
-      if (enableBackSide) {
-        const backPromise = new Promise<void>((resolve) => {
-          createAndProcessCanvas(person, "back", (canvas) => {
+          // Export front side
+          createAndProcessCanvas(person, "front", (canvas) => {
             canvas.toBlob((blob) => {
               if (blob) {
-                const filename = `${person.name.replace(/\s/g, "_")}_badge_back.png`;
-                zip.file(filename, blob);
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `${person.name.replace(/\s/g, "_")}_badge_front.png`;
+                a.click();
+                URL.revokeObjectURL(url);
               }
-              resolve();
             });
           });
+
+          // Export back side if enabled
+          if (enableBackSide) {
+            createAndProcessCanvas(person, "back", (canvas) => {
+              canvas.toBlob((blob) => {
+                if (blob) {
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = `${person.name.replace(/\s/g, "_")}_badge_back.png`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }
+              });
+            });
+          }
+          return;
+        }
+
+        // Multiple badges export
+        const zip = new JSZip();
+
+        const promises = selectedPersons.flatMap((person) => {
+          const frontPromise = new Promise<void>((resolve) => {
+            createAndProcessCanvas(person, "front", (canvas) => {
+              canvas.toBlob((blob) => {
+                if (blob) {
+                  const filename = `${person.name.replace(/\s/g, "_")}_badge_front.png`;
+                  zip.file(filename, blob);
+                }
+                resolve();
+              });
+            });
+          });
+
+          if (enableBackSide) {
+            const backPromise = new Promise<void>((resolve) => {
+              createAndProcessCanvas(person, "back", (canvas) => {
+                canvas.toBlob((blob) => {
+                  if (blob) {
+                    const filename = `${person.name.replace(/\s/g, "_")}_badge_back.png`;
+                    zip.file(filename, blob);
+                  }
+                  resolve();
+                });
+              });
+            });
+            return [frontPromise, backPromise];
+          }
+
+          return [frontPromise];
         });
-        return [frontPromise, backPromise];
-      }
 
-      return [frontPromise];
-    });
+        // Wait for all badges to be processed
+        await Promise.all(promises);
 
-    // Wait for all badges to be processed
-    await Promise.all(promises);
-
-    // Generate and download the ZIP file
-    const content = await zip.generateAsync({ type: "blob" });
-    const url = URL.createObjectURL(content);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${competition.name.replace(/\s/g, "_")}_badges.zip`;
-    a.click();
-    URL.revokeObjectURL(url);
+        // Generate and download the ZIP file
+        const content = await zip.generateAsync({ type: "blob" });
+        const url = URL.createObjectURL(content);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${competition.name.replace(/\s/g, "_")}_badges.zip`;
+        a.click();
+        URL.revokeObjectURL(url);
+      })().finally(() => {
+        setIsExporting(false);
+      }),
+      {
+        loading: `Generando ${selectedPersons.length === 1 ? "gafete" : `${selectedPersons.length} gafetes`}...`,
+        success: `${selectedPersons.length === 1 ? "Gafete generado" : `${selectedPersons.length} gafetes generados`} exitosamente`,
+        error: "Error al generar los gafetes",
+      },
+    );
   };
 
   const { data, isLoading, mutate } = useSWR<ExtendedPerson[]>(
@@ -887,11 +935,20 @@ export function BadgeManager({
                 </div>
                 <div className="flex justify-end gap-2 w-full">
                   <Button
-                    disabled={selectedPersons.length === 0}
+                    disabled={selectedPersons.length === 0 || isExporting}
                     onClick={exportToPNG}
                   >
-                    <Download />
-                    Descargar ({selectedPersons.length})
+                    {isExporting ? (
+                      <>
+                        <Loader2 className="animate-spin" />
+                        Exportando...
+                      </>
+                    ) : (
+                      <>
+                        <Download />
+                        Exportar
+                      </>
+                    )}
                   </Button>
                 </div>
               </CardFooter>

@@ -1,7 +1,6 @@
 import { BadgeManager } from "@/components/badge-manager";
 import {
   getCompetitionById,
-  getCompetitorStates,
   getStates,
   getTeams,
   getWCIFByCompetitionId,
@@ -36,24 +35,13 @@ export default async function Page({
 
   const teams = await getTeams();
 
-  const competitorStates = await getCompetitorStates(competitionId);
-
   const persons = wcif.persons.filter((person) => person.registrantId !== null);
-
-  const extendedPersons = persons.map((person) => {
-    const state = competitorStates.find((state) => state.id === person.wcaId);
-
-    return {
-      ...person,
-      stateId: state ? state.stateId : null,
-    };
-  });
 
   return (
     <main className="container mx-auto px-4 py-8">
       <BadgeManager
         competition={competition}
-        persons={extendedPersons}
+        persons={persons}
         states={states}
         teams={teams}
       />

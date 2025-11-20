@@ -18,6 +18,7 @@ export interface CanvasElement {
   imageUrl?: string;
   borderRadius?: number;
   keepAspectRatio?: boolean;
+  isFlag?: boolean;
   qrData?: string;
   qrForeground?: string;
   qrBackground?: string;

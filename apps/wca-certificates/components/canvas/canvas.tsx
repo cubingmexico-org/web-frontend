@@ -23,8 +23,15 @@ import {
   DialogFooter,
 } from "@workspace/ui/components/dialog";
 import { useState } from "react";
+import type { ExtendedPerson } from "@/types/wcif";
+import { State, Team } from "@/db/queries";
 
-export function Canvas() {
+interface CanvasProps {
+  states: State[];
+  teams: Team[];
+}
+
+export function Canvas({ states, teams }: CanvasProps): React.JSX.Element {
   const {
     elements,
     canvasWidth,
@@ -58,7 +65,9 @@ export function Canvas() {
     },
     roles: [] as string[],
     registrantId: 1,
-  };
+    countryIso2: "MX",
+    stateId: "NAY",
+  } as ExtendedPerson;
 
   const previewCanvas = async () => {
     const canvas = await createCanvasForSide(activeSide);
@@ -213,6 +222,31 @@ export function Canvas() {
 
           content = content.replace(/@rol/gi, rol);
 
+          content = content.replace(
+            /@id/gi,
+            String(currentPerson.registrantId) || "Desconocido",
+          );
+
+          const regionNames = new Intl.DisplayNames(["es"], { type: "region" });
+          const countryName =
+            regionNames.of(currentPerson.countryIso2) || "Desconocido";
+
+          content = content.replace(/@país/gi, countryName);
+
+          content = content.replace(/@país/gi, countryName);
+
+          const stateName = states.find(
+            (s) => s.id === currentPerson.stateId,
+          )?.name;
+
+          content = content.replace(/@estado/gi, stateName || "Desconocido");
+
+          const teamName = teams.find(
+            (t) => t.stateId === currentPerson.stateId,
+          )?.name;
+
+          content = content.replace(/@team/gi, teamName || "Desconocido");
+
           // Calculate optimal font size and split into lines
           const { fontSize: optimalFontSize, lines } =
             measureTextAndAdjustFontSize(
@@ -256,10 +290,21 @@ export function Canvas() {
             const img = new Image();
 
             const isWcaAvatar = element.imageUrl === "/avatar.png";
+            const isTeamLogo = element.imageUrl === "/team-logo.svg";
+            const isCountryFlag = element.imageUrl === "/country.svg";
+
+            const teamImage = teams.find(
+              (t) => t.stateId === currentPerson.stateId,
+            )?.image;
+
             const imageUrl =
               isWcaAvatar && currentPerson.avatar
                 ? `/api/image-proxy?url=${encodeURIComponent(currentPerson.avatar.url)}`
-                : element.imageUrl;
+                : isTeamLogo
+                  ? teamImage || element.imageUrl
+                  : isCountryFlag
+                    ? `https://flagcdn.com/h240/${currentPerson.countryIso2.toLowerCase()}.png`
+                    : element.imageUrl;
 
             if (imageUrl.startsWith("http")) {
               img.crossOrigin = "anonymous";

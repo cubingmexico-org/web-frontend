@@ -43,6 +43,10 @@ const mentions = [
   { id: "1", name: "nombre" },
   { id: "2", name: "wcaid" },
   { id: "3", name: "rol" },
+  { id: "4", name: "id" },
+  { id: "5", name: "país" },
+  { id: "6", name: "estado" },
+  { id: "7", name: "team" },
 ];
 
 export function PropertiesPanel() {
@@ -448,6 +452,9 @@ export function PropertiesPanel() {
                   onCheckedChange={(checked) =>
                     updateElement(selectedElement.id, {
                       keepAspectRatio: checked,
+                      isFlag: selectedElement.isFlag
+                        ? false
+                        : selectedElement.isFlag,
                       ...(checked && { height: selectedElement.width }),
                     })
                   }
@@ -455,33 +462,100 @@ export function PropertiesPanel() {
               </div>
             </div>
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="useCompetitorAvatar" className="text-xs">
-                  Usar avatar del competidor
-                </Label>
-                <Switch
-                  id="useCompetitorAvatar"
-                  checked={selectedElement.imageUrl === "/avatar.png"}
-                  onCheckedChange={(checked) =>
+              <Label className="text-xs">Fuente de imagen</Label>
+              <RadioGroup
+                value={
+                  selectedElement.imageUrl === "/avatar.png"
+                    ? "avatar"
+                    : selectedElement.imageUrl === "/team-logo.svg"
+                      ? "team-logo"
+                      : selectedElement.imageUrl === "/country.svg"
+                        ? "country"
+                        : // : selectedElement.imageUrl === "/state.png"
+                          // ? "state"
+                          "custom"
+                }
+                onValueChange={(value) => {
+                  const urlMap = {
+                    avatar: "/avatar.png",
+                    "team-logo": "/team-logo.svg",
+                    country: "/country.svg",
+                    // state: "/state.png",
+                    custom: "/placeholder.svg",
+                  };
+                  updateElement(selectedElement.id, {
+                    imageUrl:
+                      urlMap[value as keyof typeof urlMap] ||
+                      selectedElement.imageUrl,
+                  });
+
+                  if (value === "country") {
                     updateElement(selectedElement.id, {
-                      imageUrl: checked ? "/avatar.png" : "",
-                    })
+                      isFlag: true,
+                      keepAspectRatio: false,
+                      height: selectedElement.width * (4 / 7),
+                    });
                   }
-                />
-              </div>
+                }}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="avatar" id="avatar" />
+                  <Label
+                    htmlFor="avatar"
+                    className="text-xs font-normal cursor-pointer"
+                  >
+                    Avatar del competidor
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="team-logo" id="team-logo" />
+                  <Label
+                    htmlFor="team-logo"
+                    className="text-xs font-normal cursor-pointer"
+                  >
+                    Logo del Team
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="country" id="country" />
+                  <Label
+                    htmlFor="country"
+                    className="text-xs font-normal cursor-pointer"
+                  >
+                    Bandera del país
+                  </Label>
+                </div>
+                {/* <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="state" id="state" />
+                  <Label
+                    htmlFor="state"
+                    className="text-xs font-normal cursor-pointer"
+                  >
+                    Escudo del estado
+                  </Label>
+                </div> */}
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="custom" id="custom-image" />
+                  <Label
+                    htmlFor="custom-image"
+                    className="text-xs font-normal cursor-pointer"
+                  >
+                    Personalizado
+                  </Label>
+                </div>
+              </RadioGroup>
             </div>
-            {selectedElement.imageUrl === "/avatar.png" ? null : (
+            {selectedElement.imageUrl !== "/avatar.png" &&
+            selectedElement.imageUrl !== "/team-logo.svg" &&
+            selectedElement.imageUrl !== "/country.svg" ? (
+              // selectedElement.imageUrl !== "/state.png"
               <div className="space-y-2">
                 <Label htmlFor="imageUrl" className="text-xs">
                   URL de la imagen
                 </Label>
                 <Input
                   id="imageUrl"
-                  value={
-                    selectedElement.imageUrl === "/avatar.png"
-                      ? ""
-                      : selectedElement.imageUrl || ""
-                  }
+                  value={selectedElement.imageUrl || ""}
                   onChange={(e) =>
                     updateElement(selectedElement.id, {
                       imageUrl: e.target.value,
@@ -491,7 +565,7 @@ export function PropertiesPanel() {
                   placeholder="Ingrese la URL de la imagen"
                 />
               </div>
-            )}
+            ) : null}
           </>
         )}
 

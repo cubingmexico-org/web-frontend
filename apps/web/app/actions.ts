@@ -174,6 +174,7 @@ export async function addMemberFormAction(
       achievements: null,
     });
 
+    revalidateTag("persons-without-state");
     revalidateTag("members");
     revalidateTag("members-gender-count");
 

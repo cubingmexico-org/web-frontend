@@ -295,7 +295,7 @@ export function CanvasEditor({
               ctx.font = "16px sans-serif";
               ctx.textAlign = "center";
               ctx.fillText(
-                "Loading...",
+                "Cargando...",
                 element.x + element.width / 2,
                 element.y + element.height / 2,
               );

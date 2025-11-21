@@ -64,10 +64,12 @@ export function AddMemberForm({
     <div>
       {state.success && (
         <div className="container mx-auto py-3">
-          <Alert className="bg-green-50 border-green-500">
-            <Check className="h-4 w-4 text-green-600" />
-            <AlertTitle className="text-green-800">Éxito</AlertTitle>
-            <AlertDescription className="text-green-700">
+          <Alert className="bg-green-50 border-green-500 dark:bg-green-950 dark:border-green-700">
+            <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+            <AlertTitle className="text-green-800 dark:text-green-300">
+              Éxito
+            </AlertTitle>
+            <AlertDescription className="text-green-700 dark:text-green-400">
               Miembro añadido exitosamente.
             </AlertDescription>
           </Alert>
@@ -76,7 +78,7 @@ export function AddMemberForm({
       <Card className="md:col-span-2">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle>Miembros del Team</CardTitle>
-          <Dialog open={open} onOpenChange={setOpen}>
+          <Dialog open={open} onOpenChange={setOpen} modal={false}>
             <DialogTrigger asChild>
               <Button size="sm" type="button">
                 <UserPlus />

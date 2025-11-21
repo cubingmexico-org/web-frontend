@@ -290,7 +290,7 @@ export default async function Page(props: {
                 <Link
                   className={cn(
                     buttonVariants({
-                      variant: "outline",
+                      variant: "default",
                       size: "default",
                     }),
                   )}

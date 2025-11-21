@@ -1,42 +1,10 @@
-import { db } from "@/db";
-import { competition, result } from "@/db/schema";
+import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Discord, Facebook, GitHub, Instagram } from "@workspace/icons";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@workspace/ui/components/tooltip";
-import { desc, eq, isNull, lt, and, notInArray } from "drizzle-orm";
-import { Clock, Trophy } from "lucide-react";
 import Link from "next/link";
+import { Clock, Trophy } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 
-export async function Footer() {
-  const lastCompetitionWithResults = await db
-    .select({
-      name: competition.name,
-    })
-    .from(competition)
-    .innerJoin(result, eq(competition.id, result.competitionId))
-    .where(eq(competition.countryId, "Mexico"))
-    .orderBy(desc(competition.endDate))
-    .limit(1);
-
-  const competitionsWithNoResults = await db
-    .select({
-      name: competition.name,
-    })
-    .from(competition)
-    .leftJoin(result, eq(competition.id, result.competitionId))
-    .where(
-      and(
-        eq(competition.countryId, "Mexico"),
-        lt(competition.endDate, new Date()),
-        isNull(result.competitionId),
-        notInArray(competition.id, ["PerryOpen2013", "ChapingoOpen2020"]),
-      ),
-    );
-
+export function FooterSkeleton() {
   return (
     <footer className="text-muted-foreground body-font">
       <div className="container px-5 py-8 mx-auto">
@@ -84,28 +52,14 @@ export async function Footer() {
           <p className="inline-flex justify-center sm:justify-start flex-col sm:flex-row sm:items-center gap-2 text-sm">
             <span className="text-muted-foreground flex items-center">
               <Trophy className="h-4 w-4 mr-1" />
-              Último: {lastCompetitionWithResults[0]?.name}
+              Último: <Skeleton className="h-4 w-32 ml-1" />
             </span>
-            {competitionsWithNoResults.length > 0 && (
-              <>
-                <span className="hidden sm:inline text-gray-300 text-sm">
-                  •
-                </span>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <span className="text-muted-foreground flex items-center">
-                      <Clock className="h-4 w-4 mr-1" />
-                      Resultados pendientes ({competitionsWithNoResults.length})
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {competitionsWithNoResults.map((competition) => (
-                      <p key={competition.name}>{competition.name}</p>
-                    ))}
-                  </TooltipContent>
-                </Tooltip>
-              </>
-            )}
+            <span className="hidden sm:inline text-gray-300 text-sm">•</span>
+            <span className="text-muted-foreground flex items-center">
+              <Clock className="h-4 w-4 mr-1" />
+              Resultados pendientes (
+              <Skeleton className="h-4 w-3 inline-block" />)
+            </span>
           </p>
         </div>
         <div className="mt-4 text-center text-xs text-muted-foreground">

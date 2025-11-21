@@ -55,7 +55,7 @@ export default function CustomUnauthorized(): React.JSX.Element {
               una cuenta autorizada.
             </p>
 
-            <div className="bg-amber-50 border border-amber-200 dark:border-amber-600 dark:bg-amber-700 rounded-lg p-4 mt-6 text-left">
+            <div className="bg-amber-50 border border-amber-200 dark:border-amber-600 dark:bg-amber-900 rounded-lg p-4 mt-6 text-left">
               <h3 className="font-semibold text-amber-800 dark:text-white mb-2">
                 ¿Por qué estoy viendo esto?
               </h3>

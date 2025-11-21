@@ -57,7 +57,7 @@ export function TeamCard({
               className="object-cover"
             />
           </div>
-          <CardTitle className="pt-2">{name}</CardTitle>
+          <CardTitle className="pt-6">{name}</CardTitle>
           <CardDescription className={"line-clamp-2"}>
             {description}
           </CardDescription>

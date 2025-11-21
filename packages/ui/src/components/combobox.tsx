@@ -170,7 +170,7 @@ function ComboboxLoading({
       className={cn("py-6 text-center text-sm", className)}
       {...props}
     >
-      Loading...
+      Cargando...
     </ComboboxPrimitive.Loading>
   );
 }

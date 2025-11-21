@@ -48,7 +48,7 @@ export interface Person {
 
 interface Registration {
   wcaRegistrationId: number;
-  eventIds: string[];
+  eventIds: EventId[];
   status: string; // "accepted"
   isCompeting: boolean;
 }

@@ -4,8 +4,15 @@ import type React from "react";
 import { useRef, useEffect, useState } from "react";
 import { useCanvasStore } from "@/lib/canvas-store";
 import { ZoomControls } from "./zoom-controls";
+import type { EventId } from "@/types/wcif";
 
-export function CanvasEditor() {
+interface CanvasEditorProps {
+  eventIds: EventId[];
+}
+
+export function CanvasEditor({
+  eventIds,
+}: CanvasEditorProps): React.JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const backgroundImageRef = useRef<HTMLImageElement | null>(null);
@@ -595,6 +602,19 @@ export function CanvasEditor() {
           newX = resizeStart.x + resizeStart.width - size;
         }
         // bottom-right doesn't need position adjustment
+      }
+
+      if (selectedElement.imageUrl === "/country.svg") {
+        // Maintain 7:4 aspect ratio for country flags
+        newHeight = (newWidth * 4) / 7;
+      }
+
+      if (selectedElement.imageUrl === "/events.svg") {
+        const iconSize = newHeight;
+        const spacing = 5;
+        const totalWidth =
+          iconSize * eventIds.length + spacing * (eventIds.length - 1);
+        newWidth = totalWidth;
       }
 
       // For text elements, adjust font size based on resize

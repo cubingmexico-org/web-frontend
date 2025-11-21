@@ -38,11 +38,8 @@ import {
   BreadcrumbSeparator,
 } from "@workspace/ui/components/breadcrumb";
 import Link from "next/link";
-import useSWR from "swr";
 import { notFound } from "next/navigation";
-import { fetcher } from "@/lib/utils";
-import type { ExtendedPerson, Person } from "@/types/wcif";
-import { BadgeManagerSkeleton } from "./badge-manager-skeleton";
+import type { ExtendedPerson } from "@/types/wcif";
 import { Input } from "@workspace/ui/components/input";
 import { FileUploader } from "./file-uploader";
 import { WcaMonochrome } from "@workspace/icons";
@@ -53,10 +50,11 @@ import JSZip from "jszip";
 import QRCode from "qrcode";
 import type { State, Team } from "@/db/queries";
 import { toast } from "sonner";
+import { revalidateWCIF } from "@/app/actions";
 
 interface BadgeManagerProps {
   competition: Competition;
-  persons: Person[];
+  persons: ExtendedPerson[];
   states: State[];
   teams: Team[];
 }
@@ -319,10 +317,73 @@ export function BadgeManager({
                   const isWcaAvatar = element.imageUrl === "/avatar.png";
                   const isTeamLogo = element.imageUrl === "/team-logo.svg";
                   const isCountryFlag = element.imageUrl === "/country.svg";
+                  const isEventsIcon = element.imageUrl === "/events.svg";
 
                   const teamImage = teams.find(
                     (t) => t.stateId === currentPerson.stateId,
                   )?.image;
+
+                  if (isEventsIcon) {
+                    const eventsOrdered = competition.event_ids;
+
+                    // Get person's event IDs
+                    const personEventIds =
+                      currentPerson.registration?.eventIds || [];
+
+                    if (personEventIds.length > 0) {
+                      // Sort person's events according to eventsOrdered
+                      const sortedEventIds = personEventIds.sort((a, b) => {
+                        const indexA = eventsOrdered.indexOf(a);
+                        const indexB = eventsOrdered.indexOf(b);
+                        return indexA - indexB;
+                      });
+
+                      const spacing = 5;
+                      const iconSize = element.height;
+                      const totalWidth =
+                        iconSize * sortedEventIds.length +
+                        spacing * (sortedEventIds.length - 1);
+
+                      // Calculate starting X position to center the icons
+                      const startX =
+                        element.x + (element.width - totalWidth) / 2;
+
+                      // Load and draw each event icon
+                      const eventPromises = sortedEventIds.map(
+                        (eventId, index) => {
+                          return new Promise<void>((resolveEvent) => {
+                            const eventImg = new Image();
+                            eventImg.crossOrigin = "anonymous";
+
+                            eventImg.onload = () => {
+                              const xPos =
+                                startX + (iconSize + spacing) * index;
+                              ctx.drawImage(
+                                eventImg,
+                                xPos,
+                                element.y,
+                                iconSize,
+                                iconSize,
+                              );
+                              resolveEvent();
+                            };
+
+                            eventImg.onerror = () => {
+                              console.error(
+                                `Failed to load event icon: ${eventId}`,
+                              );
+                              resolveEvent();
+                            };
+
+                            eventImg.src = `/events/${eventId}.svg`;
+                          });
+                        },
+                      );
+
+                      await Promise.all(eventPromises);
+                    }
+                    break;
+                  }
 
                   const imageUrl =
                     isWcaAvatar && currentPerson.avatar
@@ -633,18 +694,6 @@ export function BadgeManager({
     );
   };
 
-  const { data, isLoading, mutate } = useSWR<ExtendedPerson[]>(
-    `/api/badges?competitionId=${competition.id}`,
-    fetcher,
-    {
-      fallbackData: [],
-    },
-  );
-
-  if (isLoading) {
-    return <BadgeManagerSkeleton />;
-  }
-
   if (!competition) {
     notFound();
   }
@@ -788,13 +837,10 @@ export function BadgeManager({
                     Gafetes de Participantes
                   </h4>
                   <span className="text-xs text-muted-foreground">
-                    {data?.length || 0} de {persons.length} generados
+                    {persons.length} generados
                   </span>
                 </div>
-                <Progress
-                  value={data ? (data.length / persons.length) * 100 : 0}
-                  className="h-2"
-                />
+                <Progress value={100} className="h-2" />
               </div>
               <div className="rounded-md bg-muted p-4">
                 <div className="flex items-center justify-between">
@@ -810,11 +856,10 @@ export function BadgeManager({
                     </p>
                   </div>
                   <Button
-                    disabled={isLoading}
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      void mutate();
+                      revalidateWCIF(competition.id);
                       setLastUpdate(new Date());
                     }}
                   >
@@ -874,7 +919,7 @@ export function BadgeManager({
                                 }
                                 onCheckedChange={(checked) => {
                                   if (checked) {
-                                    const participant = data?.filter(
+                                    const participant = persons.filter(
                                       (participant) =>
                                         participant.registrantId ===
                                         person.registrantId,
@@ -911,9 +956,9 @@ export function BadgeManager({
                 <div className="flex justify-start gap-2 w-full">
                   <Button
                     aria-label="Seleccionar todos"
-                    disabled={selectedPersons.length === data?.length}
+                    disabled={selectedPersons.length === persons.length}
                     onClick={() => {
-                      setSelectedPersons(data || []);
+                      setSelectedPersons(persons);
                     }}
                     variant="ghost"
                   >
@@ -978,7 +1023,11 @@ export function BadgeManager({
             </Card>
           </div>
 
-          <Canvas states={states} teams={teams} />
+          <Canvas
+            states={states}
+            teams={teams}
+            eventIds={competition.event_ids}
+          />
         </div>
       </div>
     </div>

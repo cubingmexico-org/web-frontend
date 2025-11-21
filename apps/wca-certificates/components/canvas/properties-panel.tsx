@@ -38,6 +38,7 @@ import {
   RadioGroupItem,
 } from "@workspace/ui/components/radio-group";
 import { WcaMonochrome } from "@workspace/icons";
+import type { EventId } from "@/types/wcif";
 
 const mentions = [
   { id: "1", name: "nombre" },
@@ -49,7 +50,11 @@ const mentions = [
   { id: "7", name: "team" },
 ];
 
-export function PropertiesPanel() {
+interface PropertiesPanelProps {
+  eventIds: EventId[];
+}
+
+export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
   const {
     elements,
     selectedElementId,
@@ -153,6 +158,17 @@ export function PropertiesPanel() {
                     updates.height = newWidth;
                   }
 
+                  if (selectedElement.imageUrl === "/country.svg") {
+                    updates.height = (newWidth * 4) / 7;
+                  }
+
+                  if (selectedElement.imageUrl === "/events.svg") {
+                    const spacing = 5;
+                    const iconSize =
+                      (newWidth + spacing) / eventIds.length - spacing;
+                    updates.height = iconSize;
+                  }
+
                   updateElement(selectedElement.id, updates);
                 }}
                 className="h-8"
@@ -179,6 +195,19 @@ export function PropertiesPanel() {
                     selectedElement.keepAspectRatio
                   ) {
                     updates.width = newHeight;
+                  }
+
+                  if (selectedElement.imageUrl === "/country.svg") {
+                    updates.width = (newHeight * 7) / 4;
+                  }
+
+                  if (selectedElement.imageUrl === "/events.svg") {
+                    const iconSize = newHeight;
+                    const spacing = 5;
+                    const totalWidth =
+                      iconSize * eventIds.length +
+                      spacing * (eventIds.length - 1);
+                    updates.width = totalWidth;
                   }
 
                   updateElement(selectedElement.id, updates);
@@ -458,6 +487,10 @@ export function PropertiesPanel() {
                       ...(checked && { height: selectedElement.width }),
                     })
                   }
+                  disabled={
+                    selectedElement.imageUrl === "/country.svg" ||
+                    selectedElement.imageUrl === "/events.svg"
+                  }
                 />
               </div>
             </div>
@@ -471,9 +504,11 @@ export function PropertiesPanel() {
                       ? "team-logo"
                       : selectedElement.imageUrl === "/country.svg"
                         ? "country"
-                        : // : selectedElement.imageUrl === "/state.png"
-                          // ? "state"
-                          "custom"
+                        : selectedElement.imageUrl === "/events.svg"
+                          ? "events"
+                          : // : selectedElement.imageUrl === "/state.png"
+                            // ? "state"
+                            "custom"
                 }
                 onValueChange={(value) => {
                   const urlMap = {
@@ -482,6 +517,7 @@ export function PropertiesPanel() {
                     country: "/country.svg",
                     // state: "/state.png",
                     custom: "/placeholder.svg",
+                    events: "/events.svg",
                   };
                   updateElement(selectedElement.id, {
                     imageUrl:
@@ -494,6 +530,20 @@ export function PropertiesPanel() {
                       isFlag: true,
                       keepAspectRatio: false,
                       height: selectedElement.width * (4 / 7),
+                    });
+                  }
+
+                  if (value === "events") {
+                    // Set initial dimensions based on number of events
+                    const iconSize = selectedElement.height || 40;
+                    const spacing = 5;
+                    const totalWidth =
+                      iconSize * eventIds.length +
+                      spacing * (eventIds.length - 1);
+                    updateElement(selectedElement.id, {
+                      keepAspectRatio: false,
+                      height: iconSize,
+                      width: totalWidth,
                     });
                   }
                 }}
@@ -525,6 +575,15 @@ export function PropertiesPanel() {
                     Bandera del país
                   </Label>
                 </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="events" id="events" />
+                  <Label
+                    htmlFor="events"
+                    className="text-xs font-normal cursor-pointer"
+                  >
+                    Íconos de los eventos
+                  </Label>
+                </div>
                 {/* <div className="flex items-center space-x-2">
                   <RadioGroupItem value="state" id="state" />
                   <Label
@@ -547,7 +606,8 @@ export function PropertiesPanel() {
             </div>
             {selectedElement.imageUrl !== "/avatar.png" &&
             selectedElement.imageUrl !== "/team-logo.svg" &&
-            selectedElement.imageUrl !== "/country.svg" ? (
+            selectedElement.imageUrl !== "/country.svg" &&
+            selectedElement.imageUrl !== "/events.svg" ? (
               // selectedElement.imageUrl !== "/state.png"
               <div className="space-y-2">
                 <Label htmlFor="imageUrl" className="text-xs">

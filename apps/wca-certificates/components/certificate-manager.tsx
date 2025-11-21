@@ -58,7 +58,7 @@ import {
   joinPersons,
   transformString,
 } from "@/lib/utils";
-import { ParticipantData, Person, PodiumData } from "@/types/wcif";
+import type { ParticipantData, Person, PodiumData } from "@/types/wcif";
 import Tiptap from "./editor/tiptap";
 import { participation, podium } from "@/data/certificates";
 import { JSONContent } from "@tiptap/react";

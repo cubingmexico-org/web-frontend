@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Info } from "lucide-react";
 import * as React from "react";
 import {
   Combobox,
@@ -14,6 +14,11 @@ import {
   ComboboxTrigger,
 } from "@workspace/ui/components/combobox";
 import { matchSorter } from "match-sorter";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip";
 
 const SYSTEM_FONTS = [
   "Arial",
@@ -172,10 +177,23 @@ export function FontsCombobox({ value, onValueChange }: FontsComboboxProps) {
       onFilter={onFilter}
       inputValue={value}
     >
-      <ComboboxLabel className="text-xs">Fuente</ComboboxLabel>
-      <ComboboxAnchor style={{ fontFamily: value }}>
-        <ComboboxInput placeholder="Seleccionar fuente..." />
-        <ComboboxTrigger>
+      <ComboboxLabel className="text-xs flex items-center gap-1">
+        <span>Fuente</span>
+        <Tooltip>
+          <TooltipTrigger>
+            <Info size={12} />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>¿No encuentras la fuente que buscas? Solicítala.</p>
+          </TooltipContent>
+        </Tooltip>
+      </ComboboxLabel>
+      <ComboboxAnchor
+        className="dark:bg-input/30 dark:border-input dark:hover:bg-input/50"
+        style={{ fontFamily: value }}
+      >
+        <ComboboxTrigger className="w-full text-primary">
+          <ComboboxInput placeholder="Seleccionar fuente..." />
           <ChevronDown className="h-4 w-4" />
         </ComboboxTrigger>
       </ComboboxAnchor>

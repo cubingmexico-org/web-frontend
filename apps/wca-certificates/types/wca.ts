@@ -1,3 +1,5 @@
+import type { EventId } from "./wcif";
+
 interface Country {
   id: string;
   name: string;
@@ -94,7 +96,7 @@ export interface Competition {
   latitude_degrees: number;
   longitude_degrees: number;
   country_iso2: string;
-  event_ids: string[];
+  event_ids: EventId[];
   main_event_id: string;
   number_of_bookmarks: number;
   using_payment_integrations?: boolean;

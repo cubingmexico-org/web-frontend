@@ -23,15 +23,20 @@ import {
   DialogFooter,
 } from "@workspace/ui/components/dialog";
 import { useState } from "react";
-import type { ExtendedPerson } from "@/types/wcif";
+import type { EventId, ExtendedPerson } from "@/types/wcif";
 import { State, Team } from "@/db/queries";
 
 interface CanvasProps {
   states: State[];
   teams: Team[];
+  eventIds: EventId[];
 }
 
-export function Canvas({ states, teams }: CanvasProps): React.JSX.Element {
+export function Canvas({
+  states,
+  teams,
+  eventIds,
+}: CanvasProps): React.JSX.Element {
   const {
     elements,
     canvasWidth,
@@ -63,6 +68,7 @@ export function Canvas({ states, teams }: CanvasProps): React.JSX.Element {
       url: session.data?.user?.image || "/avatar.png",
       thumbUrl: session.data?.user?.image || "/avatar.png",
     },
+    registration: { eventIds },
     roles: [] as string[],
     registrantId: 1,
     countryIso2: "MX",
@@ -292,10 +298,57 @@ export function Canvas({ states, teams }: CanvasProps): React.JSX.Element {
             const isWcaAvatar = element.imageUrl === "/avatar.png";
             const isTeamLogo = element.imageUrl === "/team-logo.svg";
             const isCountryFlag = element.imageUrl === "/country.svg";
+            const isEventsIcon = element.imageUrl === "/events.svg";
 
             const teamImage = teams.find(
               (t) => t.stateId === currentPerson.stateId,
             )?.image;
+
+            if (isEventsIcon) {
+              // Get person's event IDs
+              const personEventIds = currentPerson.registration?.eventIds || [];
+
+              if (personEventIds.length > 0) {
+                const spacing = 5;
+                const iconSize = element.height;
+                const totalWidth =
+                  iconSize * personEventIds.length +
+                  spacing * (personEventIds.length - 1);
+
+                // Calculate starting X position to center the icons
+                const startX = element.x + (element.width - totalWidth) / 2;
+
+                // Load and draw each event icon
+                const eventPromises = personEventIds.map((eventId, index) => {
+                  return new Promise<void>((resolveEvent) => {
+                    const eventImg = new Image();
+                    eventImg.crossOrigin = "anonymous";
+
+                    eventImg.onload = () => {
+                      const xPos = startX + (iconSize + spacing) * index;
+                      ctx.drawImage(
+                        eventImg,
+                        xPos,
+                        element.y,
+                        iconSize,
+                        iconSize,
+                      );
+                      resolveEvent();
+                    };
+
+                    eventImg.onerror = () => {
+                      console.error(`Failed to load event icon: ${eventId}`);
+                      resolveEvent();
+                    };
+
+                    eventImg.src = `/events/${eventId}.svg`;
+                  });
+                });
+
+                await Promise.all(eventPromises);
+              }
+              break;
+            }
 
             const imageUrl =
               isWcaAvatar && currentPerson.avatar
@@ -616,8 +669,8 @@ export function Canvas({ states, teams }: CanvasProps): React.JSX.Element {
 
       <div className="flex-1 flex overflow-hidden">
         <Toolbar />
-        <CanvasEditor />
-        <PropertiesPanel />
+        <CanvasEditor eventIds={eventIds} />
+        <PropertiesPanel eventIds={eventIds} />
       </div>
     </div>
   );

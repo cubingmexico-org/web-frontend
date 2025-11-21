@@ -37,6 +37,11 @@ export async function getWCIFByCompetitionId({
   try {
     const res = await fetch(
       `https://worldcubeassociation.org/api/v0/competitions/${competitionId}/wcif/public`,
+      {
+        next: {
+          tags: [`wcif-${competitionId}`],
+        },
+      },
     );
 
     if (!res.ok) {

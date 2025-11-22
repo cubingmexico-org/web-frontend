@@ -68,7 +68,7 @@ export function ManageTeam({
   >;
 }) {
   return (
-    <main className="grow">
+    <>
       <div className="bg-muted/75 border-b">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -409,6 +409,6 @@ export function ManageTeam({
           </TabsContent>
         </Tabs>
       </div>
-    </main>
+    </>
   );
 }

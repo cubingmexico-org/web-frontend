@@ -1,11 +1,10 @@
 import Link from "next/link";
-import { CubingMexico, WcaMonochrome } from "@workspace/icons";
-import { signInAction } from "@/app/actions";
-import { Button } from "@workspace/ui/components/button";
+import { CubingMexico } from "@workspace/icons";
 import { UserDropdown } from "./user-dropdown";
 import { HeaderNavigationMenu } from "./header-navigation-menu";
 import { auth } from "@/auth";
 import { getCurrentUserTeam } from "@/db/queries";
+import { SignInButton } from "./sign-in-button";
 
 export async function Header() {
   const session = await auth();
@@ -13,6 +12,7 @@ export async function Header() {
   const user = session?.user;
 
   const team = await getCurrentUserTeam({
+    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
     userId: user?.id!,
   });
 
@@ -25,20 +25,7 @@ export async function Header() {
           </Link>
           <HeaderNavigationMenu />
         </div>
-        {user ? (
-          <UserDropdown user={user} team={team} />
-        ) : (
-          <Button
-            onClick={async () => {
-              signInAction("wca");
-            }}
-            variant="ghost"
-            className="hover:bg-muted/10 hover:text-primary-foreground focus:bg-muted/10 dark:hover:bg-muted/10 dark:focus:bg-muted/10"
-          >
-            <WcaMonochrome />
-            Iniciar sesión
-          </Button>
-        )}
+        {user ? <UserDropdown user={user} team={team} /> : <SignInButton />}
       </div>
     </header>
   );

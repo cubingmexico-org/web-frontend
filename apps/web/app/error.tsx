@@ -77,11 +77,11 @@ export default function Error({
           </Button>
         </div>
 
-        <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+        <div className="bg-muted/25  p-6 rounded-lg border border-muted">
           <h2 className="text-lg font-semibold mb-3">
             ¿Sigue viendo este error?
           </h2>
-          <p className="text-gray-600 mb-4">
+          <p className="text-muted-foreground mb-4">
             Si el problema persiste, por favor repórtalo para que podamos
             solucionarlo lo antes posible.
           </p>

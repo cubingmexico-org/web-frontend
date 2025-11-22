@@ -226,7 +226,7 @@ export default async function Page(props: {
   const activeYears = currentYear - foundedYear;
 
   return (
-    <main className="grow">
+    <>
       <div className="relative h-[400px] bg-gray-200">
         <Image
           src={teamData?.coverImage || "/placeholder.svg"}
@@ -305,7 +305,6 @@ export default async function Page(props: {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         <Tabs
           defaultValue="overview"
@@ -326,7 +325,6 @@ export default async function Page(props: {
           <TabsContent value="overview">
             <div className="grid gap-6 md:grid-cols-3">
               <div className="md:col-span-2 space-y-6">
-                {/* About */}
                 <Card>
                   <CardHeader>
                     <CardTitle>Acerca de</CardTitle>
@@ -470,7 +468,6 @@ export default async function Page(props: {
               </div>
 
               <div className="space-y-6">
-                {/* Quick Stats */}
                 <Card>
                   <CardHeader>
                     <CardTitle>Estadísticas del Team</CardTitle>
@@ -550,7 +547,6 @@ export default async function Page(props: {
                   </CardContent>
                 </Card>
 
-                {/* Upcoming Events */}
                 <Card>
                   <CardHeader>
                     <CardTitle>Próximas competencias</CardTitle>
@@ -870,6 +866,6 @@ export default async function Page(props: {
           </TabsContent>
         </Tabs>
       </div>
-    </main>
+    </>
   );
 }

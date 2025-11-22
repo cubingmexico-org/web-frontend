@@ -20,7 +20,7 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@workspace/ui/components/navigation-menu";
-import { CubingMexico, WcaMonochrome } from "@workspace/icons";
+import { CubingMexico } from "@workspace/icons";
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile";
 
 export function HeaderNavigationMenu() {

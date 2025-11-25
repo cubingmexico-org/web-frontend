@@ -90,66 +90,43 @@ export default async function Page({
   const { persons, SRcount, records, tier, isDelegate, isOrganiser } =
     await unstable_cache(
       async () => {
-        return await db.transaction(async (tx) => {
-          const persons = await tx
-            .select({
-              state: state.name,
-              statesNames: sql`array_agg(DISTINCT ${competition.stateId}) FILTER (WHERE ${competition.stateId} IS NOT NULL)`,
-            })
-            .from(person)
-            .leftJoin(state, eq(person.stateId, state.id))
-            .leftJoin(result, eq(person.id, result.personId))
-            .leftJoin(competition, eq(result.competitionId, competition.id))
-            .where(eq(person.id, id))
-            .groupBy(state.name);
+        // Split queries - don't wrap everything in a transaction
+        const persons = await db
+          .select({
+            state: state.name,
+            statesNames: sql`array_agg(DISTINCT ${competition.stateId}) FILTER (WHERE ${competition.stateId} IS NOT NULL)`,
+          })
+          .from(person)
+          .leftJoin(state, eq(person.stateId, state.id))
+          .leftJoin(result, eq(person.id, result.personId))
+          .leftJoin(competition, eq(result.competitionId, competition.id))
+          .where(eq(person.id, id))
+          .groupBy(state.name);
 
-          const singleStateRanks = await tx
+        const [
+          singleStateRanks,
+          averageStateRanks,
+          membershipData,
+          isDelegate,
+          isOrganiser,
+        ] = await Promise.all([
+          db
             .select({
               stateRank: rankSingle.stateRank,
               eventId: rankSingle.eventId,
             })
             .from(rankSingle)
-            .where(eq(rankSingle.personId, id));
+            .where(eq(rankSingle.personId, id)),
 
-          const averageStateRanks = await tx
+          db
             .select({
               stateRank: rankAverage.stateRank,
               eventId: rankAverage.eventId,
             })
             .from(rankAverage)
-            .where(eq(rankAverage.personId, id));
+            .where(eq(rankAverage.personId, id)),
 
-          const SRcount =
-            singleStateRanks.filter((rank) => rank.stateRank === 1).length +
-            averageStateRanks.filter((rank) => rank.stateRank === 1).length;
-
-          const records = events
-            .filter((event) => data.personal_records[event.id])
-            .map((event) => {
-              const singleStateRank = singleStateRanks.find(
-                (rank) => rank.eventId === event.id,
-              )?.stateRank;
-              const averageStateRank = averageStateRanks.find(
-                (rank) => rank.eventId === event.id,
-              )?.stateRank;
-
-              return {
-                event: event.id,
-                record: {
-                  ...data.personal_records[event.id],
-                  single: {
-                    ...data.personal_records[event.id]?.single,
-                    state_rank: singleStateRank ?? undefined,
-                  },
-                  average: {
-                    ...data.personal_records[event.id]?.average,
-                    state_rank: averageStateRank ?? undefined,
-                  },
-                },
-              };
-            });
-
-          const membershipData = await db
+          db
             .select({
               numberOfSpeedsolvingAverages: sql<number>`COUNT(DISTINCT CASE WHEN ${result.eventId} IN(${sql.join(SPEEDSOLVING_AVERAGES_EVENTS, sql`, `)}) AND ${result.average} > 0 THEN ${result.eventId} ELSE NULL END)`,
               numberOfBLDFMCMeans: sql<number>`COUNT(DISTINCT CASE WHEN ${result.eventId} IN(${sql.join(BLD_FMC_MEANS_EVENTS, sql`, `)}) AND ${result.average} > 0 THEN ${result.eventId} ELSE NULL END)`,
@@ -172,40 +149,70 @@ export default async function Page({
                 gt(result.best, 0),
               ),
             )
-            .having(eq(countDistinct(result.eventId), events.length));
+            .having(eq(countDistinct(result.eventId), events.length)),
 
-          const tier = getTier(membershipData[0]!);
-
-          const isDelegate = await tx
+          db
             .select()
             .from(delegate)
             .where(
               and(eq(delegate.personId, id), eq(delegate.status, "active")),
-            );
+            ),
 
-          const isOrganiser = await tx
+          db
             .select()
             .from(organiser)
             .where(
               and(eq(organiser.personId, id), eq(organiser.status, "active")),
-            );
+            ),
+        ]);
 
-          return {
-            persons,
-            singleStateRanks,
-            averageStateRanks,
-            SRcount,
-            records,
-            tier,
-            isDelegate,
-            isOrganiser,
-          };
-        });
+        const SRcount =
+          singleStateRanks.filter((rank) => rank.stateRank === 1).length +
+          averageStateRanks.filter((rank) => rank.stateRank === 1).length;
+
+        const records = events
+          .filter((event) => data.personal_records[event.id])
+          .map((event) => {
+            const singleStateRank = singleStateRanks.find(
+              (rank) => rank.eventId === event.id,
+            )?.stateRank;
+            const averageStateRank = averageStateRanks.find(
+              (rank) => rank.eventId === event.id,
+            )?.stateRank;
+
+            return {
+              event: event.id,
+              record: {
+                ...data.personal_records[event.id],
+                single: {
+                  ...data.personal_records[event.id]?.single,
+                  state_rank: singleStateRank ?? undefined,
+                },
+                average: {
+                  ...data.personal_records[event.id]?.average,
+                  state_rank: averageStateRank ?? undefined,
+                },
+              },
+            };
+          });
+
+        const tier = getTier(membershipData[0]!);
+
+        return {
+          persons,
+          singleStateRanks,
+          averageStateRanks,
+          SRcount,
+          records,
+          tier,
+          isDelegate,
+          isOrganiser,
+        };
       },
       [id],
       {
         revalidate: 3600,
-        tags: ["person"],
+        tags: [`person-data-${id}`],
       },
     )();
 

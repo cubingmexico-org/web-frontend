@@ -15,10 +15,10 @@ import {
 import { SearchParams } from "@/types";
 import { getValidFilters } from "@/lib/data-table";
 import { searchParamsCache } from "./_lib/validations";
-import { EventSelector } from "./_components/event-selector";
-import { getEvents } from "@/db/queries";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
+import { EventSelector } from "./_components/event-selector";
+import { getEvents } from "@/db/queries";
 
 type Props = {
   params: Promise<{ rankType: string; eventId: string }>;
@@ -52,8 +52,7 @@ interface PageProps {
 
 export default async function Page(props: PageProps) {
   const searchParams = await props.searchParams;
-  const eventId = (await props.params).eventId;
-  const rankType = (await props.params).rankType;
+  const { eventId, rankType } = await props.params;
 
   if (eventId === "333mbf" && rankType === "average") {
     redirect(`/rankings/333mbf/single`);
@@ -91,7 +90,7 @@ export default async function Page(props: PageProps) {
   const events = await getEvents();
 
   return (
-    <main className="grow container mx-auto px-4 py-8">
+    <>
       <EventSelector
         className="mb-6"
         events={events}
@@ -124,6 +123,6 @@ export default async function Page(props: PageProps) {
           )}
         </React.Suspense>
       </div>
-    </main>
+    </>
   );
 }

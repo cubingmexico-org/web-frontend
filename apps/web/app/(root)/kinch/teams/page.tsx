@@ -1,13 +1,6 @@
 import { db } from "@/db";
 import { sql } from "drizzle-orm";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@workspace/ui/components/table";
+import { TableCell, TableRow } from "@workspace/ui/components/table";
 import { EXCLUDED_EVENTS, SINGLE_EVENTS } from "@/lib/constants";
 import { cn } from "@workspace/ui/lib/utils";
 import {
@@ -17,13 +10,6 @@ import {
 } from "@workspace/ui/components/tooltip";
 import Link from "next/link";
 import { unstable_cache } from "@/lib/unstable-cache";
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Kinch Ranks de Teams | Cubing México",
-  description:
-    "Encuentra el ranking de los mejores equipos de speedcubing en México en cada evento de la WCA. Filtra por estado, género y más.",
-};
 
 export default async function Page() {
   const data = await unstable_cache(
@@ -148,115 +134,38 @@ export default async function Page() {
   }[];
 
   return (
-    <main className="grow container mx-auto px-4 py-8">
-      <div className="flex flex-col gap-4 mb-6">
-        <h1 className="text-3xl font-bold">Kinch Ranks de Teams</h1>
-        <p>
-          Los Kinch Ranks de teams son una forma de medir el rendimiento de un
-          team en comparación con otros teams. Se calcula tomando el mejor
-          resultado de cada miembro del team en cada evento y comparándolo con
-          el mejor resultado nacional en ese evento. El resultado se expresa
-          como un porcentaje, donde 100% significa que el team tiene el mejor
-          resultado nacional en ese evento. Un porcentaje más bajo indica un
-          rendimiento inferior en comparación con el mejor resultado nacional.
-        </p>
-      </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>#</TableHead>
-            <TableHead>Team</TableHead>
-            <TableHead>Total</TableHead>
-            <TableHead>
-              <span className="cubing-icon event-333" />
-            </TableHead>
-            <TableHead>
-              <span className="cubing-icon event-222" />
-            </TableHead>
-            <TableHead>
-              <span className="cubing-icon event-444" />
-            </TableHead>
-            <TableHead>
-              <span className="cubing-icon event-555" />
-            </TableHead>
-            <TableHead>
-              <span className="cubing-icon event-666" />
-            </TableHead>
-            <TableHead>
-              <span className="cubing-icon event-777" />
-            </TableHead>
-            <TableHead>
-              <span className="cubing-icon event-333bf" />
-            </TableHead>
-            <TableHead>
-              <span className="cubing-icon event-333fm" />
-            </TableHead>
-            <TableHead>
-              <span className="cubing-icon event-333oh" />
-            </TableHead>
-            <TableHead>
-              <span className="cubing-icon event-clock" />
-            </TableHead>
-            <TableHead>
-              <span className="cubing-icon event-minx" />
-            </TableHead>
-            <TableHead>
-              <span className="cubing-icon event-pyram" />
-            </TableHead>
-            <TableHead>
-              <span className="cubing-icon event-skewb" />
-            </TableHead>
-            <TableHead>
-              <span className="cubing-icon event-sq1" />
-            </TableHead>
-            <TableHead>
-              <span className="cubing-icon event-444bf" />
-            </TableHead>
-            <TableHead>
-              <span className="cubing-icon event-555bf" />
-            </TableHead>
-            <TableHead>
-              <span className="cubing-icon event-333mbf" />
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {teams.map((team, index) => (
-            <TableRow key={team.stateId}>
-              <TableCell>{index + 1}</TableCell>
-              <TableCell className="whitespace-nowrap">
-                <Link
-                  className="hover:underline"
-                  href={`/teams/${team.stateId}`}
-                >
-                  {team.name}
-                </Link>
-              </TableCell>
-              <TableCell className="font-semibold">
-                {team.overall.toFixed(2)}
-              </TableCell>
-              {team.events.map((event) => (
-                <TableCell
-                  key={event.eventId}
-                  className={cn(
-                    event.ratio === 0 && "text-red-500 font-semibold",
-                    event.ratio === 100 && "text-green-500 font-semibold",
-                  )}
-                >
-                  <Tooltip>
-                    <TooltipTrigger>{event.ratio.toFixed(2)}</TooltipTrigger>
-                    {event.personName && (
-                      <TooltipContent>
-                        <p>{event.personName}</p>
-                      </TooltipContent>
-                    )}
-                  </Tooltip>
-                </TableCell>
-              ))}
-            </TableRow>
+    <>
+      {teams.map((team, index) => (
+        <TableRow key={team.stateId}>
+          <TableCell>{index + 1}</TableCell>
+          <TableCell className="whitespace-nowrap">
+            <Link className="hover:underline" href={`/teams/${team.stateId}`}>
+              {team.name}
+            </Link>
+          </TableCell>
+          <TableCell className="font-semibold">
+            {team.overall.toFixed(2)}
+          </TableCell>
+          {team.events.map((event) => (
+            <TableCell
+              key={event.eventId}
+              className={cn(
+                event.ratio === 0 && "text-red-500 font-semibold",
+                event.ratio === 100 && "text-green-500 font-semibold",
+              )}
+            >
+              <Tooltip>
+                <TooltipTrigger>{event.ratio.toFixed(2)}</TooltipTrigger>
+                {event.personName && (
+                  <TooltipContent>
+                    <p>{event.personName}</p>
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TableCell>
           ))}
-        </TableBody>
-      </Table>
-    </main>
+        </TableRow>
+      ))}
+    </>
   );
 }

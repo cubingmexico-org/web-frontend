@@ -1,20 +1,22 @@
 "use client";
 
 import { WcaMonochrome } from "@workspace/icons";
-import { signInAction } from "@/app/actions";
 import { Button } from "@workspace/ui/components/button";
+import { useFormStatus } from "react-dom";
+import { LoaderCircle } from "lucide-react";
 
 export function SignInButton() {
+  const { pending } = useFormStatus();
+
   return (
     <Button
-      onClick={async () => {
-        signInAction("wca");
-      }}
+      type="submit"
+      disabled={pending}
       variant="ghost"
       className="hover:bg-muted/10 hover:text-primary-foreground focus:bg-muted/10 dark:hover:bg-muted/10 dark:focus:bg-muted/10"
     >
-      <WcaMonochrome />
-      Iniciar sesión
+      {pending ? <LoaderCircle className="animate-spin" /> : <WcaMonochrome />}
+      <span>Iniciar sesión</span>
     </Button>
   );
 }

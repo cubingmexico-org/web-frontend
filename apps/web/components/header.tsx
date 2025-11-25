@@ -4,7 +4,7 @@ import { UserDropdown } from "./user-dropdown";
 import { HeaderNavigationMenu } from "./header-navigation-menu";
 import { auth } from "@/auth";
 import { getCurrentUserTeam } from "@/db/queries";
-import { SignInButton } from "./sign-in-button";
+import { UserAuthForm } from "./user-auth-form";
 
 export async function Header() {
   const session = await auth();
@@ -25,7 +25,7 @@ export async function Header() {
           </Link>
           <HeaderNavigationMenu />
         </div>
-        {user ? <UserDropdown user={user} team={team} /> : <SignInButton />}
+        {user ? <UserDropdown user={user} team={team} /> : <UserAuthForm />}
       </div>
     </header>
   );

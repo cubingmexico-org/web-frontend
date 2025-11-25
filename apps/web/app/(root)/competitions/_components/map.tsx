@@ -1,6 +1,7 @@
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import type { GeoJSONProps } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON, Marker, Popup } from "react-leaflet";
 import { LatLngExpression, LatLngTuple } from "leaflet";
 
 import "leaflet/dist/leaflet.css";
@@ -14,10 +15,12 @@ interface MapProps {
   locations: {
     id: string;
     name: string;
-    state: string | null;
+    stateName: string | null;
     latitutude: number | null;
     longitude: number | null;
   }[];
+  statesData: GeoJSONProps["data"];
+  showOnlyStates: boolean;
 }
 
 const defaults = {
@@ -25,7 +28,13 @@ const defaults = {
 };
 
 export function Map(Map: MapProps) {
-  const { zoom = defaults.zoom, posix, locations } = Map;
+  const {
+    zoom = defaults.zoom,
+    posix,
+    locations,
+    statesData,
+    showOnlyStates,
+  } = Map;
 
   const { theme } = useTheme();
 
@@ -45,21 +54,25 @@ export function Map(Map: MapProps) {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url={tileLayerUrl}
       />
-      {locations.map(({ id, name, state, latitutude, longitude }) => (
-        <Marker
-          key={id}
-          position={[
-            (latitutude && latitutude / 1000000) || 0,
-            (longitude && longitude / 1000000) || 0,
-          ]}
-        >
-          <Popup>
-            <b>{name}</b>
-            {state && <br />}
-            {state}
-          </Popup>
-        </Marker>
-      ))}
+      {!showOnlyStates &&
+        locations.map(({ id, name, stateName, latitutude, longitude }) => (
+          <Marker
+            key={id}
+            position={[
+              (latitutude && latitutude / 1000000) || 0,
+              (longitude && longitude / 1000000) || 0,
+            ]}
+          >
+            <Popup>
+              <b>{name}</b>
+              {stateName && <br />}
+              {stateName}
+            </Popup>
+          </Marker>
+        ))}
+      {showOnlyStates && statesData && (
+        <GeoJSON key={JSON.stringify(statesData)} data={statesData} />
+      )}
     </MapContainer>
   );
 }

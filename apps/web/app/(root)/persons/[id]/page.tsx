@@ -32,7 +32,7 @@ import {
 } from "@workspace/ui/components/tooltip";
 import { cn } from "@workspace/ui/lib/utils";
 import { Badge } from "@workspace/ui/components/badge";
-import { type GeoJSONProps } from "react-leaflet";
+import type { GeoJSONProps } from "react-leaflet";
 import { headers } from "next/headers";
 import Link from "next/link";
 import {
@@ -238,10 +238,10 @@ export default async function Page({
     }[];
   };
 
-  const statesNames = persons[0]?.statesNames as string[] | null;
+  const stateIds = persons[0]?.statesNames as string[] | null;
 
   const filteredStatesData = statesData.features.filter((feature) =>
-    statesNames?.includes(feature.properties.id),
+    stateIds?.includes(feature.properties.id),
   ) as unknown as GeoJSONProps["data"];
 
   const getTierClass = (tier: Tier): string => {
@@ -263,7 +263,7 @@ export default async function Page({
   };
 
   return (
-    <main className="grow container mx-auto px-4 py-8">
+    <>
       <h1 className="text-center font-semibold text-2xl mb-4 hover:underline">
         <Link
           href={`https://www.worldcubeassociation.org/persons/${id}`}
@@ -534,14 +534,10 @@ export default async function Page({
       <h2 className="flex items-center justify-center gap-2 text-lg font-semibold my-4">
         <span>Estados visitados</span>
         <Badge>
-          {statesNames?.[0] === null || statesNames === null
-            ? 0
-            : statesNames?.length}
+          {stateIds?.[0] === null || stateIds === null ? 0 : stateIds?.length}
         </Badge>
       </h2>
-      <div className="bg-white-700 mx-auto my-5 w-[98%] h-[480px]">
-        <MapContainer statesData={filteredStatesData} />
-      </div>
-    </main>
+      <MapContainer statesData={filteredStatesData} />
+    </>
   );
 }

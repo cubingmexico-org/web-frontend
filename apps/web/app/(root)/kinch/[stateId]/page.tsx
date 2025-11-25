@@ -32,6 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: `Encuentra el ranking del ${team?.name} de speedcubing en México en cada evento de la WCA. Filtra por estado, género y más.`,
   };
 }
+
 export default async function Page(props: {
   params: Promise<{ stateId: string }>;
   searchParams: Promise<SearchParams>;
@@ -166,7 +167,7 @@ export default async function Page(props: {
   const stateName = states.find((state) => state.id === stateId)?.name;
 
   return (
-    <main className="grow container mx-auto px-4 py-8">
+    <>
       <div className="flex flex-col gap-4 mb-6">
         <h1 className="text-3xl font-bold">
           Kinch Ranks estatales de {stateName}
@@ -288,6 +289,6 @@ export default async function Page(props: {
           ))}
         </TableBody>
       </Table>
-    </main>
+    </>
   );
 }

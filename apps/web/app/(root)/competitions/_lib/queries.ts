@@ -337,7 +337,8 @@ export async function getCompetitionLocations(input: GetCompetitionsSchema) {
           .select({
             id: competition.id,
             name: competition.name,
-            state: state.name,
+            stateId: competition.stateId,
+            stateName: state.name,
             latitutude: competition.latitude,
             longitude: competition.longitude,
           })
@@ -360,7 +361,7 @@ export async function getCompetitionLocations(input: GetCompetitionsSchema) {
     [JSON.stringify(input)],
     {
       revalidate: 3600,
-      tags: ["competitions"],
+      tags: ["competition-locations"],
     },
   )();
 }

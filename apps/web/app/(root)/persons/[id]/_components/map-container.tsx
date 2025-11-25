@@ -2,10 +2,11 @@
 
 import type { GeoJSONProps } from "react-leaflet";
 import dynamic from "next/dynamic";
+import { Skeleton } from "@workspace/ui/components/skeleton";
 
 const Map = dynamic(() => import("./map").then((mod) => mod.Map), {
   ssr: false,
-  loading: () => <p>Cargando mapa...</p>,
+  loading: () => <Skeleton className="w-full h-full" />,
 });
 
 export function MapContainer({

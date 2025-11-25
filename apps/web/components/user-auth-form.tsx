@@ -3,7 +3,7 @@
 import * as React from "react";
 import * as z from "zod";
 import { toast } from "sonner";
-import { SignIn } from "./auth-components";
+import { SignInButton } from "./sign-in-button";
 import { signInAction } from "@/app/actions";
 
 export function UserAuthForm(): React.JSX.Element {
@@ -22,7 +22,7 @@ export function UserAuthForm(): React.JSX.Element {
 
   return (
     <form action={signInWithWithWCA} className="grid">
-      <SignIn />
+      <SignInButton />
     </form>
   );
 }

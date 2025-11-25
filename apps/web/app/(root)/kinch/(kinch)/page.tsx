@@ -1,14 +1,13 @@
 import * as React from "react";
 import { SearchParams } from "@/types";
-import { searchParamsCache } from "./_lib/validations";
+import { searchParamsCache } from "../_lib/validations";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import { PersonsTable } from "./_components/delegates-table";
+import { KinchTable } from "../_components/kinch-table";
 import {
-  getDelegateStatusCounts,
-  getPersons,
-  getPersonsGenderCounts,
-  getPersonsStateCounts,
-} from "./_lib/queries";
+  getKinch,
+  getKinchGenderCounts,
+  getKinchStateCounts,
+} from "../_lib/queries";
 import { getValidFilters } from "@/lib/data-table";
 
 interface PageProps {
@@ -22,13 +21,12 @@ export default async function Page(props: PageProps) {
   const validFilters = getValidFilters(search.filters);
 
   const promises = Promise.all([
-    getPersons({
+    getKinch({
       ...search,
       filters: validFilters,
     }),
-    getPersonsStateCounts(),
-    getPersonsGenderCounts(),
-    getDelegateStatusCounts(),
+    getKinchStateCounts(),
+    getKinchGenderCounts(),
   ]);
 
   return (
@@ -50,7 +48,7 @@ export default async function Page(props: PageProps) {
         />
       }
     >
-      <PersonsTable promises={promises} />
+      <KinchTable promises={promises} />
     </React.Suspense>
   );
 }

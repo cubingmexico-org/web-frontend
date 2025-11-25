@@ -117,7 +117,7 @@ export default async function Page(props: PageProps) {
     const teams = data.rows as unknown as TeamData[];
 
     return (
-      <main className="grow container mx-auto px-4 py-8">
+      <>
         <div className="flex flex-col gap-4 mb-6">
           <h1 className="text-3xl font-bold">
             Sum of Ranks de Teams (Average)
@@ -128,7 +128,9 @@ export default async function Page(props: PageProps) {
             más bajo indica un mejor desempeño. Este ranking refleja el
             rendimiento colectivo del equipo en competencias oficiales.
           </p>
-          <RankTypeSelector selectedRankType={rankType} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <RankTypeSelector selectedRankType={rankType} />
+          </div>
         </div>
         <Table>
           <TableHeader>
@@ -221,7 +223,7 @@ export default async function Page(props: PageProps) {
             ))}
           </TableBody>
         </Table>
-      </main>
+      </>
     );
   }
 
@@ -290,7 +292,7 @@ export default async function Page(props: PageProps) {
   const teams = data.rows as unknown as TeamData[];
 
   return (
-    <main className="grow container mx-auto px-4 py-8">
+    <>
       <div className="flex flex-col gap-4 mb-6">
         <h1 className="text-3xl font-bold">Sum of Ranks de Teams (Single)</h1>
         <p>
@@ -397,6 +399,6 @@ export default async function Page(props: PageProps) {
           ))}
         </TableBody>
       </Table>
-    </main>
+    </>
   );
 }

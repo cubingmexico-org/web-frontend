@@ -1,11 +1,11 @@
 import * as React from "react";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import { SORTable } from "./_components/sor-table";
-import { getSOR, getSORGenderCounts, getSORStateCounts } from "./_lib/queries";
+import { SORTable } from "../_components/sor-table";
+import { getSOR, getSORGenderCounts, getSORStateCounts } from "../_lib/queries";
 import { SearchParams } from "@/types";
 import { getValidFilters } from "@/lib/data-table";
-import { searchParamsCache } from "./_lib/validations";
-import { RankTypeSelector } from "./_components/rank-type-selector";
+import { searchParamsCache } from "../_lib/validations";
+import { RankTypeSelector } from "../_components/rank-type-selector";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -41,7 +41,7 @@ export default async function Page(props: PageProps) {
   ]);
 
   return (
-    <main className="grow container mx-auto px-4 py-8">
+    <>
       <div className="flex flex-col gap-4 mb-6">
         <h1 className="text-3xl font-bold">
           {`Sum of Ranks (${rankType === "single" ? "Single" : "Average"})`}
@@ -90,6 +90,6 @@ export default async function Page(props: PageProps) {
           <SORTable promises={promises} rankType={rankType} />
         </React.Suspense>
       </div>
-    </main>
+    </>
   );
 }

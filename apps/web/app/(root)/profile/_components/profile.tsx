@@ -54,7 +54,7 @@ export function Profile({ user, person, states }: ProfileProps) {
   });
 
   return (
-    <main className="grow container mx-auto px-4 py-8 max-w-3xl">
+    <>
       <h1 className="text-2xl font-bold mb-2 text-center">{user.name}</h1>
 
       {person.stateId && (
@@ -110,25 +110,6 @@ export function Profile({ user, person, states }: ProfileProps) {
 
         <TabsContent value="general">
           <form action={formAction} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="fullName">Nombre</Label>
-              <Input id="fullName" value={user.name || ""} disabled />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="gender">Género</Label>
-              <Select defaultValue={person.gender!} disabled>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona género" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="m">Masculino</SelectItem>
-                  <SelectItem value="f">Femenino</SelectItem>
-                  <SelectItem value="o">Otro</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
             <input
               type="hidden"
               name="personId"
@@ -136,53 +117,74 @@ export function Profile({ user, person, states }: ProfileProps) {
               readOnly
             />
 
-            <div
-              className="group/field grid gap-2"
-              data-invalid={!!state.errors?.stateId}
-            >
-              <Label
-                htmlFor="state"
-                className="group-data-[invalid=true]/field:text-destructive flex items-center gap-2"
+            <div className="space-y-2">
+              <Label htmlFor="fullName">Nombre</Label>
+              <Input id="fullName" value={user.name || ""} disabled />
+            </div>
+
+            <div className="grid sm:grid-cols-2 grid-cols-1 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="gender">Género</Label>
+                <Select defaultValue={person.gender!} disabled>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecciona género" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="m">Masculino</SelectItem>
+                    <SelectItem value="f">Femenino</SelectItem>
+                    <SelectItem value="o">Otro</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div
+                className="group/field grid gap-2"
+                data-invalid={!!state.errors?.stateId}
               >
-                Representando
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Info className="size-4" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>
-                      Elige bien, cambiarlo requiere contactar a un
-                      administrador.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </Label>
-              <Select
-                defaultValue={state.defaultValues.stateId || undefined}
-                aria-invalid={!!state.errors?.stateId}
-                aria-errormessage="error-stateId"
-                name="stateId"
-                disabled={!!person.stateId}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona un estado" />
-                </SelectTrigger>
-                <SelectContent
-                  id="state"
-                  className="group-data-[invalid=true]/field:border-destructive focus-visible:group-data-[invalid=true]/field:ring-destructive"
+                <Label
+                  htmlFor="state"
+                  className="group-data-[invalid=true]/field:text-destructive flex items-center gap-2"
                 >
-                  {states.map((state) => (
-                    <SelectItem key={state.id} value={state.id}>
-                      {state.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {state.errors?.name && (
-                <p id="error-name" className="text-destructive text-sm">
-                  {state.errors.name}
-                </p>
-              )}
+                  Representando
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Info className="size-4" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        Elige bien, cambiarlo requiere contactar a un
+                        administrador.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </Label>
+                <Select
+                  defaultValue={state.defaultValues.stateId || undefined}
+                  aria-invalid={!!state.errors?.stateId}
+                  aria-errormessage="error-stateId"
+                  name="stateId"
+                  disabled={!!person.stateId}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecciona un estado" />
+                  </SelectTrigger>
+                  <SelectContent
+                    id="state"
+                    className="group-data-[invalid=true]/field:border-destructive focus-visible:group-data-[invalid=true]/field:ring-destructive"
+                  >
+                    {states.map((state) => (
+                      <SelectItem key={state.id} value={state.id}>
+                        {state.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {state.errors?.name && (
+                  <p id="error-name" className="text-destructive text-sm">
+                    {state.errors.name}
+                  </p>
+                )}
+              </div>
             </div>
 
             <div>
@@ -210,6 +212,6 @@ export function Profile({ user, person, states }: ProfileProps) {
           </div>
         </TabsContent>
       </Tabs>
-    </main>
+    </>
   );
 }

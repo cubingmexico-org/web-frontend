@@ -2,7 +2,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import "@cubing/icons";
 import { auth } from "@/auth";
-import { User } from "next-auth";
+import type { User } from "next-auth";
 import { headers } from "next/headers";
 import {
   AlertDialog,
@@ -13,6 +13,8 @@ import {
 } from "@workspace/ui/components/alert-dialog";
 import Link from "next/link";
 import { SessionProvider } from "next-auth/react";
+import { FooterSkeleton } from "@/components/footer-skeleton";
+import { Suspense } from "react";
 
 export default async function Layout({
   children,
@@ -54,7 +56,9 @@ export default async function Layout({
             children
           )}
         </div>
-        <Footer />
+        <Suspense fallback={<FooterSkeleton />}>
+          <Footer />
+        </Suspense>
       </div>
     </SessionProvider>
   );

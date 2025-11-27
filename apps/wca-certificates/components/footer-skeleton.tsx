@@ -1,12 +1,9 @@
+import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Discord, Facebook, GitHub, Instagram } from "@workspace/icons";
 import Link from "next/link";
 import { ThemeToggle } from "./theme-toggle";
-import { connection } from "next/server";
 
-export async function Footer() {
-  await connection();
-  const currentYear = new Date().getFullYear();
-
+export function FooterSkeleton() {
   return (
     <footer className="text-muted-foreground body-font">
       <div className="container px-5 py-8 mx-auto">
@@ -20,9 +17,7 @@ export async function Footer() {
               Cubing México
             </span>
           </Link>
-          <p className="text-sm text-muted-foreground sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">
-            <span>© {currentYear} Cubing México</span>
-          </p>
+          <Skeleton className="h-4.5 w-39" />
           <span className="inline-flex sm:ml-auto sm:mt-0 mt-4 justify-center sm:justify-start gap-3">
             <Link
               href="https://facebook.com/cubingmexico"

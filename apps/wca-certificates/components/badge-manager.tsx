@@ -51,6 +51,7 @@ import QRCode from "qrcode";
 import type { State, Team } from "@/db/queries";
 import { toast } from "sonner";
 import { revalidateWCIF } from "@/app/actions";
+import { Switch } from "@workspace/ui/components/switch";
 
 interface BadgeManagerProps {
   competition: Competition;
@@ -73,6 +74,8 @@ export function BadgeManager({
   const [backFiles, setBackFiles] = useState<File[]>([]);
 
   const [search, setSearch] = useState("");
+
+  const [showOnlyCompeting, setShowOnlyCompeting] = useState<boolean>(false);
 
   const [isExporting, setIsExporting] = useState(false);
 
@@ -720,9 +723,37 @@ export function BadgeManager({
     .filter((person) =>
       removeAccents(person.name.toLowerCase()).includes(
         removeAccents(search.toLowerCase()),
-      ),
+      ) &&
+      // optional competing-only filter
+      (!showOnlyCompeting || person.registration?.isCompeting === true),
     )
     .sort((a, b) => a.name.localeCompare(b.name));
+
+  const groupedPersons = (() => {
+    const newcomers: ExtendedPerson[] = [];
+    const delegates: ExtendedPerson[] = [];
+    const organizers: ExtendedPerson[] = [];
+    const regulars: ExtendedPerson[] = [];
+
+    for (const p of filteredPersons) {
+      // prioritize delegate over organizer
+      const isDelegate = p.roles?.includes("delegate");
+      const isOrganizer = p.roles?.includes("organizer");
+
+      if (isDelegate) {
+        delegates.push(p);
+      } else if (isOrganizer) {
+        organizers.push(p);
+      } else if (!p.wcaId) {
+        newcomers.push(p);
+        continue;
+      } else {
+        regulars.push(p);
+      }
+    }
+
+    return { newcomers, delegates, organizers, regulars };
+  })();
 
   return (
     <div className="space-y-6">
@@ -894,7 +925,19 @@ export function BadgeManager({
                   }}
                 />
                 <div className="space-y-4">
-                  <h4 className="text-sm font-medium">Participantes</h4>
+                  <div className="flex justify-between items-center">
+                    <h4 className="text-sm font-medium">Participantes</h4>
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="show-only-competing" className="text-xs">
+                        Mostrar solo competidores
+                      </Label>
+                      <Switch
+                        id="show-only-competing"
+                        checked={showOnlyCompeting}
+                        onCheckedChange={(v) => setShowOnlyCompeting(Boolean(v))}
+                      />
+                    </div>
+                  </div>
                   <ScrollArea className="h-96" type="always">
                     <div className="grid grid-cols-2 gap-2">
                       {filteredPersons.length === 0 ? (
@@ -903,49 +946,72 @@ export function BadgeManager({
                         </p>
                       ) : (
                         <>
-                          {filteredPersons.map((person) => (
-                            <div
-                              key={person.registrantId}
-                              className="flex items-center space-x-2"
-                            >
-                              <Checkbox
-                                id={String(person.registrantId)}
-                                checked={
-                                  selectedPersons.filter(
-                                    (participant) =>
-                                      participant.registrantId ===
-                                      person.registrantId,
-                                  ).length > 0
-                                }
-                                onCheckedChange={(checked) => {
-                                  if (checked) {
-                                    const participant = persons.filter(
-                                      (participant) =>
-                                        participant.registrantId ===
-                                        person.registrantId,
+                          {[
+                            { key: "delegates", title: "Delegados", list: groupedPersons.delegates },
+                            { key: "organizers", title: "Organizadores", list: groupedPersons.organizers },
+                            { key: "newcomers", title: "Nuevos", list: groupedPersons.newcomers },
+                            { key: "regulars", title: "Competidores", list: groupedPersons.regulars },
+                          ].map(({ key, title, list }) =>
+                            list.length > 0 ? (
+                              <div key={key} className="col-span-2">
+                                <div className="flex items-center justify-between mb-1">
+                                  <div className="text-xs font-medium">{title} ({list.length})</div>
+                                  <div>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      onClick={() => {
+                                        setSelectedPersons((prev) => {
+                                          const existingIds = new Set(prev.map(p => p.registrantId));
+                                          const toAdd = list.filter(p => !existingIds.has(p.registrantId));
+                                          return [...prev, ...toAdd];
+                                        });
+                                      }}
+                                    >
+                                      <Check />
+                                      <span className="ml-1 text-xs">Seleccionar todo</span>
+                                    </Button>
+                                  </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2">
+                                  {list.map((person) => {
+                                    const isChecked = selectedPersons.some(
+                                      (p) => p.wcaUserId === person.wcaUserId,
                                     );
-                                    if (participant) {
-                                      setSelectedPersons((prev) => [
-                                        ...prev,
-                                        ...participant,
-                                      ]);
-                                    }
-                                  } else {
-                                    setSelectedPersons((prev) =>
-                                      prev.filter(
-                                        (participant) =>
-                                          participant.registrantId !==
-                                          person.registrantId,
-                                      ),
+                                    return (
+                                      <div
+                                        key={person.wcaUserId}
+                                        className="flex items-center space-x-2"
+                                      >
+                                        <Checkbox
+                                          id={String(person.wcaUserId)}
+                                          checked={isChecked}
+                                          onCheckedChange={(checked) => {
+                                            if (checked) {
+                                              setSelectedPersons((prev) =>
+                                                prev.some((p) => p.registrantId === person.registrantId)
+                                                  ? prev
+                                                  : [...prev, person],
+                                              );
+                                            } else {
+                                              setSelectedPersons((prev) =>
+                                                prev.filter(
+                                                  (p) => p.registrantId !== person.registrantId,
+                                                ),
+                                              );
+                                            }
+                                          }}
+                                        />
+                                        <Label htmlFor={String(person.wcaUserId)}>
+                                          <p className="text-xs">{person.name}</p>
+                                        </Label>
+                                      </div>
                                     );
-                                  }
-                                }}
-                              />
-                              <Label htmlFor={String(person.registrantId)}>
-                                <p className="text-xs">{person.name}</p>
-                              </Label>
-                            </div>
-                          ))}
+                                  })}
+                                </div>
+                              </div>
+                            ) : null,
+                          )}
                         </>
                       )}
                     </div>

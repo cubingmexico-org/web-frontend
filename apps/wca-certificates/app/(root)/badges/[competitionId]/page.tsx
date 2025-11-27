@@ -36,7 +36,7 @@ export default async function Page({
 
   const teams = await getTeams();
 
-  const persons = wcif.persons.filter((person) => person.registrantId !== null);
+  const persons = wcif.persons;
 
   const competitorStates = await getCompetitorStates(competitionId);
 

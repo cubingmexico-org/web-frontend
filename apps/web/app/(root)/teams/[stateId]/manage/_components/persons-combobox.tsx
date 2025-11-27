@@ -13,7 +13,6 @@ import {
 } from "@workspace/ui/components/combobox";
 import { ChevronDown } from "lucide-react";
 import * as React from "react";
-import { getPersonsWithoutState } from "../_lib/actions";
 
 export function PersonsCombobox({
   state,
@@ -56,9 +55,13 @@ export function PersonsCombobox({
       }, 150);
 
       try {
-        const results = (await getPersonsWithoutState({
-          search: searchTerm,
-        })) as {
+        const response = await fetch(
+          `/api/get-persons-without-state?search=${encodeURIComponent(searchTerm)}`,
+        );
+
+        const data = await response.json();
+
+        const results = data?.data as {
           id: string;
           name: string;
         }[];

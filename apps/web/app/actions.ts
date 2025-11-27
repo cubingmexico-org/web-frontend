@@ -10,12 +10,13 @@ import {
   updateTeamCover,
   updateTeamLogo,
 } from "@/db/queries";
+import { getErrorMessage } from "@/lib/handle-error";
 import {
   addMemberFormSchema,
   profileFormSchema,
   teamFormSchema,
 } from "@/lib/validations";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import { z } from "zod";
 
 export async function signInAction(provider?: string) {
@@ -42,17 +43,17 @@ export async function profileFormAction(
       personId: data.personId,
     });
 
-    revalidateTag("profile-person");
+    updateTag(`profile-person-${data.personId}`);
 
     await fetch(process.env.URL + "/api/update-state-ranks", {
       method: "POST",
       body: JSON.stringify({ stateId: data.stateId }),
     });
 
-    revalidateTag("state-kinch-ranks");
-    revalidateTag("combined-records");
-    revalidateTag("ranks-single");
-    revalidateTag("ranks-average");
+    updateTag("state-kinch-ranks");
+    updateTag("combined-records");
+    updateTag("ranks-single");
+    updateTag("ranks-average");
 
     return {
       defaultValues: {
@@ -67,12 +68,7 @@ export async function profileFormAction(
       return {
         defaultValues,
         success: false,
-        errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).map(([key, value]) => [
-            key,
-            value?.join(", "),
-          ]),
-        ),
+        errors: getErrorMessage(error),
       };
     }
 
@@ -114,6 +110,8 @@ export async function teamFormAction(_prevState: unknown, formData: FormData) {
       isActive: data.isActive === "on",
     });
 
+    updateTag(`team-info-${data.stateId}`);
+
     return {
       defaultValues: {
         name: data.name,
@@ -135,12 +133,7 @@ export async function teamFormAction(_prevState: unknown, formData: FormData) {
       return {
         defaultValues,
         success: false,
-        errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).map(([key, value]) => [
-            key,
-            value?.join(", "),
-          ]),
-        ),
+        errors: getErrorMessage(error),
       };
     }
 
@@ -174,19 +167,17 @@ export async function addMemberFormAction(
       achievements: null,
     });
 
-    revalidateTag("persons-without-state");
-    revalidateTag("members");
-    revalidateTag("members-gender-count");
+    updateTag("persons-without-state");
+    updateTag(`total-members-${data.stateId}`);
+    updateTag(`members-gender-count-${data.stateId}`);
+    updateTag(`team-podiums-${data.stateId}`);
+    updateTag(`single-national-records-${data.stateId}`);
+    updateTag(`average-national-records-${data.stateId}`);
 
     await fetch(process.env.URL + "/api/update-state-ranks", {
       method: "POST",
       body: JSON.stringify({ stateId: data.stateId }),
     });
-
-    revalidateTag("state-kinch-ranks");
-    revalidateTag("combined-records");
-    revalidateTag("ranks-single");
-    revalidateTag("ranks-average");
 
     return {
       defaultValues: {
@@ -202,12 +193,7 @@ export async function addMemberFormAction(
       return {
         defaultValues,
         success: false,
-        errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).map(([key, value]) => [
-            key,
-            value?.join(", "),
-          ]),
-        ),
+        errors: getErrorMessage(error),
       };
     }
 
@@ -225,7 +211,7 @@ export async function deleteTeamLogoAction(stateId: string) {
       stateId,
     });
 
-    revalidatePath(`/teams/${stateId}/manage`);
+    updateTag(`team-info-${stateId}`);
 
     return {
       success: true,
@@ -242,7 +228,7 @@ export async function deleteTeamCoverAction(stateId: string) {
       stateId,
     });
 
-    revalidatePath(`/teams/${stateId}/manage`);
+    updateTag(`team-info-${stateId}`);
 
     return {
       success: true,
@@ -263,7 +249,7 @@ export async function updateTeamLogoAction(
       image,
     });
 
-    revalidatePath(`/teams/${stateId}/manage`);
+    updateTag(`team-info-${stateId}`);
 
     return {
       success: true,
@@ -284,7 +270,7 @@ export async function updateTeamCoverAction(
       coverImage,
     });
 
-    revalidatePath(`/teams/${stateId}/manage`);
+    updateTag(`team-info-${stateId}`);
 
     return {
       success: true,

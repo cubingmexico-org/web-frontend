@@ -6,7 +6,6 @@ import {
   parseAsStringEnum,
 } from "nuqs/server";
 import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers";
-import * as z from "zod";
 import { person } from "@/db/schema";
 import { ResultAverage, ResultSingle } from "../_types";
 
@@ -19,7 +18,9 @@ export const searchSingleParamsCache = createSearchParamsCache({
   index: parseAsInteger.withDefault(1),
   name: parseAsString.withDefault(""),
   state: parseAsArrayOf(parseAsString).withDefault([]),
-  gender: parseAsArrayOf(z.enum(person.gender.enumValues)).withDefault([]),
+  gender: parseAsArrayOf(
+    parseAsStringEnum(person.gender.enumValues),
+  ).withDefault([]),
   // advanced filter
   filters: getFiltersStateParser().withDefault([]),
   joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
@@ -38,7 +39,9 @@ export const searchAverageParamsCache = createSearchParamsCache({
   index: parseAsInteger.withDefault(1),
   name: parseAsString.withDefault(""),
   state: parseAsArrayOf(parseAsString).withDefault([]),
-  gender: parseAsArrayOf(z.enum(person.gender.enumValues)).withDefault([]),
+  gender: parseAsArrayOf(
+    parseAsStringEnum(person.gender.enumValues),
+  ).withDefault([]),
   // advanced filter
   filters: getFiltersStateParser().withDefault([]),
   joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),

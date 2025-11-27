@@ -11,15 +11,17 @@ import {
   createSerializer,
   parseAsArrayOf,
   parseAsString,
+  parseAsStringEnum,
   useQueryStates,
 } from "nuqs";
 import { person } from "@/db/schema";
-import { z } from "zod";
 
 const searchParams = {
   name: parseAsString.withDefault(""),
   state: parseAsArrayOf(parseAsString).withDefault([]),
-  gender: parseAsArrayOf(z.enum(person.gender.enumValues)).withDefault([]),
+  gender: parseAsArrayOf(
+    parseAsStringEnum(person.gender.enumValues),
+  ).withDefault([]),
 };
 const serialize = createSerializer(searchParams);
 

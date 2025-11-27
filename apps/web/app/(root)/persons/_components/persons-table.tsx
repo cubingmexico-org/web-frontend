@@ -5,23 +5,23 @@ import { useDataTable } from "@/hooks/use-data-table";
 import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import type {
-  getPersons,
-  getPersonsGenderCounts,
-  getPersonsStateCounts,
+  getCompetitors,
+  getCompetitorsGenderCounts,
+  getCompetitorsStateCounts,
 } from "../_lib/queries";
 import { getColumns } from "./persons-table-columns";
 
-interface PersonsTableProps {
+interface CompetitorsTableProps {
   promises: Promise<
     [
-      Awaited<ReturnType<typeof getPersons>>,
-      Awaited<ReturnType<typeof getPersonsStateCounts>>,
-      Awaited<ReturnType<typeof getPersonsGenderCounts>>,
+      Awaited<ReturnType<typeof getCompetitors>>,
+      Awaited<ReturnType<typeof getCompetitorsStateCounts>>,
+      Awaited<ReturnType<typeof getCompetitorsGenderCounts>>,
     ]
   >;
 }
 
-export function PersonsTable({ promises }: PersonsTableProps) {
+export function CompetitorsTable({ promises }: CompetitorsTableProps) {
   const [{ data, pageCount }, stateCounts, genderCounts] = React.use(promises);
 
   const columns = React.useMemo(

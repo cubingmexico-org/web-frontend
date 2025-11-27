@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@/db/index";
-import { and, eq, ilike, inArray, isNull, or } from "drizzle-orm";
-import { revalidateTag, unstable_cache, unstable_noStore } from "next/cache";
+import { eq, inArray } from "drizzle-orm";
+import { updateTag } from "next/cache";
 
 import { getErrorMessage } from "@/lib/handle-error";
 import { person, teamMember } from "@/db/schema";
@@ -37,7 +37,7 @@ export async function updateMember(_prevState: unknown, formData: FormData) {
         },
       });
 
-    revalidateTag("members");
+    updateTag("members");
 
     return {
       defaultValues: {
@@ -53,12 +53,7 @@ export async function updateMember(_prevState: unknown, formData: FormData) {
       return {
         defaultValues,
         success: false,
-        errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).map(([key, value]) => [
-            key,
-            value?.join(", "),
-          ]),
-        ),
+        errors: getErrorMessage(error),
       };
     }
 
@@ -71,7 +66,6 @@ export async function updateMember(_prevState: unknown, formData: FormData) {
 }
 
 export async function deleteMember(input: { id: string }) {
-  unstable_noStore();
   try {
     await db.transaction(async (tx) => {
       await tx.delete(teamMember).where(eq(teamMember.personId, input.id));
@@ -81,8 +75,8 @@ export async function deleteMember(input: { id: string }) {
         .where(eq(person.id, input.id));
     });
 
-    revalidateTag("members");
-    revalidateTag("members-gender-count");
+    updateTag("members");
+    updateTag("members-gender-count");
 
     return {
       data: null,
@@ -97,7 +91,6 @@ export async function deleteMember(input: { id: string }) {
 }
 
 export async function deleteMembers(input: { ids: string[]; stateId: string }) {
-  unstable_noStore();
   try {
     await db.transaction(async (tx) => {
       await tx
@@ -109,18 +102,18 @@ export async function deleteMembers(input: { ids: string[]; stateId: string }) {
         .where(inArray(person.id, input.ids));
     });
 
-    revalidateTag("members");
-    revalidateTag("members-gender-count");
+    updateTag("members");
+    updateTag("members-gender-count");
 
     await fetch(process.env.URL + "/api/update-state-ranks", {
       method: "POST",
       body: JSON.stringify({ stateId: input.stateId }),
     });
 
-    revalidateTag("state-kinch-ranks");
-    revalidateTag("combined-records");
-    revalidateTag("ranks-single");
-    revalidateTag("ranks-average");
+    updateTag("state-kinch-ranks");
+    updateTag("combined-records");
+    updateTag("ranks-single");
+    updateTag("ranks-average");
 
     return {
       data: null,
@@ -133,39 +126,4 @@ export async function deleteMembers(input: { ids: string[]; stateId: string }) {
       error: getErrorMessage(err),
     };
   }
-}
-
-export async function getPersonsWithoutState({ search }: { search: string }) {
-  return unstable_cache(
-    async () => {
-      try {
-        return await db
-          .select({
-            id: person.id,
-            name: person.name,
-          })
-          .from(person)
-          .where(
-            and(
-              isNull(person.stateId),
-              or(
-                ilike(person.name, `%${search}%`),
-                ilike(person.id, `%${search}%`),
-              ),
-            ),
-          )
-          .orderBy(person.name)
-          .limit(5)
-          .then((res) => res);
-      } catch (err) {
-        console.error(err);
-        return [];
-      }
-    },
-    [JSON.stringify({ search })],
-    {
-      revalidate: 3600,
-      tags: ["persons-without-state"],
-    },
-  )();
 }

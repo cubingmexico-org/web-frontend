@@ -115,15 +115,15 @@ export function AddMemberForm({
                 <div className="space-y-4 py-4">
                   <div
                     className="group/field grid gap-2"
-                    data-invalid={!!state.errors?.personId}
+                    data-invalid={!!state.errors}
                   >
                     <PersonsCombobox state={state as never} />
-                    {state.errors?.personId && (
+                    {state.errors && (
                       <p
                         id="error-personId"
                         className="text-destructive text-sm"
                       >
-                        {state.errors.personId}
+                        {state.errors}
                       </p>
                     )}
                   </div>

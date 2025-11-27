@@ -110,17 +110,15 @@ export function toSentenceCase(str: string) {
     .trim();
 }
 
-export const getTier = (
-  member:
-    | {
-        numberOfSpeedsolvingAverages: number;
-        numberOfBLDFMCMeans: number;
-        hasWorldRecord: boolean;
-        hasWorldChampionshipPodium: boolean;
-        eventsWon: number;
-      }
-    | undefined,
-): Tier | null => {
+export function getTier(
+  member: {
+    numberOfSpeedsolvingAverages: number;
+    numberOfBLDFMCMeans: number;
+    hasWorldRecord: boolean;
+    hasWorldChampionshipPodium: boolean;
+    eventsWon: number;
+  } | null,
+): Tier | null {
   if (!member) {
     return null;
   }
@@ -149,6 +147,24 @@ export const getTier = (
     case 5:
       return "Diamante";
     default:
-      return "Bronce";
+      return null;
   }
-};
+}
+
+export function getTierClass(tier: Tier): string {
+  switch (tier) {
+    case "Plata":
+      return "bg-gradient-to-r from-gray-300 to-gray-500 border-0";
+    case "Oro":
+      return "bg-gradient-to-r from-yellow-400 to-yellow-600 border-0";
+    case "Platino":
+      return "bg-gradient-to-r from-gray-100 to-gray-300 border-0";
+    case "Ópalo":
+      return "bg-gradient-to-r from-blue-400 via-purple-300 to-pink-400 border-0";
+    case "Diamante":
+      return "bg-gradient-to-r from-blue-200 to-blue-400 border-0";
+    case "Bronce":
+    default:
+      return "bg-gradient-to-r from-amber-500 to-amber-700 border-0";
+  }
+}

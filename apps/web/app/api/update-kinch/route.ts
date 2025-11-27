@@ -103,7 +103,7 @@ export async function POST(): Promise<NextResponse> {
 
       const data = await tx.execute(query);
 
-      const persons = data.rows as {
+      const persons = data as unknown as {
         id: string;
         events: { eventId: string; ratio: number }[];
         overall: number;

@@ -1,18 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 
-import { db } from "@/db";
-import { and, countDistinct, eq, gt, inArray, sql } from "drizzle-orm";
-import {
-  championship,
-  competition,
-  delegate,
-  organiser,
-  person,
-  rankAverage,
-  rankSingle,
-  result,
-  state,
-} from "@/db/schema";
 import {
   Table,
   TableHeader,
@@ -23,7 +10,12 @@ import {
 } from "@workspace/ui/components/table";
 import Image from "next/image";
 import { getEvents, getPerson } from "@/db/queries";
-import { formatTime, formatTime333mbf, getTier } from "@/lib/utils";
+import {
+  formatTime,
+  formatTime333mbf,
+  getTier,
+  getTierClass,
+} from "@/lib/utils";
 import { Info } from "lucide-react";
 import {
   Tooltip,
@@ -33,18 +25,21 @@ import {
 import { cn } from "@workspace/ui/lib/utils";
 import { Badge } from "@workspace/ui/components/badge";
 import type { GeoJSONProps } from "react-leaflet";
-import { headers } from "next/headers";
 import Link from "next/link";
-import {
-  BLD_FMC_MEANS_EVENTS,
-  SPEEDSOLVING_AVERAGES_EVENTS,
-} from "@/lib/constants";
-import { unstable_cache } from "@/lib/unstable-cache";
-import { Tier } from "@/types";
 import type { Metadata } from "next";
 import { MapContainer } from "./_components/map-container";
-
-const isProduction = process.env.NODE_ENV === "production";
+import { getStatesGeoJSON } from "@/db/queries";
+import {
+  getAverageStateRanks,
+  getIsDelegate,
+  getIsOrganiser,
+  getMembershipData,
+  getPersonInfo,
+  getSingleStateRanks,
+  getWcaData,
+} from "./_lib/queries";
+import { headers } from "next/headers";
+import { notFound } from "next/navigation";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -68,206 +63,78 @@ export default async function Page({
 }) {
   const id = (await params).id;
 
+  const [person, wcaData, events] = await Promise.all([
+    getPersonInfo(id),
+    getWcaData(id),
+    getEvents(),
+  ]);
+
+  if (!person || !wcaData) {
+    notFound();
+  }
+
   const headersList = await headers();
   const domain = headersList.get("host");
+  const isProduction = process.env.NODE_ENV === "production";
 
-  const data = await unstable_cache(
-    async () => {
-      const response = await fetch(
-        `https://www.worldcubeassociation.org/api/v0/persons/${id}`,
-      );
-      return response.json();
-    },
-    [id],
-    {
-      revalidate: 3600,
-      tags: ["wca-person"],
-    },
-  )();
+  const statesData = await getStatesGeoJSON(
+    isProduction ? `https://${domain}` : `http://${domain}`,
+  );
 
-  const events = await getEvents();
+  const stateIds = person.statesNames;
 
-  const { persons, SRcount, records, tier, isDelegate, isOrganiser } =
-    await unstable_cache(
-      async () => {
-        // Split queries - don't wrap everything in a transaction
-        const persons = await db
-          .select({
-            state: state.name,
-            statesNames: sql`array_agg(DISTINCT ${competition.stateId}) FILTER (WHERE ${competition.stateId} IS NOT NULL)`,
-          })
-          .from(person)
-          .leftJoin(state, eq(person.stateId, state.id))
-          .leftJoin(result, eq(person.id, result.personId))
-          .leftJoin(competition, eq(result.competitionId, competition.id))
-          .where(eq(person.id, id))
-          .groupBy(state.name);
-
-        const [
-          singleStateRanks,
-          averageStateRanks,
-          membershipData,
-          isDelegate,
-          isOrganiser,
-        ] = await Promise.all([
-          db
-            .select({
-              stateRank: rankSingle.stateRank,
-              eventId: rankSingle.eventId,
-            })
-            .from(rankSingle)
-            .where(eq(rankSingle.personId, id)),
-
-          db
-            .select({
-              stateRank: rankAverage.stateRank,
-              eventId: rankAverage.eventId,
-            })
-            .from(rankAverage)
-            .where(eq(rankAverage.personId, id)),
-
-          db
-            .select({
-              numberOfSpeedsolvingAverages: sql<number>`COUNT(DISTINCT CASE WHEN ${result.eventId} IN(${sql.join(SPEEDSOLVING_AVERAGES_EVENTS, sql`, `)}) AND ${result.average} > 0 THEN ${result.eventId} ELSE NULL END)`,
-              numberOfBLDFMCMeans: sql<number>`COUNT(DISTINCT CASE WHEN ${result.eventId} IN(${sql.join(BLD_FMC_MEANS_EVENTS, sql`, `)}) AND ${result.average} > 0 THEN ${result.eventId} ELSE NULL END)`,
-              hasWorldRecord: sql<boolean>`MAX(CASE WHEN ${result.regionalSingleRecord} = 'WR' OR ${result.regionalAverageRecord} = 'WR' THEN 1 ELSE 0 END) = 1`,
-              hasWorldChampionshipPodium: sql<boolean>`MAX(CASE WHEN ${result.pos} IN(1, 2, 3) AND ${result.roundTypeId} IN('f', 'c') AND ${championship.championshipType} = 'world' THEN 1 ELSE 0 END) = 1`,
-              eventsWon: sql<number>`COUNT(DISTINCT CASE WHEN ${result.pos} = 1 AND ${result.roundTypeId} IN('f', 'c') THEN ${result.eventId} ELSE NULL END)`,
-            })
-            .from(result)
-            .leftJoin(
-              championship,
-              eq(result.competitionId, championship.competitionId),
-            )
-            .where(
-              and(
-                eq(result.personId, id),
-                inArray(
-                  result.eventId,
-                  events.map((event) => event.id),
-                ),
-                gt(result.best, 0),
-              ),
-            )
-            .having(eq(countDistinct(result.eventId), events.length)),
-
-          db
-            .select()
-            .from(delegate)
-            .where(
-              and(eq(delegate.personId, id), eq(delegate.status, "active")),
-            ),
-
-          db
-            .select()
-            .from(organiser)
-            .where(
-              and(eq(organiser.personId, id), eq(organiser.status, "active")),
-            ),
-        ]);
-
-        const SRcount =
-          singleStateRanks.filter((rank) => rank.stateRank === 1).length +
-          averageStateRanks.filter((rank) => rank.stateRank === 1).length;
-
-        const records = events
-          .filter((event) => data.personal_records[event.id])
-          .map((event) => {
-            const singleStateRank = singleStateRanks.find(
-              (rank) => rank.eventId === event.id,
-            )?.stateRank;
-            const averageStateRank = averageStateRanks.find(
-              (rank) => rank.eventId === event.id,
-            )?.stateRank;
-
-            return {
-              event: event.id,
-              record: {
-                ...data.personal_records[event.id],
-                single: {
-                  ...data.personal_records[event.id]?.single,
-                  state_rank: singleStateRank ?? undefined,
-                },
-                average: {
-                  ...data.personal_records[event.id]?.average,
-                  state_rank: averageStateRank ?? undefined,
-                },
-              },
-            };
-          });
-
-        const tier = getTier(membershipData[0]!);
-
-        return {
-          persons,
-          singleStateRanks,
-          averageStateRanks,
-          SRcount,
-          records,
-          tier,
-          isDelegate,
-          isOrganiser,
-        };
-      },
-      [id],
-      {
-        revalidate: 3600,
-        tags: [`person-data-${id}`],
-      },
-    )();
-
-  const states = await unstable_cache(
-    async () => {
-      const response = await fetch(
-        `${isProduction ? "https://" : "http://"}` + domain + "/states.geojson",
-      );
-      return response.json();
-    },
-    [],
-    {
-      revalidate: false,
-      tags: ["geojson"],
-    },
-  )();
-
-  const statesData = states as {
-    type: string;
-    features: {
-      type: string;
-      properties: {
-        id: string;
-        name: string;
-      };
-      geometry: {
-        type: string;
-        coordinates: number[][][][];
-      };
-    }[];
-  };
-
-  const stateIds = persons[0]?.statesNames as string[] | null;
-
-  const filteredStatesData = statesData.features.filter((feature) =>
+  const filteredStatesData = statesData?.features.filter((feature) =>
     stateIds?.includes(feature.properties.id),
   ) as unknown as GeoJSONProps["data"];
 
-  const getTierClass = (tier: Tier): string => {
-    switch (tier) {
-      case "Plata":
-        return "bg-gradient-to-r from-gray-300 to-gray-500 border-0";
-      case "Oro":
-        return "bg-gradient-to-r from-yellow-400 to-yellow-600 border-0";
-      case "Platino":
-        return "bg-gradient-to-r from-gray-100 to-gray-300 border-0";
-      case "Ópalo":
-        return "bg-gradient-to-r from-blue-400 via-purple-300 to-pink-400 border-0";
-      case "Diamante":
-        return "bg-gradient-to-r from-blue-200 to-blue-400 border-0";
-      case "Bronce":
-      default:
-        return "bg-gradient-to-r from-amber-500 to-amber-700 border-0";
-    }
-  };
+  const [
+    singleStateRanks,
+    averageStateRanks,
+    membershipData,
+    isDelegate,
+    isOrganiser,
+  ] = await Promise.all([
+    getSingleStateRanks(id),
+    getAverageStateRanks(id),
+    getMembershipData(
+      id,
+      events.map((event) => event.id),
+    ),
+    getIsDelegate(id),
+    getIsOrganiser(id),
+  ]);
+
+  const tier = getTier(membershipData);
+
+  const records = events
+    .filter((event) => wcaData.personal_records[event.id])
+    .map((event) => {
+      const singleStateRank = singleStateRanks.find(
+        (rank) => rank.eventId === event.id,
+      )?.stateRank;
+      const averageStateRank = averageStateRanks.find(
+        (rank) => rank.eventId === event.id,
+      )?.stateRank;
+
+      return {
+        event: event.id,
+        record: {
+          ...wcaData.personal_records[event.id],
+          single: {
+            ...wcaData.personal_records[event.id]?.single,
+            state_rank: singleStateRank ?? undefined,
+          },
+          average: {
+            ...wcaData.personal_records[event.id]?.average,
+            state_rank: averageStateRank ?? undefined,
+          },
+        },
+      };
+    });
+
+  const SRcount =
+    singleStateRanks.filter((rank) => rank.stateRank === 1).length +
+    averageStateRanks.filter((rank) => rank.stateRank === 1).length;
 
   return (
     <>
@@ -277,25 +144,25 @@ export default async function Page({
           target="_blank"
           rel="noopener noreferrer"
         >
-          {data.person.name}
+          {wcaData?.person.name}
         </Link>
       </h1>
       <div className="w-full flex justify-center gap-2 mb-2">
         {tier && <Badge className={getTierClass(tier)}>Miembro {tier}</Badge>}
-        {isDelegate.length > 0 && (
+        {isDelegate && (
           <Badge>
-            {data.person.gender === "m"
+            {wcaData?.person.gender === "m"
               ? "Delegado"
-              : data.person.gender === "f"
+              : wcaData?.person.gender === "f"
                 ? "Delegada"
                 : null}
           </Badge>
         )}
-        {isOrganiser.length > 0 && (
+        {isOrganiser && (
           <Badge variant="outline">
-            {data.person.gender === "m"
+            {wcaData?.person.gender === "m"
               ? "Organizador"
-              : data.person.gender === "f"
+              : wcaData?.person.gender === "f"
                 ? "Organizadora"
                 : null}
           </Badge>
@@ -303,7 +170,7 @@ export default async function Page({
       </div>
       <div className="w-full flex justify-center mb-6">
         <Image
-          src={data.person.avatar.url}
+          src={wcaData?.person.avatar.url || "/placeholder.svg"}
           alt="Avatar"
           width={300}
           height={300}
@@ -322,20 +189,22 @@ export default async function Page({
         <TableBody>
           <TableRow>
             <TableCell className="text-center">
-              {persons[0]?.state ?? (
+              {person.state ?? (
                 <span className="text-muted-foreground font-thin">N/A</span>
               )}
             </TableCell>
-            <TableCell className="text-center">{data.person.wca_id}</TableCell>
             <TableCell className="text-center">
-              {data.person.gender === "m"
+              {wcaData.person.wca_id}
+            </TableCell>
+            <TableCell className="text-center">
+              {wcaData.person.gender === "m"
                 ? "Masculino"
-                : data.person.gender === "f"
+                : wcaData.person.gender === "f"
                   ? "Femenino"
                   : "Otro"}
             </TableCell>
             <TableCell className="text-center">
-              {data.competition_count}
+              {wcaData.competition_count}
             </TableCell>
           </TableRow>
         </TableBody>
@@ -347,9 +216,7 @@ export default async function Page({
         <TableHeader>
           <TableRow>
             <TableHead>Evento</TableHead>
-            {persons[0]?.state && (
-              <TableHead className="text-center">SR</TableHead>
-            )}
+            {person.state && <TableHead className="text-center">SR</TableHead>}
             <TableHead className="text-center">NR</TableHead>
             <TableHead className="text-center">CR</TableHead>
             <TableHead className="text-center">WR</TableHead>
@@ -358,9 +225,7 @@ export default async function Page({
             <TableHead className="text-center">WR</TableHead>
             <TableHead className="text-center">CR</TableHead>
             <TableHead className="text-center">NR</TableHead>
-            {persons[0]?.state && (
-              <TableHead className="text-center">SR</TableHead>
-            )}
+            {person.state && <TableHead className="text-center">SR</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -372,7 +237,7 @@ export default async function Page({
                   className={`cubing-icon event-${record.event}`}
                 />
               </TableCell>
-              {persons[0]?.state && (
+              {person.state && (
                 <TableCell
                   className={cn(
                     "text-center",
@@ -454,7 +319,7 @@ export default async function Page({
               >
                 {record?.record?.average?.country_rank}
               </TableCell>
-              {persons[0]?.state && (
+              {person.state && (
                 <TableCell
                   className={cn(
                     "text-center",
@@ -488,13 +353,13 @@ export default async function Page({
             <TableBody>
               <TableRow>
                 <TableCell className="text-center">
-                  {data.medals.gold}
+                  {wcaData.medals.gold}
                 </TableCell>
                 <TableCell className="text-center">
-                  {data.medals.silver}
+                  {wcaData.medals.silver}
                 </TableCell>
                 <TableCell className="text-center">
-                  {data.medals.bronze}
+                  {wcaData.medals.bronze}
                 </TableCell>
               </TableRow>
             </TableBody>
@@ -524,13 +389,13 @@ export default async function Page({
             <TableBody>
               <TableRow>
                 <TableCell className="text-center">
-                  {data.records.world}
+                  {wcaData.records.world}
                 </TableCell>
                 <TableCell className="text-center">
-                  {data.records.continental}
+                  {wcaData.records.continental}
                 </TableCell>
                 <TableCell className="text-center">
-                  {data.records.national}
+                  {wcaData.records.national}
                 </TableCell>
                 <TableCell className="text-center">{SRcount}</TableCell>
               </TableRow>

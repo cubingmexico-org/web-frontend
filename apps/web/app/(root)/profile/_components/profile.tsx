@@ -139,7 +139,7 @@ export function Profile({ user, person, states }: ProfileProps) {
 
               <div
                 className="group/field grid gap-2"
-                data-invalid={!!state.errors?.stateId}
+                data-invalid={!!state.errors}
               >
                 <Label
                   htmlFor="state"
@@ -160,7 +160,7 @@ export function Profile({ user, person, states }: ProfileProps) {
                 </Label>
                 <Select
                   defaultValue={state.defaultValues.stateId || undefined}
-                  aria-invalid={!!state.errors?.stateId}
+                  aria-invalid={!!state.errors}
                   aria-errormessage="error-stateId"
                   name="stateId"
                   disabled={!!person.stateId}
@@ -179,9 +179,9 @@ export function Profile({ user, person, states }: ProfileProps) {
                     ))}
                   </SelectContent>
                 </Select>
-                {state.errors?.name && (
+                {state.errors && (
                   <p id="error-name" className="text-destructive text-sm">
-                    {state.errors.name}
+                    {state.errors}
                   </p>
                 )}
               </div>
@@ -202,14 +202,6 @@ export function Profile({ user, person, states }: ProfileProps) {
               </Button>
             </div>
           </form>
-        </TabsContent>
-
-        <TabsContent className="space-y-6" value="preferences">
-          <div></div>
-
-          <div>
-            <Button>Guardar</Button>
-          </div>
         </TabsContent>
       </Tabs>
     </>

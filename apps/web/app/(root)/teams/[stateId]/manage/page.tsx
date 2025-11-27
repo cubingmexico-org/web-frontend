@@ -1,15 +1,17 @@
-import { db } from "@/db";
-import { person, state, team, teamMember } from "@/db/schema";
-import { and, eq } from "drizzle-orm";
 import { ManageTeam } from "./_components/manage-team";
 import { auth } from "@/auth";
 import { getValidFilters } from "@/lib/data-table";
 import { SearchParams } from "@/types";
 import { searchParamsCache } from "../_lib/validations";
-import { getMembers, getMembersGenderCounts } from "../_lib/queries";
+import {
+  getMembers,
+  getMembersGenderCounts,
+  getTeamInfo,
+  getIsTeamAdmin,
+} from "../_lib/queries";
 import { getTeam } from "@/db/queries";
 import { Metadata } from "next";
-import { unauthorized } from "next/navigation";
+import { notFound, unauthorized } from "next/navigation";
 
 type Props = {
   params: Promise<{ stateId: string }>;
@@ -32,38 +34,24 @@ export default async function Page(props: {
 }) {
   const session = await auth();
 
-  const stateId = (await props.params).stateId;
-
-  const admins = await db
-    .select({
-      id: person.id,
-    })
-    .from(person)
-    .leftJoin(teamMember, eq(person.id, teamMember.personId))
-    .where(and(eq(person.stateId, stateId), eq(teamMember.isAdmin, true)));
-
-  const currentUserIsAdmin = admins.some((admin) => {
-    return admin.id === session?.user?.id;
-  });
-
-  if (!currentUserIsAdmin) {
+  if (!session) {
     unauthorized();
   }
 
-  const teamsData = await db
-    .select({
-      name: team.name,
-      description: team.description,
-      image: team.image,
-      coverImage: team.coverImage,
-      state: state.name,
-      founded: team.founded,
-      socialLinks: team.socialLinks,
-      isActive: team.isActive,
-    })
-    .from(team)
-    .innerJoin(state, eq(team.stateId, state.id))
-    .where(eq(team.stateId, stateId));
+  const stateId = (await props.params).stateId;
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+  const isAdmin = await getIsTeamAdmin(stateId, session.user?.id!);
+
+  if (!isAdmin) {
+    unauthorized();
+  }
+
+  const team = await getTeamInfo(stateId);
+
+  if (!team) {
+    notFound();
+  }
 
   const searchParams = await props.searchParams;
   const search = searchParamsCache.parse(searchParams);
@@ -81,11 +69,5 @@ export default async function Page(props: {
     getMembersGenderCounts(stateId),
   ]);
 
-  return (
-    <ManageTeam
-      stateId={stateId}
-      teamData={teamsData[0]!}
-      promises={promises}
-    />
-  );
+  return <ManageTeam stateId={stateId} teamData={team} promises={promises} />;
 }

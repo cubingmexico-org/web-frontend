@@ -6,24 +6,24 @@ import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import type {
   getDelegateStatusCounts,
-  getPersons,
-  getPersonsGenderCounts,
-  getPersonsStateCounts,
+  getDelegates,
+  getDelegatesGenderCounts,
+  getDelegatesStateCounts,
 } from "../_lib/queries";
 import { getColumns } from "./delegates-table-columns";
 
-interface PersonsTableProps {
+interface DelegatesTableProps {
   promises: Promise<
     [
-      Awaited<ReturnType<typeof getPersons>>,
-      Awaited<ReturnType<typeof getPersonsStateCounts>>,
-      Awaited<ReturnType<typeof getPersonsGenderCounts>>,
+      Awaited<ReturnType<typeof getDelegates>>,
+      Awaited<ReturnType<typeof getDelegatesStateCounts>>,
+      Awaited<ReturnType<typeof getDelegatesGenderCounts>>,
       Awaited<ReturnType<typeof getDelegateStatusCounts>>,
     ]
   >;
 }
 
-export function PersonsTable({ promises }: PersonsTableProps) {
+export function DelegatesTable({ promises }: DelegatesTableProps) {
   const [{ data, pageCount }, stateCounts, genderCounts, statusCounts] =
     React.use(promises);
 

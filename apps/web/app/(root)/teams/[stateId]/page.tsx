@@ -24,18 +24,6 @@ import {
   Plus,
 } from "lucide-react";
 import Image from "next/image";
-import { db } from "@/db";
-import {
-  competition,
-  person,
-  rankAverage,
-  rankSingle,
-  result,
-  state,
-  team,
-  teamMember,
-} from "@/db/schema";
-import { and, count, eq, gt, inArray, or } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import {
   Avatar,
@@ -49,7 +37,17 @@ import ReactMarkdown from "react-markdown";
 import React from "react";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
 import { MembersTable } from "./_components/members-table";
-import { getMembers, getMembersGenderCounts } from "./_lib/queries";
+import {
+  getAverageNationalRecords,
+  getMembers,
+  getMembersGenderCounts,
+  getSingleNationalRecords,
+  getTeamCompetitions,
+  getTeamInfo,
+  getTeamPodiums,
+  getTotalMembers,
+  getIsTeamAdmin,
+} from "./_lib/queries";
 import { getValidFilters } from "@/lib/data-table";
 import { SearchParams } from "@/types";
 import { searchParamsCache } from "./_lib/validations";
@@ -86,99 +84,11 @@ export default async function Page(props: {
   const stateId = (await props.params).stateId;
   const session = await auth();
 
-  const {
-    teamsData,
-    totalMembers,
-    competitions,
-    totalPodiums,
-    totalSingleNationalRecords,
-    totalAverageNationalRecords,
-  } = await db.transaction(async (tx) => {
-    const teamsData = await tx
-      .select({
-        name: team.name,
-        description: team.description,
-        image: team.image,
-        coverImage: team.coverImage,
-        state: state.name,
-        founded: team.founded,
-        socialLinks: team.socialLinks,
-        isActive: team.isActive,
-      })
-      .from(team)
-      .innerJoin(state, eq(team.stateId, state.id))
-      .where(eq(team.stateId, stateId));
+  const team = await getTeamInfo(stateId);
 
-    const totalMembers = (await tx
-      .select({
-        count: count(),
-      })
-      .from(person)
-      .where(eq(person.stateId, stateId))
-      .execute()
-      .then((res) => res[0]?.count ?? 0)) as number;
-
-    const competitions = await tx
-      .select({
-        id: competition.id,
-        name: competition.name,
-        cityName: competition.cityName,
-        venue: competition.venue,
-        startDate: competition.startDate,
-        endDate: competition.endDate,
-        latitude: competition.latitude,
-        longitude: competition.longitude,
-      })
-      .from(competition)
-      .where(eq(competition.stateId, stateId))
-      .orderBy(competition.startDate);
-
-    const totalPodiums = await tx
-      .select({
-        pos: result.pos,
-      })
-      .from(result)
-      .innerJoin(person, eq(result.personId, person.id))
-      .where(
-        and(
-          eq(person.stateId, stateId),
-          or(eq(result.roundTypeId, "f"), eq(result.roundTypeId, "c")),
-          inArray(result.pos, [1, 2, 3]),
-          gt(result.best, 0),
-        ),
-      );
-
-    const totalSingleNationalRecords = await tx
-      .select({
-        eventId: rankSingle.eventId,
-      })
-      .from(rankSingle)
-      .innerJoin(person, eq(rankSingle.personId, person.id))
-      .where(and(eq(person.stateId, stateId), eq(rankSingle.countryRank, 1)));
-
-    const totalAverageNationalRecords = await tx
-      .select({
-        eventId: rankAverage.eventId,
-      })
-      .from(rankAverage)
-      .innerJoin(person, eq(rankAverage.personId, person.id))
-      .where(and(eq(person.stateId, stateId), eq(rankAverage.countryRank, 1)));
-
-    return {
-      teamsData,
-      totalMembers,
-      competitions,
-      totalPodiums,
-      totalSingleNationalRecords,
-      totalAverageNationalRecords,
-    };
-  });
-
-  if (teamsData.length === 0) {
+  if (!team) {
     return notFound();
   }
-
-  const teamData = teamsData[0];
 
   const searchParams = await props.searchParams;
   const search = searchParamsCache.parse(searchParams);
@@ -196,21 +106,25 @@ export default async function Page(props: {
     getMembersGenderCounts(stateId),
   ]);
 
+  const [
+    totalMembers,
+    competitions,
+    totalPodiums,
+    totalSingleNationalRecords,
+    totalAverageNationalRecords,
+    isAdmin,
+  ] = await Promise.all([
+    getTotalMembers(stateId),
+    getTeamCompetitions(stateId),
+    getTeamPodiums(stateId),
+    getSingleNationalRecords(stateId),
+    getAverageNationalRecords(stateId),
+    getIsTeamAdmin(stateId, session?.user?.id || ""),
+  ]);
+
   const upcomingCompetitions = competitions.filter(
     (competition) => competition.startDate >= new Date(),
   );
-
-  const admins = await db
-    .select({
-      id: person.id,
-    })
-    .from(person)
-    .leftJoin(teamMember, eq(person.id, teamMember.personId))
-    .where(and(eq(person.stateId, stateId), eq(teamMember.isAdmin, true)));
-
-  const currentUserIsAdmin = admins.some((admin) => {
-    return admin.id === session?.user?.id;
-  });
 
   const pastCompetitions = competitions
     .filter((competition) => competition.endDate < new Date())
@@ -219,18 +133,20 @@ export default async function Page(props: {
   const totalNationalRecords =
     totalSingleNationalRecords.length + totalAverageNationalRecords.length;
 
-  const foundedYear = teamData?.founded
-    ? new Date(teamData.founded).getFullYear()
+  const foundedYear = team.founded
+    ? new Date(team.founded).getFullYear()
     : new Date().getFullYear();
+
   const currentYear = new Date().getFullYear();
+
   const activeYears = currentYear - foundedYear;
 
   return (
     <>
       <div className="relative h-[400px] bg-gray-200">
         <Image
-          src={teamData?.coverImage || "/placeholder.svg"}
-          alt={`${teamData?.name} cover`}
+          src={team.coverImage || "/placeholder.svg"}
+          alt={`${team.name} cover`}
           className="w-full h-full object-cover"
           width={1200}
           height={400}
@@ -241,32 +157,32 @@ export default async function Page(props: {
             <div className="flex gap-6 w-full">
               <Avatar className="h-24 w-24 border-4 border-white">
                 <AvatarImage
-                  src={teamData?.image ?? undefined}
-                  alt={teamData?.name ?? undefined}
+                  src={team.image ?? undefined}
+                  alt={team.name ?? undefined}
                 />
                 <AvatarFallback>
-                  {teamData?.name
+                  {team.name
                     ?.split(" ")
                     .map((n) => n[0])
                     .join("")}
                 </AvatarFallback>
               </Avatar>
               <div className="text-white mb-2">
-                <h1 className="text-3xl font-bold">{teamData?.name}</h1>
+                <h1 className="text-3xl font-bold">{team.name}</h1>
                 <div className="flex flex-col sm:flex-row items-start sm:gap-4 gap-2 mt-2">
                   <div className="flex items-center">
                     <MapPin className="w-4 h-4 mr-1" />
-                    {teamData?.state}
+                    {team.state}
                   </div>
                   <div className="flex items-center">
                     <Users className="w-4 h-4 mr-1" />
                     {totalMembers} miembros
                   </div>
-                  {teamData?.founded ? (
+                  {team.founded ? (
                     <div className="flex items-center">
                       <Calendar className="w-4 h-4 mr-1" />
                       Desde{" "}
-                      {teamData.founded.toLocaleDateString("es-ES", {
+                      {team.founded.toLocaleDateString("es-ES", {
                         year: "numeric",
                       })}
                     </div>
@@ -286,7 +202,7 @@ export default async function Page(props: {
               >
                 <Users /> Ver todos los Teams
               </Link>
-              {currentUserIsAdmin ? (
+              {isAdmin ? (
                 <Link
                   className={cn(
                     buttonVariants({
@@ -330,20 +246,20 @@ export default async function Page(props: {
                     <CardTitle>Acerca de</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p>{teamData?.description}</p>
+                    <p>{team.description}</p>
                     <div className="grid grid-cols-2 gap-4 mt-4">
-                      {teamData?.socialLinks?.email ? (
+                      {team.socialLinks?.email ? (
                         <a
-                          href={`mailto:${teamData?.socialLinks?.email}`}
+                          href={`mailto:${team.socialLinks?.email}`}
                           className="flex items-center text-sm text-muted-foreground hover:underline"
                         >
                           <Mail className="mr-2 h-4 w-4" />
                           Correo electrónico
                         </a>
                       ) : null}
-                      {teamData?.socialLinks?.whatsapp ? (
+                      {team.socialLinks?.whatsapp ? (
                         <Link
-                          href={`https://wa.me/${teamData?.socialLinks?.whatsapp}`}
+                          href={`https://wa.me/${team.socialLinks?.whatsapp}`}
                           className="flex items-center text-sm text-muted-foreground hover:underline"
                           target="_blank"
                           rel="noopener noreferrer"
@@ -352,9 +268,9 @@ export default async function Page(props: {
                           WhatsApp
                         </Link>
                       ) : null}
-                      {teamData?.socialLinks?.facebook ? (
+                      {team.socialLinks?.facebook ? (
                         <Link
-                          href={teamData?.socialLinks?.facebook}
+                          href={team.socialLinks?.facebook}
                           className="flex items-center text-sm text-muted-foreground hover:underline"
                           target="_blank"
                           rel="noopener noreferrer"
@@ -363,9 +279,9 @@ export default async function Page(props: {
                           Facebook
                         </Link>
                       ) : null}
-                      {teamData?.socialLinks?.instagram ? (
+                      {team.socialLinks?.instagram ? (
                         <Link
-                          href={teamData?.socialLinks?.instagram}
+                          href={team.socialLinks?.instagram}
                           className="flex items-center text-sm text-muted-foreground hover:underline"
                           target="_blank"
                           rel="noopener noreferrer"
@@ -374,9 +290,9 @@ export default async function Page(props: {
                           Instagram
                         </Link>
                       ) : null}
-                      {teamData?.socialLinks?.tiktok ? (
+                      {team.socialLinks?.tiktok ? (
                         <Link
-                          href={teamData?.socialLinks?.tiktok}
+                          href={team.socialLinks?.tiktok}
                           className="flex items-center text-sm text-muted-foreground hover:underline"
                           target="_blank"
                           rel="noopener noreferrer"
@@ -385,9 +301,9 @@ export default async function Page(props: {
                           TikTok
                         </Link>
                       ) : null}
-                      {teamData?.socialLinks?.twitter ? (
+                      {team.socialLinks?.twitter ? (
                         <Link
-                          href={teamData?.socialLinks?.twitter}
+                          href={team.socialLinks?.twitter}
                           className="flex items-center text-sm text-muted-foreground hover:underline"
                           target="_blank"
                           rel="noopener noreferrer"
@@ -514,32 +430,32 @@ export default async function Page(props: {
                         <div className="text-sm font-medium mb-2">Ver más:</div>
                         <div className="flex flex-col space-y-2">
                           <Link
-                            href={`/rankings/333/single?state=${encodeURIComponent(teamData?.state ?? "")}`}
+                            href={`/rankings/333/single?state=${encodeURIComponent(team.state ?? "")}`}
                             className="text-sm flex items-center text-blue-600 hover:underline"
                           >
                             <Users className="w-4 h-4 mr-2" />
-                            Rankings de {teamData?.state}
+                            Rankings de {team.state}
                           </Link>
                           <Link
-                            href={`/records?state=${encodeURIComponent(teamData?.state ?? "")}`}
+                            href={`/records?state=${encodeURIComponent(team.state ?? "")}`}
                             className="text-sm flex items-center text-blue-600 hover:underline"
                           >
                             <Trophy className="w-4 h-4 mr-2" />
-                            Récords de {teamData?.state}
+                            Récords de {team.state}
                           </Link>
                           <Link
-                            href={`/sor/single?state=${encodeURIComponent(teamData?.state ?? "")}`}
+                            href={`/sor/single?state=${encodeURIComponent(team.state ?? "")}`}
                             className="text-sm flex items-center text-blue-600 hover:underline"
                           >
                             <Plus className="w-4 h-4 mr-2" />
-                            Sum of Ranks de {teamData?.state}
+                            Sum of Ranks de {team.state}
                           </Link>
                           <Link
                             href={`/kinch/${stateId}`}
                             className="text-sm flex items-center text-blue-600 hover:underline"
                           >
                             <ChartNoAxesCombined className="w-4 h-4 mr-2" />
-                            Kinch Ranks de {teamData?.state}
+                            Kinch Ranks de {team.state}
                           </Link>
                         </div>
                       </div>
@@ -643,7 +559,7 @@ export default async function Page(props: {
                   <p className="text-muted-foreground">
                     No hay logros registrados todavía
                   </p>
-                   {teamData.achievements.map((achievement, index) => (
+                   {achievements.map((achievement, index) => (
                     <div key={index} className="flex items-start gap-4 p-4 rounded-lg border">
                       <Trophy className="w-6 h-6 text-yellow-500" />
                       <div>
@@ -842,7 +758,7 @@ export default async function Page(props: {
                             Competencias organizadas
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            Total de competencias en {teamData?.state}
+                            Total de competencias en {team.state}
                           </div>
                         </div>
                       </div>

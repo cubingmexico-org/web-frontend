@@ -59,7 +59,7 @@ export function UpdateMemberSheet({
             Cambia los eventos favoritos del competidor.
           </SheetDescription>
         </SheetHeader>
-        <form action={formAction}>
+        <form action={formAction} className="px-6">
           <input type="hidden" name="stateId" defaultValue={stateId} />
           <input type="hidden" name="personId" defaultValue={member?.id} />
           <EventsCheckboxes defaultValue={member?.specialties || []} />

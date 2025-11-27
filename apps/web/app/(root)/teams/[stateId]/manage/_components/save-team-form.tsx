@@ -104,7 +104,7 @@ export function SaveTeamForm({
           <CardContent className="space-y-4">
             <div
               className="group/field grid gap-2"
-              data-invalid={!!state.errors?.name}
+              data-invalid={!!state.errors}
             >
               <Label
                 htmlFor="name"
@@ -118,13 +118,13 @@ export function SaveTeamForm({
                 placeholder="Nombre del Team"
                 className="group-data-[invalid=true]/field:border-destructive focus-visible:group-data-[invalid=true]/field:ring-destructive"
                 disabled={pending}
-                aria-invalid={!!state.errors?.name}
+                aria-invalid={!!state.errors}
                 aria-errormessage="error-name"
                 defaultValue={state.defaultValues.name}
               />
-              {state.errors?.name && (
+              {state.errors && (
                 <p id="error-name" className="text-destructive text-sm">
-                  {state.errors.name}
+                  {state.errors}
                 </p>
               )}
             </div>
@@ -150,7 +150,7 @@ export function SaveTeamForm({
             </div>
             <div
               className="group/field grid gap-2"
-              data-invalid={!!state.errors?.description}
+              data-invalid={!!state.errors}
             >
               <Label
                 htmlFor="description"
@@ -164,14 +164,14 @@ export function SaveTeamForm({
                 placeholder="Descripción"
                 className="group-data-[invalid=true]/field:border-destructive focus-visible:group-data-[invalid=true]/field:ring-destructive"
                 disabled={pending}
-                aria-invalid={!!state.errors?.description}
+                aria-invalid={!!state.errors}
                 aria-errormessage="error-description"
                 defaultValue={state.defaultValues.description || ""}
                 rows={5}
               />
-              {state.errors?.description && (
+              {state.errors && (
                 <p id="error-description" className="text-destructive text-sm">
-                  {state.errors.description}
+                  {state.errors}
                 </p>
               )}
             </div>
@@ -197,7 +197,7 @@ export function SaveTeamForm({
           <CardContent className="space-y-4">
             <div
               className="group/field grid gap-2"
-              data-invalid={!!state.errors?.email}
+              data-invalid={!!state.errors}
             >
               <Label
                 htmlFor="email"
@@ -212,19 +212,19 @@ export function SaveTeamForm({
                 placeholder="team@ejemplo.com"
                 className="group-data-[invalid=true]/field:border-destructive focus-visible:group-data-[invalid=true]/field:ring-destructive"
                 disabled={pending}
-                aria-invalid={!!state.errors?.email}
+                aria-invalid={!!state.errors}
                 aria-errormessage="error-email"
                 defaultValue={state.defaultValues.email}
               />
-              {state.errors?.email && (
+              {state.errors && (
                 <p id="error-email" className="text-destructive text-sm">
-                  {state.errors.email}
+                  {state.errors}
                 </p>
               )}
             </div>
             <div
               className="group/field grid gap-2"
-              data-invalid={!!state.errors?.whatsapp}
+              data-invalid={!!state.errors}
             >
               <Label
                 htmlFor="whatsapp"
@@ -239,19 +239,19 @@ export function SaveTeamForm({
                 placeholder="+52 55 1234 5678"
                 className="group-data-[invalid=true]/field:border-destructive focus-visible:group-data-[invalid=true]/field:ring-destructive"
                 disabled={pending}
-                aria-invalid={!!state.errors?.whatsapp}
+                aria-invalid={!!state.errors}
                 aria-errormessage="error-whatsapp"
                 defaultValue={state.defaultValues.whatsapp}
               />
-              {state.errors?.whatsapp && (
+              {state.errors && (
                 <p id="error-whatsapp" className="text-destructive text-sm">
-                  {state.errors.whatsapp}
+                  {state.errors}
                 </p>
               )}
             </div>
             <div
               className="group/field grid gap-2"
-              data-invalid={!!state.errors?.facebook}
+              data-invalid={!!state.errors}
             >
               <Label
                 htmlFor="facebook"
@@ -266,19 +266,19 @@ export function SaveTeamForm({
                 placeholder="tu.team"
                 className="group-data-[invalid=true]/field:border-destructive focus-visible:group-data-[invalid=true]/field:ring-destructive"
                 disabled={pending}
-                aria-invalid={!!state.errors?.facebook}
+                aria-invalid={!!state.errors}
                 aria-errormessage="error-facebook"
                 defaultValue={state.defaultValues.facebook}
               />
-              {state.errors?.facebook && (
+              {state.errors && (
                 <p id="error-facebook" className="text-destructive text-sm">
-                  {state.errors.facebook}
+                  {state.errors}
                 </p>
               )}
             </div>
             <div
               className="group/field grid gap-2"
-              data-invalid={!!state.errors?.instagram}
+              data-invalid={!!state.errors}
             >
               <Label
                 htmlFor="instagram"
@@ -293,13 +293,13 @@ export function SaveTeamForm({
                 placeholder="@tu.team"
                 className="group-data-[invalid=true]/field:border-destructive focus-visible:group-data-[invalid=true]/field:ring-destructive"
                 disabled={pending}
-                aria-invalid={!!state.errors?.instagram}
+                aria-invalid={!!state.errors}
                 aria-errormessage="error-instagram"
                 defaultValue={state.defaultValues.instagram}
               />
-              {state.errors?.instagram && (
+              {state.errors && (
                 <p id="error-instagram" className="text-destructive text-sm">
-                  {state.errors.instagram}
+                  {state.errors}
                 </p>
               )}
             </div>

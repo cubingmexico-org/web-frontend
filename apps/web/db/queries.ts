@@ -1,3 +1,5 @@
+"use cache";
+
 import "server-only";
 import { db } from "@/db";
 import {
@@ -10,135 +12,128 @@ import {
   teamMember,
   person,
   TeamMember,
+  competition,
+  result,
 } from "@/db/schema";
-import { unstable_cache } from "@/lib/unstable-cache";
-import { eq, lt } from "drizzle-orm";
-import { cache } from "react";
+import { cacheLife, cacheTag } from "next/cache";
+import { and, desc, eq, ilike, isNull, lt, notInArray, or } from "drizzle-orm";
 
 export async function getEvents() {
-  return unstable_cache(
-    async () => {
-      try {
-        return await db
-          .select({
-            id: event.id,
-            name: event.name,
-          })
-          .from(event)
-          .where(lt(event.rank, 200))
-          .orderBy(event.rank)
-          .then((res) => res);
-      } catch (err) {
-        console.error(err);
-        return [];
-      }
-    },
-    [],
-    {
-      revalidate: false,
-      tags: ["events"],
-    },
-  )();
+  cacheLife("max");
+  cacheTag("events");
+
+  try {
+    return await db
+      .select({
+        id: event.id,
+        name: event.name,
+      })
+      .from(event)
+      .where(lt(event.rank, 200))
+      .orderBy(event.rank)
+      .then((res) => res);
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
 }
 
 export async function getStates() {
-  return unstable_cache(
-    async () => {
-      try {
-        return await db
-          .select({
-            id: state.id,
-            name: state.name,
-          })
-          .from(state)
-          .then((res) => res);
-      } catch (err) {
-        console.error(err);
-        return [];
-      }
-    },
-    [],
-    {
-      revalidate: false,
-      tags: ["states"],
-    },
-  )();
+  cacheLife("max");
+  cacheTag("states");
+
+  try {
+    return await db
+      .select({
+        id: state.id,
+        name: state.name,
+      })
+      .from(state)
+      .then((res) => res);
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
 }
 
 export async function getPersons() {
-  return unstable_cache(
-    async () => {
-      try {
-        return await db
-          .select({
-            id: person.id,
-            name: person.name,
-          })
-          .from(person)
-          .then((res) => res);
-      } catch (err) {
-        console.error(err);
-        return [];
-      }
-    },
-    [],
-    {
-      revalidate: false,
-      tags: ["persons"],
-    },
-  )();
+  cacheLife("days");
+  cacheTag("persons");
+
+  try {
+    return await db
+      .select({
+        id: person.id,
+        name: person.name,
+      })
+      .from(person)
+      .then((res) => res);
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
 }
 
 export async function getCurrentUserTeam({ userId }: { userId: Person["id"] }) {
-  return await unstable_cache(
-    async () => {
-      try {
-        return (await db
-          .select({
-            id: person.stateId,
-            name: team.name,
-          })
-          .from(person)
-          .innerJoin(team, eq(person.stateId, team.stateId))
-          .where(eq(person.id, userId))
-          .then((res) => res[0])) as {
-          id: string;
-          name: string;
-        };
-      } catch (err) {
-        console.error(err);
-        return null;
-      }
-    },
-    [userId],
-    {
-      revalidate: 3600,
-      tags: ["current-user-team"],
-    },
-  )();
+  cacheLife("hours");
+  cacheTag(`current-user-team-${userId}`);
+
+  try {
+    return (await db
+      .select({
+        id: person.stateId,
+        name: team.name,
+      })
+      .from(person)
+      .innerJoin(team, eq(person.stateId, team.stateId))
+      .where(eq(person.id, userId))
+      .then((res) => res[0])) as {
+      id: string;
+      name: string;
+    };
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
 }
 
-export const getPerson = cache(async (id: string) => {
-  const res = await db
-    .select({
-      name: person.name,
-    })
-    .from(person)
-    .where(eq(person.id, id));
-  return res[0];
-});
+export async function getPerson(id: string) {
+  cacheLife("hours");
+  cacheTag(`person-${id}`);
 
-export const getTeam = cache(async (stateId: string) => {
-  const res = await db
-    .select({
-      name: team.name,
-      state: state.name,
-    })
-    .from(team)
-    .innerJoin(state, eq(team.stateId, state.id))
-    .where(eq(team.stateId, stateId));
-  return res[0];
-});
+  try {
+    const res = await db
+      .select({
+        name: person.name,
+      })
+      .from(person)
+      .where(eq(person.id, id));
+    return res[0];
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
+
+export async function getTeam(stateId: string) {
+  cacheLife("hours");
+  cacheTag(`team-${stateId}`);
+
+  try {
+    const res = await db
+      .select({
+        name: team.name,
+        state: state.name,
+      })
+      .from(team)
+      .innerJoin(state, eq(team.stateId, state.id))
+      .where(eq(team.stateId, stateId));
+    return res[0];
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
 
 export async function saveTeam({
   stateId,
@@ -156,7 +151,7 @@ export async function saveTeam({
   isActive: Team["isActive"];
 }) {
   try {
-    return await db
+    await db
       .update(team)
       .set({
         name,
@@ -180,7 +175,7 @@ export async function saveProfile({
   personId: Person["id"];
 }) {
   try {
-    return await db
+    await db
       .update(person)
       .set({
         stateId,
@@ -194,7 +189,7 @@ export async function saveProfile({
 
 export async function deleteTeamLogo({ stateId }: { stateId: State["id"] }) {
   try {
-    return await db
+    await db
       .update(team)
       .set({
         image: null,
@@ -214,7 +209,7 @@ export async function updateTeamLogo({
   image: Team["image"];
 }) {
   try {
-    return await db
+    await db
       .update(team)
       .set({
         image,
@@ -228,7 +223,7 @@ export async function updateTeamLogo({
 
 export async function deleteTeamCover({ stateId }: { stateId: State["id"] }) {
   try {
-    return await db
+    await db
       .update(team)
       .set({
         coverImage: null,
@@ -248,7 +243,7 @@ export async function updateTeamCover({
   coverImage: Team["coverImage"];
 }) {
   try {
-    return await db
+    await db
       .update(team)
       .set({
         coverImage,
@@ -296,5 +291,100 @@ export async function addMember({
   } catch (error) {
     console.error("Failed to add member in database");
     throw error;
+  }
+}
+
+export async function getLastCompetitionWithResults() {
+  cacheLife("hours");
+  cacheTag("last-competition-with-results");
+
+  try {
+    const lastCompetitionWithResults = await db
+      .select({
+        name: competition.name,
+      })
+      .from(competition)
+      .innerJoin(result, eq(competition.id, result.competitionId))
+      .where(eq(competition.countryId, "Mexico"))
+      .orderBy(desc(competition.endDate))
+      .limit(1);
+
+    const competitionsWithNoResults = await db
+      .select({
+        name: competition.name,
+      })
+      .from(competition)
+      .leftJoin(result, eq(competition.id, result.competitionId))
+      .where(
+        and(
+          eq(competition.countryId, "Mexico"),
+          lt(competition.endDate, new Date()),
+          isNull(result.competitionId),
+          notInArray(competition.id, ["PerryOpen2013", "ChapingoOpen2020"]),
+        ),
+      );
+    return { lastCompetitionWithResults, competitionsWithNoResults };
+  } catch (err) {
+    console.error(err);
+    return { lastCompetitionWithResults: [], competitionsWithNoResults: [] };
+  }
+}
+
+export async function getPersonsWithoutState({ search }: { search: string }) {
+  cacheLife("hours");
+  cacheTag("persons-without-state");
+
+  try {
+    return await db
+      .select({
+        id: person.id,
+        name: person.name,
+      })
+      .from(person)
+      .where(
+        and(
+          isNull(person.stateId),
+          or(
+            ilike(person.name, `%${search}%`),
+            ilike(person.id, `%${search}%`),
+          ),
+        ),
+      )
+      .orderBy(person.name)
+      .limit(5)
+      .then((res) => res);
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+}
+
+interface StatesGeoJSON {
+  type: string;
+  features: {
+    type: string;
+    properties: {
+      id: string;
+      name: string;
+    };
+    geometry: {
+      type: string;
+      coordinates: number[][][][];
+    };
+  }[];
+}
+
+export async function getStatesGeoJSON(
+  domain: string,
+): Promise<StatesGeoJSON | null> {
+  cacheLife("max");
+  cacheTag("geojson");
+
+  try {
+    const response = await fetch(domain + "/states.geojson");
+    return response.json();
+  } catch (err) {
+    console.error(err);
+    return null;
   }
 }

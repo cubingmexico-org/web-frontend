@@ -4,9 +4,9 @@ import { searchParamsCache } from "../_lib/validations";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
 import { KinchTable } from "../_components/kinch-table";
 import {
-  getKinch,
-  getKinchGenderCounts,
-  getKinchStateCounts,
+  getKinchRanks,
+  getKinchRanksGenderCounts,
+  getKinchRanksStateCounts,
 } from "../_lib/queries";
 import { getValidFilters } from "@/lib/data-table";
 
@@ -21,12 +21,12 @@ export default async function Page(props: PageProps) {
   const validFilters = getValidFilters(search.filters);
 
   const promises = Promise.all([
-    getKinch({
+    getKinchRanks({
       ...search,
       filters: validFilters,
     }),
-    getKinchStateCounts(),
-    getKinchGenderCounts(),
+    getKinchRanksStateCounts(),
+    getKinchRanksGenderCounts(),
   ]);
 
   return (

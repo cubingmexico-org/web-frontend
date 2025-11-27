@@ -1,5 +1,3 @@
-import { db } from "@/db";
-import { sql } from "drizzle-orm";
 import {
   Table,
   TableBody,
@@ -8,7 +6,6 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
-import { EXCLUDED_EVENTS } from "@/lib/constants";
 import { cn } from "@workspace/ui/lib/utils";
 import {
   Tooltip,
@@ -18,27 +15,14 @@ import {
 import { notFound } from "next/navigation";
 import { RankTypeSelector } from "./_components/rank-type-selector";
 import Link from "next/link";
-import { unstable_cache } from "@/lib/unstable-cache";
 import { Metadata } from "next";
+import { getSORTeamsAverage, getSORTeamsSingle } from "./_lib/queries";
 
 export const metadata: Metadata = {
   title: "Sum Of Ranks de Teams | Cubing México",
   description:
     "Encuentra el ranking de los mejores equipos de speedcubing en México en cada evento de la WCA. Filtra por estado, género y más.",
 };
-
-interface TeamData {
-  stateId: string;
-  name: string;
-  overall: number;
-  events: {
-    eventId: string;
-    bestRank: number;
-    personId: string | null;
-    personName: string | null;
-    completed: boolean;
-  }[];
-}
 
 interface PageProps {
   params: Promise<{ rankType: "single" | "average" }>;
@@ -52,69 +36,7 @@ export default async function Page(props: PageProps) {
   }
 
   if (rankType === "average") {
-    const data = await unstable_cache(
-      async () => {
-        return await db.execute(
-          sql`
-        WITH "allEvents" AS (
-          SELECT DISTINCT "eventId"
-          FROM "ranksAverage"
-          WHERE "eventId" NOT IN (${sql.join(EXCLUDED_EVENTS, sql`, `)})
-        ),
-        "bestPersonEvent" AS (
-          SELECT DISTINCT ON (p."stateId", e."eventId")
-            t."name",
-            t."stateId",
-            e."eventId",
-            ev."rank" AS "eventRank",
-            p.id AS "personId",
-            p."name" AS "personName",
-            COALESCE(rs."countryRank", wr."worstRank") AS "bestRank",
-            wr."worstRank"
-          FROM persons p
-          CROSS JOIN "allEvents" e
-          JOIN events ev ON ev.id = e."eventId"
-          JOIN teams t ON p."stateId" = t."stateId"
-          LEFT JOIN "ranksAverage" rs
-            ON p.id = rs."personId" AND e."eventId" = rs."eventId"
-          LEFT JOIN (
-            SELECT "eventId", MAX("countryRank") + 1 AS "worstRank"
-            FROM public."ranksAverage"
-            GROUP BY "eventId"
-          ) wr
-            ON wr."eventId" = e."eventId"
-          WHERE p."stateId" IS NOT NULL
-          ORDER BY p."stateId", e."eventId", COALESCE(rs."countryRank", wr."worstRank")
-        )
-        SELECT
-          bpe."name",
-          bpe."stateId",
-          json_agg(
-            json_build_object(
-              'eventId', bpe."eventId",
-              'eventRank', bpe."eventRank",
-              'bestRank', bpe."bestRank",
-              'personId', CASE WHEN bpe."bestRank" = bpe."worstRank" THEN NULL ELSE bpe."personId" END,
-              'personName', CASE WHEN bpe."bestRank" = bpe."worstRank" THEN NULL ELSE bpe."personName" END,
-              'completed', CASE WHEN bpe."bestRank" = bpe."worstRank" THEN false ELSE true END
-            )
-            ORDER BY bpe."eventRank"
-          ) AS events,
-          SUM(bpe."bestRank") AS overall
-        FROM "bestPersonEvent" bpe
-        GROUP BY bpe."name", bpe."stateId"
-        ORDER BY SUM(bpe."bestRank")
-      `,
-        );
-      },
-      [],
-      {
-        revalidate: 3600,
-        tags: ["sor-teams-average"],
-      },
-    )();
-
-    const teams = data.rows as unknown as TeamData[];
+    const teams = await getSORTeamsAverage();
 
     return (
       <>
@@ -227,69 +149,7 @@ export default async function Page(props: PageProps) {
     );
   }
 
-  const data = await unstable_cache(
-    async () => {
-      return await db.execute(
-        sql`
-      WITH "allEvents" AS (
-        SELECT DISTINCT "eventId"
-        FROM "ranksSingle"
-        WHERE "eventId" NOT IN (${sql.join(EXCLUDED_EVENTS, sql`, `)})
-      ),
-      "bestPersonEvent" AS (
-        SELECT DISTINCT ON (p."stateId", e."eventId")
-          t."name",
-          t."stateId",
-          e."eventId",
-          ev."rank" AS "eventRank",
-          p.id AS "personId",
-          p."name" AS "personName",
-          COALESCE(rs."countryRank", wr."worstRank") AS "bestRank",
-          wr."worstRank"
-        FROM persons p
-        CROSS JOIN "allEvents" e
-        JOIN events ev ON ev.id = e."eventId"
-        JOIN teams t ON p."stateId" = t."stateId"
-        LEFT JOIN "ranksSingle" rs
-          ON p.id = rs."personId" AND e."eventId" = rs."eventId"
-        LEFT JOIN (
-          SELECT "eventId", MAX("countryRank") + 1 AS "worstRank"
-          FROM public."ranksSingle"
-          GROUP BY "eventId"
-        ) wr
-          ON wr."eventId" = e."eventId"
-        WHERE p."stateId" IS NOT NULL
-        ORDER BY p."stateId", e."eventId", COALESCE(rs."countryRank", wr."worstRank")
-      )
-      SELECT
-        bpe."name",
-        bpe."stateId",
-        json_agg(
-          json_build_object(
-            'eventId', bpe."eventId",
-            'eventRank', bpe."eventRank",
-            'bestRank', bpe."bestRank",
-            'personId', CASE WHEN bpe."bestRank" = bpe."worstRank" THEN NULL ELSE bpe."personId" END,
-            'personName', CASE WHEN bpe."bestRank" = bpe."worstRank" THEN NULL ELSE bpe."personName" END,
-            'completed', CASE WHEN bpe."bestRank" = bpe."worstRank" THEN false ELSE true END
-          )
-          ORDER BY bpe."eventRank"
-        ) AS events,
-        SUM(bpe."bestRank") AS overall
-      FROM "bestPersonEvent" bpe
-      GROUP BY bpe."name", bpe."stateId"
-      ORDER BY SUM(bpe."bestRank")
-    `,
-      );
-    },
-    [],
-    {
-      revalidate: 3600,
-      tags: ["sor-teams-single"],
-    },
-  )();
-
-  const teams = data.rows as unknown as TeamData[];
+  const teams = await getSORTeamsSingle();
 
   return (
     <>

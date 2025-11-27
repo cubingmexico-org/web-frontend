@@ -1,41 +1,20 @@
-import { db } from "@/db";
-import { competition, result } from "@/db/schema";
 import { Discord, Facebook, GitHub, Instagram } from "@workspace/icons";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip";
-import { desc, eq, isNull, lt, and, notInArray } from "drizzle-orm";
 import { Clock, Trophy } from "lucide-react";
 import Link from "next/link";
 import { ThemeToggle } from "./theme-toggle";
+import { getLastCompetitionWithResults } from "@/db/queries";
+import { connection } from "next/server";
 
 export async function Footer() {
-  const lastCompetitionWithResults = await db
-    .select({
-      name: competition.name,
-    })
-    .from(competition)
-    .innerJoin(result, eq(competition.id, result.competitionId))
-    .where(eq(competition.countryId, "Mexico"))
-    .orderBy(desc(competition.endDate))
-    .limit(1);
+  await connection();
+  const currentYear = new Date().getFullYear();
 
-  const competitionsWithNoResults = await db
-    .select({
-      name: competition.name,
-    })
-    .from(competition)
-    .leftJoin(result, eq(competition.id, result.competitionId))
-    .where(
-      and(
-        eq(competition.countryId, "Mexico"),
-        lt(competition.endDate, new Date()),
-        isNull(result.competitionId),
-        notInArray(competition.id, ["PerryOpen2013", "ChapingoOpen2020"]),
-      ),
-    );
+  const competitions = await getLastCompetitionWithResults();
 
   return (
     <footer className="text-muted-foreground body-font">
@@ -51,7 +30,7 @@ export async function Footer() {
             </span>
           </Link>
           <p className="text-sm text-muted-foreground sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">
-            <span>© {new Date().getFullYear()} Cubing México</span>
+            <span>© {currentYear} Cubing México</span>
           </p>
           <span className="inline-flex sm:ml-auto sm:mt-0 mt-4 justify-center sm:justify-start gap-3">
             <Link
@@ -84,9 +63,9 @@ export async function Footer() {
           <p className="inline-flex justify-center sm:justify-start flex-col sm:flex-row sm:items-center gap-2 text-sm">
             <span className="text-muted-foreground flex items-center">
               <Trophy className="h-4 w-4 mr-1" />
-              Último: {lastCompetitionWithResults[0]?.name}
+              Último: {competitions.lastCompetitionWithResults[0]?.name}
             </span>
-            {competitionsWithNoResults.length > 0 && (
+            {competitions.competitionsWithNoResults.length > 0 && (
               <>
                 <span className="hidden sm:inline text-gray-300 text-sm">
                   •
@@ -95,13 +74,16 @@ export async function Footer() {
                   <TooltipTrigger>
                     <span className="text-muted-foreground flex items-center">
                       <Clock className="h-4 w-4 mr-1" />
-                      Resultados pendientes ({competitionsWithNoResults.length})
+                      Resultados pendientes (
+                      {competitions.competitionsWithNoResults.length})
                     </span>
                   </TooltipTrigger>
                   <TooltipContent>
-                    {competitionsWithNoResults.map((competition) => (
-                      <p key={competition.name}>{competition.name}</p>
-                    ))}
+                    {competitions.competitionsWithNoResults.map(
+                      (competition) => (
+                        <p key={competition.name}>{competition.name}</p>
+                      ),
+                    )}
                   </TooltipContent>
                 </Tooltip>
               </>

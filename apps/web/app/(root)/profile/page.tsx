@@ -1,14 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 
 import { auth } from "@/auth";
-import { db } from "@/db";
-import { person } from "@/db/schema";
-import { eq } from "drizzle-orm";
 import { Profile } from "./_components/profile";
 import { getPerson, getStates } from "@/db/queries";
-import { unstable_cache } from "@/lib/unstable-cache";
 import type { Metadata } from "next";
-import { unauthorized } from "next/navigation";
+import { notFound, unauthorized } from "next/navigation";
+import { getProfile } from "./_lib/queries";
 
 export async function generateMetadata(): Promise<Metadata> {
   const session = await auth();
@@ -24,27 +21,17 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Page() {
   const session = await auth();
 
-  if (!session?.user) {
+  if (!session) {
     unauthorized();
   }
 
-  const persons = await unstable_cache(
-    async () => {
-      return await db
-        .select({
-          id: person.id,
-          name: person.name,
-          gender: person.gender,
-          stateId: person.stateId,
-        })
-        .from(person)
-        .where(eq(person.id, session?.user?.id!));
-    },
-    [session?.user?.id!],
-    { revalidate: 3600, tags: ["profile-person"] },
-  )();
+  const person = await getProfile(session.user?.id!);
+
+  if (!person) {
+    notFound();
+  }
 
   const states = await getStates();
 
-  return <Profile user={session?.user!} person={persons[0]!} states={states} />;
+  return <Profile user={session?.user!} person={person} states={states} />;
 }

@@ -12,7 +12,7 @@ export function UserAuthForm(): React.JSX.Element {
       await signInAction("wca");
     } catch (error) {
       if (error instanceof z.ZodError) {
-        console.error(error.errors);
+        console.error(error);
         toast.error("Failed to sign in with WCA", {
           description: "Please try again",
         });

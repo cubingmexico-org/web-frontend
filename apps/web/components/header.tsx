@@ -9,11 +9,26 @@ import { UserAuthForm } from "./user-auth-form";
 export async function Header() {
   const session = await auth();
 
-  const user = session?.user;
+  if (!session) {
+    return (
+      <header className="bg-primary text-primary-foreground body-font top-0 z-50">
+        <div className="mx-auto flex flex-col sm:flex-row items-center gap-8 justify-between p-5">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-8">
+            <Link href="/">
+              <CubingMexico className="size-16" />
+            </Link>
+            <HeaderNavigationMenu />
+          </div>
+          <UserAuthForm />
+        </div>
+      </header>
+    );
+  }
+
+  const user = session.user!;
 
   const team = await getCurrentUserTeam({
-    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-    userId: user?.id!,
+    userId: user.id!,
   });
 
   return (
@@ -25,7 +40,7 @@ export async function Header() {
           </Link>
           <HeaderNavigationMenu />
         </div>
-        {user ? <UserDropdown user={user} team={team} /> : <UserAuthForm />}
+        <UserDropdown user={user} team={team} />
       </div>
     </header>
   );

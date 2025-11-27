@@ -10,16 +10,18 @@ import {
   parseAsArrayOf,
   createSerializer,
   useQueryStates,
+  parseAsStringEnum,
 } from "nuqs";
-import { z } from "zod";
 import { ResultTypeSelector } from "./result-type-selector";
 import { usePathname } from "next/navigation";
 
 const searchParams = {
   name: parseAsString.withDefault(""),
   state: parseAsArrayOf(parseAsString).withDefault([]),
-  gender: parseAsArrayOf(z.enum(person.gender.enumValues)).withDefault([]),
-  show: parseAsArrayOf(z.enum(["results"])).withDefault([]),
+  gender: parseAsArrayOf(
+    parseAsStringEnum(person.gender.enumValues),
+  ).withDefault([]),
+  show: parseAsArrayOf(parseAsStringEnum(["results"])).withDefault([]),
 };
 const serialize = createSerializer(searchParams);
 

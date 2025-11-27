@@ -2,12 +2,12 @@ import * as React from "react";
 import { SearchParams } from "@/types";
 import { searchParamsCache } from "./_lib/validations";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import { PersonsTable } from "./_components/delegates-table";
+import { DelegatesTable } from "./_components/delegates-table";
 import {
+  getDelegates,
+  getDelegatesStateCounts,
+  getDelegatesGenderCounts,
   getDelegateStatusCounts,
-  getPersons,
-  getPersonsGenderCounts,
-  getPersonsStateCounts,
 } from "./_lib/queries";
 import { getValidFilters } from "@/lib/data-table";
 
@@ -22,12 +22,12 @@ export default async function Page(props: PageProps) {
   const validFilters = getValidFilters(search.filters);
 
   const promises = Promise.all([
-    getPersons({
+    getDelegates({
       ...search,
       filters: validFilters,
     }),
-    getPersonsStateCounts(),
-    getPersonsGenderCounts(),
+    getDelegatesStateCounts(),
+    getDelegatesGenderCounts(),
     getDelegateStatusCounts(),
   ]);
 
@@ -50,7 +50,7 @@ export default async function Page(props: PageProps) {
         />
       }
     >
-      <PersonsTable promises={promises} />
+      <DelegatesTable promises={promises} />
     </React.Suspense>
   );
 }

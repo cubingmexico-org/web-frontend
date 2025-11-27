@@ -2,10 +2,10 @@ import * as React from "react";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
 import { CompetitionsTable } from "./_components/competitions-table";
 import {
-  getCompetitionLocations,
   getCompetitions,
-  getStateCounts,
-  getStatusCounts,
+  getCompetitionsLocations,
+  getCompetitionsStateCounts,
+  getCompetitionsStatusCounts,
 } from "./_lib/queries";
 import { SearchParams } from "@/types";
 import { getValidFilters } from "@/lib/data-table";
@@ -14,11 +14,9 @@ import { DateRangePicker } from "@/components/date-range-picker";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Metadata } from "next";
 import { MapContainer } from "./_components/map-container";
-import { unstable_cache } from "@/lib/unstable-cache";
-import { headers } from "next/headers";
 import type { GeoJSONProps } from "react-leaflet";
-
-const isProduction = process.env.NODE_ENV === "production";
+import { getStatesGeoJSON } from "@/db/queries";
+import { headers } from "next/headers";
 
 interface PageProps {
   searchParams: Promise<SearchParams>;
@@ -39,10 +37,8 @@ export async function generateMetadata({
       "Encuentra competencias oficiales de la WCA en México y conéctate con otros cuberos.",
   };
 }
-export default async function Page(props: PageProps) {
-  const headersList = await headers();
-  const domain = headersList.get("host");
 
+export default async function Page(props: PageProps) {
   const searchParams = await props.searchParams;
   const search = searchParamsCache.parse(searchParams);
 
@@ -53,49 +49,28 @@ export default async function Page(props: PageProps) {
       ...search,
       filters: validFilters,
     }),
-    getStateCounts(),
-    getStatusCounts(),
+    getCompetitionsStateCounts(),
+    getCompetitionsStatusCounts(),
   ]);
 
-  const locations = await getCompetitionLocations({
+  const locations = await getCompetitionsLocations({
     ...search,
     filters: validFilters,
   });
 
-  const states = await unstable_cache(
-    async () => {
-      const response = await fetch(
-        `${isProduction ? "https://" : "http://"}` + domain + "/states.geojson",
-      );
-      return response.json();
-    },
-    [],
-    {
-      revalidate: false,
-      tags: ["geojson"],
-    },
-  )();
+  const headersList = await headers();
+  const domain = headersList.get("host");
+  const isProduction = process.env.NODE_ENV === "production";
 
-  const statesData = states as {
-    type: string;
-    features: {
-      type: string;
-      properties: {
-        id: string;
-        name: string;
-      };
-      geometry: {
-        type: string;
-        coordinates: number[][][][];
-      };
-    }[];
-  };
+  const statesData = await getStatesGeoJSON(
+    isProduction ? `https://${domain}` : `http://${domain}`,
+  );
 
   const statesIds = Array.from(
     new Set(locations.map((location) => location.stateId)),
   );
 
-  const filteredStatesData = statesData.features.filter((feature) =>
+  const filteredStatesData = statesData?.features.filter((feature) =>
     statesIds?.includes(feature.properties.id),
   ) as unknown as GeoJSONProps["data"];
 

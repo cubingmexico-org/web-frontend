@@ -2,11 +2,11 @@ import * as React from "react";
 import { SearchParams } from "@/types";
 import { searchParamsCache } from "../_lib/validations";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import { PersonsTable } from "../_components/persons-table";
+import { CompetitorsTable } from "../_components/persons-table";
 import {
-  getPersons,
-  getPersonsGenderCounts,
-  getPersonsStateCounts,
+  getCompetitors,
+  getCompetitorsGenderCounts,
+  getCompetitorsStateCounts,
 } from "../_lib/queries";
 import { getValidFilters } from "@/lib/data-table";
 
@@ -21,12 +21,12 @@ export default async function Page(props: PageProps) {
   const validFilters = getValidFilters(search.filters);
 
   const promises = Promise.all([
-    getPersons({
+    getCompetitors({
       ...search,
       filters: validFilters,
     }),
-    getPersonsStateCounts(),
-    getPersonsGenderCounts(),
+    getCompetitorsStateCounts(),
+    getCompetitorsGenderCounts(),
   ]);
 
   return (
@@ -48,7 +48,7 @@ export default async function Page(props: PageProps) {
         />
       }
     >
-      <PersonsTable promises={promises} />
+      <CompetitorsTable promises={promises} />
     </React.Suspense>
   );
 }

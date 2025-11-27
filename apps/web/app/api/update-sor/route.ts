@@ -83,7 +83,7 @@ export async function POST(): Promise<NextResponse> {
 
       const data = await tx.execute(singleQuery);
 
-      const persons = data.rows as {
+      const persons = data as unknown as {
         id: string;
         events: { eventId: string; countryRank: number; completed: boolean }[];
         overall: number;
@@ -105,7 +105,7 @@ export async function POST(): Promise<NextResponse> {
 
       const data = await tx.execute(averageQuery);
 
-      const persons = data.rows as {
+      const persons = data as unknown as {
         id: string;
         events: { eventId: string; countryRank: number; completed: boolean }[];
         overall: number;

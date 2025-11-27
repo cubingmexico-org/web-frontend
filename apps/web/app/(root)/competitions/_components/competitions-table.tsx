@@ -6,8 +6,8 @@ import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import type {
   getCompetitions,
-  getStateCounts,
-  getStatusCounts,
+  getCompetitionsStateCounts,
+  getCompetitionsStatusCounts,
 } from "../_lib/queries";
 import { getColumns } from "./competitions-table-columns";
 // import { getEventsIcon } from "../_lib/utils";
@@ -16,8 +16,8 @@ interface CompetitionsTableProps {
   promises: Promise<
     [
       Awaited<ReturnType<typeof getCompetitions>>,
-      Awaited<ReturnType<typeof getStateCounts>>,
-      Awaited<ReturnType<typeof getStatusCounts>>,
+      Awaited<ReturnType<typeof getCompetitionsStateCounts>>,
+      Awaited<ReturnType<typeof getCompetitionsStatusCounts>>,
     ]
   >;
 }

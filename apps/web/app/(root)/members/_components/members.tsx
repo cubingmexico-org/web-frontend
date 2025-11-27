@@ -1,6 +1,6 @@
 "use client";
 
-import { getTier } from "@/lib/utils";
+import { getTier, getTierClass } from "@/lib/utils";
 import type { Tier } from "@/types";
 import { Badge } from "@workspace/ui/components/badge";
 import { TableRow, TableCell } from "@workspace/ui/components/table";
@@ -24,24 +24,6 @@ interface MembersProps {
 }
 
 export function Members({ members }: MembersProps) {
-  const getTierClass = (tier: Tier): string => {
-    switch (tier) {
-      case "Plata":
-        return "bg-gradient-to-r from-gray-300 to-gray-500 border-0";
-      case "Oro":
-        return "bg-gradient-to-r from-yellow-400 to-yellow-600 border-0";
-      case "Platino":
-        return "bg-gradient-to-r from-gray-100 to-gray-300 border-0";
-      case "Ópalo":
-        return "bg-gradient-to-r from-blue-400 via-purple-300 to-pink-400 border-0";
-      case "Diamante":
-        return "bg-gradient-to-r from-blue-200 to-blue-400 border-0";
-      case "Bronce":
-      default:
-        return "bg-gradient-to-r from-amber-500 to-amber-700 border-0";
-    }
-  };
-
   const tierOrder: Tier[] = [
     "Bronce",
     "Plata",

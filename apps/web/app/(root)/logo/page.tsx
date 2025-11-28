@@ -7,8 +7,7 @@ export default async function Page(): Promise<React.JSX.Element> {
 
   return (
     <p className="text-sm text-muted-foreground mt-2">
-      © {currentYear} Cubing México. Todos los derechos
-      reservados.
+      © {currentYear} Cubing México. Todos los derechos reservados.
     </p>
   );
 }

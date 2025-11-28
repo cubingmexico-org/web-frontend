@@ -1,5 +1,13 @@
 export type ElementType = "text" | "rectangle" | "circle" | "image" | "qrcode";
 
+interface DropShadow {
+  enabled: boolean;
+  offsetX: number;
+  offsetY: number;
+  blur: number;
+  color: string;
+}
+
 export interface CanvasElement {
   id: string;
   type: ElementType;
@@ -11,9 +19,10 @@ export interface CanvasElement {
   content?: string;
   fontFamily?: string;
   fontSize?: number;
-  fontWeight?: string;
+  fontWeight?: "normal" | "bold"; // | "bolder" | "lighter" | number;
   textAlign?: "center" | "end" | "left" | "right" | "start";
   color?: string;
+  dropShadow?: DropShadow;
   backgroundColor?: string;
   imageUrl?: string;
   borderRadius?: number;

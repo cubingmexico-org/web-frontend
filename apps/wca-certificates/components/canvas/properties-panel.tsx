@@ -5,7 +5,7 @@ import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { Slider } from "@workspace/ui/components/slider";
-import { AlignCenter, AlignLeft, AlignRight, Trash2 } from "lucide-react";
+import { AlignCenter, AlignLeft, AlignRight, Bold, Trash2 } from "lucide-react";
 import {
   ColorPicker,
   ColorPickerAlphaSlider,
@@ -253,7 +253,8 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
                   const canvas = document.createElement("canvas");
                   const ctx = canvas.getContext("2d");
                   if (ctx) {
-                    ctx.font = `${selectedElement.fontSize || 24}px ${selectedElement.fontFamily || "Arial"}`;
+                    const fontWeight = selectedElement.fontWeight || "normal";
+                    ctx.font = `${fontWeight} ${selectedElement.fontSize || 24}px ${selectedElement.fontFamily || "Arial"}`;
                     const metrics = ctx.measureText(value);
                     const width = metrics.width;
                     const height = (selectedElement.fontSize || 24) * 1.2;
@@ -295,7 +296,8 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
                   const canvas = document.createElement("canvas");
                   const ctx = canvas.getContext("2d");
                   if (ctx) {
-                    ctx.font = `${selectedElement.fontSize || 24}px ${fontFamily}`;
+                    const fontWeight = selectedElement.fontWeight || "normal";
+                    ctx.font = `${fontWeight} ${selectedElement.fontSize || 24}px ${fontFamily}`;
                     const metrics = ctx.measureText(
                       selectedElement.content || "",
                     );
@@ -326,7 +328,8 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
                   const canvas = document.createElement("canvas");
                   const ctx = canvas.getContext("2d");
                   if (ctx) {
-                    ctx.font = `${fontSize}px ${selectedElement.fontFamily || "Arial"}`;
+                    const fontWeight = selectedElement.fontWeight || "normal";
+                    ctx.font = `${fontWeight} ${fontSize}px ${selectedElement.fontFamily || "Arial"}`;
                     const metrics = ctx.measureText(
                       selectedElement.content || "",
                     );
@@ -342,6 +345,49 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
                 }}
                 className="h-8"
               />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs">Estilo de texto</Label>
+              <div className="flex gap-1">
+                <Button
+                  variant={
+                    selectedElement.fontWeight === "bold"
+                      ? "default"
+                      : "outline"
+                  }
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => {
+                    const newWeight =
+                      selectedElement.fontWeight === "bold" ? "normal" : "bold";
+
+                    // Measure text dimensions with new weight
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("2d");
+                    if (ctx) {
+                      ctx.font = `${newWeight} ${selectedElement.fontSize || 24}px ${selectedElement.fontFamily || "Arial"}`;
+                      const metrics = ctx.measureText(
+                        selectedElement.content || "",
+                      );
+                      const width = metrics.width;
+                      const height = (selectedElement.fontSize || 24) * 1.2;
+
+                      updateElement(selectedElement.id, {
+                        fontWeight: newWeight,
+                        width,
+                        height,
+                      });
+                    } else {
+                      updateElement(selectedElement.id, {
+                        fontWeight: newWeight,
+                      });
+                    }
+                  }}
+                  title="Negrita"
+                >
+                  <Bold />
+                </Button>
+              </div>
             </div>
             <div className="space-y-2">
               <Label className="text-xs">Alineación de texto</Label>
@@ -430,6 +476,162 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
                 </ColorPickerContent>
               </ColorPicker>
             </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="dropShadow" className="text-xs">
+                  Sombra
+                </Label>
+                <Switch
+                  id="dropShadow"
+                  checked={selectedElement.dropShadow?.enabled ?? false}
+                  onCheckedChange={(checked) => {
+                    const currentShadow = selectedElement.dropShadow;
+                    updateElement(selectedElement.id, {
+                      dropShadow: {
+                        enabled: checked,
+                        offsetX: currentShadow?.offsetX ?? 2,
+                        offsetY: currentShadow?.offsetY ?? 2,
+                        blur: currentShadow?.blur ?? 4,
+                        color: currentShadow?.color ?? "#000000",
+                      },
+                    });
+                  }}
+                />
+              </div>
+            </div>
+            {selectedElement.dropShadow?.enabled && (
+              <>
+                <div className="space-y-2">
+                  <Label className="text-xs">Desplazamiento de sombra</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label htmlFor="shadowOffsetX" className="text-xs">
+                        X
+                      </Label>
+                      <Input
+                        id="shadowOffsetX"
+                        type="number"
+                        value={selectedElement.dropShadow?.offsetX ?? 2}
+                        onChange={(e) =>
+                          updateElement(selectedElement.id, {
+                            dropShadow: {
+                              ...selectedElement.dropShadow,
+                              enabled: true,
+                              offsetX: Number(e.target.value),
+                              offsetY: selectedElement.dropShadow?.offsetY ?? 2,
+                              blur: selectedElement.dropShadow?.blur ?? 4,
+                              color:
+                                selectedElement.dropShadow?.color ?? "#000000",
+                            },
+                          })
+                        }
+                        className="h-8"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="shadowOffsetY" className="text-xs">
+                        Y
+                      </Label>
+                      <Input
+                        id="shadowOffsetY"
+                        type="number"
+                        value={selectedElement.dropShadow?.offsetY ?? 2}
+                        onChange={(e) =>
+                          updateElement(selectedElement.id, {
+                            dropShadow: {
+                              ...selectedElement.dropShadow,
+                              enabled: true,
+                              offsetX: selectedElement.dropShadow?.offsetX ?? 2,
+                              offsetY: Number(e.target.value),
+                              blur: selectedElement.dropShadow?.blur ?? 4,
+                              color:
+                                selectedElement.dropShadow?.color ?? "#000000",
+                            },
+                          })
+                        }
+                        className="h-8"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="shadowBlur" className="text-xs">
+                    Desenfoque: {selectedElement.dropShadow?.blur ?? 4}px
+                  </Label>
+                  <Slider
+                    id="shadowBlur"
+                    min={0}
+                    max={20}
+                    step={1}
+                    value={[selectedElement.dropShadow?.blur ?? 4]}
+                    onValueChange={([value]) =>
+                      updateElement(selectedElement.id, {
+                        dropShadow: {
+                          ...selectedElement.dropShadow,
+                          enabled: true,
+                          offsetX: selectedElement.dropShadow?.offsetX ?? 2,
+                          offsetY: selectedElement.dropShadow?.offsetY ?? 2,
+                          blur: value || 1,
+                          color: selectedElement.dropShadow?.color ?? "#000000",
+                        },
+                      })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="shadowColor" className="text-xs">
+                    Color de sombra
+                  </Label>
+                  <ColorPicker
+                    value={selectedElement.dropShadow?.color || "#000000"}
+                    onValueChange={(color) => {
+                      // Only update if color actually changed
+                      if (color !== selectedElement.dropShadow?.color) {
+                        updateElement(selectedElement.id, {
+                          dropShadow: {
+                            ...selectedElement.dropShadow,
+                            enabled: true,
+                            offsetX: selectedElement.dropShadow?.offsetX ?? 2,
+                            offsetY: selectedElement.dropShadow?.offsetY ?? 2,
+                            blur: selectedElement.dropShadow?.blur ?? 4,
+                            color,
+                          },
+                        });
+                      }
+                    }}
+                    defaultFormat="hex"
+                    className="w-full"
+                  >
+                    <div className="flex items-center gap-3">
+                      <ColorPickerTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="flex items-center gap-2 px-3"
+                        >
+                          <ColorPickerSwatch className="size-4" />
+                          {selectedElement.dropShadow?.color || "#000000"}
+                        </Button>
+                      </ColorPickerTrigger>
+                    </div>
+                    <ColorPickerContent>
+                      <ColorPickerArea />
+                      <div className="flex items-center gap-2">
+                        <ColorPickerEyeDropper />
+                        <div className="flex flex-1 flex-col gap-2">
+                          <ColorPickerHueSlider />
+                          <ColorPickerAlphaSlider />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <ColorPickerFormatSelect />
+                        <ColorPickerInput />
+                      </div>
+                    </ColorPickerContent>
+                  </ColorPicker>
+                </div>
+              </>
+            )}
           </>
         )}
 

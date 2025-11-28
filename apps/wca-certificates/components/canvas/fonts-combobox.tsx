@@ -32,6 +32,7 @@ const SYSTEM_FONTS = [
   // Custom fonts
   "Santa Monday",
   "Basically A Sans Serif Font",
+  "Rubik",
 ];
 
 interface FontsComboboxProps {

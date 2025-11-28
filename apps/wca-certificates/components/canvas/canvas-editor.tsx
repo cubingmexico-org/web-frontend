@@ -10,6 +10,9 @@ interface CanvasEditorProps {
   eventIds: EventId[];
 }
 
+// Snap threshold in pixels
+const SNAP_THRESHOLD = 5;
+
 export function CanvasEditor({
   eventIds,
 }: CanvasEditorProps): React.JSX.Element {
@@ -46,11 +49,17 @@ export function CanvasEditor({
     y: 0,
     width: 0,
     height: 0,
-    fontSize: 0, // Add fontSize to resize start state
+    fontSize: 0,
   });
   const [isEditingText, setIsEditingText] = useState(false);
   const [editingText, setEditingText] = useState("");
   const textInputRef = useRef<HTMLInputElement>(null);
+
+  // Smart guides state
+  const [guides, setGuides] = useState<{
+    horizontal: number | null;
+    vertical: number | null;
+  }>({ horizontal: null, vertical: null });
 
   // Preload and cache images
   useEffect(() => {
@@ -199,7 +208,6 @@ export function CanvasEditor({
           ctx.textAlign = element.textAlign || "left";
 
           let textX = element.x;
-          // Adjust x position based on alignment
           if (element.textAlign === "center") {
             textX = element.x + element.width / 2;
           } else if (element.textAlign === "right") {
@@ -207,31 +215,24 @@ export function CanvasEditor({
           }
 
           ctx.fillText(content, textX, element.y + fontSize);
-
-          // Reset text align to prevent affecting other drawings
           ctx.textAlign = "left";
           break;
         }
 
         case "image":
           if (element.imageUrl) {
-            // Use cached image instead of creating new one
             const cachedImg = imageCache.current.get(element.imageUrl);
             if (cachedImg && cachedImg.complete) {
-              // Apply border radius if specified
               if (element.borderRadius && element.borderRadius > 0) {
                 ctx.save();
                 ctx.beginPath();
 
-                // For 50% border radius, draw a circle
                 if (element.borderRadius === 50) {
                   const centerX = element.x + element.width / 2;
                   const centerY = element.y + element.height / 2;
                   const radius = Math.min(element.width, element.height) / 2;
                   ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
                 } else {
-                  // For other values, draw rounded rectangle
-                  // Cap the radius to prevent overlapping corners
                   const maxRadius = Math.min(element.width, element.height) / 2;
                   const radius = Math.min(
                     (element.borderRadius / 100) * maxRadius * 2,
@@ -288,7 +289,6 @@ export function CanvasEditor({
                 ctx.restore();
               }
             } else {
-              // Show placeholder while loading
               ctx.fillStyle = "#e5e7eb";
               ctx.fillRect(element.x, element.y, element.width, element.height);
               ctx.fillStyle = "#9ca3af";
@@ -302,7 +302,6 @@ export function CanvasEditor({
               ctx.textAlign = "left";
             }
           } else {
-            // Placeholder for images without URL
             ctx.fillStyle = "#e5e7eb";
             ctx.fillRect(element.x, element.y, element.width, element.height);
             ctx.fillStyle = "#9ca3af";
@@ -318,16 +317,13 @@ export function CanvasEditor({
           break;
 
         case "qrcode": {
-          // Draw QR code placeholder
           ctx.fillStyle = element.qrBackground || "#ffffff";
           ctx.fillRect(element.x, element.y, element.width, element.height);
 
-          // Draw border
           ctx.strokeStyle = element.qrForeground || "#000000";
           ctx.lineWidth = 2;
           ctx.strokeRect(element.x, element.y, element.width, element.height);
 
-          // Draw QR code text
           ctx.fillStyle = element.qrForeground || "#000000";
           ctx.font = "14px sans-serif";
           ctx.textAlign = "center";
@@ -337,7 +333,6 @@ export function CanvasEditor({
             element.y + element.height / 2 - 10,
           );
 
-          // Draw QR data preview
           if (element.qrData) {
             ctx.font = "10px sans-serif";
             const maxLength = 20;
@@ -371,19 +366,19 @@ export function CanvasEditor({
 
         const handleSize = 8;
         const handles = [
-          { x: element.x - handleSize / 2, y: element.y - handleSize / 2 }, // top-left
+          { x: element.x - handleSize / 2, y: element.y - handleSize / 2 },
           {
             x: element.x + element.width - handleSize / 2,
             y: element.y - handleSize / 2,
-          }, // top-right
+          },
           {
             x: element.x - handleSize / 2,
             y: element.y + element.height - handleSize / 2,
-          }, // bottom-left
+          },
           {
             x: element.x + element.width - handleSize / 2,
             y: element.y + element.height - handleSize / 2,
-          }, // bottom-right
+          },
         ];
 
         ctx.fillStyle = "#6366f1";
@@ -394,6 +389,30 @@ export function CanvasEditor({
 
       ctx.restore();
     });
+
+    // Draw smart guides
+    ctx.save();
+    ctx.strokeStyle = "#f43f5e";
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+
+    // Draw horizontal center guide
+    if (guides.horizontal !== null) {
+      ctx.beginPath();
+      ctx.moveTo(0, guides.horizontal);
+      ctx.lineTo(canvas.width, guides.horizontal);
+      ctx.stroke();
+    }
+
+    // Draw vertical center guide
+    if (guides.vertical !== null) {
+      ctx.beginPath();
+      ctx.moveTo(guides.vertical, 0);
+      ctx.lineTo(guides.vertical, canvas.height);
+      ctx.stroke();
+    }
+
+    ctx.restore();
   };
 
   useEffect(() => {
@@ -405,6 +424,7 @@ export function CanvasEditor({
     canvasWidth,
     canvasHeight,
     activeSide,
+    guides,
   ]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -582,7 +602,6 @@ export function CanvasEditor({
           break;
       }
 
-      // For images with aspect ratio locked, maintain 1:1 ratio
       if (
         (selectedElement.type === "image" ||
           selectedElement.type === "qrcode") &&
@@ -592,7 +611,6 @@ export function CanvasEditor({
         newWidth = size;
         newHeight = size;
 
-        // Adjust position based on which handle is being dragged
         if (resizeHandle === "top-left") {
           newX = resizeStart.x + resizeStart.width - size;
           newY = resizeStart.y + resizeStart.height - size;
@@ -601,11 +619,9 @@ export function CanvasEditor({
         } else if (resizeHandle === "bottom-left") {
           newX = resizeStart.x + resizeStart.width - size;
         }
-        // bottom-right doesn't need position adjustment
       }
 
       if (selectedElement.imageUrl === "/country.svg") {
-        // Maintain 7:4 aspect ratio for country flags
         newHeight = (newWidth * 4) / 7;
       }
 
@@ -617,7 +633,6 @@ export function CanvasEditor({
         newWidth = totalWidth;
       }
 
-      // For text elements, adjust font size based on resize
       if (selectedElement.type === "text" && newWidth > 20 && newHeight > 20) {
         const widthRatio = newWidth / resizeStart.width;
         const heightRatio = newHeight / resizeStart.height;
@@ -643,7 +658,6 @@ export function CanvasEditor({
           fontSize: newFontSize,
         });
       } else if (newWidth > 20 && newHeight > 20) {
-        // For non-text elements, maintain minimum size constraints
         updateElement(selectedElementId, {
           x: newX,
           y: newY,
@@ -654,11 +668,71 @@ export function CanvasEditor({
       return;
     }
 
-    // Handle dragging
+    // Handle dragging with smart guides
     if (isDragging && selectedElementId) {
+      const selectedElement = currentElements.find(
+        (el) => el.id === selectedElementId,
+      );
+      if (!selectedElement) return;
+
+      let newX = x - dragOffset.x;
+      let newY = y - dragOffset.y;
+
+      // Calculate element center
+      const elementCenterX = newX + selectedElement.width / 2;
+      const elementCenterY = newY + selectedElement.height / 2;
+
+      // Canvas center
+      const canvasCenterX = canvasWidth / 2;
+      const canvasCenterY = canvasHeight / 2;
+
+      // Check for alignment with canvas center
+      let horizontalGuide: number | null = null;
+      let verticalGuide: number | null = null;
+
+      // Snap to vertical center (horizontal guide line)
+      if (Math.abs(elementCenterY - canvasCenterY) < SNAP_THRESHOLD) {
+        newY = canvasCenterY - selectedElement.height / 2;
+        horizontalGuide = canvasCenterY;
+      }
+
+      // Snap to horizontal center (vertical guide line)
+      if (Math.abs(elementCenterX - canvasCenterX) < SNAP_THRESHOLD) {
+        newX = canvasCenterX - selectedElement.width / 2;
+        verticalGuide = canvasCenterX;
+      }
+
+      // Check alignment with other elements
+      currentElements.forEach((element) => {
+        if (element.id === selectedElementId) return;
+
+        const otherCenterX = element.x + element.width / 2;
+        const otherCenterY = element.y + element.height / 2;
+
+        // Snap to other element's vertical center
+        if (
+          horizontalGuide === null &&
+          Math.abs(elementCenterY - otherCenterY) < SNAP_THRESHOLD
+        ) {
+          newY = otherCenterY - selectedElement.height / 2;
+          horizontalGuide = otherCenterY;
+        }
+
+        // Snap to other element's horizontal center
+        if (
+          verticalGuide === null &&
+          Math.abs(elementCenterX - otherCenterX) < SNAP_THRESHOLD
+        ) {
+          newX = otherCenterX - selectedElement.width / 2;
+          verticalGuide = otherCenterX;
+        }
+      });
+
+      setGuides({ horizontal: horizontalGuide, vertical: verticalGuide });
+
       updateElement(selectedElementId, {
-        x: x - dragOffset.x,
-        y: y - dragOffset.y,
+        x: newX,
+        y: newY,
       });
     }
   };
@@ -667,6 +741,8 @@ export function CanvasEditor({
     setIsDragging(false);
     setIsResizing(false);
     setResizeHandle(null);
+    // Clear guides when done dragging
+    setGuides({ horizontal: null, vertical: null });
   };
 
   const handleTextEditComplete = () => {

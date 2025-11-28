@@ -552,7 +552,7 @@ export function Canvas({
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "design.json";
+    a.download = `gafete-${competitionId}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };

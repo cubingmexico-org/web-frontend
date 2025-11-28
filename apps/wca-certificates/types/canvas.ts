@@ -11,7 +11,7 @@ export interface CanvasElement {
   content?: string;
   fontFamily?: string;
   fontSize?: number;
-  fontWeight?: string;
+  fontWeight?: "normal" | "bold" // | "bolder" | "lighter" | number;
   textAlign?: "center" | "end" | "left" | "right" | "start";
   color?: string;
   backgroundColor?: string;

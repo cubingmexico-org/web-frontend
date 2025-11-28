@@ -5,7 +5,7 @@ import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { Slider } from "@workspace/ui/components/slider";
-import { AlignCenter, AlignLeft, AlignRight, Trash2 } from "lucide-react";
+import { AlignCenter, AlignLeft, AlignRight, Bold, Trash2 } from "lucide-react";
 import {
   ColorPicker,
   ColorPickerAlphaSlider,
@@ -253,7 +253,8 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
                   const canvas = document.createElement("canvas");
                   const ctx = canvas.getContext("2d");
                   if (ctx) {
-                    ctx.font = `${selectedElement.fontSize || 24}px ${selectedElement.fontFamily || "Arial"}`;
+                    const fontWeight = selectedElement.fontWeight || "normal";
+                    ctx.font = `${fontWeight} ${selectedElement.fontSize || 24}px ${selectedElement.fontFamily || "Arial"}`;
                     const metrics = ctx.measureText(value);
                     const width = metrics.width;
                     const height = (selectedElement.fontSize || 24) * 1.2;
@@ -295,7 +296,8 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
                   const canvas = document.createElement("canvas");
                   const ctx = canvas.getContext("2d");
                   if (ctx) {
-                    ctx.font = `${selectedElement.fontSize || 24}px ${fontFamily}`;
+                    const fontWeight = selectedElement.fontWeight || "normal";
+                    ctx.font = `${fontWeight} ${selectedElement.fontSize || 24}px ${fontFamily}`;
                     const metrics = ctx.measureText(
                       selectedElement.content || "",
                     );
@@ -326,7 +328,8 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
                   const canvas = document.createElement("canvas");
                   const ctx = canvas.getContext("2d");
                   if (ctx) {
-                    ctx.font = `${fontSize}px ${selectedElement.fontFamily || "Arial"}`;
+                    const fontWeight = selectedElement.fontWeight || "normal";
+                    ctx.font = `${fontWeight} ${fontSize}px ${selectedElement.fontFamily || "Arial"}`;
                     const metrics = ctx.measureText(
                       selectedElement.content || "",
                     );
@@ -342,6 +345,47 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
                 }}
                 className="h-8"
               />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs">Estilo de texto</Label>
+              <div className="flex gap-1">
+                <Button
+                  variant={
+                    selectedElement.fontWeight === "bold" ? "default" : "outline"
+                  }
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => {
+                    const newWeight =
+                      selectedElement.fontWeight === "bold" ? "normal" : "bold";
+
+                    // Measure text dimensions with new weight
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("2d");
+                    if (ctx) {
+                      ctx.font = `${newWeight} ${selectedElement.fontSize || 24}px ${selectedElement.fontFamily || "Arial"}`;
+                      const metrics = ctx.measureText(
+                        selectedElement.content || "",
+                      );
+                      const width = metrics.width;
+                      const height = (selectedElement.fontSize || 24) * 1.2;
+
+                      updateElement(selectedElement.id, {
+                        fontWeight: newWeight,
+                        width,
+                        height,
+                      });
+                    } else {
+                      updateElement(selectedElement.id, {
+                        fontWeight: newWeight,
+                      });
+                    }
+                  }}
+                  title="Negrita"
+                >
+                  <Bold />
+                </Button>
+              </div>
             </div>
             <div className="space-y-2">
               <Label className="text-xs">Alineación de texto</Label>
@@ -435,23 +479,23 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
 
         {(selectedElement.type === "rectangle" ||
           selectedElement.type === "circle") && (
-          <div className="space-y-2">
-            <Label htmlFor="bgColor" className="text-xs">
-              Color de relleno
-            </Label>
-            <Input
-              id="bgColor"
-              type="color"
-              value={selectedElement.backgroundColor || "#3b82f6"}
-              onChange={(e) =>
-                updateElement(selectedElement.id, {
-                  backgroundColor: e.target.value,
-                })
-              }
-              className="h-10"
-            />
-          </div>
-        )}
+            <div className="space-y-2">
+              <Label htmlFor="bgColor" className="text-xs">
+                Color de relleno
+              </Label>
+              <Input
+                id="bgColor"
+                type="color"
+                value={selectedElement.backgroundColor || "#3b82f6"}
+                onChange={(e) =>
+                  updateElement(selectedElement.id, {
+                    backgroundColor: e.target.value,
+                  })
+                }
+                className="h-10"
+              />
+            </div>
+          )}
 
         {selectedElement.type === "image" && (
           <>
@@ -507,8 +551,8 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
                         : selectedElement.imageUrl === "/events.svg"
                           ? "events"
                           : // : selectedElement.imageUrl === "/state.png"
-                            // ? "state"
-                            "custom"
+                          // ? "state"
+                          "custom"
                 }
                 onValueChange={(value) => {
                   const urlMap = {
@@ -605,9 +649,9 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
               </RadioGroup>
             </div>
             {selectedElement.imageUrl !== "/avatar.png" &&
-            selectedElement.imageUrl !== "/team-logo.svg" &&
-            selectedElement.imageUrl !== "/country.svg" &&
-            selectedElement.imageUrl !== "/events.svg" ? (
+              selectedElement.imageUrl !== "/team-logo.svg" &&
+              selectedElement.imageUrl !== "/country.svg" &&
+              selectedElement.imageUrl !== "/events.svg" ? (
               // selectedElement.imageUrl !== "/state.png"
               <div className="space-y-2">
                 <Label htmlFor="imageUrl" className="text-xs">

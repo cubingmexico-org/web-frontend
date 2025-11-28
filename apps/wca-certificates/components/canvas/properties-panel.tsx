@@ -351,7 +351,9 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
               <div className="flex gap-1">
                 <Button
                   variant={
-                    selectedElement.fontWeight === "bold" ? "default" : "outline"
+                    selectedElement.fontWeight === "bold"
+                      ? "default"
+                      : "outline"
                   }
                   size="icon"
                   className="h-8 w-8"
@@ -474,28 +476,184 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
                 </ColorPickerContent>
               </ColorPicker>
             </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="dropShadow" className="text-xs">
+                  Sombra
+                </Label>
+                <Switch
+                  id="dropShadow"
+                  checked={selectedElement.dropShadow?.enabled ?? false}
+                  onCheckedChange={(checked) => {
+                    const currentShadow = selectedElement.dropShadow;
+                    updateElement(selectedElement.id, {
+                      dropShadow: {
+                        enabled: checked,
+                        offsetX: currentShadow?.offsetX ?? 2,
+                        offsetY: currentShadow?.offsetY ?? 2,
+                        blur: currentShadow?.blur ?? 4,
+                        color: currentShadow?.color ?? "#000000",
+                      },
+                    });
+                  }}
+                />
+              </div>
+            </div>
+            {selectedElement.dropShadow?.enabled && (
+              <>
+                <div className="space-y-2">
+                  <Label className="text-xs">Desplazamiento de sombra</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label htmlFor="shadowOffsetX" className="text-xs">
+                        X
+                      </Label>
+                      <Input
+                        id="shadowOffsetX"
+                        type="number"
+                        value={selectedElement.dropShadow?.offsetX ?? 2}
+                        onChange={(e) =>
+                          updateElement(selectedElement.id, {
+                            dropShadow: {
+                              ...selectedElement.dropShadow,
+                              enabled: true,
+                              offsetX: Number(e.target.value),
+                              offsetY: selectedElement.dropShadow?.offsetY ?? 2,
+                              blur: selectedElement.dropShadow?.blur ?? 4,
+                              color:
+                                selectedElement.dropShadow?.color ?? "#000000",
+                            },
+                          })
+                        }
+                        className="h-8"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="shadowOffsetY" className="text-xs">
+                        Y
+                      </Label>
+                      <Input
+                        id="shadowOffsetY"
+                        type="number"
+                        value={selectedElement.dropShadow?.offsetY ?? 2}
+                        onChange={(e) =>
+                          updateElement(selectedElement.id, {
+                            dropShadow: {
+                              ...selectedElement.dropShadow,
+                              enabled: true,
+                              offsetX: selectedElement.dropShadow?.offsetX ?? 2,
+                              offsetY: Number(e.target.value),
+                              blur: selectedElement.dropShadow?.blur ?? 4,
+                              color:
+                                selectedElement.dropShadow?.color ?? "#000000",
+                            },
+                          })
+                        }
+                        className="h-8"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="shadowBlur" className="text-xs">
+                    Desenfoque: {selectedElement.dropShadow?.blur ?? 4}px
+                  </Label>
+                  <Slider
+                    id="shadowBlur"
+                    min={0}
+                    max={20}
+                    step={1}
+                    value={[selectedElement.dropShadow?.blur ?? 4]}
+                    onValueChange={([value]) =>
+                      updateElement(selectedElement.id, {
+                        dropShadow: {
+                          ...selectedElement.dropShadow,
+                          enabled: true,
+                          offsetX: selectedElement.dropShadow?.offsetX ?? 2,
+                          offsetY: selectedElement.dropShadow?.offsetY ?? 2,
+                          blur: value || 1,
+                          color: selectedElement.dropShadow?.color ?? "#000000",
+                        },
+                      })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="shadowColor" className="text-xs">
+                    Color de sombra
+                  </Label>
+                  <ColorPicker
+                    value={selectedElement.dropShadow?.color || "#000000"}
+                    onValueChange={(color) => {
+                      // Only update if color actually changed
+                      if (color !== selectedElement.dropShadow?.color) {
+                        updateElement(selectedElement.id, {
+                          dropShadow: {
+                            ...selectedElement.dropShadow,
+                            enabled: true,
+                            offsetX: selectedElement.dropShadow?.offsetX ?? 2,
+                            offsetY: selectedElement.dropShadow?.offsetY ?? 2,
+                            blur: selectedElement.dropShadow?.blur ?? 4,
+                            color,
+                          },
+                        });
+                      }
+                    }}
+                    defaultFormat="hex"
+                    className="w-full"
+                  >
+                    <div className="flex items-center gap-3">
+                      <ColorPickerTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="flex items-center gap-2 px-3"
+                        >
+                          <ColorPickerSwatch className="size-4" />
+                          {selectedElement.dropShadow?.color || "#000000"}
+                        </Button>
+                      </ColorPickerTrigger>
+                    </div>
+                    <ColorPickerContent>
+                      <ColorPickerArea />
+                      <div className="flex items-center gap-2">
+                        <ColorPickerEyeDropper />
+                        <div className="flex flex-1 flex-col gap-2">
+                          <ColorPickerHueSlider />
+                          <ColorPickerAlphaSlider />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <ColorPickerFormatSelect />
+                        <ColorPickerInput />
+                      </div>
+                    </ColorPickerContent>
+                  </ColorPicker>
+                </div>
+              </>
+            )}
           </>
         )}
 
         {(selectedElement.type === "rectangle" ||
           selectedElement.type === "circle") && (
-            <div className="space-y-2">
-              <Label htmlFor="bgColor" className="text-xs">
-                Color de relleno
-              </Label>
-              <Input
-                id="bgColor"
-                type="color"
-                value={selectedElement.backgroundColor || "#3b82f6"}
-                onChange={(e) =>
-                  updateElement(selectedElement.id, {
-                    backgroundColor: e.target.value,
-                  })
-                }
-                className="h-10"
-              />
-            </div>
-          )}
+          <div className="space-y-2">
+            <Label htmlFor="bgColor" className="text-xs">
+              Color de relleno
+            </Label>
+            <Input
+              id="bgColor"
+              type="color"
+              value={selectedElement.backgroundColor || "#3b82f6"}
+              onChange={(e) =>
+                updateElement(selectedElement.id, {
+                  backgroundColor: e.target.value,
+                })
+              }
+              className="h-10"
+            />
+          </div>
+        )}
 
         {selectedElement.type === "image" && (
           <>
@@ -551,8 +709,8 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
                         : selectedElement.imageUrl === "/events.svg"
                           ? "events"
                           : // : selectedElement.imageUrl === "/state.png"
-                          // ? "state"
-                          "custom"
+                            // ? "state"
+                            "custom"
                 }
                 onValueChange={(value) => {
                   const urlMap = {
@@ -649,9 +807,9 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
               </RadioGroup>
             </div>
             {selectedElement.imageUrl !== "/avatar.png" &&
-              selectedElement.imageUrl !== "/team-logo.svg" &&
-              selectedElement.imageUrl !== "/country.svg" &&
-              selectedElement.imageUrl !== "/events.svg" ? (
+            selectedElement.imageUrl !== "/team-logo.svg" &&
+            selectedElement.imageUrl !== "/country.svg" &&
+            selectedElement.imageUrl !== "/events.svg" ? (
               // selectedElement.imageUrl !== "/state.png"
               <div className="space-y-2">
                 <Label htmlFor="imageUrl" className="text-xs">

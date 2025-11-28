@@ -203,6 +203,14 @@ export function CanvasEditor({
           const fontWeight = element.fontWeight || "normal";
           const content = element.content || "";
 
+          // Apply drop shadow if enabled
+          if (element.dropShadow?.enabled) {
+            ctx.shadowColor = element.dropShadow.color || "#000000";
+            ctx.shadowBlur = element.dropShadow.blur || 4;
+            ctx.shadowOffsetX = element.dropShadow.offsetX || 2;
+            ctx.shadowOffsetY = element.dropShadow.offsetY || 2;
+          }
+
           ctx.fillStyle = element.color || "#000000";
           ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
           ctx.textAlign = element.textAlign || "left";
@@ -215,6 +223,15 @@ export function CanvasEditor({
           }
 
           ctx.fillText(content, textX, element.y + fontSize);
+
+          // Reset shadow after drawing text
+          if (element.dropShadow?.enabled) {
+            ctx.shadowColor = "transparent";
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+          }
+
           ctx.textAlign = "left";
           break;
         }

@@ -287,6 +287,14 @@ export function BadgeManager({
                     fontWeight,
                   );
 
+                // Apply drop shadow if enabled
+                if (element.dropShadow?.enabled) {
+                  ctx.shadowColor = element.dropShadow.color || "#000000";
+                  ctx.shadowBlur = element.dropShadow.blur || 4;
+                  ctx.shadowOffsetX = element.dropShadow.offsetX || 2;
+                  ctx.shadowOffsetY = element.dropShadow.offsetY || 2;
+                }
+
                 ctx.fillStyle = element.color || "#000000";
                 ctx.font = `${fontWeight} ${optimalFontSize}px ${fontFamily}`;
                 ctx.textAlign = element.textAlign || "left";
@@ -309,6 +317,14 @@ export function BadgeManager({
 
                   ctx.fillText(line, textX, startY + index * lineHeight);
                 });
+
+                // Reset shadow after drawing text
+                if (element.dropShadow?.enabled) {
+                  ctx.shadowColor = "transparent";
+                  ctx.shadowBlur = 0;
+                  ctx.shadowOffsetX = 0;
+                  ctx.shadowOffsetY = 0;
+                }
 
                 ctx.textAlign = "left";
                 break;
@@ -720,12 +736,13 @@ export function BadgeManager({
     str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
   const filteredPersons = persons
-    .filter((person) =>
-      removeAccents(person.name.toLowerCase()).includes(
-        removeAccents(search.toLowerCase()),
-      ) &&
-      // optional competing-only filter
-      (!showOnlyCompeting || person.registration?.isCompeting === true),
+    .filter(
+      (person) =>
+        removeAccents(person.name.toLowerCase()).includes(
+          removeAccents(search.toLowerCase()),
+        ) &&
+        // optional competing-only filter
+        (!showOnlyCompeting || person.registration?.isCompeting === true),
     )
     .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -934,7 +951,9 @@ export function BadgeManager({
                       <Switch
                         id="show-only-competing"
                         checked={showOnlyCompeting}
-                        onCheckedChange={(v) => setShowOnlyCompeting(Boolean(v))}
+                        onCheckedChange={(v) =>
+                          setShowOnlyCompeting(Boolean(v))
+                        }
                       />
                     </div>
                   </div>
@@ -947,29 +966,54 @@ export function BadgeManager({
                       ) : (
                         <>
                           {[
-                            { key: "delegates", title: "Delegados", list: groupedPersons.delegates },
-                            { key: "organizers", title: "Organizadores", list: groupedPersons.organizers },
-                            { key: "newcomers", title: "Nuevos", list: groupedPersons.newcomers },
-                            { key: "regulars", title: "Competidores", list: groupedPersons.regulars },
+                            {
+                              key: "delegates",
+                              title: "Delegados",
+                              list: groupedPersons.delegates,
+                            },
+                            {
+                              key: "organizers",
+                              title: "Organizadores",
+                              list: groupedPersons.organizers,
+                            },
+                            {
+                              key: "newcomers",
+                              title: "Nuevos",
+                              list: groupedPersons.newcomers,
+                            },
+                            {
+                              key: "regulars",
+                              title: "Competidores",
+                              list: groupedPersons.regulars,
+                            },
                           ].map(({ key, title, list }) =>
                             list.length > 0 ? (
                               <div key={key} className="col-span-2">
                                 <div className="flex items-center justify-between mb-1">
-                                  <div className="text-xs font-medium">{title} ({list.length})</div>
+                                  <div className="text-xs font-medium">
+                                    {title} ({list.length})
+                                  </div>
                                   <div>
                                     <Button
                                       size="sm"
                                       variant="ghost"
                                       onClick={() => {
                                         setSelectedPersons((prev) => {
-                                          const existingIds = new Set(prev.map(p => p.registrantId));
-                                          const toAdd = list.filter(p => !existingIds.has(p.registrantId));
+                                          const existingIds = new Set(
+                                            prev.map((p) => p.registrantId),
+                                          );
+                                          const toAdd = list.filter(
+                                            (p) =>
+                                              !existingIds.has(p.registrantId),
+                                          );
                                           return [...prev, ...toAdd];
                                         });
                                       }}
                                     >
                                       <Check />
-                                      <span className="ml-1 text-xs">Seleccionar todo</span>
+                                      <span className="ml-1 text-xs">
+                                        Seleccionar todo
+                                      </span>
                                     </Button>
                                   </div>
                                 </div>
@@ -989,21 +1033,31 @@ export function BadgeManager({
                                           onCheckedChange={(checked) => {
                                             if (checked) {
                                               setSelectedPersons((prev) =>
-                                                prev.some((p) => p.registrantId === person.registrantId)
+                                                prev.some(
+                                                  (p) =>
+                                                    p.registrantId ===
+                                                    person.registrantId,
+                                                )
                                                   ? prev
                                                   : [...prev, person],
                                               );
                                             } else {
                                               setSelectedPersons((prev) =>
                                                 prev.filter(
-                                                  (p) => p.registrantId !== person.registrantId,
+                                                  (p) =>
+                                                    p.registrantId !==
+                                                    person.registrantId,
                                                 ),
                                               );
                                             }
                                           }}
                                         />
-                                        <Label htmlFor={String(person.wcaUserId)}>
-                                          <p className="text-xs">{person.name}</p>
+                                        <Label
+                                          htmlFor={String(person.wcaUserId)}
+                                        >
+                                          <p className="text-xs">
+                                            {person.name}
+                                          </p>
                                         </Label>
                                       </div>
                                     );

@@ -170,6 +170,9 @@ export function CanvasEditor({
     currentElements.forEach((element) => {
       ctx.save();
 
+      // Set element opacity
+      ctx.globalAlpha = element.opacity !== undefined ? element.opacity : 1;
+
       // Apply transformations
       const centerX = element.x + element.width / 2;
       const centerY = element.y + element.height / 2;
@@ -370,6 +373,7 @@ export function CanvasEditor({
 
       // Draw selection border
       if (element.id === selectedElementId) {
+        ctx.globalAlpha = 1; // <-- Always opaque for border and handles
         ctx.strokeStyle = "#6366f1";
         ctx.lineWidth = 2;
         ctx.setLineDash([5, 5]);
@@ -405,6 +409,8 @@ export function CanvasEditor({
       }
 
       ctx.restore();
+      // Reset opacity for next element
+      ctx.globalAlpha = 1;
     });
 
     // Draw smart guides

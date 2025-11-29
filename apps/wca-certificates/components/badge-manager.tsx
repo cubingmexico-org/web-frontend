@@ -199,6 +199,8 @@ export function BadgeManager({
             ctx.translate(centerX, centerY);
             ctx.rotate((element.rotation * Math.PI) / 180);
             ctx.translate(-centerX, -centerY);
+            ctx.globalAlpha =
+              element.opacity !== undefined ? element.opacity : 1;
 
             switch (element.type) {
               case "rectangle":
@@ -370,28 +372,48 @@ export function BadgeManager({
                       // Load and draw each event icon
                       const eventPromises = sortedEventIds.map(
                         (eventId, index) => {
-                          return new Promise<void>((resolveEvent) => {
+                          return new Promise((resolveEvent) => {
                             const eventImg = new Image();
                             eventImg.crossOrigin = "anonymous";
 
                             eventImg.onload = () => {
                               const xPos =
                                 startX + (iconSize + spacing) * index;
-                              ctx.drawImage(
+
+                              const tempCanvas =
+                                document.createElement("canvas");
+                              tempCanvas.width = iconSize;
+                              tempCanvas.height = iconSize;
+                              const tempCtx = tempCanvas.getContext("2d");
+
+                              tempCtx?.drawImage(
                                 eventImg,
+                                0,
+                                0,
+                                iconSize,
+                                iconSize,
+                              );
+
+                              tempCtx!.globalCompositeOperation = "source-in";
+                              tempCtx!.fillStyle = element.color || "#000000";
+                              tempCtx!.fillRect(0, 0, iconSize, iconSize);
+
+                              ctx.drawImage(
+                                tempCanvas,
                                 xPos,
                                 element.y,
                                 iconSize,
                                 iconSize,
                               );
-                              resolveEvent();
+
+                              resolveEvent(void 0);
                             };
 
                             eventImg.onerror = () => {
                               console.error(
                                 `Failed to load event icon: ${eventId}`,
                               );
-                              resolveEvent();
+                              resolveEvent(void 0);
                             };
 
                             eventImg.src = `/events/${eventId}.svg`;
@@ -408,7 +430,7 @@ export function BadgeManager({
                     isWcaAvatar && currentPerson.avatar
                       ? `/api/image-proxy?url=${encodeURIComponent(currentPerson.avatar.url)}`
                       : isTeamLogo
-                        ? teamImage || element.imageUrl
+                        ? teamImage || "/logo.svg"
                         : isCountryFlag
                           ? `https://flagcdn.com/h240/${currentPerson.countryIso2.toLowerCase()}.png`
                           : element.imageUrl;

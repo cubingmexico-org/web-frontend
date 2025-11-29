@@ -17,6 +17,7 @@ export interface CanvasElement {
   height: number;
   rotation: number;
   content?: string;
+  opacity?: number;
   fontFamily?: string;
   fontSize?: number;
   fontWeight?: "normal" | "bold"; // | "bolder" | "lighter" | number;

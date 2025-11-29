@@ -239,6 +239,22 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
           />
         </div>
 
+        <div>
+          <Label htmlFor="opacity" className="text-xs">
+            Opacidad: {selectedElement.opacity ?? 1}
+          </Label>
+          <Slider
+            id="opacity"
+            min={0}
+            max={1}
+            step={0.01}
+            value={[selectedElement.opacity ?? 1]}
+            onValueChange={([value]) =>
+              updateElement(selectedElement.id, { opacity: value })
+            }
+          />
+        </div>
+
         {selectedElement.type === "text" && (
           <>
             <div className="space-y-2">
@@ -828,6 +844,50 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
                 />
               </div>
             ) : null}
+            {selectedElement.imageUrl === "/events.svg" && (
+              <div className="space-y-2">
+                <Label htmlFor="iconsColor" className="text-xs">
+                  Color de los íconos
+                </Label>
+                <ColorPicker
+                  value={selectedElement.color || "#000000"}
+                  onValueChange={(color) => {
+                    // Only update if color actually changed
+                    if (color !== selectedElement.color) {
+                      updateElement(selectedElement.id, { color });
+                    }
+                  }}
+                  defaultFormat="hex"
+                  className="w-full"
+                >
+                  <div className="flex items-center gap-3">
+                    <ColorPickerTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="flex items-center gap-2 px-3"
+                      >
+                        <ColorPickerSwatch className="size-4" />
+                        {selectedElement.color || "#000000"}
+                      </Button>
+                    </ColorPickerTrigger>
+                  </div>
+                  <ColorPickerContent>
+                    <ColorPickerArea />
+                    <div className="flex items-center gap-2">
+                      <ColorPickerEyeDropper />
+                      <div className="flex flex-1 flex-col gap-2">
+                        <ColorPickerHueSlider />
+                        <ColorPickerAlphaSlider />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <ColorPickerFormatSelect />
+                      <ColorPickerInput />
+                    </div>
+                  </ColorPickerContent>
+                </ColorPicker>
+              </div>
+            )}
           </>
         )}
 

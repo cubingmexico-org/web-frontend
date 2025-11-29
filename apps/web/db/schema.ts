@@ -164,13 +164,7 @@ export const rankAverage = pgTable(
     // Cubing México
     stateRank: integer("stateRank"),
   },
-  (table) => {
-    return [
-      {
-        pk: primaryKey({ columns: [table.personId, table.eventId] }),
-      },
-    ];
-  },
+  (t) => [primaryKey({ columns: [t.personId, t.eventId] })],
 );
 
 export type RankAverage = InferSelectModel<typeof rankAverage>;
@@ -191,13 +185,7 @@ export const rankSingle = pgTable(
     // Cubing México
     stateRank: integer("stateRank"),
   },
-  (table) => {
-    return [
-      {
-        pk: primaryKey({ columns: [table.personId, table.eventId] }),
-      },
-    ];
-  },
+  (t) => [primaryKey({ columns: [t.personId, t.eventId] })],
 );
 
 export type RankSingle = InferSelectModel<typeof rankSingle>;
@@ -228,20 +216,11 @@ export const result = pgTable(
     regionalSingleRecord: varchar("regionalSingleRecord", { length: 3 }),
     regionalAverageRecord: varchar("regionalAverageRecord", { length: 3 }),
   },
-  (table) => {
-    return [
-      {
-        pk: primaryKey({
-          columns: [
-            table.competitionId,
-            table.eventId,
-            table.roundTypeId,
-            table.pos,
-          ],
-        }),
-      },
-    ];
-  },
+  (t) => [
+    primaryKey({
+      columns: [t.competitionId, t.eventId, t.roundTypeId, t.pos],
+    }),
+  ],
 );
 
 export type Result = InferSelectModel<typeof result>;
@@ -315,13 +294,7 @@ export const sumOfRanks = pgTable(
     overall: integer("overall").notNull(),
     events: jsonb("events").notNull(),
   },
-  (table) => {
-    return [
-      {
-        pk: primaryKey({ columns: [table.personId, table.resultType] }),
-      },
-    ];
-  },
+  (t) => [primaryKey({ columns: [t.personId, t.resultType] })],
 );
 
 export type SumOfRanks = InferSelectModel<typeof sumOfRanks>;
@@ -336,13 +309,7 @@ export const kinchRanks = pgTable(
     overall: doublePrecision("overall").notNull(),
     events: jsonb("events").notNull(),
   },
-  (table) => {
-    return [
-      {
-        pk: primaryKey({ columns: [table.personId] }),
-      },
-    ];
-  },
+  (t) => [primaryKey({ columns: [t.personId] })],
 );
 
 export type KinchRanks = InferSelectModel<typeof kinchRanks>;

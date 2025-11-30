@@ -1,19 +1,19 @@
 import * as React from "react";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import { CompetitionsTable } from "./_components/competitions-table";
+import { CompetitionsTable } from "../_components/competitions-table";
 import {
   getCompetitions,
   getCompetitionsLocations,
   getCompetitionsStateCounts,
   getCompetitionsStatusCounts,
-} from "./_lib/queries";
+} from "../_lib/queries";
 import { SearchParams } from "@/types";
 import { getValidFilters } from "@/lib/data-table";
-import { searchParamsCache } from "./_lib/validations";
+import { searchParamsCache } from "../_lib/validations";
 import { DateRangePicker } from "@/components/date-range-picker";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Metadata } from "next";
-import { MapContainer } from "./_components/map-container";
+import { MapContainer } from "../_components/map-container";
 import type { GeoJSONProps } from "react-leaflet";
 import { getStatesGeoJSON } from "@/db/queries";
 import { headers } from "next/headers";
@@ -88,17 +88,9 @@ export default async function Page(props: PageProps) {
         <React.Suspense
           fallback={
             <DataTableSkeleton
-              columnCount={7}
-              filterCount={2}
-              cellWidths={[
-                "10rem",
-                "30rem",
-                "10rem",
-                "10rem",
-                "6rem",
-                "6rem",
-                "6rem",
-              ]}
+              columnCount={6}
+              filterCount={3}
+              cellWidths={["9rem", "20rem", "20rem", "9rem", "10rem", "10rem"]}
               shrinkZero
             />
           }

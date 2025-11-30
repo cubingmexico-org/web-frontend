@@ -14,6 +14,7 @@ import {
 } from "nuqs";
 import { ResultTypeSelector } from "./result-type-selector";
 import { usePathname } from "next/navigation";
+import type { EventId } from "@/types/wca";
 
 const searchParams = {
   name: parseAsString.withDefault(""),
@@ -30,7 +31,7 @@ interface EventSelectorProps extends React.HTMLAttributes<HTMLDivElement> {
     id: string;
     name: string;
   }[];
-  selectedEventId: string;
+  selectedEventId: EventId;
   selectedRankType: "single" | "average";
   className?: string;
 }

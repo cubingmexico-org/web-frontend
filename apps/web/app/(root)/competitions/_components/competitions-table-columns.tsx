@@ -73,9 +73,7 @@ export function getColumns({
             </Badge>
             <Link
               className="truncate font-medium hover:underline"
-              href={`https://www.worldcubeassociation.org/competitions/${row.original.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={`/competitions/${row.original.id}`}
             >
               {row.getValue("name")}
             </Link>

@@ -476,7 +476,11 @@ export default async function Page(props: {
                       ) : null}
                       {upcomingCompetitions.map((competition, index) => (
                         <div key={index} className="space-y-2">
-                          <h3 className="font-semibold">{competition.name}</h3>
+                          <h3 className="font-semibold">
+                            <Link href={`/competitions/${competition.id}`}>
+                              {competition.name}
+                            </Link>
+                          </h3>
                           <div className="text-sm text-muted-foreground">
                             <div className="flex items-center">
                               <Calendar className="w-4 h-4 mr-2" />
@@ -594,7 +598,11 @@ export default async function Page(props: {
                       >
                         <Calendar className="w-6 h-6" />
                         <div className="grow">
-                          <h3 className="font-semibold">{competition.name}</h3>
+                          <h3 className="font-semibold">
+                            <Link href={`/competitions/${competition.id}`}>
+                              {competition.name}
+                            </Link>
+                          </h3>
                           <div className="text-sm text-muted-foreground mt-2">
                             <div className="flex items-center">
                               <Calendar className="w-4 h-4 mr-2" />
@@ -631,7 +639,7 @@ export default async function Page(props: {
                           </div>
                         </div>
                         <Link
-                          href={`https://www.worldcubeassociation.org/competitions/${competition.id}`}
+                          href={`/competitions/${competition.id}`}
                           className={buttonVariants({ variant: "default" })}
                         >
                           Ver detalles
@@ -660,7 +668,11 @@ export default async function Page(props: {
                       >
                         <Calendar className="w-6 h-6" />
                         <div className="grow">
-                          <h3 className="font-semibold">{competition.name}</h3>
+                          <h3 className="font-semibold">
+                            <Link href={`/competitions/${competition.id}`}>
+                              {competition.name}
+                            </Link>
+                          </h3>
                           <div className="text-sm text-muted-foreground mt-2">
                             <div className="flex items-center">
                               <Calendar className="w-4 h-4 mr-2" />
@@ -697,10 +709,8 @@ export default async function Page(props: {
                           </div>
                         </div>
                         <Link
-                          href={`https://www.worldcubeassociation.org/competitions/${competition.id}`}
+                          href={`/competitions/${competition.id}`}
                           className={buttonVariants({ variant: "default" })}
-                          target="_blank"
-                          rel="noopener noreferrer"
                         >
                           Ver detalles
                         </Link>

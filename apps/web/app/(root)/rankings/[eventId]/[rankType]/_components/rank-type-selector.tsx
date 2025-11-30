@@ -7,9 +7,10 @@ import {
 } from "@workspace/ui/components/toggle-group";
 import { useRouter } from "next/navigation";
 import { cn } from "@workspace/ui/lib/utils";
+import type { EventId } from "@/types/wca";
 
 interface RankTypeSelectorProps extends React.HTMLAttributes<HTMLDivElement> {
-  selectedEventId: string;
+  selectedEventId: EventId;
   selectedRankType: "single" | "average";
   hrefSingle: string;
   hrefAverage: string;

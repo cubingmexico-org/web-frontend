@@ -36,7 +36,7 @@ import {
   getMembershipData,
   getPersonInfo,
   getSingleStateRanks,
-  getWcaData,
+  getWcaPersonData,
 } from "./_lib/queries";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
@@ -65,7 +65,7 @@ export default async function Page({
 
   const [person, wcaData, events] = await Promise.all([
     getPersonInfo(id),
-    getWcaData(id),
+    getWcaPersonData(id),
     getEvents(),
   ]);
 

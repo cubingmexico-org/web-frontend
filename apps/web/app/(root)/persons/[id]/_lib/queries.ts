@@ -21,11 +21,11 @@ import type { WcaPersonResponse } from "@/types/wca";
 import { and, countDistinct, eq, gt, inArray, sql } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 
-export async function getWcaData(
+export async function getWcaPersonData(
   wcaId: string,
 ): Promise<WcaPersonResponse | null> {
   cacheLife("hours");
-  cacheTag(`wca-data-${wcaId}`);
+  cacheTag(`wca-person-data-${wcaId}`);
 
   try {
     const response = await fetch(

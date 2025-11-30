@@ -74,6 +74,25 @@ export async function getPersons() {
   }
 }
 
+export async function getCompetitions() {
+  cacheLife("days");
+  cacheTag("competitions-sitemap");
+
+  try {
+    return await db
+      .select({
+        id: competition.id,
+        name: competition.name,
+      })
+      .from(competition)
+      .where(eq(competition.countryId, "Mexico"))
+      .then((res) => res);
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+}
+
 export async function getCurrentUserTeam({ userId }: { userId: Person["id"] }) {
   cacheLife("hours");
   cacheTag(`current-user-team-${userId}`);

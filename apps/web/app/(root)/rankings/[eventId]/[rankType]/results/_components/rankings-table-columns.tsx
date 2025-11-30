@@ -132,7 +132,7 @@ export function getSingleColumns({
           <div className="flex space-x-2 whitespace-nowrap">
             <Link
               className="hover:underline"
-              href={`https://www.worldcubeassociation.org/competitions/${competitionId}`}
+              href={`/competitions/${competitionId}`}
             >
               {row.getValue("competition")}
             </Link>
@@ -273,7 +273,7 @@ export function getAverageColumns({
           <div className="flex space-x-2 whitespace-nowrap">
             <Link
               className="hover:underline"
-              href={`https://www.worldcubeassociation.org/competitions/${competitionId}`}
+              href={`/competitions/${competitionId}`}
             >
               {row.getValue("competition")}
             </Link>

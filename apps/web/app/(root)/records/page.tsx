@@ -91,7 +91,7 @@ export default async function Page(props: PageProps) {
                 <TableCell className="whitespace-nowrap">
                   <Link
                     className="hover:underline"
-                    href={`https://www.worldcubeassociation.org/competitions/${record.single.competitionId}`}
+                    href={`/competitions/${record.single.competitionId}`}
                   >
                     {record.single.competition}
                   </Link>
@@ -194,7 +194,7 @@ export default async function Page(props: PageProps) {
                   <TableCell className="whitespace-nowrap">
                     <Link
                       className="hover:underline"
-                      href={`https://www.worldcubeassociation.org/competitions/${record.average?.competitionId}`}
+                      href={`/competitions/${record.average?.competitionId}`}
                     >
                       {record.average?.competition}
                     </Link>

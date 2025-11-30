@@ -31,7 +31,6 @@ export const useCanvasStore = create<CanvasStore>((set) => ({
   selectedElementId: null,
   canvasWidth: 638,
   canvasHeight: 1012,
-  opacity: 1,
   backgroundImage: undefined,
   backgroundImageBack: undefined,
   zoom: 1,

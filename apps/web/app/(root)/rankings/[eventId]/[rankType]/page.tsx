@@ -19,9 +19,12 @@ import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import { EventSelector } from "./_components/event-selector";
 import { getEvents } from "@/db/queries";
+import type { EventId } from "@/types/wca";
+
+type Params = { eventId: EventId; rankType: "single" | "average" };
 
 type Props = {
-  params: Promise<{ rankType: string; eventId: string }>;
+  params: Promise<Params>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -46,7 +49,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 interface PageProps {
-  params: Promise<{ eventId: string; rankType: "single" | "average" }>;
+  params: Promise<Params>;
   searchParams: Promise<SearchParams>;
 }
 

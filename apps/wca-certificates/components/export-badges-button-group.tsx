@@ -1,124 +1,54 @@
 "use client";
 
-import { CanvasEditor } from "@/components/canvas/canvas-editor";
-import { Toolbar } from "@/components/canvas/toolbar";
-import { PropertiesPanel } from "@/components/canvas/properties-panel";
-import { CanvasSettings } from "@/components/canvas/canvas-settings";
-import { Button } from "@workspace/ui/components/button";
-import { Download, Eye, FlipHorizontal, RotateCcw, Upload } from "lucide-react";
-import { useCanvasStore } from "@/lib/canvas-store";
-import type { CanvasElement } from "@/types/canvas";
-import { useSession } from "next-auth/react";
-import QRCode from "qrcode";
-import { useParams } from "next/navigation";
-import { toast } from "sonner";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogClose,
-  DialogFooter,
-} from "@workspace/ui/components/dialog";
-import { useState } from "react";
-import type { EventId, ExtendedPerson } from "@/types/wcif";
-import { State, Team } from "@/db/queries";
+import { ChevronDownIcon, Download, Loader2 } from "lucide-react";
 
-interface CanvasProps {
+import { Button } from "@workspace/ui/components/button";
+import { ButtonGroup } from "@workspace/ui/components/button-group";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu";
+import { useState } from "react";
+import { useCanvasStore } from "@/lib/canvas-store";
+import { toast } from "sonner";
+import type { ExtendedPerson } from "@/types/wcif";
+import JSZip from "jszip";
+import QRCode from "qrcode";
+import { jsPDF } from "jspdf";
+import type { State, Team } from "@/db/queries";
+import type { Competition } from "@/types/wca";
+
+interface ExportBadgesButtonGroupProps {
+  selectedPersons: ExtendedPerson[];
+  competition: Competition;
   states: State[];
   teams: Team[];
-  eventIds: EventId[];
 }
 
-export function Canvas({
+export function ExportBadgesButtonGroup({
+  selectedPersons,
+  competition,
   states,
   teams,
-  eventIds,
-}: CanvasProps): React.JSX.Element {
+}: ExportBadgesButtonGroupProps) {
+  const [isExporting, setIsExporting] = useState(false);
+
   const {
     elements,
     canvasWidth,
     canvasHeight,
     backgroundImage,
     backgroundImageBack,
-    activeSide,
-    setActiveSide,
     enableBackSide,
-    setElements,
-    setCanvasSize,
-    setBackgroundImage,
-    setBackgroundImageBack,
-    setEnableBackSide,
   } = useCanvasStore();
 
-  const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
+  const DPI = 300;
+  const pxToMm = (px: number) => (px * 25.4) / DPI;
 
-  const session = useSession();
-
-  const params = useParams();
-
-  const competitionId = params.competitionId;
-
-  const currentPerson = {
-    name: session.data?.user?.name || "Leonardo Del Toro",
-    wcaId: session.data?.user?.id || null,
-    avatar: {
-      url: session.data?.user?.image || "/avatar.png",
-      thumbUrl: session.data?.user?.image || "/avatar.png",
-    },
-    registration: { eventIds },
-    roles: [] as string[],
-    registrantId: 1,
-    countryIso2: "MX",
-    stateId: "NAY",
-  } as ExtendedPerson;
-
-  const previewCanvas = async () => {
-    const canvas = await createCanvasForSide(activeSide);
-
-    if (!canvas) return;
-
-    openCanvas(canvas);
-  };
-
-  const createCanvasForSide = async (side: "front" | "back") => {
-    const canvas = document.createElement("canvas");
-    canvas.width = canvasWidth;
-    canvas.height = canvasHeight;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return null;
-
-    const sideElements = elements[side] || [];
-
-    const backgroundImageUrl =
-      side === "front" ? backgroundImage : backgroundImageBack;
-
-    if (backgroundImageUrl) {
-      await new Promise<void>((resolve) => {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.src = backgroundImageUrl;
-        img.onload = () => {
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          resolve();
-        };
-        img.onerror = () => {
-          console.error("Failed to load background image");
-          resolve();
-        };
-      });
-    } else {
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-    }
-
-    await drawElements(ctx, sideElements);
-
-    return canvas;
-  };
-
+  // Helper function to measure text and calculate optimal font size with multi-line support
   const measureTextAndAdjustFontSize = (
     ctx: CanvasRenderingContext2D,
     text: string,
@@ -178,11 +108,13 @@ export function Canvas({
     return { fontSize, lines };
   };
 
-  async function drawElements(
+  // Shared function to draw all elements on a canvas
+  const drawElements = async (
     ctx: CanvasRenderingContext2D,
-    elementsArray: CanvasElement[],
-  ) {
-    for (const element of elementsArray) {
+    currentPerson: ExtendedPerson,
+    side: "front" | "back" = "front",
+  ) => {
+    for (const element of elements[side]) {
       ctx.save();
 
       const centerX = element.x + element.width / 2;
@@ -234,7 +166,9 @@ export function Canvas({
             String(currentPerson.registrantId) || "Desconocido",
           );
 
-          const regionNames = new Intl.DisplayNames(["es"], { type: "region" });
+          const regionNames = new Intl.DisplayNames(["es"], {
+            type: "region",
+          });
           const countryName =
             regionNames.of(currentPerson.countryIso2) || "Desconocido";
 
@@ -322,21 +256,30 @@ export function Canvas({
             )?.image;
 
             if (isEventsIcon) {
+              const eventsOrdered = competition.event_ids;
+
               // Get person's event IDs
               const personEventIds = currentPerson.registration?.eventIds || [];
 
               if (personEventIds.length > 0) {
+                // Sort person's events according to eventsOrdered
+                const sortedEventIds = personEventIds.sort((a, b) => {
+                  const indexA = eventsOrdered.indexOf(a);
+                  const indexB = eventsOrdered.indexOf(b);
+                  return indexA - indexB;
+                });
+
                 const spacing = 5;
                 const iconSize = element.height;
                 const totalWidth =
-                  iconSize * personEventIds.length +
-                  spacing * (personEventIds.length - 1);
+                  iconSize * sortedEventIds.length +
+                  spacing * (sortedEventIds.length - 1);
 
                 // Calculate starting X position to center the icons
                 const startX = element.x + (element.width - totalWidth) / 2;
 
                 // Load and draw each event icon
-                const eventPromises = personEventIds.map((eventId, index) => {
+                const eventPromises = sortedEventIds.map((eventId, index) => {
                   return new Promise((resolveEvent) => {
                     const eventImg = new Image();
                     eventImg.crossOrigin = "anonymous";
@@ -501,9 +444,9 @@ export function Canvas({
           // Replace placeholder text with person's data
           const qrData =
             element.qrDataSource === "wca-live"
-              ? `https://live.worldcubeassociation.org/link/competitions/${competitionId}`
+              ? `https://live.worldcubeassociation.org/link/competitions/${competition.id}`
               : element.qrDataSource === "competition-groups"
-                ? `https://www.competitiongroups.com/competitions/${competitionId}/persons/${currentPerson.registrantId}`
+                ? `https://www.competitiongroups.com/competitions/${competition.id}/persons/${currentPerson.registrantId}`
                 : element.qrData;
 
           if (qrData) {
@@ -548,164 +491,298 @@ export function Canvas({
 
       ctx.restore();
     }
-  }
+  };
 
-  function openCanvas(canvas: HTMLCanvasElement) {
-    canvas.toBlob((blob) => {
-      if (!blob) return;
-      const url = URL.createObjectURL(blob);
-      const newWindow = window.open(url, "_blank");
+  // Shared function to create and process canvas
+  const createCanvasForSide = (
+    person: ExtendedPerson,
+    side: "front" | "back",
+  ): Promise<HTMLCanvasElement> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement("canvas");
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        resolve(canvas);
+        return;
+      }
 
-      // Clean up the URL after the window loads
-      if (newWindow) {
-        newWindow.onload = () => {
-          URL.revokeObjectURL(url);
+      const processCanvas = async () => {
+        await drawElements(ctx, person, side);
+        resolve(canvas);
+      };
+
+      if (backgroundImage && side === "front") {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.src = backgroundImage;
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          void processCanvas();
         };
+        img.onerror = () => {
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          void processCanvas();
+        };
+      } else if (backgroundImageBack && side === "back") {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.src = backgroundImageBack;
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          void processCanvas();
+        };
+        img.onerror = () => {
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          void processCanvas();
+        };
+      } else {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        void processCanvas();
       }
     });
-  }
+  };
 
-  const exportToJSON = () => {
-    const data = JSON.stringify(
+  const exportToPNG = async () => {
+    setIsExporting(true);
+
+    // Wrap the entire export logic in toast.promise
+    toast.promise(
+      (async () => {
+        // Single badge export
+        if (selectedPersons.length === 1) {
+          const person = selectedPersons[0]!;
+
+          // Export front side
+          const frontCanvas = await createCanvasForSide(person, "front");
+          frontCanvas.toBlob((blob) => {
+            if (blob) {
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = `${person.name.replace(/\s/g, "_")}_badge_front.png`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }
+          });
+
+          // Export back side if enabled
+          if (enableBackSide) {
+            const backCanvas = await createCanvasForSide(person, "back");
+            backCanvas.toBlob((blob) => {
+              if (blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `${person.name.replace(/\s/g, "_")}_badge_back.png`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }
+            });
+          }
+          return;
+        }
+
+        // Multiple badges export
+        const zip = new JSZip();
+
+        const promises = selectedPersons.flatMap((person) => {
+          const frontPromise = (async () => {
+            const canvas = await createCanvasForSide(person, "front");
+            return new Promise<void>((resolve) => {
+              canvas.toBlob((blob) => {
+                if (blob) {
+                  const filename = `${person.name.replace(/\s/g, "_")}_badge_front.png`;
+                  zip.file(filename, blob);
+                }
+                resolve();
+              });
+            });
+          })();
+
+          if (enableBackSide) {
+            const backPromise = (async () => {
+              const canvas = await createCanvasForSide(person, "back");
+              return new Promise<void>((resolve) => {
+                canvas.toBlob((blob) => {
+                  if (blob) {
+                    const filename = `${person.name.replace(/\s/g, "_")}_badge_back.png`;
+                    zip.file(filename, blob);
+                  }
+                  resolve();
+                });
+              });
+            })();
+            return [frontPromise, backPromise];
+          }
+
+          return [frontPromise];
+        });
+
+        // Wait for all badges to be processed
+        await Promise.all(promises);
+
+        // Generate and download the ZIP file
+        const content = await zip.generateAsync({ type: "blob" });
+        const url = URL.createObjectURL(content);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${competition.name.replace(/\s/g, "_")}_badges.zip`;
+        a.click();
+        URL.revokeObjectURL(url);
+      })().finally(() => {
+        setIsExporting(false);
+      }),
       {
-        elements,
-        canvasWidth,
-        canvasHeight,
-        backgroundImage,
-        backgroundImageBack,
-        enableBackSide,
+        loading: `Generando ${selectedPersons.length === 1 ? "gafete" : `${selectedPersons.length} gafetes`}...`,
+        success: `${selectedPersons.length === 1 ? "Gafete generado" : `${selectedPersons.length} gafetes generados`} exitosamente`,
+        error: "Error al generar los gafetes",
       },
-      null,
-      2,
     );
-    const blob = new Blob([data], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `gafete-${competitionId}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
   };
 
-  const importFromJSON = () => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "application/json";
-    input.onchange = async (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (!file) return;
+  const exportToPDF = async () => {
+    setIsExporting(true);
 
-      try {
-        const text = await file.text();
-        const data = JSON.parse(text);
+    toast.promise(
+      (async () => {
+        // Calculate page dimensions in mm
+        const pageWidthMm = pxToMm(canvasWidth);
+        const pageHeightMm = pxToMm(canvasHeight);
 
-        if (data.elements) setElements(data.elements);
-        if (data.canvasWidth && data.canvasHeight)
-          setCanvasSize(data.canvasWidth, data.canvasHeight);
-        if (data.backgroundImage) setBackgroundImage(data.backgroundImage);
-        if (data.backgroundImageBack)
-          setBackgroundImageBack(data.backgroundImageBack);
-        if (data.enableBackSide !== undefined)
-          setEnableBackSide(data.enableBackSide);
-      } catch (error) {
-        console.error("Failed to import design:", error);
-        toast.error(
-          "Error al importar el diseño. Verifica que el archivo sea válido.",
-        );
-      }
-    };
-    input.click();
+        // Single person PDF export
+        if (selectedPersons.length === 1) {
+          const person = selectedPersons[0]!;
+
+          // Create PDF with custom page size
+          const pdf = new jsPDF({
+            orientation: pageWidthMm > pageHeightMm ? "landscape" : "portrait",
+            unit: "mm",
+            format: [pageWidthMm, pageHeightMm],
+          });
+
+          // Generate front side canvas
+          const frontCanvas = await createCanvasForSide(person, "front");
+          const frontDataUrl = frontCanvas.toDataURL("image/png", 1.0);
+
+          // Add front page
+          pdf.addImage(frontDataUrl, "PNG", 0, 0, pageWidthMm, pageHeightMm);
+
+          // Add back page if enabled
+          if (enableBackSide) {
+            pdf.addPage([pageWidthMm, pageHeightMm]);
+            const backCanvas = await createCanvasForSide(person, "back");
+            const backDataUrl = backCanvas.toDataURL("image/png", 1.0);
+            pdf.addImage(backDataUrl, "PNG", 0, 0, pageWidthMm, pageHeightMm);
+          }
+
+          // Download PDF
+          pdf.save(`${person.name.replace(/\s/g, "_")}_badge.pdf`);
+          return;
+        }
+
+        // Multiple persons - create ZIP with individual PDFs
+        const zip = new JSZip();
+
+        const promises = selectedPersons.map(async (person) => {
+          // Create PDF with custom page size
+          const pdf = new jsPDF({
+            orientation: pageWidthMm > pageHeightMm ? "landscape" : "portrait",
+            unit: "mm",
+            format: [pageWidthMm, pageHeightMm],
+          });
+
+          // Generate front side canvas
+          const frontCanvas = await createCanvasForSide(person, "front");
+          const frontDataUrl = frontCanvas.toDataURL("image/png", 1.0);
+
+          // Add front page
+          pdf.addImage(frontDataUrl, "PNG", 0, 0, pageWidthMm, pageHeightMm);
+
+          // Add back page if enabled
+          if (enableBackSide) {
+            pdf.addPage([pageWidthMm, pageHeightMm]);
+            const backCanvas = await createCanvasForSide(person, "back");
+            const backDataUrl = backCanvas.toDataURL("image/png", 1.0);
+            pdf.addImage(backDataUrl, "PNG", 0, 0, pageWidthMm, pageHeightMm);
+          }
+
+          // Get PDF as blob and add to ZIP
+          const pdfBlob = pdf.output("blob");
+          const filename = `${person.name.replace(/\s/g, "_")}_badge.pdf`;
+          zip.file(filename, pdfBlob);
+        });
+
+        // Wait for all PDFs to be generated
+        await Promise.all(promises);
+
+        // Generate and download the ZIP file
+        const content = await zip.generateAsync({ type: "blob" });
+        const url = URL.createObjectURL(content);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${competition.name.replace(/\s/g, "_")}_badges_pdf.zip`;
+        a.click();
+        URL.revokeObjectURL(url);
+      })().finally(() => {
+        setIsExporting(false);
+      }),
+      {
+        loading: `Generando PDF${selectedPersons.length === 1 ? "" : "s"}...`,
+        success: `PDF${selectedPersons.length === 1 ? "" : "s"} generado${selectedPersons.length === 1 ? "" : "s"} exitosamente`,
+        error: "Error al generar los PDFs",
+      },
+    );
   };
-
-  const resetCanvas = () => {
-    setElements({ front: [], back: [] });
-    setCanvasSize(638, 1011);
-    setBackgroundImage(undefined);
-    setBackgroundImageBack(undefined);
-    setEnableBackSide(false);
-    setIsResetDialogOpen(false);
-  };
-
-  const DPI = 300;
-  const pxToMm = (px: number) => (px * 25.4) / DPI;
 
   return (
-    <div className="h-screen w-full flex flex-col bg-background border">
-      <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4">
-        <div className="flex items-center gap-4">
-          <h1 className="text-lg font-semibold text-foreground">Gafetes</h1>
-          <span className="text-sm text-muted-foreground">
-            {pxToMm(canvasWidth).toFixed(1)} × {pxToMm(canvasHeight).toFixed(1)}{" "}
-            mm
-          </span>
-          {enableBackSide && (
-            <div className="flex items-center gap-2 border-l pl-4">
-              <Button
-                variant={activeSide === "front" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setActiveSide("front")}
-              >
-                Frente
-              </Button>
-              <Button
-                variant={activeSide === "back" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setActiveSide("back")}
-              >
-                <FlipHorizontal />
-                Reverso
-              </Button>
-            </div>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          <CanvasSettings />
-          <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="sm">
-                <RotateCcw />
-                Reiniciar
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>¿Estás seguro de reiniciar el lienzo?</DialogTitle>
-                <DialogDescription>
-                  Esta acción eliminará todos los elementos y restablecerá el
-                  lienzo a su estado predeterminado. Esta acción no se puede
-                  deshacer.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button type="button" variant="secondary">
-                    Cerrar
-                  </Button>
-                </DialogClose>
-                <Button onClick={resetCanvas}>Reiniciar lienzo</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-          <Button variant="outline" size="sm" onClick={importFromJSON}>
-            <Upload />
-            Importar JSON
-          </Button>
-          <Button variant="outline" size="sm" onClick={exportToJSON}>
+    <ButtonGroup>
+      <Button
+        variant="outline"
+        disabled={selectedPersons.length === 0 || isExporting}
+        onClick={exportToPNG}
+      >
+        {isExporting ? (
+          <>
+            <Loader2 className="animate-spin" />
+            Exportando...
+          </>
+        ) : (
+          <>
             <Download />
-            Exportar JSON
+            Exportar PNG
+          </>
+        )}
+      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" className="pl-2!">
+            <ChevronDownIcon />
           </Button>
-          <Button variant="default" size="sm" onClick={previewCanvas}>
-            <Eye />
-            Previsualizar
-          </Button>
-        </div>
-      </header>
-
-      <div className="flex-1 flex overflow-hidden">
-        <Toolbar />
-        <CanvasEditor eventIds={eventIds} />
-        <PropertiesPanel eventIds={eventIds} />
-      </div>
-    </div>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="[--radius:1rem]">
+          <DropdownMenuGroup>
+            <DropdownMenuItem
+              disabled={selectedPersons.length === 0 || isExporting}
+              onClick={exportToPDF}
+            >
+              <Download />
+              Exportar PDF
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              // disabled={selectedPersons.length === 0 || isExporting}
+              disabled
+            >
+              <Download />
+              Exportar PDF (2x2)
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </ButtonGroup>
   );
 }

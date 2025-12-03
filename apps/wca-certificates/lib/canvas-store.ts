@@ -30,7 +30,7 @@ export const useCanvasStore = create<CanvasStore>((set) => ({
   setEnableBackSide: (enable) => set({ enableBackSide: enable }),
   selectedElementId: null,
   canvasWidth: 638,
-  canvasHeight: 1012,
+  canvasHeight: 1011,
   backgroundImage: undefined,
   backgroundImageBack: undefined,
   zoom: 1,

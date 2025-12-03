@@ -29,8 +29,23 @@ export function CanvasSettings() {
     activeSide,
     setActiveSide,
   } = useCanvasStore();
-  const [width, setWidth] = useState(canvasWidth);
-  const [height, setHeight] = useState(canvasHeight);
+
+  // Using 300 DPI for conversion between px <-> mm
+  const DPI = 300;
+  const pxToMm = (px: number) => (px * 25.4) / DPI;
+  const mmToPx = (mm: number) => Math.round((mm * DPI) / 25.4);
+
+  const [width, setWidth] = useState<number>(
+    Number(pxToMm(canvasWidth).toFixed(1)),
+  );
+  const [height, setHeight] = useState<number>(
+    Number(pxToMm(canvasHeight).toFixed(1)),
+  );
+
+  useEffect(() => {
+    setWidth(Number(pxToMm(canvasWidth).toFixed(1)));
+    setHeight(Number(pxToMm(canvasHeight).toFixed(1)));
+  }, [canvasWidth, canvasHeight]);
 
   useEffect(() => {
     if (!enableBackSide && activeSide === "back") {
@@ -39,8 +54,14 @@ export function CanvasSettings() {
   }, [enableBackSide, activeSide, setActiveSide]);
 
   const handleApplySize = () => {
-    setCanvasSize(width, height);
+    const pxW = mmToPx(width);
+    const pxH = mmToPx(height);
+    setCanvasSize(pxW, pxH);
   };
+
+  // Input min/max in mm derived from original px min/max (100 - 5000 px)
+  const minMm = Number(pxToMm(100).toFixed(1));
+  const maxMm = Number(pxToMm(5000).toFixed(1));
 
   return (
     <Sheet>
@@ -53,7 +74,8 @@ export function CanvasSettings() {
         <SheetHeader>
           <SheetTitle>Configuración del lienzo</SheetTitle>
           <SheetDescription>
-            Personaliza el tamaño del lienzo para tus gafetes.
+            Personaliza el tamaño del lienzo para tus gafetes (valores en mm,
+            fondo en px a 300 DPI).
           </SheetDescription>
         </SheetHeader>
 
@@ -62,25 +84,27 @@ export function CanvasSettings() {
             <h3 className="font-medium">Tamaño del lienzo</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="width">Ancho (px)</Label>
+                <Label htmlFor="width">Ancho (mm)</Label>
                 <Input
                   id="width"
                   type="number"
                   value={width}
                   onChange={(e) => setWidth(Number(e.target.value))}
-                  min={100}
-                  max={5000}
+                  min={minMm}
+                  max={maxMm}
+                  step={0.1}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="height">Altura (px)</Label>
+                <Label htmlFor="height">Altura (mm)</Label>
                 <Input
                   id="height"
                   type="number"
                   value={height}
                   onChange={(e) => setHeight(Number(e.target.value))}
-                  min={100}
-                  max={5000}
+                  min={minMm}
+                  max={maxMm}
+                  step={0.1}
                 />
               </div>
             </div>
@@ -90,46 +114,66 @@ export function CanvasSettings() {
 
             <div className="space-y-2">
               <Label>Preajustes</Label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 gap-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    setWidth(638);
-                    setHeight(1012);
+                    setWidth(Number(pxToMm(638).toFixed(1)));
+                    setHeight(Number(pxToMm(1011).toFixed(1)));
                   }}
                 >
-                  CR-80 (638×1012)
+                  CR-80 (54 mm × 85.6 mm)
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    setWidth(1012);
-                    setHeight(638);
+                    setWidth(Number(pxToMm(1011).toFixed(1)));
+                    setHeight(Number(pxToMm(638).toFixed(1)));
                   }}
                 >
-                  CR-80 (1012×638)
+                  CR-80 (85.6 mm × 54 mm)
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    setWidth(615);
-                    setHeight(991);
+                    setWidth(Number(pxToMm(615).toFixed(1)));
+                    setHeight(Number(pxToMm(991).toFixed(1)));
                   }}
                 >
-                  CR-79 (615×991)
+                  CR-79 (52.1 mm × 83.9 mm)
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    setWidth(991);
-                    setHeight(615);
+                    setWidth(Number(pxToMm(991).toFixed(1)));
+                    setHeight(Number(pxToMm(615).toFixed(1)));
                   }}
                 >
-                  CR-79 (991×615)
+                  CR-79 (83.9 mm × 52.1 mm)
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setWidth(Number(pxToMm(644).toFixed(1)));
+                    setHeight(Number(pxToMm(1009).toFixed(1)));
+                  }}
+                >
+                  MACP (54.5 mm × 85.4 mm)
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setWidth(Number(pxToMm(1009).toFixed(1)));
+                    setHeight(Number(pxToMm(644).toFixed(1)));
+                  }}
+                >
+                  MACP (85.4 mm × 54.5 mm)
                 </Button>
               </div>
             </div>

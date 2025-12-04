@@ -139,17 +139,21 @@ export function BadgeManager({
     const newcomers: ExtendedPerson[] = [];
     const delegates: ExtendedPerson[] = [];
     const organizers: ExtendedPerson[] = [];
+    const volunteers: ExtendedPerson[] = [];
     const regulars: ExtendedPerson[] = [];
 
     for (const p of filteredPersons) {
       // prioritize delegate over organizer
       const isDelegate = p.roles?.includes("delegate");
       const isOrganizer = p.roles?.includes("organizer");
+      const isVolunteer = p.roles?.find((r) => r.startsWith("staff-"));
 
       if (isDelegate) {
         delegates.push(p);
       } else if (isOrganizer) {
         organizers.push(p);
+      } else if (isVolunteer) {
+        volunteers.push(p);
       } else if (!p.wcaId) {
         newcomers.push(p);
         continue;
@@ -158,7 +162,7 @@ export function BadgeManager({
       }
     }
 
-    return { newcomers, delegates, organizers, regulars };
+    return { newcomers, delegates, organizers, volunteers, regulars };
   })();
 
   return (
@@ -364,6 +368,11 @@ export function BadgeManager({
                               key: "organizers",
                               title: "Organizadores",
                               list: groupedPersons.organizers,
+                            },
+                            {
+                              key: "volunteers",
+                              title: "Voluntarios",
+                              list: groupedPersons.volunteers,
                             },
                             {
                               key: "newcomers",

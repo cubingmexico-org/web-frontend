@@ -152,12 +152,20 @@ export function ExportBadgesButtonGroup({
           content = content.replace(/@wcaid/gi, currentPerson.wcaId || "Nuevo");
 
           const rol = currentPerson.roles.includes("delegate")
-            ? "Delegado"
+            ? currentPerson.gender === "f"
+              ? "Delegada"
+              : "Delegado"
             : currentPerson.roles.includes("organizer")
-              ? "Organizador"
+              ? currentPerson.gender === "f"
+                ? "Organizadora"
+                : "Organizador"
               : currentPerson.roles.find((r) => r.startsWith("staff-"))
-                ? "Staff"
-                : "Competidor";
+                ? currentPerson.gender === "f"
+                  ? "Voluntaria"
+                  : "Voluntario"
+                : currentPerson.gender === "f"
+                  ? "Competidora"
+                  : "Competidor";
 
           content = content.replace(/@rol/gi, rol);
 

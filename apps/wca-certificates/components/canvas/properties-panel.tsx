@@ -37,7 +37,7 @@ import {
   RadioGroup,
   RadioGroupItem,
 } from "@workspace/ui/components/radio-group";
-import { WcaMonochrome } from "@workspace/icons";
+import { CompetitionGroups, WcaMonochrome } from "@workspace/icons";
 import type { EventId } from "@/types/wcif";
 
 const mentions = [
@@ -926,6 +926,10 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
                         : value === "competition-groups"
                           ? "https://www.competitiongroups.com/"
                           : "",
+                    qrIncludeIcon:
+                      value === "custom"
+                        ? false
+                        : selectedElement.qrIncludeIcon,
                   })
                 }
               >
@@ -948,7 +952,7 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
                     htmlFor="competition-groups"
                     className="text-xs font-normal cursor-pointer"
                   >
-                    <WcaMonochrome className="size-4" />
+                    <CompetitionGroups className="size-4" />
                     Tareas del competidor en Competition Groups
                   </Label>
                 </div>
@@ -962,6 +966,26 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
                   </Label>
                 </div>
               </RadioGroup>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="qrIncludeIcon" className="text-xs">
+                  Incluir ícono
+                </Label>
+                <Switch
+                  id="qrIncludeIcon"
+                  checked={selectedElement.qrIncludeIcon || false}
+                  onCheckedChange={(checked) =>
+                    updateElement(selectedElement.id, {
+                      qrIncludeIcon: checked,
+                    })
+                  }
+                  disabled={
+                    selectedElement.qrDataSource === "custom" ||
+                    !selectedElement.qrDataSource
+                  }
+                />
+              </div>
             </div>
             {selectedElement.qrDataSource !== "custom" ? null : (
               <div className="space-y-2">

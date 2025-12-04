@@ -510,7 +510,10 @@ export function Canvas({
             try {
               // Generate QR code as data URL
               const qrDataUrl = await QRCode.toDataURL(qrData, {
-                errorCorrectionLevel: element.qrErrorCorrection || "M",
+                errorCorrectionLevel:
+                  element.qrDataSource === "wca-live"
+                    ? "H"
+                    : element.qrErrorCorrection || "M",
                 margin: 1,
                 width: element.width,
                 color: {
@@ -530,7 +533,113 @@ export function Canvas({
                     element.width,
                     element.height,
                   );
-                  resolve();
+
+                  // Add WCA Live logo in the center if it's a wca-live data source
+                  if (
+                    element.qrDataSource === "wca-live" &&
+                    element.qrIncludeIcon
+                  ) {
+                    const logoImg = new Image();
+                    logoImg.crossOrigin = "anonymous";
+                    logoImg.onload = () => {
+                      // Calculate logo size (approximately 20-25% of QR code size)
+                      const logoSize =
+                        Math.min(element.width, element.height) * 0.25;
+                      const logoX = element.x + (element.width - logoSize) / 2;
+                      const logoY = element.y + (element.height - logoSize) / 2;
+
+                      // Draw a background behind the logo for better visibility
+                      ctx.fillStyle = element.qrBackground || "#ffffff";
+                      ctx.fillRect(
+                        logoX - 2,
+                        logoY - 2,
+                        logoSize + 4,
+                        logoSize + 4,
+                      );
+
+                      // Create a temporary canvas to colorize the logo
+                      const tempCanvas = document.createElement("canvas");
+                      tempCanvas.width = logoSize;
+                      tempCanvas.height = logoSize;
+                      const tempCtx = tempCanvas.getContext("2d");
+
+                      if (tempCtx) {
+                        tempCtx.drawImage(logoImg, 0, 0, logoSize, logoSize);
+                        tempCtx.globalCompositeOperation = "source-in";
+                        tempCtx.fillStyle = element.qrForeground || "#000000";
+                        tempCtx.fillRect(0, 0, logoSize, logoSize);
+
+                        // Draw the colorized logo
+                        ctx.drawImage(
+                          tempCanvas,
+                          logoX,
+                          logoY,
+                          logoSize,
+                          logoSize,
+                        );
+                      }
+
+                      resolve();
+                    };
+                    logoImg.onerror = () => {
+                      console.error("Failed to load WCA Live logo");
+                      resolve();
+                    };
+                    logoImg.src = "/wca.svg";
+                  } else if (
+                    element.qrDataSource === "competition-groups" &&
+                    element.qrIncludeIcon
+                  ) {
+                    const logoImg = new Image();
+                    logoImg.crossOrigin = "anonymous";
+                    logoImg.onload = () => {
+                      // Calculate logo size (approximately 20-25% of QR code size)
+                      const logoSize =
+                        Math.min(element.width, element.height) * 0.25;
+                      const logoX = element.x + (element.width - logoSize) / 2;
+                      const logoY = element.y + (element.height - logoSize) / 2;
+
+                      // Draw a background behind the logo for better visibility
+                      ctx.fillStyle = element.qrBackground || "#ffffff";
+                      ctx.fillRect(
+                        logoX - 2,
+                        logoY - 2,
+                        logoSize + 4,
+                        logoSize + 4,
+                      );
+
+                      // Create a temporary canvas to colorize the logo
+                      const tempCanvas = document.createElement("canvas");
+                      tempCanvas.width = logoSize;
+                      tempCanvas.height = logoSize;
+                      const tempCtx = tempCanvas.getContext("2d");
+
+                      if (tempCtx) {
+                        tempCtx.drawImage(logoImg, 0, 0, logoSize, logoSize);
+                        tempCtx.globalCompositeOperation = "source-in";
+                        tempCtx.fillStyle = element.qrForeground || "#000000";
+                        tempCtx.fillRect(0, 0, logoSize, logoSize);
+
+                        // Draw the colorized logo
+                        ctx.drawImage(
+                          tempCanvas,
+                          logoX,
+                          logoY,
+                          logoSize,
+                          logoSize,
+                        );
+                      }
+
+                      resolve();
+                    };
+                    logoImg.onerror = () => {
+                      console.error("Failed to load Competition Groups logo");
+                      resolve();
+                    };
+                    logoImg.src = "/competition-groups.svg";
+                  } else {
+                    resolve();
+                  }
                 };
                 qrImg.onerror = () => {
                   console.error("Failed to load QR code");

@@ -34,6 +34,7 @@ export interface CanvasElement {
   qrBackground?: string;
   qrErrorCorrection?: "L" | "M" | "Q" | "H";
   qrDataSource?: "wca-live" | "competition-groups" | "custom";
+  qrIncludeIcon?: boolean;
 }
 
 export interface CanvasState {

@@ -39,6 +39,7 @@ export async function GET(request: Request): Promise<Response> {
           result.ranking !== null &&
           result.best !== -1 &&
           result.best !== -2 &&
+          result.average !== -1 &&
           personIdToName[result.personId] !== undefined // Only include Mexican people
       )
       .sort((a, b) => {

@@ -1,1 +1,0 @@
-ALTER TABLE "sponsors" DROP COLUMN "facebook";

@@ -11,7 +11,7 @@ export async function GET(request: Request): Promise<Response> {
   const persons = wcif?.persons || [];
 
   const personsWithRegistrantId = persons.filter(
-    (person) => person.registrantId !== null,
+    (person) => person.registrantId !== null && person.countryIso2 === "MX",
   );
 
   const personIdToName: Record<string, string> = {};
@@ -39,17 +39,32 @@ export async function GET(request: Request): Promise<Response> {
           result.ranking !== null &&
           result.best !== -1 &&
           result.best !== -2 &&
-          result.ranking >= 1 &&
-          result.ranking <= 3,
+          result.average !== -1 &&
+          personIdToName[result.personId] !== undefined // Only include Mexican people
       )
-      .sort((a, b) => a.ranking! - b.ranking!)
+      .sort((a, b) => {
+        const aResult = event.id === "333bf" ||
+          event.id === "444bf" ||
+          event.id === "555bf" ||
+          event.id === "333mbf"
+          ? a.best
+          : a.average;
+        const bResult = event.id === "333bf" ||
+          event.id === "444bf" ||
+          event.id === "555bf" ||
+          event.id === "333mbf"
+          ? b.best
+          : b.average;
+        return aResult - bResult;
+      })
+      .slice(0, 3)
       .map((person) => ({
         personName: personIdToName[person.personId],
         result:
           event.id === "333bf" ||
-          event.id === "444bf" ||
-          event.id === "555bf" ||
-          event.id === "333mbf"
+            event.id === "444bf" ||
+            event.id === "555bf" ||
+            event.id === "333mbf"
             ? person.best
             : person.average,
       }));

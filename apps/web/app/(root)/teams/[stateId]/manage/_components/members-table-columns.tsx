@@ -53,7 +53,7 @@ export function getColumns({
       enableHiding: false,
     },
     {
-      accessorKey: "id",
+      accessorKey: "wcaId",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="WCA ID" />
       ),
@@ -62,11 +62,11 @@ export function getColumns({
           <div>
             <Link
               className="hover:underline text-accent-foreground"
-              href={`https://www.worldcubeassociation.org/persons/${row.getValue("id")}`}
+              href={`https://www.worldcubeassociation.org/persons/${row.getValue("wcaId")}`}
               target="_blank"
               rel="noopener noreferrer"
             >
-              {row.getValue("id")}
+              {row.getValue("wcaId")}
             </Link>
           </div>
         );

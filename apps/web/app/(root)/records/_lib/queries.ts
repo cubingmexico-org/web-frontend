@@ -2,7 +2,14 @@
 
 import "server-only";
 import { db } from "@/db";
-import { event, state, person, result, competition, resultAttempts } from "@/db/schema";
+import {
+  event,
+  state,
+  person,
+  result,
+  competition,
+  resultAttempts,
+} from "@/db/schema";
 import { and, eq, gt, notInArray, sql, inArray } from "drizzle-orm";
 import { EXCLUDED_EVENTS } from "@/lib/constants";
 import { GetRecordsSchema } from "./validations";
@@ -114,7 +121,7 @@ export async function getRecords(input: GetRecordsSchema) {
         )
         .leftJoin(state, eq(person.stateId, state.id))
         .where(and(eq(averageRankedResults.rowNum, 1)))
-        .orderBy(event.rank)
+        .orderBy(event.rank);
 
       // Collect all result IDs to fetch attempts
       const allResultIds = [
@@ -164,15 +171,15 @@ export async function getRecords(input: GetRecordsSchema) {
           },
           average: averageRecord
             ? {
-              best: averageRecord.overallBest,
-              personId: averageRecord.personId,
-              name: averageRecord.personName,
-              gender: averageRecord.personGender,
-              state: averageRecord.personState,
-              competitionId: averageRecord.competitionId,
-              competition: averageRecord.competitionName,
-              solves: attemptsByResultId[averageRecord.resultId] ?? [],
-            }
+                best: averageRecord.overallBest,
+                personId: averageRecord.personId,
+                name: averageRecord.personName,
+                gender: averageRecord.personGender,
+                state: averageRecord.personState,
+                competitionId: averageRecord.competitionId,
+                competition: averageRecord.competitionName,
+                solves: attemptsByResultId[averageRecord.resultId] ?? [],
+              }
             : null,
         };
       });

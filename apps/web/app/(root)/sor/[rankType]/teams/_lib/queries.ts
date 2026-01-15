@@ -25,28 +25,28 @@ export async function getSORTeamsAverage(): Promise<TeamData[]> {
 
   try {
     const data = await db.execute(
-    sql`
-            WITH "allEvents" AS (
+      sql`
+            WITH all_events AS (
               SELECT DISTINCT event_id
               FROM ranks_average
               WHERE event_id NOT IN (${sql.join(EXCLUDED_EVENTS, sql`, `)})
             ),
-            "bestPersonEvent" AS (
+            best_person_event AS (
               SELECT DISTINCT ON (p.state_id, e.event_id)
                 t.name,
                 t.state_id,
                 e.event_id,
                 ev.rank AS event_rank,
-                p.id AS person_id,
+                p.wca_id AS person_id,
                 p.name AS person_name,
                 COALESCE(rs.country_rank, wr.worst_rank) AS best_rank,
                 wr.worst_rank
               FROM persons p
-              CROSS JOIN "allEvents" e
+              CROSS JOIN all_events e
               JOIN events ev ON ev.id = e.event_id
               JOIN teams t ON p.state_id = t.state_id
               LEFT JOIN ranks_average rs
-                ON p.id = rs.person_id AND e.event_id = rs.event_id
+                ON p.wca_id = rs.person_id AND e.event_id = rs.event_id
               LEFT JOIN (
                 SELECT event_id, MAX(country_rank) + 1 AS worst_rank
                 FROM public.ranks_average
@@ -71,7 +71,7 @@ export async function getSORTeamsAverage(): Promise<TeamData[]> {
                 ORDER BY bpe.event_rank
               ) AS events,
               SUM(bpe.best_rank) AS overall
-            FROM "bestPersonEvent" bpe
+            FROM best_person_event bpe
             GROUP BY bpe.name, bpe.state_id
             ORDER BY SUM(bpe.best_rank)
           `,
@@ -91,27 +91,27 @@ export async function getSORTeamsSingle(): Promise<TeamData[]> {
   try {
     const data = await db.execute(
       sql`
-      WITH "allEvents" AS (
+      WITH all_events AS (
         SELECT DISTINCT event_id
         FROM ranks_single
         WHERE event_id NOT IN (${sql.join(EXCLUDED_EVENTS, sql`, `)})
       ),
-      "bestPersonEvent" AS (
+      best_person_event AS (
         SELECT DISTINCT ON (p.state_id, e.event_id)
           t.name,
           t.state_id,
           e.event_id,
           ev.rank AS event_rank,
-          p.id AS person_id,
+          p.wca_id AS person_id,
           p.name AS person_name,
           COALESCE(rs.country_rank, wr.worst_rank) AS best_rank,
           wr.worst_rank
         FROM persons p
-        CROSS JOIN "allEvents" e
+        CROSS JOIN all_events e
         JOIN events ev ON ev.id = e.event_id
         JOIN teams t ON p.state_id = t.state_id
         LEFT JOIN ranks_single rs
-          ON p.id = rs.person_id AND e.event_id = rs.event_id
+          ON p.wca_id = rs.person_id AND e.event_id = rs.event_id
         LEFT JOIN (
           SELECT event_id, MAX(country_rank) + 1 AS worst_rank
           FROM public.ranks_single
@@ -136,7 +136,7 @@ export async function getSORTeamsSingle(): Promise<TeamData[]> {
           ORDER BY bpe.event_rank
         ) AS events,
         SUM(bpe.best_rank) AS overall
-      FROM bestPersonEvent bpe
+      FROM best_person_event bpe
       GROUP BY bpe.name, bpe.state_id
       ORDER BY SUM(bpe.best_rank)
     `,

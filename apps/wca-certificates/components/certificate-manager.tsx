@@ -480,107 +480,107 @@ export function CertificateManager({
                         row.content?.some((cell) => cell.type === "tableCell"),
                       )
                         ? data.results.map((result) => {
-                          const cell = item.content?.find((row) =>
-                            row.content?.some(
-                              (cell) => cell.type === "tableCell",
-                            ),
-                          );
+                            const cell = item.content?.find((row) =>
+                              row.content?.some(
+                                (cell) => cell.type === "tableCell",
+                              ),
+                            );
 
-                          let event;
-                          let average;
-                          let ranking;
+                            let event;
+                            let average;
+                            let ranking;
 
-                          for (const row of cell?.content || []) {
-                            for (const cell of row.content || []) {
-                              if (
-                                cell.content?.some(
-                                  (content) => content.type === "mention",
-                                )
-                              ) {
-                                switch (cell.content[0]?.attrs?.id) {
-                                  case "Evento (tabla)":
-                                  case "Event (table)":
-                                    event = renderParticipantDocumentContent(
-                                      {
-                                        content: [
+                            for (const row of cell?.content || []) {
+                              for (const cell of row.content || []) {
+                                if (
+                                  cell.content?.some(
+                                    (content) => content.type === "mention",
+                                  )
+                                ) {
+                                  switch (cell.content[0]?.attrs?.id) {
+                                    case "Evento (tabla)":
+                                    case "Event (table)":
+                                      event = renderParticipantDocumentContent(
+                                        {
+                                          content: [
+                                            {
+                                              type: "paragraph",
+                                              attrs: cell.attrs,
+                                              content: [
+                                                {
+                                                  type: "text",
+                                                  text: formatEvents(
+                                                    result.event,
+                                                  ),
+                                                  marks: cell.content[0].marks,
+                                                },
+                                              ],
+                                            },
+                                          ],
+                                        },
+                                        data,
+                                      );
+                                      break;
+                                    case "Resultado (tabla)":
+                                    case "Result (table)":
+                                      average =
+                                        renderParticipantDocumentContent(
                                           {
-                                            type: "paragraph",
-                                            attrs: cell.attrs,
                                             content: [
                                               {
-                                                type: "text",
-                                                text: formatEvents(
-                                                  result.event,
-                                                ),
-                                                marks: cell.content[0].marks,
+                                                type: "paragraph",
+                                                attrs: cell.attrs,
+                                                content: [
+                                                  {
+                                                    type: "text",
+                                                    text: formatResults(
+                                                      result.average,
+                                                      result.event,
+                                                    ),
+                                                    marks:
+                                                      cell.content[0].marks,
+                                                  },
+                                                ],
                                               },
                                             ],
                                           },
-                                        ],
-                                      },
-                                      data,
-                                    );
-                                    break;
-                                  case "Resultado (tabla)":
-                                  case "Result (table)":
-                                    average =
-                                      renderParticipantDocumentContent(
-                                        {
-                                          content: [
-                                            {
-                                              type: "paragraph",
-                                              attrs: cell.attrs,
-                                              content: [
-                                                {
-                                                  type: "text",
-                                                  text: formatResults(
-                                                    result.average,
-                                                    result.event,
-                                                  ),
-                                                  marks:
-                                                    cell.content[0].marks,
-                                                },
-                                              ],
-                                            },
-                                          ],
-                                        },
-                                        data,
-                                      );
-                                    break;
-                                  case "Posición (tabla)":
-                                  case "Ranking (table)":
-                                    ranking =
-                                      renderParticipantDocumentContent(
-                                        {
-                                          content: [
-                                            {
-                                              type: "paragraph",
-                                              attrs: cell.attrs,
-                                              content: [
-                                                {
-                                                  type: "text",
-                                                  text: (
-                                                    result.ranking || ""
-                                                  ).toString(),
-                                                  marks:
-                                                    cell.content[0].marks,
-                                                },
-                                              ],
-                                            },
-                                          ],
-                                        },
-                                        data,
-                                      );
-                                    break;
-                                  default:
-                                    break;
+                                          data,
+                                        );
+                                      break;
+                                    case "Posición (tabla)":
+                                    case "Ranking (table)":
+                                      ranking =
+                                        renderParticipantDocumentContent(
+                                          {
+                                            content: [
+                                              {
+                                                type: "paragraph",
+                                                attrs: cell.attrs,
+                                                content: [
+                                                  {
+                                                    type: "text",
+                                                    text: (
+                                                      result.ranking || ""
+                                                    ).toString(),
+                                                    marks:
+                                                      cell.content[0].marks,
+                                                  },
+                                                ],
+                                              },
+                                            ],
+                                          },
+                                          data,
+                                        );
+                                      break;
+                                    default:
+                                      break;
+                                  }
                                 }
                               }
                             }
-                          }
 
-                          return [event || {}, average || {}, ranking || {}];
-                        })
+                            return [event || {}, average || {}, ranking || {}];
+                          })
                         : []),
                     ],
                   },
@@ -898,8 +898,8 @@ export function CertificateManager({
                     value={
                       podiumsData
                         ? (Math.ceil(podiumsData.length / 3) /
-                          competition.event_ids.length) *
-                        100
+                            competition.event_ids.length) *
+                          100
                         : 0
                     }
                     className="h-2"

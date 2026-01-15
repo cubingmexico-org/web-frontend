@@ -40,21 +40,23 @@ export async function GET(request: Request): Promise<Response> {
           result.best !== -1 &&
           result.best !== -2 &&
           result.average !== -1 &&
-          personIdToName[result.personId] !== undefined // Only include Mexican people
+          personIdToName[result.personId] !== undefined, // Only include Mexican people
       )
       .sort((a, b) => {
-        const aResult = event.id === "333bf" ||
+        const aResult =
+          event.id === "333bf" ||
           event.id === "444bf" ||
           event.id === "555bf" ||
           event.id === "333mbf"
-          ? a.best
-          : a.average;
-        const bResult = event.id === "333bf" ||
+            ? a.best
+            : a.average;
+        const bResult =
+          event.id === "333bf" ||
           event.id === "444bf" ||
           event.id === "555bf" ||
           event.id === "333mbf"
-          ? b.best
-          : b.average;
+            ? b.best
+            : b.average;
         return aResult - bResult;
       })
       .slice(0, 3)
@@ -62,9 +64,9 @@ export async function GET(request: Request): Promise<Response> {
         personName: personIdToName[person.personId],
         result:
           event.id === "333bf" ||
-            event.id === "444bf" ||
-            event.id === "555bf" ||
-            event.id === "333mbf"
+          event.id === "444bf" ||
+          event.id === "555bf" ||
+          event.id === "333mbf"
             ? person.best
             : person.average,
       }));

@@ -31,7 +31,6 @@ import { MapContainer } from "./_components/map-container";
 import { getStatesGeoJSON } from "@/db/queries";
 import {
   getAverageStateRanks,
-  getIsDelegate,
   getIsOrganizer,
   getMembershipData,
   getPersonInfo,
@@ -40,6 +39,7 @@ import {
 } from "./_lib/queries";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
+import type { DelegateStatus } from "@/types/wca";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -87,22 +87,18 @@ export default async function Page({
     stateIds?.includes(feature.properties.id),
   ) as unknown as GeoJSONProps["data"];
 
-  const [
-    singleStateRanks,
-    averageStateRanks,
-    membershipData,
-    isDelegate,
-    isOrganizer,
-  ] = await Promise.all([
-    getSingleStateRanks(id),
-    getAverageStateRanks(id),
-    getMembershipData(
-      id,
-      events.map((event) => event.id),
-    ),
-    getIsDelegate(id),
-    getIsOrganizer(id),
-  ]);
+  const [singleStateRanks, averageStateRanks, membershipData, isOrganizer] =
+    await Promise.all([
+      getSingleStateRanks(id),
+      getAverageStateRanks(id),
+      getMembershipData(
+        id,
+        events.map((event) => event.id),
+      ),
+      getIsOrganizer(id),
+    ]);
+
+  const isDelegate = wcaData.person.delegate_status !== null;
 
   const tier = getTier(membershipData);
 
@@ -136,6 +132,28 @@ export default async function Page({
     singleStateRanks.filter((rank) => rank.stateRank === 1).length +
     averageStateRanks.filter((rank) => rank.stateRank === 1).length;
 
+  function formatDelegateStatus(status: DelegateStatus, gender: string) {
+    switch (status) {
+      case "junior_delegate":
+        return gender === "m" ? "Delegado Junior" : "Delegada Junior";
+      case "senior_delegate":
+        return gender === "m" ? "Delegado Senior" : "Delegada Senior";
+      case "trainee_delegate":
+        return gender === "m"
+          ? "Delegado en Entrenamiento"
+          : "Delegada en Entrenamiento";
+      case "regional_delegate":
+        return gender === "m" ? "Delegado Regional" : "Delegada Regional";
+      case "full_delegate":
+      default:
+        return gender === "m"
+          ? "Delegado"
+          : gender === "f"
+            ? "Delegada"
+            : "Delegado";
+    }
+  }
+
   return (
     <>
       <h1 className="text-center font-semibold text-2xl mb-4 hover:underline">
@@ -151,11 +169,10 @@ export default async function Page({
         {tier && <Badge className={getTierClass(tier)}>Miembro {tier}</Badge>}
         {isDelegate && (
           <Badge>
-            {wcaData?.person.gender === "m"
-              ? "Delegado"
-              : wcaData?.person.gender === "f"
-                ? "Delegada"
-                : null}
+            {formatDelegateStatus(
+              wcaData.person.delegate_status,
+              wcaData.person.gender,
+            )}
           </Badge>
         )}
         {isOrganizer && (

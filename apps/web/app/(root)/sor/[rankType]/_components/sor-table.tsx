@@ -25,6 +25,8 @@ interface SORTableProps {
 export function SORTable({ promises, rankType }: SORTableProps) {
   const [{ data, pageCount }, stateCounts, genderCounts] = React.use(promises);
 
+  console.log(data);
+
   const columns = React.useMemo(
     () =>
       getColumns({

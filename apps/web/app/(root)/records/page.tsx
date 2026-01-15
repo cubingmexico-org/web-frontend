@@ -98,13 +98,24 @@ export default async function Page(props: PageProps) {
                 <TableCell className="whitespace-nowrap">
                   <p className="flex gap-4">
                     {record.single.solves.map((value, _, array) => {
-                      const min = record.single.solves.length === 5 ? Math.min(...array.filter((n) => n !== 0)) : undefined;
-                      const max =  record.single.solves.length === 5 ? Math.max(...array) : undefined;
-                      const formattedValue = record.eventId === "333mbf"
-                        ? formatTime333mbf(value)
-                        : record.eventId === "333fm"
-                          ? value === -1 ? "DNF" : value === -2 ? "DNS" : value
-                          : formatTime(value);
+                      const min =
+                        record.single.solves.length === 5
+                          ? Math.min(...array.filter((n) => n !== 0))
+                          : undefined;
+                      const max =
+                        record.single.solves.length === 5
+                          ? Math.max(...array)
+                          : undefined;
+                      const formattedValue =
+                        record.eventId === "333mbf"
+                          ? formatTime333mbf(value)
+                          : record.eventId === "333fm"
+                            ? value === -1
+                              ? "DNF"
+                              : value === -2
+                                ? "DNS"
+                                : value
+                            : formatTime(value);
 
                       return (
                         <span key={value}>
@@ -150,29 +161,40 @@ export default async function Page(props: PageProps) {
                       {record.average?.competition}
                     </Link>
                   </TableCell>
-                <TableCell className="whitespace-nowrap">
-                  <p className="flex gap-4">
-                    {record.average?.solves.map((value, _, array) => {
-                      const min = record.average?.solves.length === 5 ? Math.min(...array.filter((n) => n !== 0)) : undefined;
-                      const max =  record.average?.solves.length === 5 ? Math.max(...array) : undefined;
-                      const formattedValue = record.eventId === "333mbf"
-                        ? formatTime333mbf(value)
-                        : record.eventId === "333fm"
-                          ? value === -1 ? "DNF" : value === -2 ? "DNS" : value
-                          : formatTime(value);
+                  <TableCell className="whitespace-nowrap">
+                    <p className="flex gap-4">
+                      {record.average?.solves.map((value, _, array) => {
+                        const min =
+                          record.average?.solves.length === 5
+                            ? Math.min(...array.filter((n) => n !== 0))
+                            : undefined;
+                        const max =
+                          record.average?.solves.length === 5
+                            ? Math.max(...array)
+                            : undefined;
+                        const formattedValue =
+                          record.eventId === "333mbf"
+                            ? formatTime333mbf(value)
+                            : record.eventId === "333fm"
+                              ? value === -1
+                                ? "DNF"
+                                : value === -2
+                                  ? "DNS"
+                                  : value
+                              : formatTime(value);
 
-                      return (
-                        <span key={value}>
-                          {value === 0
-                            ? null
-                            : value === min || value === max
-                              ? `(${formattedValue})`
-                              : formattedValue}
-                        </span>
-                      );
-                    })}
-                  </p>
-                </TableCell>
+                        return (
+                          <span key={value}>
+                            {value === 0
+                              ? null
+                              : value === min || value === max
+                                ? `(${formattedValue})`
+                                : formattedValue}
+                          </span>
+                        );
+                      })}
+                    </p>
+                  </TableCell>
                 </TableRow>
               ) : null}
             </TableBody>

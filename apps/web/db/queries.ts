@@ -93,7 +93,11 @@ export async function getCompetitions() {
   }
 }
 
-export async function getCurrentUserTeam({ userId }: { userId: Person["wcaId"] }) {
+export async function getCurrentUserTeam({
+  userId,
+}: {
+  userId: Person["wcaId"];
+}) {
   cacheLife("hours");
   cacheTag(`current-user-team-${userId}`);
 

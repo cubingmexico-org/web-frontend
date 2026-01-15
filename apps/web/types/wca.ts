@@ -8,12 +8,20 @@ export interface WcaPersonResponse {
   records: Records;
 }
 
+export type DelegateStatus =
+  | "junior_delegate"
+  | "senior_delegate"
+  | "trainee_delegate"
+  | "regional_delegate"
+  | "full_delegate"
+  | null;
+
 export interface Person {
   name: string;
   gender: string;
   url: string;
   country: Country;
-  delegate_status: string | null;
+  delegate_status: DelegateStatus;
   class: string;
   teams: unknown[];
   avatar: Avatar;

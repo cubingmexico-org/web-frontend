@@ -5,7 +5,6 @@ import { db } from "@/db";
 import {
   championship,
   competition,
-  delegate,
   organizer,
   person,
   rankAverage,
@@ -130,23 +129,6 @@ export async function getMembershipData(wcaId: string, eventIds: string[]) {
   } catch (err) {
     console.error(err);
     return null;
-  }
-}
-
-export async function getIsDelegate(wcaId: string) {
-  cacheLife("hours");
-  cacheTag(`is-delegate-${wcaId}`);
-
-  try {
-    const data = await db
-      .select()
-      .from(delegate)
-      .where(and(eq(delegate.personId, wcaId), eq(delegate.status, "active")));
-
-    return data.length > 0;
-  } catch (err) {
-    console.error(err);
-    return false;
   }
 }
 

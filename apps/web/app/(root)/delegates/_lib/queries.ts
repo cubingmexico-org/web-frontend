@@ -62,7 +62,7 @@ export async function getDelegates(input: GetDelegatesSchema) {
     const { data, total } = await db.transaction(async (tx) => {
       const data = await tx
         .select({
-          id: person.id,
+          wcaId: person.wcaId,
           name: person.name,
           gender: person.gender,
           state: state.name,
@@ -74,12 +74,12 @@ export async function getDelegates(input: GetDelegatesSchema) {
           competitionDelegate,
           eq(delegate.id, competitionDelegate.delegateId),
         )
-        .innerJoin(person, eq(delegate.personId, person.id))
+        .innerJoin(person, eq(delegate.personId, person.wcaId))
         .leftJoin(state, eq(person.stateId, state.id))
         .limit(input.perPage)
         .offset(offset)
         .where(where)
-        .groupBy(person.id, state.name, delegate.status)
+        .groupBy(person.wcaId, state.name, delegate.status)
         .orderBy(...orderBy);
 
       const total = (await tx
@@ -91,10 +91,10 @@ export async function getDelegates(input: GetDelegatesSchema) {
           competitionDelegate,
           eq(delegate.id, competitionDelegate.delegateId),
         )
-        .innerJoin(person, eq(delegate.personId, person.id))
+        .innerJoin(person, eq(delegate.personId, person.wcaId))
         .leftJoin(state, eq(person.stateId, state.id))
         .where(where)
-        .groupBy(person.id, state.name, delegate.status)
+        .groupBy(person.wcaId, state.name, delegate.status)
         .execute()
         .then((res) => res.length)) as number;
 
@@ -123,7 +123,7 @@ export async function getDelegatesStateCounts() {
         count: count(),
       })
       .from(delegate)
-      .innerJoin(person, eq(delegate.personId, person.id))
+      .innerJoin(person, eq(delegate.personId, person.wcaId))
       .leftJoin(state, eq(person.stateId, state.id))
       .groupBy(state.name)
       .having(gt(count(), 0))
@@ -155,7 +155,7 @@ export async function getDelegatesGenderCounts() {
         count: count(),
       })
       .from(delegate)
-      .innerJoin(person, eq(delegate.personId, person.id))
+      .innerJoin(person, eq(delegate.personId, person.wcaId))
       .groupBy(person.gender)
       .having(gt(count(), 0))
       .orderBy(person.gender)

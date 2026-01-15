@@ -1,4 +1,5 @@
 import NextAuth, { type NextAuthResult } from "next-auth";
+import { DelegateStatus } from "./types/wca";
 
 interface WCAProfile {
   me: {
@@ -16,7 +17,7 @@ interface WCAProfile {
       continentId: string;
       iso2: string;
     };
-    delegate_status: string | null;
+    delegate_status: DelegateStatus;
     // teams: any[];
     avatar: {
       id: number;

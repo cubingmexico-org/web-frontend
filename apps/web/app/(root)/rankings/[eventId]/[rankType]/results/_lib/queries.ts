@@ -84,7 +84,7 @@ export async function getRankSingles(
           competitionId: result.competitionId,
         })
         .from(result)
-        .innerJoin(person, eq(result.personId, person.id))
+        .innerJoin(person, eq(result.personId, person.wcaId))
         .innerJoin(competition, eq(result.competitionId, competition.id))
         .leftJoin(state, eq(person.stateId, state.id))
         .limit(input.perPage)
@@ -97,7 +97,7 @@ export async function getRankSingles(
           count: count(),
         })
         .from(result)
-        .innerJoin(person, eq(result.personId, person.id))
+        .innerJoin(person, eq(result.personId, person.wcaId))
         .innerJoin(competition, eq(result.competitionId, competition.id))
         .leftJoin(state, eq(person.stateId, state.id))
         .where(where)
@@ -129,7 +129,7 @@ export async function getRankSinglesStateCounts(eventId: Event["id"]) {
         count: count(),
       })
       .from(result)
-      .innerJoin(person, eq(result.personId, person.id))
+      .innerJoin(person, eq(result.personId, person.wcaId))
       .innerJoin(competition, eq(result.competitionId, competition.id))
       .leftJoin(state, eq(person.stateId, state.id))
       .where(eq(result.eventId, eventId))
@@ -163,7 +163,7 @@ export async function getRankSinglesGenderCounts(eventId: Event["id"]) {
         count: count(),
       })
       .from(result)
-      .innerJoin(person, eq(result.personId, person.id))
+      .innerJoin(person, eq(result.personId, person.wcaId))
       .innerJoin(competition, eq(result.competitionId, competition.id))
       .where(eq(result.eventId, eventId))
       .groupBy(person.gender)
@@ -242,7 +242,7 @@ export async function getRankAverages(
           competitionId: competition.id,
         })
         .from(result)
-        .innerJoin(person, eq(result.personId, person.id))
+        .innerJoin(person, eq(result.personId, person.wcaId))
         .innerJoin(competition, eq(result.competitionId, competition.id))
         .leftJoin(state, eq(person.stateId, state.id))
         .limit(input.perPage)
@@ -255,7 +255,7 @@ export async function getRankAverages(
           count: count(),
         })
         .from(result)
-        .innerJoin(person, eq(result.personId, person.id))
+        .innerJoin(person, eq(result.personId, person.wcaId))
         .innerJoin(competition, eq(result.competitionId, competition.id))
         .leftJoin(state, eq(person.stateId, state.id))
         .where(where)
@@ -287,7 +287,7 @@ export async function getRankAveragesStateCounts(eventId: Event["id"]) {
         count: count(),
       })
       .from(result)
-      .innerJoin(person, eq(result.personId, person.id))
+      .innerJoin(person, eq(result.personId, person.wcaId))
       .innerJoin(competition, eq(result.competitionId, competition.id))
       .leftJoin(state, eq(person.stateId, state.id))
       .where(eq(result.eventId, eventId))
@@ -312,7 +312,7 @@ export async function getRankAveragesStateCounts(eventId: Event["id"]) {
 
 export async function getRankAveragesGenderCounts(eventId: Event["id"]) {
   cacheLife("hours");
-  cacheTag("results-average-gender-counts");
+  cacheTag(`results-average-gender-counts-${eventId}`);
 
   try {
     return await db
@@ -321,9 +321,10 @@ export async function getRankAveragesGenderCounts(eventId: Event["id"]) {
         count: count(),
       })
       .from(result)
-      .innerJoin(person, eq(result.personId, person.id))
+      .innerJoin(person, eq(result.personId, person.wcaId))
       .innerJoin(competition, eq(result.competitionId, competition.id))
       .leftJoin(state, eq(person.stateId, state.id))
+      .where(eq(result.eventId, eventId))
       .groupBy(person.gender)
       .having(gt(count(), 0))
       .orderBy(person.gender)

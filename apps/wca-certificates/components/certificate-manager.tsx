@@ -84,6 +84,7 @@ import { FileUploader } from "./file-uploader";
 import { WcaMonochrome } from "@workspace/icons";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
 import { toast } from "sonner";
+import { Switch } from "@workspace/ui/components/switch";
 
 export function CertificateManager({
   competition,
@@ -130,6 +131,8 @@ export function CertificateManager({
     "general" | "female" | "newcomer"
   >("general");
   const [searchParticipant, setSearchParticipant] = useState("");
+
+  const [filterByCountry, setFilterByCountry] = useState<boolean>(false);
 
   useEffect(() => {
     if (files.length > 0) {
@@ -988,25 +991,41 @@ export function CertificateManager({
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="podiumType">Tipo de podio</Label>
-                      <Select
-                        value={selectedTemplate}
-                        onValueChange={handleTemplateChange}
-                      >
-                        <SelectTrigger className="w-[180px]" id="podiumType">
-                          <SelectValue placeholder="Seleccionar tipo de podio" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="general">General</SelectItem>
-                          <SelectItem value="female" disabled>
-                            Femeniles
-                          </SelectItem>
-                          <SelectItem value="newcomers" disabled>
-                            Primera vez
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="podiumType">Tipo de podio</Label>
+                        <Select
+                          value={selectedTemplate}
+                          onValueChange={handleTemplateChange}
+                        >
+                          <SelectTrigger className="w-full" id="podiumType">
+                            <SelectValue placeholder="Seleccionar tipo de podio" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="general">General</SelectItem>
+                            <SelectItem value="female" disabled>
+                              Femeniles
+                            </SelectItem>
+                            <SelectItem value="newcomers" disabled>
+                              Primera vez
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {/* <div className="flex gap-2 items-center">
+                        <Label htmlFor="filterByCountry">
+                          Filtrar por país
+                        </Label>
+                        <Switch
+                          id="filterByCountry"
+                          checked={filterByCountry}
+                          onCheckedChange={(checked) =>
+                            setFilterByCountry(!!checked)
+                          }
+                        >
+                          Habilitar
+                        </Switch>
+                      </div> */}
                     </div>
                     <div className="space-y-4">
                       <h4 className="text-sm font-medium">Eventos</h4>

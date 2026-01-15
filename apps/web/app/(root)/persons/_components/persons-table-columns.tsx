@@ -17,12 +17,12 @@ export function getColumns({
 }: GetColumnsProps): ColumnDef<Person>[] {
   return [
     {
-      accessorKey: "id",
+      accessorKey: "wcaId",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="WCA ID" />
       ),
       cell: ({ row }) => {
-        return <div>{row.getValue("id")}</div>;
+        return <div>{row.getValue("wcaId")}</div>;
       },
       enableHiding: false,
     },
@@ -37,7 +37,7 @@ export function getColumns({
           <div className="flex space-x-2 whitespace-nowrap">
             <Link
               className="hover:underline text-accent-foreground"
-              href={`/persons/${row.original.id}`}
+              href={`/persons/${row.original.wcaId}`}
             >
               {row.getValue("name")}
             </Link>

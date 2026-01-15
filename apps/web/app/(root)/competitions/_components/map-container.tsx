@@ -19,7 +19,7 @@ export function MapContainer({
     id: string;
     name: string;
     stateName: string | null;
-    latitutude: number | null;
+    latitude: number | null;
     longitude: number | null;
   }[];
   statesData: GeoJSONProps["data"];

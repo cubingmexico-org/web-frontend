@@ -81,7 +81,7 @@ export async function POST(req: Request): Promise<NextResponse> {
             eventId: rankSingle.eventId,
           })
           .from(rankSingle)
-          .innerJoin(person, eq(rankSingle.personId, person.id))
+          .innerJoin(person, eq(rankSingle.personId, person.wcaId))
           .leftJoin(state, eq(person.stateId, state.id))
           .where(singleWhere)
           .orderBy(asc(rankSingle.countryRank));
@@ -108,7 +108,7 @@ export async function POST(req: Request): Promise<NextResponse> {
             eventId: rankAverage.eventId,
           })
           .from(rankAverage)
-          .innerJoin(person, eq(rankAverage.personId, person.id))
+          .innerJoin(person, eq(rankAverage.personId, person.wcaId))
           .leftJoin(state, eq(person.stateId, state.id))
           .where(averageWhere)
           .orderBy(asc(rankAverage.countryRank));

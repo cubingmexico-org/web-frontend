@@ -16,7 +16,7 @@ interface MapProps {
     id: string;
     name: string;
     stateName: string | null;
-    latitutude: number | null;
+    latitude: number | null;
     longitude: number | null;
   }[];
   statesData: GeoJSONProps["data"];
@@ -55,11 +55,11 @@ export function Map(Map: MapProps) {
         url={tileLayerUrl}
       />
       {!showOnlyStates &&
-        locations.map(({ id, name, stateName, latitutude, longitude }) => (
+        locations.map(({ id, name, stateName, latitude, longitude }) => (
           <Marker
             key={id}
             position={[
-              (latitutude && latitutude / 1000000) || 0,
+              (latitude && latitude / 1000000) || 0,
               (longitude && longitude / 1000000) || 0,
             ]}
           >

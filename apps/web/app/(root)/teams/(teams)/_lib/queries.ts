@@ -21,7 +21,7 @@ export async function getTeams() {
         state: state.name,
         founded: team.founded,
         isActive: team.isActive,
-        members: count(person.id),
+        members: count(person.wcaId),
       })
       .from(team)
       .innerJoin(state, eq(team.stateId, state.id))
@@ -36,7 +36,7 @@ export async function getTeams() {
         team.founded,
         team.isActive,
       )
-      .orderBy(desc(count(person.id)));
+      .orderBy(desc(count(person.wcaId)));
   } catch (error) {
     console.error("Error fetching teams:", error);
     return [];

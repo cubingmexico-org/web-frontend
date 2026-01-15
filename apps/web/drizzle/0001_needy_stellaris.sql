@@ -1,0 +1,1 @@
+ALTER TABLE "competitions" DROP COLUMN "cancelled";

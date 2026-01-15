@@ -27,13 +27,13 @@ export async function getKinchRanksTeams(): Promise<KinchRanksTeams[]> {
       sql`
               WITH PersonalKinch AS (
                 SELECT
-                  p.id,
-                  p."stateId",
-                  p."name",
-                  pr."eventId",
+                  p.wca_id,
+                  p.state_id,
+                  p.name,
+                  pr.event_id,
                   pr.type,
                   CASE 
-                    WHEN pr."eventId" = '333mbf' THEN
+                    WHEN pr.event_id = '333mbf' THEN
                       CASE 
                         WHEN COALESCE(pr.personal_best, 0) != 0 THEN 
                           (
@@ -53,75 +53,75 @@ export async function getKinchRanksTeams(): Promise<KinchRanksTeams[]> {
                   END AS best_ratio
                 FROM (
                   SELECT
-                    "personId",
-                    "eventId",
+                    person_id,
+                    event_id,
                     MIN(best) AS personal_best,
                     'average' AS type
-                  FROM "ranksAverage"
-                  WHERE "eventId" NOT IN (${sql.join(EXCLUDED_EVENTS, sql`, `)})
-                  GROUP BY "personId", "eventId"
+                  FROM ranks_average
+                  WHERE event_id NOT IN (${sql.join(EXCLUDED_EVENTS, sql`, `)})
+                  GROUP BY person_id, event_id
                   UNION ALL
                   SELECT
-                    "personId",
-                    "eventId",
+                    person_id,
+                    event_id,
                     MIN(best) AS personal_best,
                     'single' AS type
-                  FROM "ranksSingle"
-                  WHERE "eventId" IN (${sql.join(SINGLE_EVENTS, sql`, `)})
-                  GROUP BY "personId", "eventId"
+                  FROM ranks_single
+                  WHERE event_id IN (${sql.join(SINGLE_EVENTS, sql`, `)})
+                  GROUP BY person_id, event_id
                 ) pr
-                JOIN persons p ON p.id = pr."personId"
+                JOIN persons p ON p.wca_id = pr.person_id
                 LEFT JOIN (
                   SELECT
-                    "eventId",
+                    event_id,
                     MIN(best) AS national_best,
                     'average' AS type
-                  FROM "ranksAverage"
-                  WHERE "countryRank" = 1 AND "eventId" NOT IN (${sql.join(EXCLUDED_EVENTS, sql`, `)})
-                  GROUP BY "eventId"
+                  FROM ranks_average
+                  WHERE country_rank = 1 AND event_id NOT IN (${sql.join(EXCLUDED_EVENTS, sql`, `)})
+                  GROUP BY event_id
                   UNION ALL
                   SELECT
-                    "eventId",
+                    event_id,
                     MIN(best) AS national_best,
                     'single' AS type
-                  FROM "ranksSingle"
-                  WHERE "countryRank" = 1 AND "eventId" IN (${sql.join(SINGLE_EVENTS, sql`, `)})
-                  GROUP BY "eventId"
-                ) nr ON pr."eventId" = nr."eventId" AND pr.type = nr.type
+                  FROM ranks_single
+                  WHERE country_rank = 1 AND event_id IN (${sql.join(SINGLE_EVENTS, sql`, `)})
+                  GROUP BY event_id
+                ) nr ON pr.event_id = nr.event_id AND pr.type = nr.type
               ),
               TeamKinch AS (
                 SELECT
-                  "stateId",
-                  "eventId",
+                  state_id,
+                  event_id,
                   best_ratio AS team_ratio,
-                  id AS person_id,
-                  "name" AS person_name
+                  wca_id AS person_id,
+                  name AS person_name
                 FROM (
                   SELECT
                     pk.*,
-                    ROW_NUMBER() OVER (PARTITION BY pk."stateId", pk."eventId" ORDER BY pk.best_ratio DESC) AS rn
+                    ROW_NUMBER() OVER (PARTITION BY pk.state_id, pk.event_id ORDER BY pk.best_ratio DESC) AS rn
                   FROM PersonalKinch pk
                 ) sub
                 WHERE rn = 1
               )
               SELECT
-                t."name",
-                t."stateId",
+                t.name,
+                t.state_id,
                 json_agg(
                   json_build_object(
-                    'eventId', e."id",
+                    'eventId', e.id,
                     'ratio', COALESCE(tk.team_ratio, 0),
                     'personId', tk.person_id,
                     'personName', tk.person_name
                   )
-                  ORDER BY e."rank"
+                  ORDER BY e.rank
                 ) AS events,
                 AVG(COALESCE(tk.team_ratio, 0)) AS overall
               FROM teams t
               CROSS JOIN events e
-              LEFT JOIN TeamKinch tk ON t."stateId" = tk."stateId" AND e."id" = tk."eventId"
-              WHERE e."id" NOT IN (${sql.join(EXCLUDED_EVENTS, sql`, `)})
-              GROUP BY t."name", t."stateId"
+              LEFT JOIN TeamKinch tk ON t.state_id = tk.state_id AND e.id = tk.event_id
+              WHERE e.id NOT IN (${sql.join(EXCLUDED_EVENTS, sql`, `)})
+              GROUP BY t.name, t.state_id
               ORDER BY overall DESC;
             `,
     );

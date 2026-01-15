@@ -35,7 +35,7 @@ import {
 interface ProfileProps {
   user: User;
   person: {
-    id: string;
+    wcaId: string;
     name: string | null;
     gender: "m" | "f" | "o" | null;
     stateId: string | null;
@@ -47,7 +47,7 @@ export function Profile({ user, person, states }: ProfileProps) {
   const [state, formAction, pending] = useActionState(profileFormAction, {
     defaultValues: {
       stateId: person.stateId || "",
-      personId: person.id,
+      personId: person.wcaId,
     },
     success: false,
     errors: null,
@@ -113,7 +113,7 @@ export function Profile({ user, person, states }: ProfileProps) {
             <input
               type="hidden"
               name="personId"
-              defaultValue={person.id}
+              defaultValue={person.wcaId}
               readOnly
             />
 

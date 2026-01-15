@@ -5,25 +5,25 @@ import { useDataTable } from "@/hooks/use-data-table";
 import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import type {
-  getOrganiserStatusCounts,
-  getOrganisers,
-  getOrganisersGenderCounts,
-  getOrganisersStateCounts,
+  getOrganizerStatusCounts,
+  getOrganizers,
+  getOrganizersGenderCounts,
+  getOrganizersStateCounts,
 } from "../_lib/queries";
-import { getColumns } from "./organisers-table-columns";
+import { getColumns } from "./organizers-table-columns";
 
-interface OrganisersTableProps {
+interface OrganizersTableProps {
   promises: Promise<
     [
-      Awaited<ReturnType<typeof getOrganisers>>,
-      Awaited<ReturnType<typeof getOrganisersStateCounts>>,
-      Awaited<ReturnType<typeof getOrganisersGenderCounts>>,
-      Awaited<ReturnType<typeof getOrganiserStatusCounts>>,
+      Awaited<ReturnType<typeof getOrganizers>>,
+      Awaited<ReturnType<typeof getOrganizersStateCounts>>,
+      Awaited<ReturnType<typeof getOrganizersGenderCounts>>,
+      Awaited<ReturnType<typeof getOrganizerStatusCounts>>,
     ]
   >;
 }
 
-export function OrganisersTable({ promises }: OrganisersTableProps) {
+export function OrganizersTable({ promises }: OrganizersTableProps) {
   const [{ data, pageCount }, stateCounts, genderCounts, statusCounts] =
     React.use(promises);
 
@@ -48,7 +48,7 @@ export function OrganisersTable({ promises }: OrganisersTableProps) {
         status: false,
       },
     },
-    getRowId: (originalRow) => originalRow.id,
+    getRowId: (originalRow) => originalRow.wcaId,
     shallow: false,
     clearOnDefault: true,
     enableRowSelection: false,

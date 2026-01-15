@@ -314,8 +314,8 @@ export async function getCompetitionsLocations(input: GetCompetitionsSchema) {
         name: competition.name,
         stateId: competition.stateId,
         stateName: state.name,
-        latitutude: competition.latitude,
-        longitude: competition.longitude,
+        latitude: competition.latitudeMicrodegrees,
+        longitude: competition.longitudeMicrodegrees,
       })
       .from(competition)
       .leftJoin(state, eq(competition.stateId, state.id))
@@ -323,8 +323,8 @@ export async function getCompetitionsLocations(input: GetCompetitionsSchema) {
       .groupBy(
         competition.id,
         state.name,
-        competition.latitude,
-        competition.longitude,
+        competition.latitudeMicrodegrees,
+        competition.longitudeMicrodegrees,
       );
 
     return data;

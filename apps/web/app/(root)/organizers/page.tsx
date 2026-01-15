@@ -2,12 +2,12 @@ import * as React from "react";
 import { SearchParams } from "@/types";
 import { searchParamsCache } from "./_lib/validations";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import { OrganisersTable } from "./_components/organisers-table";
+import { OrganizersTable } from "./_components/organizers-table";
 import {
-  getOrganiserStatusCounts,
-  getOrganisers,
-  getOrganisersGenderCounts,
-  getOrganisersStateCounts,
+  getOrganizerStatusCounts,
+  getOrganizers,
+  getOrganizersGenderCounts,
+  getOrganizersStateCounts,
 } from "./_lib/queries";
 import { getValidFilters } from "@/lib/data-table";
 
@@ -22,13 +22,13 @@ export default async function Page(props: PageProps) {
   const validFilters = getValidFilters(search.filters);
 
   const promises = Promise.all([
-    getOrganisers({
+    getOrganizers({
       ...search,
       filters: validFilters,
     }),
-    getOrganisersStateCounts(),
-    getOrganisersGenderCounts(),
-    getOrganiserStatusCounts(),
+    getOrganizersStateCounts(),
+    getOrganizersGenderCounts(),
+    getOrganizerStatusCounts(),
   ]);
 
   return (
@@ -50,7 +50,7 @@ export default async function Page(props: PageProps) {
         />
       }
     >
-      <OrganisersTable promises={promises} />
+      <OrganizersTable promises={promises} />
     </React.Suspense>
   );
 }

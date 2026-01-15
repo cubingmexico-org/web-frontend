@@ -68,7 +68,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const personUrls = persons.map((person) => {
     return {
-      url: `https://www.cubingmexico.net/persons/${person.id}`,
+      url: `https://www.cubingmexico.net/persons/${person.wcaId}`,
       lastModified: new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.5,
@@ -166,7 +166,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     ...personUrls,
     {
-      url: "https://www.cubingmexico.net/organisers",
+      url: "https://www.cubingmexico.net/organizers",
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.5,

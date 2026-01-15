@@ -51,7 +51,7 @@ export function DeleteMembersDialog({
   function onDelete() {
     startDeleteTransition(async () => {
       const { error } = await deleteMembers({
-        ids: members.map((task) => task.id),
+        ids: members.map((task) => task.wcaId),
         stateId,
       });
 

@@ -52,7 +52,7 @@ export async function getKinchRanks(input: GetKinchSinglesSchema) {
           gender: person.gender,
         })
         .from(kinchRanks)
-        .innerJoin(person, eq(kinchRanks.personId, person.id))
+        .innerJoin(person, eq(kinchRanks.personId, person.wcaId))
         .leftJoin(state, eq(person.stateId, state.id))
         .limit(input.perPage)
         .offset(offset)
@@ -64,7 +64,7 @@ export async function getKinchRanks(input: GetKinchSinglesSchema) {
           count: count(),
         })
         .from(kinchRanks)
-        .innerJoin(person, eq(kinchRanks.personId, person.id))
+        .innerJoin(person, eq(kinchRanks.personId, person.wcaId))
         .leftJoin(state, eq(person.stateId, state.id))
         .where(where)
         .execute()
@@ -95,7 +95,7 @@ export async function getKinchRanksStateCounts() {
         count: count(),
       })
       .from(kinchRanks)
-      .innerJoin(person, eq(kinchRanks.personId, person.id))
+      .innerJoin(person, eq(kinchRanks.personId, person.wcaId))
       .leftJoin(state, eq(person.stateId, state.id))
       .groupBy(state.name)
       .having(gt(count(), 0))
@@ -127,7 +127,7 @@ export async function getKinchRanksGenderCounts() {
         count: count(),
       })
       .from(kinchRanks)
-      .innerJoin(person, eq(kinchRanks.personId, person.id))
+      .innerJoin(person, eq(kinchRanks.personId, person.wcaId))
       .groupBy(person.gender)
       .having(gt(count(), 0))
       .orderBy(person.gender)

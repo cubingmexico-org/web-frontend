@@ -1,0 +1,1 @@
+ALTER TABLE "competitions" ADD COLUMN "cancelled" boolean DEFAULT false NOT NULL;

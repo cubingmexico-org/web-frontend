@@ -43,7 +43,7 @@ export function CompetitorsTable({ promises }: CompetitorsTableProps) {
         gender: false,
       },
     },
-    getRowId: (originalRow) => originalRow.id,
+    getRowId: (originalRow) => originalRow.wcaId,
     shallow: false,
     clearOnDefault: true,
     enableRowSelection: false,

@@ -6,8 +6,8 @@ import {
   state,
   person,
   type State,
-  organiser,
-  competitionOrganiser,
+  organizer,
+  competitionOrganizer,
 } from "@/db/schema";
 import {
   and,
@@ -20,12 +20,12 @@ import {
   inArray,
   countDistinct,
 } from "drizzle-orm";
-import { type GetOrganisersSchema } from "./validations";
+import { type GetOrganizersSchema } from "./validations";
 import { cacheLife, cacheTag } from "next/cache";
 
-export async function getOrganisers(input: GetOrganisersSchema) {
+export async function getOrganizers(input: GetOrganizersSchema) {
   cacheLife("hours");
-  cacheTag("organisers");
+  cacheTag("organizers");
 
   try {
     const offset = (input.page - 1) * input.perPage;
@@ -34,7 +34,7 @@ export async function getOrganisers(input: GetOrganisersSchema) {
       input.name ? ilike(person.name, `%${input.name}%`) : undefined,
       input.state.length > 0 ? inArray(state.name, input.state) : undefined,
       input.status.length > 0
-        ? inArray(organiser.status, input.status)
+        ? inArray(organizer.status, input.status)
         : undefined,
       input.gender.length > 0
         ? inArray(person.gender, input.gender)
@@ -49,12 +49,12 @@ export async function getOrganisers(input: GetOrganisersSchema) {
                 return item.desc ? desc(state.name) : asc(state.name);
               case "competitions":
                 return item.desc
-                  ? desc(countDistinct(competitionOrganiser.competitionId))
-                  : asc(countDistinct(competitionOrganiser.competitionId));
+                  ? desc(countDistinct(competitionOrganizer.competitionId))
+                  : asc(countDistinct(competitionOrganizer.competitionId));
               case "status":
                 return item.desc
-                  ? desc(organiser.status)
-                  : asc(organiser.status);
+                  ? desc(organizer.status)
+                  : asc(organizer.status);
               default:
                 return item.desc ? desc(person[item.id]) : asc(person[item.id]);
             }
@@ -64,39 +64,39 @@ export async function getOrganisers(input: GetOrganisersSchema) {
     const { data, total } = await db.transaction(async (tx) => {
       const data = await tx
         .select({
-          id: person.id,
+          wcaId: person.wcaId,
           name: person.name,
           gender: person.gender,
           state: state.name,
-          status: organiser.status,
-          competitions: countDistinct(competitionOrganiser.competitionId),
+          status: organizer.status,
+          competitions: countDistinct(competitionOrganizer.competitionId),
         })
-        .from(organiser)
+        .from(organizer)
         .innerJoin(
-          competitionOrganiser,
-          eq(organiser.id, competitionOrganiser.organiserId),
+          competitionOrganizer,
+          eq(organizer.id, competitionOrganizer.organizerId),
         )
-        .innerJoin(person, eq(organiser.personId, person.id))
+        .innerJoin(person, eq(organizer.personId, person.wcaId))
         .leftJoin(state, eq(person.stateId, state.id))
         .limit(input.perPage)
         .offset(offset)
         .where(where)
-        .groupBy(person.id, state.name, organiser.status)
+        .groupBy(person.wcaId, state.name, organizer.status)
         .orderBy(...orderBy);
 
       const total = (await tx
         .select({
           count: count(),
         })
-        .from(organiser)
+        .from(organizer)
         .innerJoin(
-          competitionOrganiser,
-          eq(organiser.id, competitionOrganiser.organiserId),
+          competitionOrganizer,
+          eq(organizer.id, competitionOrganizer.organizerId),
         )
-        .innerJoin(person, eq(organiser.personId, person.id))
+        .innerJoin(person, eq(organizer.personId, person.wcaId))
         .leftJoin(state, eq(person.stateId, state.id))
         .where(where)
-        .groupBy(person.id, state.name, organiser.status)
+        .groupBy(person.wcaId, state.name, organizer.status)
         .execute()
         .then((res) => res.length)) as number;
 
@@ -114,9 +114,9 @@ export async function getOrganisers(input: GetOrganisersSchema) {
   }
 }
 
-export async function getOrganisersStateCounts() {
+export async function getOrganizersStateCounts() {
   cacheLife("hours");
-  cacheTag("organisers-state-counts");
+  cacheTag("organizers-state-counts");
 
   try {
     return await db
@@ -124,8 +124,8 @@ export async function getOrganisersStateCounts() {
         state: state.name,
         count: count(),
       })
-      .from(organiser)
-      .innerJoin(person, eq(organiser.personId, person.id))
+      .from(organizer)
+      .innerJoin(person, eq(organizer.personId, person.wcaId))
       .leftJoin(state, eq(person.stateId, state.id))
       .groupBy(state.name)
       .having(gt(count(), 0))
@@ -146,9 +146,9 @@ export async function getOrganisersStateCounts() {
   }
 }
 
-export async function getOrganisersGenderCounts() {
+export async function getOrganizersGenderCounts() {
   cacheLife("hours");
-  cacheTag("organisers-gender-counts");
+  cacheTag("organizers-gender-counts");
 
   try {
     return await db
@@ -156,8 +156,8 @@ export async function getOrganisersGenderCounts() {
         gender: person.gender,
         count: count(),
       })
-      .from(organiser)
-      .innerJoin(person, eq(organiser.personId, person.id))
+      .from(organizer)
+      .innerJoin(person, eq(organizer.personId, person.wcaId))
       .groupBy(person.gender)
       .having(gt(count(), 0))
       .orderBy(person.gender)
@@ -177,20 +177,20 @@ export async function getOrganisersGenderCounts() {
   }
 }
 
-export async function getOrganiserStatusCounts() {
+export async function getOrganizerStatusCounts() {
   cacheLife("hours");
-  cacheTag("organisers-status-counts");
+  cacheTag("organizers-status-counts");
 
   try {
     return await db
       .select({
-        status: organiser.status,
+        status: organizer.status,
         count: count(),
       })
-      .from(organiser)
-      .groupBy(organiser.status)
+      .from(organizer)
+      .groupBy(organizer.status)
       .having(gt(count(), 0))
-      .orderBy(organiser.status)
+      .orderBy(organizer.status)
       .then((res) =>
         res.reduce(
           (acc, { status, count }) => {

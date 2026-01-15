@@ -64,7 +64,7 @@ export async function getCompetitors(input: GetPersonsSchema) {
     const { data, total } = await db.transaction(async (tx) => {
       const data = await tx
         .select({
-          id: person.id,
+          wcaId: person.wcaId,
           name: person.name,
           gender: person.gender,
           state: state.name,
@@ -81,12 +81,12 @@ export async function getCompetitors(input: GetPersonsSchema) {
         })
         .from(person)
         .leftJoin(state, eq(person.stateId, state.id))
-        .innerJoin(result, eq(person.id, result.personId))
+        .innerJoin(result, eq(person.wcaId, result.personId))
         .innerJoin(competition, eq(result.competitionId, competition.id))
         .limit(input.perPage)
         .offset(offset)
         .where(where)
-        .groupBy(person.id, state.name)
+        .groupBy(person.wcaId, state.name)
         .orderBy(...orderBy);
 
       const total = (await tx
@@ -95,10 +95,10 @@ export async function getCompetitors(input: GetPersonsSchema) {
         })
         .from(person)
         .leftJoin(state, eq(person.stateId, state.id))
-        .innerJoin(result, eq(person.id, result.personId))
+        .innerJoin(result, eq(person.wcaId, result.personId))
         .innerJoin(competition, eq(result.competitionId, competition.id))
         .where(where)
-        .groupBy(person.id, state.name)
+        .groupBy(person.wcaId, state.name)
         .execute()
         .then((res) => res.length)) as number;
 

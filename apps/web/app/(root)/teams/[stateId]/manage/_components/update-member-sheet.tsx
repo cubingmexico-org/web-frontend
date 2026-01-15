@@ -35,7 +35,7 @@ export function UpdateMemberSheet({
     defaultValues: {
       stateId,
       // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-      personId: member?.id!,
+      personId: member?.wcaId!,
       specialties: member?.specialties ?? null,
     },
     success: false,
@@ -61,7 +61,7 @@ export function UpdateMemberSheet({
         </SheetHeader>
         <form action={formAction} className="px-6">
           <input type="hidden" name="stateId" defaultValue={stateId} />
-          <input type="hidden" name="personId" defaultValue={member?.id} />
+          <input type="hidden" name="personId" defaultValue={member?.wcaId} />
           <EventsCheckboxes defaultValue={member?.specialties || []} />
           <SheetFooter className="gap-2 pt-2 sm:space-x-0">
             <SheetClose asChild>

@@ -48,7 +48,7 @@ export function DelegatesTable({ promises }: DelegatesTableProps) {
         status: false,
       },
     },
-    getRowId: (originalRow) => originalRow.id,
+    getRowId: (originalRow) => originalRow.wcaId,
     shallow: false,
     clearOnDefault: true,
     enableRowSelection: false,

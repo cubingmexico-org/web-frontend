@@ -1,9 +1,70 @@
 {
-  "id": "128a428a-16de-4efb-98ef-8040d36d24a5",
-  "prevId": "bd7ceec5-ce88-4e4f-b81d-e466f71a3839",
+  "id": "b4f95298-2e84-4871-aee7-ef532684bca7",
+  "prevId": "5330f1d1-d146-4b6f-ad8d-9d881e3470b8",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.championships": {
+      "name": "championships",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(32)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "competition_id": {
+          "name": "competition_id",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "championship_type": {
+          "name": "championship_type",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "championship_comp_idx": {
+          "name": "championship_comp_idx",
+          "columns": [
+            {
+              "expression": "competition_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "championships_competition_id_competitions_id_fk": {
+          "name": "championships_competition_id_competitions_id_fk",
+          "tableFrom": "championships",
+          "tableTo": "competitions",
+          "columnsFrom": [
+            "competition_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.competitions": {
       "name": "competitions",
       "schema": "",
@@ -20,58 +81,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "cityName": {
-          "name": "cityName",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "countryId": {
-          "name": "countryId",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": true
-        },
         "information": {
           "name": "information",
           "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "startDate": {
-          "name": "startDate",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "endDate": {
-          "name": "endDate",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "cancelled": {
-          "name": "cancelled",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
-        "venue": {
-          "name": "venue",
-          "type": "varchar(240)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "venueAddress": {
-          "name": "venueAddress",
-          "type": "varchar(191)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "venueDetails": {
-          "name": "venueDetails",
-          "type": "varchar(191)",
           "primaryKey": false,
           "notNull": false
         },
@@ -81,39 +93,118 @@
           "primaryKey": false,
           "notNull": false
         },
-        "cellName": {
-          "name": "cellName",
+        "venue": {
+          "name": "venue",
+          "type": "varchar(240)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "city_name": {
+          "name": "city_name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "country_id": {
+          "name": "country_id",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "venue_address": {
+          "name": "venue_address",
+          "type": "varchar(191)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "venue_details": {
+          "name": "venue_details",
+          "type": "varchar(191)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cell_name": {
+          "name": "cell_name",
           "type": "varchar(45)",
           "primaryKey": false,
           "notNull": true
         },
-        "latitude": {
-          "name": "latitude",
+        "start_date": {
+          "name": "start_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "end_date": {
+          "name": "end_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "latitude_microdegrees": {
+          "name": "latitude_microdegrees",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
-        "longitude": {
-          "name": "longitude",
+        "longitude_microdegrees": {
+          "name": "longitude_microdegrees",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
-        "stateId": {
-          "name": "stateId",
+        "state_id": {
+          "name": "state_id",
           "type": "varchar(3)",
           "primaryKey": false,
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "competitions_state_idx": {
+          "name": "competitions_state_idx",
+          "columns": [
+            {
+              "expression": "state_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "competitions_date_idx": {
+          "name": "competitions_date_idx",
+          "columns": [
+            {
+              "expression": "start_date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "end_date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
-        "competitions_stateId_states_id_fk": {
-          "name": "competitions_stateId_states_id_fk",
+        "competitions_state_id_states_id_fk": {
+          "name": "competitions_state_id_states_id_fk",
           "tableFrom": "competitions",
           "tableTo": "states",
           "columnsFrom": [
-            "stateId"
+            "state_id"
           ],
           "columnsTo": [
             "id"
@@ -132,14 +223,14 @@
       "name": "competition_delegates",
       "schema": "",
       "columns": {
-        "competitionId": {
-          "name": "competitionId",
+        "competition_id": {
+          "name": "competition_id",
           "type": "varchar(32)",
           "primaryKey": false,
           "notNull": true
         },
-        "delegateId": {
-          "name": "delegateId",
+        "delegate_id": {
+          "name": "delegate_id",
           "type": "varchar(128)",
           "primaryKey": false,
           "notNull": true
@@ -147,12 +238,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "competition_delegates_competitionId_competitions_id_fk": {
-          "name": "competition_delegates_competitionId_competitions_id_fk",
+        "competition_delegates_competition_id_competitions_id_fk": {
+          "name": "competition_delegates_competition_id_competitions_id_fk",
           "tableFrom": "competition_delegates",
           "tableTo": "competitions",
           "columnsFrom": [
-            "competitionId"
+            "competition_id"
           ],
           "columnsTo": [
             "id"
@@ -160,12 +251,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "competition_delegates_delegateId_delegates_id_fk": {
-          "name": "competition_delegates_delegateId_delegates_id_fk",
+        "competition_delegates_delegate_id_delegates_id_fk": {
+          "name": "competition_delegates_delegate_id_delegates_id_fk",
           "tableFrom": "competition_delegates",
           "tableTo": "delegates",
           "columnsFrom": [
-            "delegateId"
+            "delegate_id"
           ],
           "columnsTo": [
             "id"
@@ -175,11 +266,11 @@
         }
       },
       "compositePrimaryKeys": {
-        "competition_delegates_competitionId_delegateId_pk": {
-          "name": "competition_delegates_competitionId_delegateId_pk",
+        "competition_delegates_competition_id_delegate_id_pk": {
+          "name": "competition_delegates_competition_id_delegate_id_pk",
           "columns": [
-            "competitionId",
-            "delegateId"
+            "competition_id",
+            "delegate_id"
           ]
         }
       },
@@ -192,27 +283,43 @@
       "name": "competition_events",
       "schema": "",
       "columns": {
-        "competitionId": {
-          "name": "competitionId",
+        "competition_id": {
+          "name": "competition_id",
           "type": "varchar(32)",
           "primaryKey": false,
           "notNull": true
         },
-        "eventId": {
-          "name": "eventId",
+        "event_id": {
+          "name": "event_id",
           "type": "varchar(6)",
           "primaryKey": false,
           "notNull": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "comp_event_event_idx": {
+          "name": "comp_event_event_idx",
+          "columns": [
+            {
+              "expression": "event_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
-        "competition_events_competitionId_competitions_id_fk": {
-          "name": "competition_events_competitionId_competitions_id_fk",
+        "competition_events_competition_id_competitions_id_fk": {
+          "name": "competition_events_competition_id_competitions_id_fk",
           "tableFrom": "competition_events",
           "tableTo": "competitions",
           "columnsFrom": [
-            "competitionId"
+            "competition_id"
           ],
           "columnsTo": [
             "id"
@@ -220,12 +327,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "competition_events_eventId_events_id_fk": {
-          "name": "competition_events_eventId_events_id_fk",
+        "competition_events_event_id_events_id_fk": {
+          "name": "competition_events_event_id_events_id_fk",
           "tableFrom": "competition_events",
           "tableTo": "events",
           "columnsFrom": [
-            "eventId"
+            "event_id"
           ],
           "columnsTo": [
             "id"
@@ -235,11 +342,11 @@
         }
       },
       "compositePrimaryKeys": {
-        "competition_events_competitionId_eventId_pk": {
-          "name": "competition_events_competitionId_eventId_pk",
+        "competition_events_competition_id_event_id_pk": {
+          "name": "competition_events_competition_id_event_id_pk",
           "columns": [
-            "competitionId",
-            "eventId"
+            "competition_id",
+            "event_id"
           ]
         }
       },
@@ -248,18 +355,18 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.competition_organisers": {
-      "name": "competition_organisers",
+    "public.competition_organizers": {
+      "name": "competition_organizers",
       "schema": "",
       "columns": {
-        "competitionId": {
-          "name": "competitionId",
+        "competition_id": {
+          "name": "competition_id",
           "type": "varchar(32)",
           "primaryKey": false,
           "notNull": true
         },
-        "organiserId": {
-          "name": "organiserId",
+        "organizer_id": {
+          "name": "organizer_id",
           "type": "varchar(128)",
           "primaryKey": false,
           "notNull": true
@@ -267,12 +374,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "competition_organisers_competitionId_competitions_id_fk": {
-          "name": "competition_organisers_competitionId_competitions_id_fk",
-          "tableFrom": "competition_organisers",
+        "competition_organizers_competition_id_competitions_id_fk": {
+          "name": "competition_organizers_competition_id_competitions_id_fk",
+          "tableFrom": "competition_organizers",
           "tableTo": "competitions",
           "columnsFrom": [
-            "competitionId"
+            "competition_id"
           ],
           "columnsTo": [
             "id"
@@ -280,12 +387,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "competition_organisers_organiserId_organisers_id_fk": {
-          "name": "competition_organisers_organiserId_organisers_id_fk",
-          "tableFrom": "competition_organisers",
-          "tableTo": "organisers",
+        "competition_organizers_organizer_id_organizers_id_fk": {
+          "name": "competition_organizers_organizer_id_organizers_id_fk",
+          "tableFrom": "competition_organizers",
+          "tableTo": "organizers",
           "columnsFrom": [
-            "organiserId"
+            "organizer_id"
           ],
           "columnsTo": [
             "id"
@@ -295,11 +402,11 @@
         }
       },
       "compositePrimaryKeys": {
-        "competition_organisers_competitionId_organiserId_pk": {
-          "name": "competition_organisers_competitionId_organiserId_pk",
+        "competition_organizers_competition_id_organizer_id_pk": {
+          "name": "competition_organizers_competition_id_organizer_id_pk",
           "columns": [
-            "competitionId",
-            "organiserId"
+            "competition_id",
+            "organizer_id"
           ]
         }
       },
@@ -318,8 +425,8 @@
           "primaryKey": true,
           "notNull": true
         },
-        "personId": {
-          "name": "personId",
+        "person_id": {
+          "name": "person_id",
           "type": "varchar(10)",
           "primaryKey": false,
           "notNull": true
@@ -334,15 +441,15 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "delegates_personId_persons_id_fk": {
-          "name": "delegates_personId_persons_id_fk",
+        "delegates_person_id_persons_wca_id_fk": {
+          "name": "delegates_person_id_persons_wca_id_fk",
           "tableFrom": "delegates",
           "tableTo": "persons",
           "columnsFrom": [
-            "personId"
+            "person_id"
           ],
           "columnsTo": [
-            "id"
+            "wca_id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -364,6 +471,12 @@
           "primaryKey": true,
           "notNull": true
         },
+        "format": {
+          "name": "format",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true
+        },
         "name": {
           "name": "name",
           "type": "varchar(54)",
@@ -376,18 +489,6 @@
           "primaryKey": false,
           "notNull": true,
           "default": 0
-        },
-        "format": {
-          "name": "format",
-          "type": "varchar(10)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "cellName": {
-          "name": "cellName",
-          "type": "varchar(45)",
-          "primaryKey": false,
-          "notNull": true
         }
       },
       "indexes": {},
@@ -398,21 +499,84 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.exportMetadata": {
-      "name": "exportMetadata",
+    "public.export_metadata": {
+      "name": "export_metadata",
+      "schema": "",
+      "columns": {
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.formats": {
+      "name": "formats",
       "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(32)",
+          "type": "varchar(1)",
           "primaryKey": true,
           "notNull": true
         },
-        "date": {
-          "name": "date",
-          "type": "timestamp",
+        "expected_solve_count": {
+          "name": "expected_solve_count",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(50)",
           "primaryKey": false,
           "notNull": true
+        },
+        "sort_by": {
+          "name": "sort_by",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sort_by_second": {
+          "name": "sort_by_second",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "trim_fastest_n": {
+          "name": "trim_fastest_n",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "trim_slowest_n": {
+          "name": "trim_slowest_n",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -423,8 +587,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.kinchRanks": {
-      "name": "kinchRanks",
+    "public.kinch_ranks": {
+      "name": "kinch_ranks",
       "schema": "",
       "columns": {
         "rank": {
@@ -433,8 +597,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "personId": {
-          "name": "personId",
+        "person_id": {
+          "name": "person_id",
           "type": "varchar(10)",
           "primaryKey": false,
           "notNull": true
@@ -447,35 +611,42 @@
         },
         "events": {
           "name": "events",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "kinchRanks_personId_persons_id_fk": {
-          "name": "kinchRanks_personId_persons_id_fk",
-          "tableFrom": "kinchRanks",
+        "kinch_ranks_person_id_persons_wca_id_fk": {
+          "name": "kinch_ranks_person_id_persons_wca_id_fk",
+          "tableFrom": "kinch_ranks",
           "tableTo": "persons",
           "columnsFrom": [
-            "personId"
+            "person_id"
           ],
           "columnsTo": [
-            "id"
+            "wca_id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "kinch_ranks_person_id_pk": {
+          "name": "kinch_ranks_person_id_pk",
+          "columns": [
+            "person_id"
+          ]
+        }
+      },
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.organisers": {
-      "name": "organisers",
+    "public.organizers": {
+      "name": "organizers",
       "schema": "",
       "columns": {
         "id": {
@@ -484,8 +655,8 @@
           "primaryKey": true,
           "notNull": true
         },
-        "personId": {
-          "name": "personId",
+        "person_id": {
+          "name": "person_id",
           "type": "varchar(10)",
           "primaryKey": false,
           "notNull": false
@@ -500,15 +671,15 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "organisers_personId_persons_id_fk": {
-          "name": "organisers_personId_persons_id_fk",
-          "tableFrom": "organisers",
+        "organizers_person_id_persons_wca_id_fk": {
+          "name": "organizers_person_id_persons_wca_id_fk",
+          "tableFrom": "organizers",
           "tableTo": "persons",
           "columnsFrom": [
-            "personId"
+            "person_id"
           ],
           "columnsTo": [
-            "id"
+            "wca_id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -524,8 +695,8 @@
       "name": "persons",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
+        "wca_id": {
+          "name": "wca_id",
           "type": "varchar(10)",
           "primaryKey": true,
           "notNull": true
@@ -542,21 +713,52 @@
           "primaryKey": false,
           "notNull": false
         },
-        "stateId": {
-          "name": "stateId",
+        "state_id": {
+          "name": "state_id",
           "type": "varchar(3)",
           "primaryKey": false,
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "person_name_idx": {
+          "name": "person_name_idx",
+          "columns": [
+            {
+              "expression": "name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "person_state_idx": {
+          "name": "person_state_idx",
+          "columns": [
+            {
+              "expression": "state_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
-        "persons_stateId_states_id_fk": {
-          "name": "persons_stateId_states_id_fk",
+        "persons_state_id_states_id_fk": {
+          "name": "persons_state_id_states_id_fk",
           "tableFrom": "persons",
           "tableTo": "states",
           "columnsFrom": [
-            "stateId"
+            "state_id"
           ],
           "columnsTo": [
             "id"
@@ -571,22 +773,10 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.ranksAverage": {
-      "name": "ranksAverage",
+    "public.ranks_average": {
+      "name": "ranks_average",
       "schema": "",
       "columns": {
-        "personId": {
-          "name": "personId",
-          "type": "varchar(10)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "eventId": {
-          "name": "eventId",
-          "type": "varchar(6)",
-          "primaryKey": false,
-          "notNull": true
-        },
         "best": {
           "name": "best",
           "type": "integer",
@@ -594,55 +784,89 @@
           "notNull": true,
           "default": 0
         },
-        "worldRank": {
-          "name": "worldRank",
+        "person_id": {
+          "name": "person_id",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "varchar(6)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "world_rank": {
+          "name": "world_rank",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "default": 0
         },
-        "continentRank": {
-          "name": "continentRank",
+        "continent_rank": {
+          "name": "continent_rank",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "default": 0
         },
-        "countryRank": {
-          "name": "countryRank",
+        "country_rank": {
+          "name": "country_rank",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "default": 0
         },
-        "stateRank": {
-          "name": "stateRank",
+        "state_rank": {
+          "name": "state_rank",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "rank_avg_event_best_idx": {
+          "name": "rank_avg_event_best_idx",
+          "columns": [
+            {
+              "expression": "event_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "best",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
-        "ranksAverage_personId_persons_id_fk": {
-          "name": "ranksAverage_personId_persons_id_fk",
-          "tableFrom": "ranksAverage",
+        "ranks_average_person_id_persons_wca_id_fk": {
+          "name": "ranks_average_person_id_persons_wca_id_fk",
+          "tableFrom": "ranks_average",
           "tableTo": "persons",
           "columnsFrom": [
-            "personId"
+            "person_id"
           ],
           "columnsTo": [
-            "id"
+            "wca_id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "ranksAverage_eventId_events_id_fk": {
-          "name": "ranksAverage_eventId_events_id_fk",
-          "tableFrom": "ranksAverage",
+        "ranks_average_event_id_events_id_fk": {
+          "name": "ranks_average_event_id_events_id_fk",
+          "tableFrom": "ranks_average",
           "tableTo": "events",
           "columnsFrom": [
-            "eventId"
+            "event_id"
           ],
           "columnsTo": [
             "id"
@@ -651,28 +875,24 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "ranks_average_person_id_event_id_pk": {
+          "name": "ranks_average_person_id_event_id_pk",
+          "columns": [
+            "person_id",
+            "event_id"
+          ]
+        }
+      },
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.ranksSingle": {
-      "name": "ranksSingle",
+    "public.ranks_single": {
+      "name": "ranks_single",
       "schema": "",
       "columns": {
-        "personId": {
-          "name": "personId",
-          "type": "varchar(10)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "eventId": {
-          "name": "eventId",
-          "type": "varchar(6)",
-          "primaryKey": false,
-          "notNull": true
-        },
         "best": {
           "name": "best",
           "type": "integer",
@@ -680,55 +900,89 @@
           "notNull": true,
           "default": 0
         },
-        "worldRank": {
-          "name": "worldRank",
+        "person_id": {
+          "name": "person_id",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "varchar(6)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "world_rank": {
+          "name": "world_rank",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "default": 0
         },
-        "continentRank": {
-          "name": "continentRank",
+        "continent_rank": {
+          "name": "continent_rank",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "default": 0
         },
-        "countryRank": {
-          "name": "countryRank",
+        "country_rank": {
+          "name": "country_rank",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "default": 0
         },
-        "stateRank": {
-          "name": "stateRank",
+        "state_rank": {
+          "name": "state_rank",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "rank_sin_event_best_idx": {
+          "name": "rank_sin_event_best_idx",
+          "columns": [
+            {
+              "expression": "event_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "best",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
-        "ranksSingle_personId_persons_id_fk": {
-          "name": "ranksSingle_personId_persons_id_fk",
-          "tableFrom": "ranksSingle",
+        "ranks_single_person_id_persons_wca_id_fk": {
+          "name": "ranks_single_person_id_persons_wca_id_fk",
+          "tableFrom": "ranks_single",
           "tableTo": "persons",
           "columnsFrom": [
-            "personId"
+            "person_id"
           ],
           "columnsTo": [
-            "id"
+            "wca_id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "ranksSingle_eventId_events_id_fk": {
-          "name": "ranksSingle_eventId_events_id_fk",
-          "tableFrom": "ranksSingle",
+        "ranks_single_event_id_events_id_fk": {
+          "name": "ranks_single_event_id_events_id_fk",
+          "tableFrom": "ranks_single",
           "tableTo": "events",
           "columnsFrom": [
-            "eventId"
+            "event_id"
           ],
           "columnsTo": [
             "id"
@@ -737,7 +991,15 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "ranks_single_person_id_event_id_pk": {
+          "name": "ranks_single_person_id_event_id_pk",
+          "columns": [
+            "person_id",
+            "event_id"
+          ]
+        }
+      },
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
@@ -747,23 +1009,11 @@
       "name": "results",
       "schema": "",
       "columns": {
-        "competitionId": {
-          "name": "competitionId",
-          "type": "varchar(32)",
-          "primaryKey": false,
+        "id": {
+          "name": "id",
+          "type": "varchar(64)",
+          "primaryKey": true,
           "notNull": true
-        },
-        "eventId": {
-          "name": "eventId",
-          "type": "varchar(6)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "roundTypeId": {
-          "name": "roundTypeId",
-          "type": "varchar(1)",
-          "primaryKey": false,
-          "notNull": false
         },
         "pos": {
           "name": "pos",
@@ -786,100 +1036,179 @@
           "notNull": true,
           "default": 0
         },
-        "personId": {
-          "name": "personId",
+        "competition_id": {
+          "name": "competition_id",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "round_type_id": {
+          "name": "round_type_id",
+          "type": "varchar(1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "varchar(6)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "person_id": {
+          "name": "person_id",
           "type": "varchar(10)",
           "primaryKey": false,
           "notNull": true
         },
-        "formatId": {
-          "name": "formatId",
+        "format_id": {
+          "name": "format_id",
           "type": "varchar(1)",
           "primaryKey": false,
           "notNull": true
         },
-        "value1": {
-          "name": "value1",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
-        "value2": {
-          "name": "value2",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
-        "value3": {
-          "name": "value3",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
-        "value4": {
-          "name": "value4",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
-        "value5": {
-          "name": "value5",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
-        "regionalSingleRecord": {
-          "name": "regionalSingleRecord",
+        "regional_single_record": {
+          "name": "regional_single_record",
           "type": "varchar(3)",
           "primaryKey": false,
           "notNull": false
         },
-        "regionalAverageRecord": {
-          "name": "regionalAverageRecord",
+        "regional_average_record": {
+          "name": "regional_average_record",
           "type": "varchar(3)",
           "primaryKey": false,
           "notNull": false
+        }
+      },
+      "indexes": {
+        "results_comp_event_idx": {
+          "name": "results_comp_event_idx",
+          "columns": [
+            {
+              "expression": "competition_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "event_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "results_person_idx": {
+          "name": "results_person_idx",
+          "columns": [
+            {
+              "expression": "person_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "results_competition_id_competitions_id_fk": {
+          "name": "results_competition_id_competitions_id_fk",
+          "tableFrom": "results",
+          "tableTo": "competitions",
+          "columnsFrom": [
+            "competition_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "results_round_type_id_round_types_id_fk": {
+          "name": "results_round_type_id_round_types_id_fk",
+          "tableFrom": "results",
+          "tableTo": "round_types",
+          "columnsFrom": [
+            "round_type_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "results_event_id_events_id_fk": {
+          "name": "results_event_id_events_id_fk",
+          "tableFrom": "results",
+          "tableTo": "events",
+          "columnsFrom": [
+            "event_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "results_person_id_persons_wca_id_fk": {
+          "name": "results_person_id_persons_wca_id_fk",
+          "tableFrom": "results",
+          "tableTo": "persons",
+          "columnsFrom": [
+            "person_id"
+          ],
+          "columnsTo": [
+            "wca_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.result_attempts": {
+      "name": "result_attempts",
+      "schema": "",
+      "columns": {
+        "value": {
+          "name": "value",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "attempt_number": {
+          "name": "attempt_number",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "result_id": {
+          "name": "result_id",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "results_competitionId_competitions_id_fk": {
-          "name": "results_competitionId_competitions_id_fk",
-          "tableFrom": "results",
-          "tableTo": "competitions",
+        "result_attempts_result_id_results_id_fk": {
+          "name": "result_attempts_result_id_results_id_fk",
+          "tableFrom": "result_attempts",
+          "tableTo": "results",
           "columnsFrom": [
-            "competitionId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "results_eventId_events_id_fk": {
-          "name": "results_eventId_events_id_fk",
-          "tableFrom": "results",
-          "tableTo": "events",
-          "columnsFrom": [
-            "eventId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "results_personId_persons_id_fk": {
-          "name": "results_personId_persons_id_fk",
-          "tableFrom": "results",
-          "tableTo": "persons",
-          "columnsFrom": [
-            "personId"
+            "result_id"
           ],
           "columnsTo": [
             "id"
@@ -888,6 +1217,59 @@
           "onUpdate": "no action"
         }
       },
+      "compositePrimaryKeys": {
+        "result_attempts_result_id_attempt_number_pk": {
+          "name": "result_attempts_result_id_attempt_number_pk",
+          "columns": [
+            "result_id",
+            "attempt_number"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.round_types": {
+      "name": "round_types",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(1)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "final": {
+          "name": "final",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rank": {
+          "name": "rank",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "cell_name": {
+          "name": "cell_name",
+          "type": "varchar(45)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -900,7 +1282,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(3)",
+          "type": "varchar(32)",
           "primaryKey": true,
           "notNull": true
         },
@@ -922,42 +1304,18 @@
           "primaryKey": false,
           "notNull": false
         },
-        "facebook": {
-          "name": "facebook",
-          "type": "varchar(191)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "instagram": {
-          "name": "instagram",
-          "type": "varchar(191)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "tiktok": {
-          "name": "tiktok",
-          "type": "varchar(191)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "phoneNumber": {
-          "name": "phoneNumber",
-          "type": "varchar(15)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "email": {
-          "name": "email",
-          "type": "varchar(191)",
+        "social_links": {
+          "name": "social_links",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },
         "active": {
           "name": "active",
-          "type": "integer",
+          "type": "boolean",
           "primaryKey": false,
           "notNull": true,
-          "default": 0
+          "default": false
         }
       },
       "indexes": {},
@@ -993,8 +1351,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.sumOfRanks": {
-      "name": "sumOfRanks",
+    "public.sum_of_ranks": {
+      "name": "sum_of_ranks",
       "schema": "",
       "columns": {
         "rank": {
@@ -1003,14 +1361,14 @@
           "primaryKey": false,
           "notNull": true
         },
-        "personId": {
-          "name": "personId",
+        "person_id": {
+          "name": "person_id",
           "type": "varchar(10)",
           "primaryKey": false,
           "notNull": true
         },
-        "resultType": {
-          "name": "resultType",
+        "result_type": {
+          "name": "result_type",
           "type": "varchar(7)",
           "primaryKey": false,
           "notNull": true
@@ -1023,28 +1381,36 @@
         },
         "events": {
           "name": "events",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "sumOfRanks_personId_persons_id_fk": {
-          "name": "sumOfRanks_personId_persons_id_fk",
-          "tableFrom": "sumOfRanks",
+        "sum_of_ranks_person_id_persons_wca_id_fk": {
+          "name": "sum_of_ranks_person_id_persons_wca_id_fk",
+          "tableFrom": "sum_of_ranks",
           "tableTo": "persons",
           "columnsFrom": [
-            "personId"
+            "person_id"
           ],
           "columnsTo": [
-            "id"
+            "wca_id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "sum_of_ranks_person_id_result_type_pk": {
+          "name": "sum_of_ranks_person_id_result_type_pk",
+          "columns": [
+            "person_id",
+            "result_type"
+          ]
+        }
+      },
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
@@ -1072,14 +1438,14 @@
           "primaryKey": false,
           "notNull": false
         },
-        "coverImage": {
-          "name": "coverImage",
+        "cover_image": {
+          "name": "cover_image",
           "type": "varchar(191)",
           "primaryKey": false,
           "notNull": false
         },
-        "stateId": {
-          "name": "stateId",
+        "state_id": {
+          "name": "state_id",
           "type": "varchar(3)",
           "primaryKey": true,
           "notNull": true
@@ -1090,14 +1456,14 @@
           "primaryKey": false,
           "notNull": false
         },
-        "socialLinks": {
-          "name": "socialLinks",
-          "type": "json",
+        "social_links": {
+          "name": "social_links",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },
-        "isActive": {
-          "name": "isActive",
+        "is_active": {
+          "name": "is_active",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
@@ -1106,12 +1472,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "teams_stateId_states_id_fk": {
-          "name": "teams_stateId_states_id_fk",
+        "teams_state_id_states_id_fk": {
+          "name": "teams_state_id_states_id_fk",
           "tableFrom": "teams",
           "tableTo": "states",
           "columnsFrom": [
-            "stateId"
+            "state_id"
           ],
           "columnsTo": [
             "id"
@@ -1130,8 +1496,8 @@
       "name": "team_achievements",
       "schema": "",
       "columns": {
-        "stateId": {
-          "name": "stateId",
+        "state_id": {
+          "name": "state_id",
           "type": "varchar(3)",
           "primaryKey": true,
           "notNull": true
@@ -1157,12 +1523,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "team_achievements_stateId_states_id_fk": {
-          "name": "team_achievements_stateId_states_id_fk",
+        "team_achievements_state_id_states_id_fk": {
+          "name": "team_achievements_state_id_states_id_fk",
           "tableFrom": "team_achievements",
           "tableTo": "states",
           "columnsFrom": [
-            "stateId"
+            "state_id"
           ],
           "columnsTo": [
             "id"
@@ -1181,26 +1547,26 @@
       "name": "team_members",
       "schema": "",
       "columns": {
-        "personId": {
-          "name": "personId",
+        "person_id": {
+          "name": "person_id",
           "type": "varchar(10)",
           "primaryKey": true,
           "notNull": true
         },
         "specialties": {
           "name": "specialties",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },
         "achievements": {
           "name": "achievements",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },
-        "isAdmin": {
-          "name": "isAdmin",
+        "is_admin": {
+          "name": "is_admin",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
@@ -1209,15 +1575,15 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "team_members_personId_persons_id_fk": {
-          "name": "team_members_personId_persons_id_fk",
+        "team_members_person_id_persons_wca_id_fk": {
+          "name": "team_members_person_id_persons_wca_id_fk",
           "tableFrom": "team_members",
           "tableTo": "persons",
           "columnsFrom": [
-            "personId"
+            "person_id"
           ],
           "columnsTo": [
-            "id"
+            "wca_id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"

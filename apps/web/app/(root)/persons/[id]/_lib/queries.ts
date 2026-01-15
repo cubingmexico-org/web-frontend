@@ -5,8 +5,7 @@ import { db } from "@/db";
 import {
   championship,
   competition,
-  delegate,
-  organiser,
+  organizer,
   person,
   rankAverage,
   rankSingle,
@@ -51,9 +50,9 @@ export async function getPersonInfo(wcaId: string) {
       })
       .from(person)
       .leftJoin(state, eq(person.stateId, state.id))
-      .leftJoin(result, eq(person.id, result.personId))
+      .leftJoin(result, eq(person.wcaId, result.personId))
       .leftJoin(competition, eq(result.competitionId, competition.id))
-      .where(eq(person.id, wcaId))
+      .where(eq(person.wcaId, wcaId))
       .groupBy(state.name);
 
     return data[0] ?? null;
@@ -133,33 +132,16 @@ export async function getMembershipData(wcaId: string, eventIds: string[]) {
   }
 }
 
-export async function getIsDelegate(wcaId: string) {
+export async function getIsOrganizer(wcaId: string) {
   cacheLife("hours");
-  cacheTag(`is-delegate-${wcaId}`);
+  cacheTag(`is-organizer-${wcaId}`);
 
   try {
     const data = await db
       .select()
-      .from(delegate)
-      .where(and(eq(delegate.personId, wcaId), eq(delegate.status, "active")));
-
-    return data.length > 0;
-  } catch (err) {
-    console.error(err);
-    return false;
-  }
-}
-
-export async function getIsOrganiser(wcaId: string) {
-  cacheLife("hours");
-  cacheTag(`is-organiser-${wcaId}`);
-
-  try {
-    const data = await db
-      .select()
-      .from(organiser)
+      .from(organizer)
       .where(
-        and(eq(organiser.personId, wcaId), eq(organiser.status, "active")),
+        and(eq(organizer.personId, wcaId), eq(organizer.status, "active")),
       );
 
     return data.length > 0;

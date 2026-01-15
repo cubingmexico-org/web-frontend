@@ -8,7 +8,7 @@ import Link from "next/link";
 import React from "react";
 
 interface Member {
-  id: string;
+  wcaId: string;
   name: string | null;
   gender: "m" | "f" | "o" | null;
   state: string | null;
@@ -42,10 +42,10 @@ export function Members({ members }: MembersProps) {
   return (
     <>
       {sortedMembers.map((member) => (
-        <TableRow key={member.id}>
+        <TableRow key={member.wcaId}>
           <TableCell className="whitespace-nowrap">
             <div className="flex">
-              <Link href={`/persons/${member.id}`} className="font-medium">
+              <Link href={`/persons/${member.wcaId}`} className="font-medium">
                 {member.name}
               </Link>
             </div>

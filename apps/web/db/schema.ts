@@ -10,103 +10,155 @@ import {
   doublePrecision,
   boolean,
   jsonb,
+  index,
 } from "drizzle-orm/pg-core";
 
 // WCA
 
-export const competition = pgTable("competitions", {
-  id: varchar("id", { length: 32 }).primaryKey(),
-  name: varchar("name", { length: 50 }).notNull(),
-  cityName: varchar("cityName", { length: 50 }).notNull(),
-  countryId: varchar("countryId", { length: 50 }).notNull(),
-  information: text("information"),
-  startDate: timestamp("startDate").notNull(),
-  endDate: timestamp("endDate").notNull(),
-  cancelled: integer("cancelled").notNull().default(0),
-  // eventSpecs: text("eventSpecs"),
-  // wcaDelegate: text("wcaDelegate"),
-  // organiser: text("organiser"),
-  venue: varchar("venue", { length: 240 }).notNull(),
-  venueAddress: varchar("venueAddress", { length: 191 }),
-  venueDetails: varchar("venueDetails", { length: 191 }),
-  external_website: varchar("external_website", { length: 200 }),
-  cellName: varchar("cellName", { length: 45 }).notNull(),
-  latitude: integer("latitude"),
-  longitude: integer("longitude"),
-  // Cubing México
-  stateId: varchar("stateId", { length: 3 }).references(() => state.id, {
-    onDelete: "cascade",
-  }),
-});
+export const competition = pgTable(
+  "competitions",
+  {
+    id: varchar("id", { length: 32 }).primaryKey(),
+    name: varchar("name", { length: 50 }).notNull(),
+    information: text("information"),
+    externalWebsite: varchar("external_website", { length: 200 }),
+    venue: varchar("venue", { length: 240 }).notNull(),
+    cityName: varchar("city_name", { length: 50 }).notNull(),
+    countryId: varchar("country_id", { length: 50 }).notNull(),
+    venueAddress: varchar("venue_address", { length: 191 }),
+    venueDetails: varchar("venue_details", { length: 191 }),
+    cellName: varchar("cell_name", { length: 45 }).notNull(),
+    cancelled: boolean("cancelled").notNull().default(false),
+    // eventSpecs: text("event_specs"),
+    // delegates: text("delegates"),
+    // organizers: text("organizers"),
+    startDate: timestamp("start_date").notNull(),
+    endDate: timestamp("end_date").notNull(),
+    latitudeMicrodegrees: integer("latitude_microdegrees"),
+    longitudeMicrodegrees: integer("longitude_microdegrees"),
+    // Cubing México
+    stateId: varchar("state_id", { length: 3 }).references(() => state.id, {
+      onDelete: "cascade",
+    }),
+  },
+  (t) => [
+    index("competitions_state_idx").on(t.stateId),
+    index("competitions_date_idx").on(t.startDate, t.endDate),
+  ],
+);
 
 export type Competition = InferSelectModel<typeof competition>;
 
-export const championship = pgTable("championships", {
-  id: varchar("id", { length: 32 }).primaryKey(),
-  competitionId: varchar("competitionId", { length: 32 })
-    .references(() => competition.id, { onDelete: "cascade" })
-    .notNull(),
-  championshipType: varchar("championshipType", {
-    length: 50,
-  }).notNull(),
-});
+export const championship = pgTable(
+  "championships",
+  {
+    id: varchar("id", { length: 32 }).primaryKey(),
+    competitionId: varchar("competition_id", { length: 32 })
+      .references(() => competition.id, { onDelete: "cascade" })
+      .notNull(),
+    championshipType: varchar("championship_type", {
+      length: 50,
+    }).notNull(),
+  },
+  (t) => [index("championship_comp_idx").on(t.competitionId)],
+);
 
 export type Championship = InferSelectModel<typeof championship>;
 
 export const event = pgTable("events", {
   id: varchar("id", { length: 6 }).primaryKey(),
+  format: varchar("format", { length: 10 }).notNull(),
   name: varchar("name", { length: 54 }).notNull(),
   rank: integer("rank").notNull().default(0),
-  format: varchar("format", { length: 10 }).notNull(),
-  cellName: varchar("cellName", { length: 45 }).notNull(),
 });
 
 export type Event = InferSelectModel<typeof event>;
 
+export const roundType = pgTable("round_types", {
+  id: varchar("id", { length: 1 }).primaryKey(),
+  final: boolean("final").notNull().default(false),
+  name: varchar("name", { length: 256 }).notNull(),
+  rank: integer("rank").notNull().default(0),
+  cellName: varchar("cell_name", { length: 45 }).notNull(),
+});
+
+export type RoundType = InferSelectModel<typeof roundType>;
+
+export const formats = pgTable("formats", {
+  id: varchar("id", { length: 1 }).primaryKey(),
+  expectedSolveCount: smallint("expected_solve_count").notNull().default(0),
+  name: varchar("name", { length: 50 }).notNull(),
+  sortBy: varchar("sort_by", {
+    length: 10,
+    enum: ["single", "average"],
+  }).notNull(),
+  sortBySecond: varchar("sort_by_second", {
+    length: 10,
+    enum: ["single", "average"],
+  }),
+  trimFastestN: boolean("trim_fastest_n").notNull().default(false),
+  trimSlowestN: boolean("trim_slowest_n").notNull().default(false),
+});
+
+export type Formats = InferSelectModel<typeof formats>;
+
 export const competitionEvent = pgTable(
   "competition_events",
   {
-    competitionId: varchar("competitionId", { length: 32 })
+    competitionId: varchar("competition_id", { length: 32 })
       .references(() => competition.id, { onDelete: "cascade" })
       .notNull(),
-    eventId: varchar("eventId", { length: 6 })
+    eventId: varchar("event_id", { length: 6 })
       .references(() => event.id, { onDelete: "cascade" })
       .notNull(),
   },
-  (t) => [primaryKey({ columns: [t.competitionId, t.eventId] })],
+  (t) => [
+    primaryKey({ columns: [t.competitionId, t.eventId] }),
+    index("comp_event_event_idx").on(t.eventId),
+  ],
 );
 
 export type CompetitionEvent = InferSelectModel<typeof competitionEvent>;
 
-export const person = pgTable("persons", {
-  id: varchar("id", { length: 10 }).primaryKey(),
-  name: varchar("name", { length: 80 }),
-  gender: varchar("gender", { length: 1, enum: ["m", "f", "o"] }),
-  // Cubing México
-  stateId: varchar("stateId", { length: 3 }).references(() => state.id, {
-    onDelete: "cascade",
-  }),
-});
+export const person = pgTable(
+  "persons",
+  {
+    wcaId: varchar("wca_id", { length: 10 }).primaryKey(),
+    name: varchar("name", { length: 80 }),
+    gender: varchar("gender", { length: 1, enum: ["m", "f", "o"] }),
+    // Cubing México
+    stateId: varchar("state_id", { length: 3 }).references(() => state.id, {
+      onDelete: "cascade",
+    }),
+  },
+  (t) => [
+    index("person_name_idx").on(t.name),
+    index("person_state_idx").on(t.stateId),
+  ],
+);
 
 export type Person = InferSelectModel<typeof person>;
 
-export const organiser = pgTable("organisers", {
+export const organizer = pgTable("organizers", {
   id: varchar("id", { length: 128 }).primaryKey(),
-  personId: varchar("personId", { length: 10 }).references(() => person.id, {
-    onDelete: "cascade",
-  }),
+  personId: varchar("person_id", { length: 10 }).references(
+    () => person.wcaId,
+    {
+      onDelete: "cascade",
+    },
+  ),
   status: varchar("status", {
     length: 50,
     enum: ["active", "inactive"],
   }).default("active"),
 });
 
-export type Organiser = InferSelectModel<typeof organiser>;
+export type Organizer = InferSelectModel<typeof organizer>;
 
 export const delegate = pgTable("delegates", {
   id: varchar("id", { length: 128 }).primaryKey(),
-  personId: varchar("personId", { length: 10 })
-    .references(() => person.id, { onDelete: "cascade" })
+  personId: varchar("person_id", { length: 10 })
+    .references(() => person.wcaId, { onDelete: "cascade" })
     .notNull(),
   status: varchar("status", {
     length: 50,
@@ -116,30 +168,30 @@ export const delegate = pgTable("delegates", {
 
 export type Delegate = InferSelectModel<typeof delegate>;
 
-export const competitionOrganiser = pgTable(
-  "competition_organisers",
+export const competitionOrganizer = pgTable(
+  "competition_organizers",
   {
-    competitionId: varchar("competitionId", { length: 32 })
+    competitionId: varchar("competition_id", { length: 32 })
       .references(() => competition.id, { onDelete: "cascade" })
       .notNull(),
-    organiserId: varchar("organiserId", { length: 128 })
-      .references(() => organiser.id, { onDelete: "cascade" })
+    organizerId: varchar("organizer_id", { length: 128 })
+      .references(() => organizer.id, { onDelete: "cascade" })
       .notNull(),
   },
-  (t) => [primaryKey({ columns: [t.competitionId, t.organiserId] })],
+  (t) => [primaryKey({ columns: [t.competitionId, t.organizerId] })],
 );
 
-export type CompetitionOrganiser = InferSelectModel<
-  typeof competitionOrganiser
+export type CompetitionOrganizer = InferSelectModel<
+  typeof competitionOrganizer
 >;
 
 export const competitionDelegate = pgTable(
   "competition_delegates",
   {
-    competitionId: varchar("competitionId", { length: 32 })
+    competitionId: varchar("competition_id", { length: 32 })
       .references(() => competition.id, { onDelete: "cascade" })
       .notNull(),
-    delegateId: varchar("delegateId", { length: 128 })
+    delegateId: varchar("delegate_id", { length: 128 })
       .references(() => delegate.id, { onDelete: "cascade" })
       .notNull(),
   },
@@ -149,43 +201,49 @@ export const competitionDelegate = pgTable(
 export type CompetitionDelegate = InferSelectModel<typeof competitionDelegate>;
 
 export const rankAverage = pgTable(
-  "ranksAverage",
+  "ranks_average",
   {
-    personId: varchar("personId", { length: 10 })
+    best: integer("best").notNull().default(0),
+    personId: varchar("person_id", { length: 10 })
       .notNull()
-      .references(() => person.id, { onDelete: "cascade" }),
-    eventId: varchar("eventId", { length: 6 })
+      .references(() => person.wcaId, { onDelete: "cascade" }),
+    eventId: varchar("event_id", { length: 6 })
       .notNull()
       .references(() => event.id, { onDelete: "cascade" }),
-    best: integer("best").notNull().default(0),
-    worldRank: integer("worldRank").notNull().default(0),
-    continentRank: integer("continentRank").notNull().default(0),
-    countryRank: integer("countryRank").notNull().default(0),
+    worldRank: integer("world_rank").notNull().default(0),
+    continentRank: integer("continent_rank").notNull().default(0),
+    countryRank: integer("country_rank").notNull().default(0),
     // Cubing México
-    stateRank: integer("stateRank"),
+    stateRank: integer("state_rank"),
   },
-  (t) => [primaryKey({ columns: [t.personId, t.eventId] })],
+  (t) => [
+    primaryKey({ columns: [t.personId, t.eventId] }),
+    index("rank_avg_event_best_idx").on(t.eventId, t.best),
+  ],
 );
 
 export type RankAverage = InferSelectModel<typeof rankAverage>;
 
 export const rankSingle = pgTable(
-  "ranksSingle",
+  "ranks_single",
   {
-    personId: varchar("personId", { length: 10 })
+    best: integer("best").notNull().default(0),
+    personId: varchar("person_id", { length: 10 })
       .notNull()
-      .references(() => person.id, { onDelete: "cascade" }),
-    eventId: varchar("eventId", { length: 6 })
+      .references(() => person.wcaId, { onDelete: "cascade" }),
+    eventId: varchar("event_id", { length: 6 })
       .notNull()
       .references(() => event.id, { onDelete: "cascade" }),
-    best: integer("best").notNull().default(0),
-    worldRank: integer("worldRank").notNull().default(0),
-    continentRank: integer("continentRank").notNull().default(0),
-    countryRank: integer("countryRank").notNull().default(0),
+    worldRank: integer("world_rank").notNull().default(0),
+    continentRank: integer("continent_rank").notNull().default(0),
+    countryRank: integer("country_rank").notNull().default(0),
     // Cubing México
-    stateRank: integer("stateRank"),
+    stateRank: integer("state_rank"),
   },
-  (t) => [primaryKey({ columns: [t.personId, t.eventId] })],
+  (t) => [
+    primaryKey({ columns: [t.personId, t.eventId] }),
+    index("rank_sin_event_best_idx").on(t.eventId, t.best),
+  ],
 );
 
 export type RankSingle = InferSelectModel<typeof rankSingle>;
@@ -193,37 +251,49 @@ export type RankSingle = InferSelectModel<typeof rankSingle>;
 export const result = pgTable(
   "results",
   {
-    competitionId: varchar("competitionId", { length: 32 })
-      .notNull()
-      .references(() => competition.id, { onDelete: "cascade" }),
-    eventId: varchar("eventId", { length: 6 })
-      .notNull()
-      .references(() => event.id, { onDelete: "cascade" }),
-    roundTypeId: varchar("roundTypeId", { length: 1 }),
+    id: varchar("id", { length: 64 }).primaryKey(),
     pos: smallint("pos").default(0),
     best: integer("best").notNull().default(0),
     average: integer("average").notNull().default(0),
-    personId: varchar("personId", { length: 10 })
+    competitionId: varchar("competition_id", { length: 32 })
       .notNull()
-      .references(() => person.id, { onDelete: "cascade" }),
+      .references(() => competition.id, { onDelete: "cascade" }),
+    roundTypeId: varchar("round_type_id", { length: 1 }).references(
+      () => roundType.id,
+      { onDelete: "cascade" },
+    ),
+    eventId: varchar("event_id", { length: 6 })
+      .notNull()
+      .references(() => event.id, { onDelete: "cascade" }),
+    personId: varchar("person_id", { length: 10 })
+      .notNull()
+      .references(() => person.wcaId, { onDelete: "cascade" }),
     // personCountryId: varchar("personCountryId", { length: 50 }),
-    formatId: varchar("formatId", { length: 1 }).notNull(),
-    value1: integer("value1").notNull().default(0),
-    value2: integer("value2").notNull().default(0),
-    value3: integer("value3").notNull().default(0),
-    value4: integer("value4").notNull().default(0),
-    value5: integer("value5").notNull().default(0),
-    regionalSingleRecord: varchar("regionalSingleRecord", { length: 3 }),
-    regionalAverageRecord: varchar("regionalAverageRecord", { length: 3 }),
+    formatId: varchar("format_id", { length: 1 }).notNull(),
+    regionalSingleRecord: varchar("regional_single_record", { length: 3 }),
+    regionalAverageRecord: varchar("regional_average_record", { length: 3 }),
   },
   (t) => [
-    primaryKey({
-      columns: [t.competitionId, t.eventId, t.roundTypeId, t.pos],
-    }),
+    index("results_comp_event_idx").on(t.competitionId, t.eventId),
+    index("results_person_idx").on(t.personId),
   ],
 );
 
 export type Result = InferSelectModel<typeof result>;
+
+export const resultAttempts = pgTable(
+  "result_attempts",
+  {
+    value: integer("value").notNull().default(0),
+    attemptNumber: smallint("attempt_number").notNull(),
+    resultId: varchar("result_id", { length: 64 })
+      .notNull()
+      .references(() => result.id, { onDelete: "cascade" }),
+  },
+  (t) => [primaryKey({ columns: [t.resultId, t.attemptNumber] })],
+);
+
+export type ResultAttempts = InferSelectModel<typeof resultAttempts>;
 
 // Cubing México
 
@@ -238,13 +308,13 @@ export const team = pgTable("teams", {
   name: varchar("name", { length: 50 }).notNull(),
   description: text("description"),
   image: varchar("image", { length: 191 }),
-  coverImage: varchar("coverImage", { length: 191 }),
-  stateId: varchar("stateId", { length: 3 })
+  coverImage: varchar("cover_image", { length: 191 }),
+  stateId: varchar("state_id", { length: 3 })
     .notNull()
     .references(() => state.id, { onDelete: "cascade" })
     .primaryKey(),
   founded: timestamp("founded"),
-  socialLinks: jsonb("socialLinks").$type<{
+  socialLinks: jsonb("social_links").$type<{
     email?: string;
     whatsapp?: string;
     facebook?: string;
@@ -252,27 +322,27 @@ export const team = pgTable("teams", {
     twitter?: string;
     tiktok?: string;
   }>(),
-  isActive: boolean("isActive").notNull().default(true),
+  isActive: boolean("is_active").notNull().default(true),
 });
 
 export type Team = InferSelectModel<typeof team>;
 
 export const teamMember = pgTable("team_members", {
-  personId: varchar("personId", { length: 10 })
+  personId: varchar("person_id", { length: 10 })
     .notNull()
-    .references(() => person.id, {
+    .references(() => person.wcaId, {
       onDelete: "cascade",
     })
     .primaryKey(),
   specialties: jsonb("specialties").$type<string[]>(),
   achievements: jsonb("achievements").$type<string[]>(),
-  isAdmin: boolean("isAdmin").notNull().default(false),
+  isAdmin: boolean("is_admin").notNull().default(false),
 });
 
 export type TeamMember = InferSelectModel<typeof teamMember>;
 
 export const teamAchievement = pgTable("team_achievements", {
-  stateId: varchar("stateId", { length: 3 })
+  stateId: varchar("state_id", { length: 3 })
     .notNull()
     .references(() => state.id, { onDelete: "cascade" })
     .primaryKey(),
@@ -284,13 +354,13 @@ export const teamAchievement = pgTable("team_achievements", {
 export type TeamAchievement = InferSelectModel<typeof teamAchievement>;
 
 export const sumOfRanks = pgTable(
-  "sumOfRanks",
+  "sum_of_ranks",
   {
     rank: integer("rank").notNull(),
-    personId: varchar("personId", { length: 10 })
+    personId: varchar("person_id", { length: 10 })
       .notNull()
-      .references(() => person.id, { onDelete: "cascade" }),
-    resultType: varchar("resultType", { length: 7 }).notNull(),
+      .references(() => person.wcaId, { onDelete: "cascade" }),
+    resultType: varchar("result_type", { length: 7 }).notNull(),
     overall: integer("overall").notNull(),
     events: jsonb("events").notNull(),
   },
@@ -300,12 +370,12 @@ export const sumOfRanks = pgTable(
 export type SumOfRanks = InferSelectModel<typeof sumOfRanks>;
 
 export const kinchRanks = pgTable(
-  "kinchRanks",
+  "kinch_ranks",
   {
     rank: integer("rank").notNull(),
-    personId: varchar("personId", { length: 10 })
+    personId: varchar("person_id", { length: 10 })
       .notNull()
-      .references(() => person.id, { onDelete: "cascade" }),
+      .references(() => person.wcaId, { onDelete: "cascade" }),
     overall: doublePrecision("overall").notNull(),
     events: jsonb("events").notNull(),
   },
@@ -314,10 +384,10 @@ export const kinchRanks = pgTable(
 
 export type KinchRanks = InferSelectModel<typeof kinchRanks>;
 
-export const exportMetadata = pgTable("exportMetadata", {
+export const exportMetadata = pgTable("export_metadata", {
   key: text("key").primaryKey(),
   value: text("value"),
-  updatedAt: timestamp("updatedAt").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const sponsor = pgTable("sponsors", {
@@ -325,7 +395,7 @@ export const sponsor = pgTable("sponsors", {
   name: varchar("name", { length: 50 }).notNull(),
   description: text("description"),
   logo: varchar("logo", { length: 191 }),
-  socialLinks: jsonb("socialLinks").$type<{
+  socialLinks: jsonb("social_links").$type<{
     email?: string;
     whatsapp?: string;
     facebook?: string;

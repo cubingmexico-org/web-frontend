@@ -131,7 +131,7 @@ export function HeaderNavigationMenu() {
                 </NavigationMenuLink>
                 <NavigationMenuLink asChild>
                   <Link
-                    href="/organisers"
+                    href="/organizers"
                     className="flex-row items-center gap-2"
                   >
                     <Users className="size-4" />

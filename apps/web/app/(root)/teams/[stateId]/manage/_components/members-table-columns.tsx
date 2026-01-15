@@ -84,7 +84,7 @@ export function getColumns({
           <div className="flex space-x-2 w-72">
             <Link
               className="hover:underline text-accent-foreground"
-              href={`/persons/${row.original.id}`}
+              href={`/persons/${row.original.wcaId}`}
             >
               {row.getValue("name")}
             </Link>

@@ -63,7 +63,7 @@ export async function getPersons() {
   try {
     return await db
       .select({
-        id: person.id,
+        wcaId: person.wcaId,
         name: person.name,
       })
       .from(person)
@@ -93,7 +93,7 @@ export async function getCompetitions() {
   }
 }
 
-export async function getCurrentUserTeam({ userId }: { userId: Person["id"] }) {
+export async function getCurrentUserTeam({ userId }: { userId: Person["wcaId"] }) {
   cacheLife("hours");
   cacheTag(`current-user-team-${userId}`);
 
@@ -105,7 +105,7 @@ export async function getCurrentUserTeam({ userId }: { userId: Person["id"] }) {
       })
       .from(person)
       .innerJoin(team, eq(person.stateId, team.stateId))
-      .where(eq(person.id, userId))
+      .where(eq(person.wcaId, userId))
       .then((res) => res[0])) as {
       id: string;
       name: string;
@@ -126,7 +126,7 @@ export async function getPerson(id: string) {
         name: person.name,
       })
       .from(person)
-      .where(eq(person.id, id));
+      .where(eq(person.wcaId, id));
     return res[0];
   } catch (err) {
     console.error(err);
@@ -191,7 +191,7 @@ export async function saveProfile({
   personId,
 }: {
   stateId: State["id"];
-  personId: Person["id"];
+  personId: Person["wcaId"];
 }) {
   try {
     await db
@@ -199,7 +199,7 @@ export async function saveProfile({
       .set({
         stateId,
       })
-      .where(eq(person.id, personId));
+      .where(eq(person.wcaId, personId));
   } catch (error) {
     console.error("Failed to save profile in database");
     throw error;
@@ -281,7 +281,7 @@ export async function addMember({
   achievements,
 }: {
   stateId: State["id"];
-  personId: Person["id"];
+  personId: Person["wcaId"];
   specialties: TeamMember["specialties"];
   achievements: TeamMember["achievements"];
 }) {
@@ -291,7 +291,7 @@ export async function addMember({
       .set({
         stateId,
       })
-      .where(eq(person.id, personId));
+      .where(eq(person.wcaId, personId));
 
     await db
       .insert(teamMember)
@@ -356,7 +356,7 @@ export async function getPersonsWithoutState({ search }: { search: string }) {
   try {
     return await db
       .select({
-        id: person.id,
+        id: person.wcaId,
         name: person.name,
       })
       .from(person)
@@ -365,7 +365,7 @@ export async function getPersonsWithoutState({ search }: { search: string }) {
           isNull(person.stateId),
           or(
             ilike(person.name, `%${search}%`),
-            ilike(person.id, `%${search}%`),
+            ilike(person.wcaId, `%${search}%`),
           ),
         ),
       )

@@ -23,62 +23,62 @@ export async function getKinchRanksState(
     const data = await db.execute(sql`
               WITH PersonalRecords AS (
                 SELECT
-                  "personId",
-                  "eventId",
+                  person_id,
+                  event_id,
                   MIN(best) AS personal_best,
                   'average' AS type
-                FROM "ranksAverage"
-                WHERE "eventId" NOT IN (${sql.join(EXCLUDED_EVENTS, sql`, `)})
-                GROUP BY "personId", "eventId"
+                FROM ranks_average
+                WHERE event_id NOT IN (${sql.join(EXCLUDED_EVENTS, sql`, `)})
+                GROUP BY person_id, event_id
                 UNION ALL
                 SELECT
-                  "personId",
-                  "eventId",
+                  person_id,
+                  event_id,
                   MIN(best) AS personal_best,
                   'single' AS type
-                FROM "ranksSingle"
-                WHERE "eventId" IN (${sql.join(SINGLE_EVENTS, sql`, `)})
-                GROUP BY "personId", "eventId"
+                FROM ranks_single
+                WHERE event_id IN (${sql.join(SINGLE_EVENTS, sql`, `)})
+                GROUP BY person_id, event_id
               ),
               StateRecords AS (
                 SELECT
-                  r."eventId",
+                  r.event_id,
                   MIN(r.best) AS state_best,
                   'average' AS type
-                FROM "ranksAverage" r
-                JOIN "persons" p ON r."personId" = p.id
-                WHERE r."stateRank" = 1
-                  AND p."stateId" = ${stateId}
-                  AND r."eventId" NOT IN (${sql.join(EXCLUDED_EVENTS, sql`, `)})
-                GROUP BY r."eventId"
+                FROM ranks_average r
+                JOIN persons p ON r.person_id = p.wca_id
+                WHERE r.state_rank = 1
+                  AND p.state_id = ${stateId}
+                  AND r.event_id NOT IN (${sql.join(EXCLUDED_EVENTS, sql`, `)})
+                GROUP BY r.event_id
                 UNION ALL
                 SELECT
-                  r."eventId",
+                  r.event_id,
                   MIN(r.best) AS state_best,
                   'single' AS type
-                FROM "ranksSingle" r
-                JOIN "persons" p ON r."personId" = p.id
-                WHERE r."stateRank" = 1
-                  AND p."stateId" = ${stateId}
-                  AND r."eventId" IN (${sql.join(SINGLE_EVENTS, sql`, `)})
-                GROUP BY r."eventId"
+                FROM ranks_single r
+                JOIN persons p ON r.person_id = p.wca_id
+                WHERE r.state_rank = 1
+                  AND p.state_id = ${stateId}
+                  AND r.event_id IN (${sql.join(SINGLE_EVENTS, sql`, `)})
+                GROUP BY r.event_id
               ),
               Persons AS (
                 SELECT 
-                  id AS "personId",
+                  wca_id AS person_id,
                   name
-                FROM "persons"
-                WHERE "stateId" = ${stateId}
+                FROM persons
+                WHERE state_id = ${stateId}
               ),
               Events AS (
                 SELECT id, rank
-                FROM "events"
+                FROM events
                 WHERE id NOT IN (${sql.join(EXCLUDED_EVENTS, sql`, `)})
               ),
               Ratios AS (
                 SELECT  
-                  p."personId",
-                  e.id AS "eventId",
+                  p.person_id,
+                  e.id AS event_id,
                   e.rank,
                   MAX(
                     CASE 
@@ -99,24 +99,24 @@ export async function getKinchRanksState(
                   ) AS best_ratio
                 FROM Persons p
                 CROSS JOIN Events e
-                LEFT JOIN PersonalRecords pr ON p."personId" = pr."personId" AND e.id = pr."eventId"
-                LEFT JOIN StateRecords sr ON e.id = sr."eventId" AND pr.type = sr.type
-                GROUP BY p."personId", e.id, e.rank
+                LEFT JOIN PersonalRecords pr ON p.person_id = pr.person_id AND e.id = pr.event_id
+                LEFT JOIN StateRecords sr ON e.id = sr.event_id AND pr.type = sr.type
+                GROUP BY p.person_id, e.id, e.rank
               )
               SELECT 
-                p."personId" AS id,
+                p.person_id AS id,
                 p.name,
                 json_agg(
                   json_build_object(
-                    'eventId', r."eventId",
+                    'eventId', r.event_id,
                     'ratio', r.best_ratio
                   )
                   ORDER BY r.rank
                 ) AS events,
                 AVG(r.best_ratio) AS overall
               FROM Ratios r
-              JOIN Persons p ON r."personId" = p."personId"
-              GROUP BY p."personId", p.name
+              JOIN Persons p ON r.person_id = p.person_id
+              GROUP BY p.person_id, p.name
               ORDER BY overall DESC;
             `);
 

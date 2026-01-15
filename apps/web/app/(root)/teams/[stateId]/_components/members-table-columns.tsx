@@ -17,7 +17,7 @@ export function getColumns({
 }: GetColumnsProps): ColumnDef<Member>[] {
   return [
     {
-      accessorKey: "id",
+      accessorKey: "wcaId",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="WCA ID" />
       ),
@@ -26,11 +26,11 @@ export function getColumns({
           <div>
             <Link
               className="hover:underline text-accent-foreground"
-              href={`https://www.worldcubeassociation.org/persons/${row.getValue("id")}`}
+              href={`https://www.worldcubeassociation.org/persons/${row.getValue("wcaId")}`}
               target="_blank"
               rel="noopener noreferrer"
             >
-              {row.getValue("id")}
+              {row.getValue("wcaId")}
             </Link>
           </div>
         );
@@ -48,7 +48,7 @@ export function getColumns({
           <div className="flex space-x-2 whitespace-nowrap">
             <Link
               className="hover:underline text-accent-foreground"
-              href={`/persons/${row.original.id}`}
+              href={`/persons/${row.original.wcaId}`}
             >
               {row.getValue("name")}
             </Link>

@@ -13,10 +13,10 @@ export async function getNumberOfPersons() {
   try {
     const total = (await db
       .select({
-        count: countDistinct(person.id),
+        count: countDistinct(person.wcaId),
       })
       .from(person)
-      .innerJoin(result, and(eq(person.id, result.personId)))
+      .innerJoin(result, and(eq(person.wcaId, result.personId)))
       .innerJoin(competition, and(eq(competition.id, result.competitionId)))
       .where(and(eq(competition.countryId, "Mexico")))
       .execute()

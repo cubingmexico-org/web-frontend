@@ -52,7 +52,7 @@ export function MembersTableActionBar({
     setCurrentAction("delete");
     startTransition(async () => {
       const { error } = await deleteMembers({
-        ids: rows.map((row) => row.original.id),
+        ids: rows.map((row) => row.original.wcaId),
         stateId,
       });
 

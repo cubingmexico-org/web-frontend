@@ -1,5 +1,5 @@
 export interface Person {
-  id: string;
+  wcaId: string;
   name: string | null;
   gender: string | null;
   state: string | null;

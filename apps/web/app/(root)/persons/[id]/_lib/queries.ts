@@ -6,7 +6,7 @@ import {
   championship,
   competition,
   delegate,
-  organiser,
+  organizer,
   person,
   rankAverage,
   rankSingle,
@@ -51,9 +51,9 @@ export async function getPersonInfo(wcaId: string) {
       })
       .from(person)
       .leftJoin(state, eq(person.stateId, state.id))
-      .leftJoin(result, eq(person.id, result.personId))
+      .leftJoin(result, eq(person.wcaId, result.personId))
       .leftJoin(competition, eq(result.competitionId, competition.id))
-      .where(eq(person.id, wcaId))
+      .where(eq(person.wcaId, wcaId))
       .groupBy(state.name);
 
     return data[0] ?? null;
@@ -150,16 +150,16 @@ export async function getIsDelegate(wcaId: string) {
   }
 }
 
-export async function getIsOrganiser(wcaId: string) {
+export async function getIsOrganizer(wcaId: string) {
   cacheLife("hours");
-  cacheTag(`is-organiser-${wcaId}`);
+  cacheTag(`is-organizer-${wcaId}`);
 
   try {
     const data = await db
       .select()
-      .from(organiser)
+      .from(organizer)
       .where(
-        and(eq(organiser.personId, wcaId), eq(organiser.status, "active")),
+        and(eq(organizer.personId, wcaId), eq(organizer.status, "active")),
       );
 
     return data.length > 0;

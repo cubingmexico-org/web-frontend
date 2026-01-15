@@ -13,13 +13,13 @@ export async function getProfile(userId: string) {
   try {
     const persons = await db
       .select({
-        id: person.id,
+        wcaId: person.wcaId,
         name: person.name,
         gender: person.gender,
         stateId: person.stateId,
       })
       .from(person)
-      .where(eq(person.id, userId));
+      .where(eq(person.wcaId, userId));
 
     return persons.length > 0 ? persons[0] : null;
   } catch (err) {

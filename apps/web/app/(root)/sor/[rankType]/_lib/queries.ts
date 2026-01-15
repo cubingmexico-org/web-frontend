@@ -56,7 +56,7 @@ export async function getSOR(
           gender: person.gender,
         })
         .from(sumOfRanks)
-        .innerJoin(person, eq(sumOfRanks.personId, person.id))
+        .innerJoin(person, eq(sumOfRanks.personId, person.wcaId))
         .leftJoin(state, eq(person.stateId, state.id))
         .limit(input.perPage)
         .offset(offset)
@@ -68,7 +68,7 @@ export async function getSOR(
           count: count(),
         })
         .from(sumOfRanks)
-        .innerJoin(person, eq(sumOfRanks.personId, person.id))
+        .innerJoin(person, eq(sumOfRanks.personId, person.wcaId))
         .leftJoin(state, eq(person.stateId, state.id))
         .where(where)
         .execute()
@@ -99,7 +99,7 @@ export async function getSORStateCounts(rankType: "single" | "average") {
         count: count(),
       })
       .from(sumOfRanks)
-      .innerJoin(person, eq(sumOfRanks.personId, person.id))
+      .innerJoin(person, eq(sumOfRanks.personId, person.wcaId))
       .leftJoin(state, eq(person.stateId, state.id))
       .where(eq(sumOfRanks.resultType, rankType))
       .groupBy(state.name)
@@ -132,7 +132,7 @@ export async function getSORGenderCounts(rankType: "single" | "average") {
         count: count(),
       })
       .from(sumOfRanks)
-      .innerJoin(person, eq(sumOfRanks.personId, person.id))
+      .innerJoin(person, eq(sumOfRanks.personId, person.wcaId))
       .where(eq(sumOfRanks.resultType, rankType))
       .groupBy(person.gender)
       .having(gt(count(), 0))

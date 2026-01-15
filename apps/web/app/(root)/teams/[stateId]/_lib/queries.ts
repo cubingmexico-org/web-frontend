@@ -85,8 +85,8 @@ export async function getTeamCompetitions(stateId: string) {
         venue: competition.venue,
         startDate: competition.startDate,
         endDate: competition.endDate,
-        latitude: competition.latitude,
-        longitude: competition.longitude,
+        latitudeMicrodegrees: competition.latitudeMicrodegrees,
+        longitudeMicrodegrees: competition.longitudeMicrodegrees,
       })
       .from(competition)
       .where(eq(competition.stateId, stateId))
@@ -105,7 +105,7 @@ export async function getTeamPodiums(stateId: string) {
     return await db
       .select({ pos: result.pos })
       .from(result)
-      .innerJoin(person, eq(result.personId, person.id))
+      .innerJoin(person, eq(result.personId, person.wcaId))
       .where(
         and(
           eq(person.stateId, stateId),
@@ -128,7 +128,7 @@ export async function getSingleNationalRecords(stateId: string) {
     return await db
       .select({ eventId: rankSingle.eventId })
       .from(rankSingle)
-      .innerJoin(person, eq(rankSingle.personId, person.id))
+      .innerJoin(person, eq(rankSingle.personId, person.wcaId))
       .where(and(eq(person.stateId, stateId), eq(rankSingle.countryRank, 1)));
   } catch (err) {
     console.error(err);
@@ -144,7 +144,7 @@ export async function getAverageNationalRecords(stateId: string) {
     return await db
       .select({ eventId: rankAverage.eventId })
       .from(rankAverage)
-      .innerJoin(person, eq(rankAverage.personId, person.id))
+      .innerJoin(person, eq(rankAverage.personId, person.wcaId))
       .where(and(eq(person.stateId, stateId), eq(rankAverage.countryRank, 1)));
   } catch (err) {
     console.error(err);
@@ -183,8 +183,8 @@ export async function getMembers(
                   : asc(teamMember.isAdmin);
               case "stateRecords":
                 return item.desc
-                  ? desc(sql`"stateRecords"`)
-                  : asc(sql`"stateRecords"`);
+                  ? desc(sql`"state_records"`)
+                  : asc(sql`"state_records"`);
               case "podiums":
                 return item.desc ? desc(sql`"podiums"`) : asc(sql`"podiums"`);
               case "specialties": // TODO: Fix this
@@ -200,7 +200,7 @@ export async function getMembers(
     const { data, total } = await db.transaction(async (tx) => {
       const data = await tx
         .select({
-          id: person.id,
+          wcaId: person.wcaId,
           name: person.name,
           gender: person.gender,
           isAdmin: teamMember.isAdmin,
@@ -215,26 +215,26 @@ export async function getMembers(
           stateRecords: sql`(
                 SELECT CAST((
                   (SELECT COUNT(*)
-                    FROM "ranksSingle"
-                    WHERE "personId" = ${person.id}
-                    AND "stateRank" = 1)
+                    FROM ranks_single
+                    WHERE person_id = ${person.wcaId}
+                    AND state_rank = 1)
                   +
                   (SELECT COUNT(*)
-                    FROM "ranksAverage"
-                    WHERE "personId" = ${person.id}
-                    AND "stateRank" = 1)
+                    FROM ranks_average
+                    WHERE person_id = ${person.wcaId}
+                    AND state_rank = 1)
                 ) AS INTEGER) AS stateRecords
               )`.as("stateRecords"),
           specialties: teamMember.specialties,
         })
         .from(person)
-        .leftJoin(teamMember, eq(person.id, teamMember.personId))
-        .innerJoin(result, eq(person.id, result.personId))
+        .leftJoin(teamMember, eq(person.wcaId, teamMember.personId))
+        .innerJoin(result, eq(person.wcaId, result.personId))
         .limit(input.perPage)
         .offset(offset)
         .where(where)
         .groupBy(
-          person.id,
+          person.wcaId,
           person.name,
           person.gender,
           teamMember.isAdmin,
@@ -247,7 +247,7 @@ export async function getMembers(
           count: count(),
         })
         .from(person)
-        .leftJoin(teamMember, eq(person.id, teamMember.personId))
+        .leftJoin(teamMember, eq(person.wcaId, teamMember.personId))
         .where(where)
         .execute()
         .then((res) => res[0]?.count ?? 0)) as number;
@@ -304,15 +304,15 @@ export async function getIsTeamAdmin(stateId: string, personId: string) {
   try {
     const admin = await db
       .select({
-        id: person.id,
+        id: person.wcaId,
       })
       .from(person)
-      .leftJoin(teamMember, eq(person.id, teamMember.personId))
+      .leftJoin(teamMember, eq(person.wcaId, teamMember.personId))
       .where(
         and(
           eq(person.stateId, stateId),
           eq(teamMember.isAdmin, true),
-          eq(person.id, personId),
+          eq(person.wcaId, personId),
         ),
       );
 

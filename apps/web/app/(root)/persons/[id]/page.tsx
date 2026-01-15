@@ -32,7 +32,7 @@ import { getStatesGeoJSON } from "@/db/queries";
 import {
   getAverageStateRanks,
   getIsDelegate,
-  getIsOrganiser,
+  getIsOrganizer,
   getMembershipData,
   getPersonInfo,
   getSingleStateRanks,
@@ -92,7 +92,7 @@ export default async function Page({
     averageStateRanks,
     membershipData,
     isDelegate,
-    isOrganiser,
+    isOrganizer,
   ] = await Promise.all([
     getSingleStateRanks(id),
     getAverageStateRanks(id),
@@ -101,7 +101,7 @@ export default async function Page({
       events.map((event) => event.id),
     ),
     getIsDelegate(id),
-    getIsOrganiser(id),
+    getIsOrganizer(id),
   ]);
 
   const tier = getTier(membershipData);
@@ -158,7 +158,7 @@ export default async function Page({
                 : null}
           </Badge>
         )}
-        {isOrganiser && (
+        {isOrganizer && (
           <Badge variant="outline">
             {wcaData?.person.gender === "m"
               ? "Organizador"

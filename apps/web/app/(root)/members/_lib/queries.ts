@@ -20,7 +20,7 @@ export async function getMollerzMembers() {
 
     const members = await db
       .select({
-        id: person.id,
+        wcaId: person.wcaId,
         name: person.name,
         gender: person.gender,
         state: state.name,
@@ -31,7 +31,7 @@ export async function getMollerzMembers() {
         eventsWon: sql<number>`COUNT(DISTINCT CASE WHEN ${result.pos} = 1 AND ${result.roundTypeId} IN('f', 'c') THEN ${result.eventId} ELSE NULL END)`,
       })
       .from(person)
-      .innerJoin(result, eq(person.id, result.personId))
+      .innerJoin(result, eq(person.wcaId, result.personId))
       .leftJoin(state, eq(person.stateId, state.id))
       .leftJoin(
         championship,
@@ -46,7 +46,7 @@ export async function getMollerzMembers() {
           gt(result.best, 0),
         ),
       )
-      .groupBy(person.id, person.name, person.gender, state.name)
+      .groupBy(person.wcaId, person.name, person.gender, state.name)
       .having(eq(countDistinct(result.eventId), events.length));
     return members;
   } catch (error) {

@@ -1,7 +1,7 @@
 import { Person, TeamMember } from "@/db/schema";
 
 export interface Member {
-  id: Person["id"];
+  wcaId: Person["wcaId"];
   name: Person["name"];
   gender: Person["gender"];
   isAdmin: TeamMember["isAdmin"] | null;

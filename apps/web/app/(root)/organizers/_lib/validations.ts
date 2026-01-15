@@ -7,7 +7,7 @@ import {
 } from "nuqs/server";
 import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers";
 import type { Person } from "../_types";
-import { organiser, person } from "@/db/schema";
+import { organizer, person } from "@/db/schema";
 
 export const searchParamsCache = createSearchParamsCache({
   page: parseAsInteger.withDefault(1),
@@ -21,13 +21,13 @@ export const searchParamsCache = createSearchParamsCache({
     parseAsStringEnum(person.gender.enumValues),
   ).withDefault([]),
   status: parseAsArrayOf(
-    parseAsStringEnum(organiser.status.enumValues),
+    parseAsStringEnum(organizer.status.enumValues),
   ).withDefault([]),
   // advanced filter
   filters: getFiltersStateParser().withDefault([]),
   joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
 });
 
-export type GetOrganisersSchema = Awaited<
+export type GetOrganizersSchema = Awaited<
   ReturnType<typeof searchParamsCache.parse>
 >;

@@ -72,7 +72,7 @@ export async function deleteMember(input: { id: string }) {
       await tx
         .update(person)
         .set({ stateId: null })
-        .where(eq(person.id, input.id));
+        .where(eq(person.wcaId, input.id));
     });
 
     updateTag("members");
@@ -99,7 +99,7 @@ export async function deleteMembers(input: { ids: string[]; stateId: string }) {
       await tx
         .update(person)
         .set({ stateId: null })
-        .where(inArray(person.id, input.ids));
+        .where(inArray(person.wcaId, input.ids));
     });
 
     updateTag("members");

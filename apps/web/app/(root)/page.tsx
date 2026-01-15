@@ -49,7 +49,7 @@ export default function Page() {
       <section className="text-muted-foreground body-font">
         <div className="container px-5 py-24 mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-            <Link href="/rankings/333/single">
+            <Link href="/rankings/333/single?state=Jalisco">
               <Card className="p-4 transition-all hover:border-primary hover:shadow-md">
                 <CardHeader>
                   <CardTitle className="text-lg text-primary font-medium title-font mb-4">

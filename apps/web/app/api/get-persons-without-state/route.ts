@@ -1,9 +1,10 @@
-import { NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { getPersonsWithoutState } from "@/db/queries";
 
-export async function GET(request: Request): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
-    const search = new URL(request.url).searchParams.get("search") || "";
+    const searchParams = request.nextUrl.searchParams;
+    const search = searchParams.get("search");
 
     const results = await getPersonsWithoutState({
       search: search || "",

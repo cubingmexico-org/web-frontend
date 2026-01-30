@@ -4,17 +4,26 @@ import {
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
-import { auth } from "@/auth";
 import "@cubing/icons";
 import { getCompetitionsManagedByUser } from "@/db/queries";
 import { CompetitionList } from "@/components/competition-list";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 export default async function Page(): Promise<React.JSX.Element> {
-  const session = await auth();
+  const headersList = await headers();
+
+  const tokenData = await auth.api.getAccessToken({
+    body: {
+      providerId: "wca",
+    },
+    headers: headersList,
+  });
 
   const competitions = await getCompetitionsManagedByUser({
-    token: session?.token,
+    token: tokenData?.accessToken || "",
   });
+
   const currentDate = new Date();
   const upcomingCompetitions = competitions.filter(
     (competition) =>

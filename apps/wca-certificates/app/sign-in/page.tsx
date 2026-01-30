@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { UserAuthForm } from "@/components/user-auth-form";
 import { CubingMexico } from "@workspace/icons";
+import { SignIn } from "@/components/auth-components";
 
 export default function Page(): React.JSX.Element {
   return (
@@ -18,7 +18,7 @@ export default function Page(): React.JSX.Element {
             </p>
           </div>
           <div className="grid gap-4">
-            <UserAuthForm />
+            <SignIn />
           </div>
           <div className="mt-4 text-center text-sm">
             <p>¿No tienes cuenta de la World Cube Association?</p>

@@ -1,18 +1,41 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
-  "globalEnv": ["URL", "NEXTAUTH_SECRET", "CRON_SECRET", "WCA_CLIENT_ID", "WCA_CLIENT_SECRET", "NODE_ENV", "DATABASE_URL", "UPLOADTHING_TOKEN", "API_ENDPOINT"],
+  "globalEnv": [
+    "URL",
+    "NEXTAUTH_SECRET",
+    "CRON_SECRET",
+    "WCA_CLIENT_ID",
+    "WCA_CLIENT_SECRET",
+    "NODE_ENV",
+    "DATABASE_URL",
+    "UPLOADTHING_TOKEN",
+    "API_URL",
+    "BETTER_AUTH_URL"
+  ],
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*"
+      ],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**"
+      ]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": [
+        "^lint"
+      ]
     },
     "check-types": {
-      "dependsOn": ["^check-types"]
+      "dependsOn": [
+        "^check-types"
+      ]
     },
     "dev": {
       "cache": false,

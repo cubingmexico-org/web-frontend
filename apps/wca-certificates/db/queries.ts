@@ -96,7 +96,7 @@ export interface Team {
 
 export async function getTeams(): Promise<Team[]> {
   try {
-    const res = await fetch(`${process.env.API_ENDPOINT}/teams`, {
+    const res = await fetch(`${process.env.API_URL}/teams`, {
       next: { revalidate: 3600 },
     });
 
@@ -116,7 +116,7 @@ export interface State {
 
 export async function getStates(): Promise<State[]> {
   try {
-    const res = await fetch(`${process.env.API_ENDPOINT}/states`, {
+    const res = await fetch(`${process.env.API_URL}/states`, {
       next: { revalidate: false },
     });
 
@@ -137,7 +137,7 @@ export async function getCompetitorStates(competitionId: string): Promise<
 > {
   try {
     const res = await fetch(
-      `${process.env.API_ENDPOINT}/competitor-states/${competitionId}`,
+      `${process.env.API_URL}/competitor-states/${competitionId}`,
       {
         next: { revalidate: 3600 },
       },

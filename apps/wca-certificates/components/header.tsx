@@ -9,9 +9,9 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@workspace/ui/components/avatar";
-import type { User } from "next-auth";
 import { SignOut } from "./auth-components";
 import { CubingMexico } from "@workspace/icons";
+import type { User } from "better-auth";
 
 export function Header({ user }: { user: User }) {
   return (

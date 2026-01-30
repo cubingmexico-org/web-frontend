@@ -131,7 +131,7 @@ export async function getStates(): Promise<State[]> {
 
 export async function getCompetitorStates(competitionId: string): Promise<
   {
-    id: string;
+    wcaId: string;
     stateId: string | null;
   }[]
 > {

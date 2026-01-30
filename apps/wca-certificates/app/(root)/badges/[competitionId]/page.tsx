@@ -41,7 +41,7 @@ export default async function Page({
   const competitorStates = await getCompetitorStates(competitionId);
 
   const extendedPersons = persons.map((person) => {
-    const state = competitorStates.find((state) => state.id === person.wcaId);
+    const state = competitorStates.find((state) => state.wcaId === person.wcaId);
 
     return {
       ...person,

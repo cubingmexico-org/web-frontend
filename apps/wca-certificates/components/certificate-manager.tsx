@@ -798,7 +798,7 @@ export function CertificateManager({
             <ChevronRight className="h-4 w-4" />
           </BreadcrumbSeparator>
           <BreadcrumbItem>
-            <BreadcrumbLink className="max-w-[200px] truncate">
+            <BreadcrumbLink className="max-w-50 truncate">
               {competition.name}
             </BreadcrumbLink>
           </BreadcrumbItem>

@@ -15,8 +15,9 @@ import {
 } from "@workspace/ui/components/popover";
 import { es } from "react-day-picker/locale";
 
-interface DateRangePickerProps
-  extends React.ComponentPropsWithoutRef<typeof PopoverContent> {
+interface DateRangePickerProps extends React.ComponentPropsWithoutRef<
+  typeof PopoverContent
+> {
   /**
    * The selected date range.
    * @default undefined

@@ -67,6 +67,10 @@ export async function getCompetitionById({
       `https://www.worldcubeassociation.org/api/v0/competitions/${id}`,
     );
 
+    if (!res.ok) {
+      throw new Error("Failed to fetch data");
+    }
+
     const data = await res.json();
 
     return data;

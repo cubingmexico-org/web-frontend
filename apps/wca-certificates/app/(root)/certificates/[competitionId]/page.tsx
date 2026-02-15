@@ -1,5 +1,8 @@
 import { CertificateManager } from "@/components/certificate-manager";
 import { getCompetitionById, getWCIFByCompetitionId } from "@/db/queries";
+import Link from "next/link";
+
+import { notFound } from "next/navigation";
 
 type Params = Promise<{ competitionId: string }>;
 
@@ -15,7 +18,7 @@ export default async function Page({
   });
 
   if (!competition) {
-    throw new Error("Competition not found");
+    notFound();
   }
 
   const wcif = await getWCIFByCompetitionId({
@@ -23,7 +26,33 @@ export default async function Page({
   });
 
   if (!wcif) {
-    throw new Error("WCIF not found");
+    return (
+      <main className="container mx-auto px-4 py-8 max-w-2xl">
+        <div className="border rounded-lg p-6 shadow-sm">
+          <h2 className="text-2xl font-bold mb-4 text-center">
+            WCIF no disponible
+          </h2>
+          <div className="space-y-4">
+            <p className="leading-relaxed">
+              No se pudo encontrar el WCIF para esta competencia. Por favor, asegúrate
+              de que el WCIF esté disponible antes de intentar generar certificados.
+            </p>
+            <p className="leading-relaxed">
+              Si eres el organizador de esta competencia, entra a{" "}
+              <Link
+                href="https://live.worldcubeassociation.org/my-competitions"
+                className="underline font-medium transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                WCA Live
+              </Link>{" "}
+              e importa la competencia para que el WCIF esté disponible.
+            </p>
+          </div>
+        </div>
+      </main>
+    )
   }
 
   const persons = wcif.persons.filter((person) => person.registrantId !== null);

@@ -45,7 +45,7 @@ export default async function Page(): Promise<React.JSX.Element> {
           <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
             Competencias que gestionas
           </h1>
-          <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
+          <p className="mx-auto max-w-175 text-muted-foreground md:text-xl">
             Explora las competencias próximas, en curso y pasadas que gestionas
             en la WCA.
           </p>

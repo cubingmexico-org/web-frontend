@@ -33,7 +33,6 @@ export function CompetitionList({
         <CompetitionCard
           key={competition.id}
           competition={competition}
-          status={status}
         />
       ))}
     </div>

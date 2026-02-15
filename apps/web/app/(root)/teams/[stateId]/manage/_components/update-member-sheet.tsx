@@ -20,8 +20,9 @@ import { useParams } from "next/navigation";
 import { Member } from "../../_types";
 import { toast } from "sonner";
 
-interface UpdateMemberSheetProps
-  extends React.ComponentPropsWithRef<typeof Sheet> {
+interface UpdateMemberSheetProps extends React.ComponentPropsWithRef<
+  typeof Sheet
+> {
   member: Member | null;
 }
 

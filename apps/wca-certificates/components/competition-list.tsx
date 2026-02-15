@@ -1,5 +1,23 @@
 import { CompetitionCard } from "@/components/competition-card";
-import { Competition } from "@/types/wca";
+import type { Competition } from "@/types/wca";
+
+const emptyStateConfig = {
+  upcoming: {
+    icon: "📅",
+    title: "No hay competencias próximas",
+    description: "No tienes competencias próximas programadas en este momento.",
+  },
+  ongoing: {
+    icon: "🎯",
+    title: "No hay competencias en curso",
+    description: "No hay competencias activas en este momento.",
+  },
+  past: {
+    icon: "📚",
+    title: "No hay competencias pasadas",
+    description: "No tienes historial de competencias gestionadas.",
+  },
+};
 
 export function CompetitionList({
   competitions,
@@ -9,19 +27,15 @@ export function CompetitionList({
   status: "upcoming" | "ongoing" | "past";
 }) {
   if (!competitions.length) {
+    const config = emptyStateConfig[status];
     return (
-      <div className="flex flex-col items-center justify-center py-12">
-        <h3 className="text-xl font-medium text-primary">
-          No se encontraron competencias
-        </h3>
-        <p className="text-muted-foreground">
-          No hay competencias{" "}
-          {status === "upcoming"
-            ? "próximas"
-            : status === "ongoing"
-              ? "en curso"
-              : "pasadas"}{" "}
-          que gestiones en este momento.
+      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed bg-muted/20 py-16">
+        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted text-4xl">
+          {config.icon}
+        </div>
+        <h3 className="text-xl font-semibold">{config.title}</h3>
+        <p className="mt-2 max-w-sm text-center text-sm text-muted-foreground">
+          {config.description}
         </p>
       </div>
     );

@@ -14,8 +14,9 @@ import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-interface DataTableActionBarProps<TData>
-  extends React.ComponentProps<typeof motion.div> {
+interface DataTableActionBarProps<TData> extends React.ComponentProps<
+  typeof motion.div
+> {
   table: Table<TData>;
   visible?: boolean;
   container?: Element | DocumentFragment | null;
@@ -78,8 +79,9 @@ function DataTableActionBar<TData>({
   );
 }
 
-interface DataTableActionBarActionProps
-  extends React.ComponentProps<typeof Button> {
+interface DataTableActionBarActionProps extends React.ComponentProps<
+  typeof Button
+> {
   tooltip?: string;
   isPending?: boolean;
 }

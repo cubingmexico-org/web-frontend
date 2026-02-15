@@ -3,36 +3,65 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
 } from "@workspace/ui/components/dropdown-menu";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@workspace/ui/components/avatar";
-import type { User } from "next-auth";
 import { SignOut } from "./auth-components";
 import { CubingMexico } from "@workspace/icons";
+import { Award } from "lucide-react";
+import type { User } from "better-auth";
 
 export function Header({ user }: { user: User }) {
+  const initials =
+    user.name
+      ?.split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2) ?? "U";
+
   return (
-    <header className="bg-primary text-primary-foreground body-font">
-      <div className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
-        <CubingMexico className="size-16" />
+    <header className="sticky top-0 z-50 w-full border-b bg-primary/95 text-primary-foreground backdrop-blur supports-backdrop-filter:bg-primary/90">
+      <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
         <Link
-          className="flex title-font font-medium items-center text-primary-foreground mb-4 md:mb-0"
+          className="flex items-center gap-3 transition-opacity hover:opacity-90"
           href="/"
         >
-          <span className="ml-3 text-2xl">Certificados</span>
+          <CubingMexico className="size-12 md:size-14" />
+          <div className="flex flex-col">
+            <span className="text-xl font-bold md:text-2xl">Certificados</span>
+            <span className="hidden text-xs font-normal opacity-90 sm:block">
+              Cubing México
+            </span>
+          </div>
         </Link>
-        <nav className="md:ml-auto flex flex-wrap items-center text-base justify-center">
+
+        <nav className="flex items-center gap-4">
           <DropdownMenu>
-            <DropdownMenuTrigger className="rounded-full">
-              <Avatar className="size-12">
-                <AvatarImage src={user.image ?? undefined} />
-                <AvatarFallback>U</AvatarFallback>
+            <DropdownMenuTrigger className="group rounded-full outline-none ring-2 ring-transparent transition-all hover:ring-primary-foreground/20 focus-visible:ring-primary-foreground/40">
+              <Avatar className="size-11 border-2 border-primary-foreground/20 transition-all group-hover:border-primary-foreground/40 md:size-12">
+                <AvatarImage
+                  src={user.image ?? undefined}
+                  alt={user.name ?? "User"}
+                />
+                <AvatarFallback className="bg-primary-foreground/10 text-sm font-semibold">
+                  {initials}
+                </AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" alignOffset={-20}>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem asChild>
+                <Link href="/" className="cursor-pointer">
+                  <Award className="mr-2 h-4 w-4" />
+                  Mis Competencias
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <SignOut />
             </DropdownMenuContent>
           </DropdownMenu>

@@ -1,13 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import { UserAuthForm } from "@/components/user-auth-form";
 import { CubingMexico } from "@workspace/icons";
+import { SignIn } from "@/components/auth-components";
 
 export default function Page(): React.JSX.Element {
   return (
-    <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
+    <div className="w-full lg:grid lg:min-h-150 lg:grid-cols-2 xl:min-h-200">
       <div className="flex items-center justify-center py-12">
-        <div className="mx-auto grid w-[350px] gap-6">
+        <div className="mx-auto grid w-87.5 gap-6">
           <div className="grid gap-2 text-center">
             <div className="flex items-center justify-center">
               <CubingMexico className="size-72" />
@@ -18,7 +18,7 @@ export default function Page(): React.JSX.Element {
             </p>
           </div>
           <div className="grid gap-4">
-            <UserAuthForm />
+            <SignIn />
           </div>
           <div className="mt-4 text-center text-sm">
             <p>¿No tienes cuenta de la World Cube Association?</p>

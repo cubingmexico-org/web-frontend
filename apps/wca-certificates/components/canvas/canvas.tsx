@@ -8,7 +8,6 @@ import { Button } from "@workspace/ui/components/button";
 import { Download, Eye, FlipHorizontal, RotateCcw, Upload } from "lucide-react";
 import { useCanvasStore } from "@/lib/canvas-store";
 import type { CanvasElement } from "@/types/canvas";
-import { useSession } from "next-auth/react";
 import QRCode from "qrcode";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
@@ -25,6 +24,7 @@ import {
 import { useState } from "react";
 import type { EventId, ExtendedPerson } from "@/types/wcif";
 import { State, Team } from "@/db/queries";
+import { authClient } from "@/lib/auth-client";
 
 interface CanvasProps {
   states: State[];
@@ -55,7 +55,7 @@ export function Canvas({
 
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
 
-  const session = useSession();
+  const session = authClient.useSession();
 
   const params = useParams();
 

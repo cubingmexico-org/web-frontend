@@ -558,7 +558,8 @@ function useColorPickerContext(consumerName: string) {
 }
 
 interface ColorPickerRootProps
-  extends Omit<React.ComponentProps<"div">, "onValueChange">,
+  extends
+    Omit<React.ComponentProps<"div">, "onValueChange">,
     Pick<
       React.ComponentProps<typeof Popover>,
       "defaultOpen" | "open" | "onOpenChange" | "modal"
@@ -1150,7 +1151,8 @@ function ColorPickerEyeDropper(props: ColorPickerEyeDropperProps) {
 }
 
 interface ColorPickerFormatSelectProps
-  extends Omit<React.ComponentProps<typeof Select>, "value" | "onValueChange">,
+  extends
+    Omit<React.ComponentProps<typeof Select>, "value" | "onValueChange">,
     Pick<React.ComponentProps<typeof SelectTrigger>, "size" | "className"> {}
 
 function ColorPickerFormatSelect(props: ColorPickerFormatSelectProps) {
@@ -1193,11 +1195,10 @@ function ColorPickerFormatSelect(props: ColorPickerFormatSelectProps) {
   );
 }
 
-interface ColorPickerInputProps
-  extends Omit<
-    React.ComponentProps<typeof Input>,
-    "value" | "onChange" | "color"
-  > {
+interface ColorPickerInputProps extends Omit<
+  React.ComponentProps<typeof Input>,
+  "value" | "onChange" | "color"
+> {
   withoutAlpha?: boolean;
 }
 
@@ -1281,7 +1282,8 @@ const inputGroupItemVariants = cva(
 );
 
 interface InputGroupItemProps
-  extends React.ComponentProps<typeof Input>,
+  extends
+    React.ComponentProps<typeof Input>,
     VariantProps<typeof inputGroupItemVariants> {}
 
 function InputGroupItem({

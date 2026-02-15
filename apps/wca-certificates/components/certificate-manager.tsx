@@ -36,6 +36,8 @@ import {
   Check,
   X,
   Download,
+  Search,
+  XCircle,
 } from "lucide-react";
 import { Competition } from "@/types/wca";
 import {
@@ -85,6 +87,7 @@ import { WcaMonochrome } from "@workspace/icons";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
 import { toast } from "sonner";
 import { Switch } from "@workspace/ui/components/switch";
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile";
 
 export function CertificateManager({
   competition,
@@ -134,6 +137,8 @@ export function CertificateManager({
 
   const [filterByCountry, setFilterByCountry] = useState<boolean>(false);
 
+  const isMobile = useIsMobile();
+
   useEffect(() => {
     if (files.length > 0) {
       const reader = new FileReader();
@@ -181,6 +186,44 @@ export function CertificateManager({
       fallbackData: [],
     },
   );
+
+  if (isMobile) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Settings className="h-5 w-5" />
+            Función no disponible en móvil
+          </CardTitle>
+          <CardDescription>
+            El gestor de certificados requiere una pantalla más grande
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Esta función está diseñada para ser utilizada en computadoras de
+            escritorio o tabletas debido a la complejidad de la interfaz y las
+            herramientas de diseño.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Por favor, accede desde un dispositivo con una pantalla más grande
+            para gestionar los certificados de{" "}
+            <span className="font-medium">{competition.name}</span>.
+          </p>
+          <Link
+            href="/"
+            className={buttonVariants({
+              variant: "default",
+              className: "w-full",
+            })}
+          >
+            <Home />
+            Volver al inicio
+          </Link>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (isLoadingParticipants || isLoadingPodiums) {
     return <CertificateManagerSkeleton />;
@@ -798,7 +841,7 @@ export function CertificateManager({
             <ChevronRight className="h-4 w-4" />
           </BreadcrumbSeparator>
           <BreadcrumbItem>
-            <BreadcrumbLink className="max-w-[200px] truncate">
+            <BreadcrumbLink className="max-w-50 truncate">
               {competition.name}
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -821,7 +864,7 @@ export function CertificateManager({
         </p>
       </div>
       <div className="space-y-6">
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 lg:grid-cols-3">
           <Card>
             <CardHeader>
               <CardTitle>Información de la Competencia</CardTitle>
@@ -875,7 +918,7 @@ export function CertificateManager({
             </CardContent>
           </Card>
 
-          <Card className="md:col-span-2">
+          <Card className="lg:col-span-2">
             <CardHeader>
               <CardTitle>Estado de los Certificados</CardTitle>
               <CardDescription>
@@ -902,7 +945,13 @@ export function CertificateManager({
                           100
                         : 0
                     }
-                    className="h-2"
+                    className={`h-2 transition-all ${
+                      podiumsData &&
+                      Math.ceil(podiumsData.length / 3) ===
+                        competition.event_ids.length
+                        ? "*:bg-green-600"
+                        : ""
+                    }`}
                   />
                 </div>
                 <div className="space-y-2">
@@ -921,7 +970,12 @@ export function CertificateManager({
                         ? (participantsData.length / persons.length) * 100
                         : 0
                     }
-                    className="h-2"
+                    className={`h-2 transition-all ${
+                      participantsData &&
+                      participantsData.length === persons.length
+                        ? "*:bg-green-600"
+                        : ""
+                    }`}
                   />
                 </div>
               </div>
@@ -978,7 +1032,7 @@ export function CertificateManager({
 
           <TabsContent value="podium" className="space-y-6 pt-6">
             <div className="grid gap-6">
-              <div className="grid gap-6 md:grid-cols-2 grid-cols-1">
+              <div className="grid gap-6 lg:grid-cols-2">
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center">
@@ -1029,11 +1083,17 @@ export function CertificateManager({
                     </div>
                     <div className="space-y-4">
                       <h4 className="text-sm font-medium">Eventos</h4>
-                      <div className="grid md:grid-cols-2 grid-cols-1 gap-2">
+                      <div className="grid sm:grid-cols-2 gap-3">
                         {competition.event_ids.map((eventId) => (
                           <div
                             key={eventId}
-                            className="flex items-center space-x-2"
+                            className="flex items-center space-x-2 rounded-md p-2 hover:bg-muted/50 transition-colors cursor-pointer"
+                            onClick={() => {
+                              const checkbox = document.getElementById(
+                                `event-${eventId}`,
+                              ) as HTMLButtonElement;
+                              checkbox?.click();
+                            }}
                           >
                             <Checkbox
                               id={`event-${eventId}`}
@@ -1069,11 +1129,11 @@ export function CertificateManager({
                             />
                             <Label
                               htmlFor={`event-${eventId}`}
-                              className="flex gap-1 items-center"
+                              className="flex gap-2 items-center cursor-pointer flex-1"
                             >
                               <span
                                 className={`cubing-icon event-${eventId}`}
-                              />{" "}
+                              />
                               <p className="text-xs">
                                 {eventNames[eventId] || eventId}
                               </p>
@@ -1083,9 +1143,9 @@ export function CertificateManager({
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter className="flex flex-col gap-2">
-                    <div className="flex justify-start gap-2 w-full">
-                      <Toggle
+                  <CardFooter className="flex flex-col gap-3">
+                    <div className="flex flex-wrap justify-start gap-2 w-full">
+                      <Button
                         aria-label="Seleccionar todos"
                         onClick={() => {
                           if (selectedPodiums.length === podiumsData?.length) {
@@ -1094,17 +1154,18 @@ export function CertificateManager({
                             setSelectedPodiums(podiumsData || []);
                           }
                         }}
-                        pressed={
-                          selectedPodiums.length === podiumsData?.length
-                            ? true
-                            : false
-                        }
+                        variant="outline"
+                        size="sm"
                       >
-                        <Check />
+                        {selectedPodiums.length === podiumsData?.length ? (
+                          <X className="h-4 w-4" />
+                        ) : (
+                          <Check className="h-4 w-4" />
+                        )}
                         {selectedPodiums.length === podiumsData?.length
                           ? "Desmarcar todos"
                           : "Seleccionar todos"}
-                      </Toggle>
+                      </Button>
                       {selectedPodiums.length > 0 && (
                         <Button
                           aria-label="Borrar selección"
@@ -1112,13 +1173,14 @@ export function CertificateManager({
                             setSelectedPodiums([]);
                           }}
                           variant="ghost"
+                          size="sm"
                         >
-                          <X />
+                          <X className="h-4 w-4" />
                           Borrar selección
                         </Button>
                       )}
                     </div>
-                    <div className="flex justify-end gap-2 w-full">
+                    <div className="flex flex-wrap justify-end gap-2 w-full">
                       <Button
                         disabled={selectedPodiums.length === 0}
                         onClick={() => generatePDF("open")}
@@ -1186,7 +1248,7 @@ export function CertificateManager({
 
           <TabsContent value="participation" className="space-y-6 pt-6">
             <div className="grid gap-6">
-              <div className="grid gap-6 md:grid-cols-2">
+              <div className="grid gap-6 lg:grid-cols-2">
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center">
@@ -1199,17 +1261,33 @@ export function CertificateManager({
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <Input
-                      placeholder="Buscar participante"
-                      value={searchParticipant}
-                      onChange={(e) => {
-                        setSearchParticipant(e.target.value);
-                      }}
-                    />
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        placeholder="Buscar participante"
+                        value={searchParticipant}
+                        onChange={(e) => {
+                          setSearchParticipant(e.target.value);
+                        }}
+                        className="pl-9 pr-9"
+                      />
+                      {searchParticipant && (
+                        <button
+                          onClick={() => setSearchParticipant("")}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                          type="button"
+                        >
+                          <XCircle className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
                     <div className="space-y-4">
                       <h4 className="text-sm font-medium">Participantes</h4>
-                      <ScrollArea className="h-96" type="always">
-                        <div className="grid grid-cols-2 gap-2">
+                      <ScrollArea
+                        className="h-80 rounded-md border bg-muted/20 p-4"
+                        type="always"
+                      >
+                        <div className="grid sm:grid-cols-2 gap-3 pr-3">
                           {filteredPersons.length === 0 ? (
                             <p className="text-sm text-muted-foreground">
                               No se encontraron participantes
@@ -1219,7 +1297,13 @@ export function CertificateManager({
                               {filteredPersons.map((person) => (
                                 <div
                                   key={person.registrantId}
-                                  className="flex items-center space-x-2"
+                                  className="flex items-center space-x-2 rounded-md p-2 hover:bg-background/80 transition-colors cursor-pointer"
+                                  onClick={() => {
+                                    const checkbox = document.getElementById(
+                                      String(person.registrantId),
+                                    ) as HTMLButtonElement;
+                                    checkbox?.click();
+                                  }}
                                 >
                                   <Checkbox
                                     id={String(person.registrantId)}
@@ -1262,8 +1346,13 @@ export function CertificateManager({
                                       ).length === 0
                                     }
                                   />
-                                  <Label htmlFor={String(person.registrantId)}>
-                                    <p className="text-xs">{person.name}</p>
+                                  <Label
+                                    htmlFor={String(person.registrantId)}
+                                    className="cursor-pointer flex-1"
+                                  >
+                                    <p className="text-xs leading-relaxed">
+                                      {person.name}
+                                    </p>
                                   </Label>
                                 </div>
                               ))}
@@ -1273,21 +1362,33 @@ export function CertificateManager({
                       </ScrollArea>
                     </div>
                   </CardContent>
-                  <CardFooter className="flex flex-col gap-2">
-                    <div className="flex justify-start gap-2 w-full">
+                  <CardFooter className="flex flex-col gap-3">
+                    <div className="flex flex-wrap justify-start gap-2 w-full">
                       <Button
                         aria-label="Seleccionar todos"
-                        disabled={
-                          selectedParticipants.length ===
-                          participantsData?.length
-                        }
                         onClick={() => {
-                          setSelctedParticipants(participantsData || []);
+                          if (
+                            selectedParticipants.length ===
+                            participantsData?.length
+                          ) {
+                            setSelctedParticipants([]);
+                          } else {
+                            setSelctedParticipants(participantsData || []);
+                          }
                         }}
-                        variant="ghost"
+                        variant="outline"
+                        size="sm"
                       >
-                        <Check />
-                        Seleccionar todos
+                        {selectedParticipants.length ===
+                        participantsData?.length ? (
+                          <X className="h-4 w-4" />
+                        ) : (
+                          <Check className="h-4 w-4" />
+                        )}
+                        {selectedParticipants.length ===
+                        participantsData?.length
+                          ? "Desmarcar todos"
+                          : "Seleccionar todos"}
                       </Button>
                       {selectedParticipants.length > 0 && (
                         <Button
@@ -1296,13 +1397,14 @@ export function CertificateManager({
                             setSelctedParticipants([]);
                           }}
                           variant="ghost"
+                          size="sm"
                         >
-                          <X />
+                          <X className="h-4 w-4" />
                           Borrar selección
                         </Button>
                       )}
                     </div>
-                    <div className="flex justify-end gap-2 w-full">
+                    <div className="flex flex-wrap justify-end gap-2 w-full">
                       <Button
                         disabled={selectedParticipants.length === 0}
                         variant="outline"

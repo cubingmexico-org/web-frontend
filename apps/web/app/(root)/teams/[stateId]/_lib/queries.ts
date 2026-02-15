@@ -223,8 +223,8 @@ export async function getMembers(
                     FROM ranks_average
                     WHERE person_id = ${person.wcaId}
                     AND state_rank = 1)
-                ) AS INTEGER) AS stateRecords
-              )`.as("stateRecords"),
+                ) AS INTEGER) AS state_records
+              )`.as("state_records"),
           specialties: teamMember.specialties,
         })
         .from(person)

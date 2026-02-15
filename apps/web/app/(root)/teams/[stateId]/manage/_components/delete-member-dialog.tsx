@@ -30,8 +30,9 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 
 import { deleteMembers } from "../_lib/actions";
 
-interface DeleteMembersDialogProps
-  extends React.ComponentPropsWithoutRef<typeof Dialog> {
+interface DeleteMembersDialogProps extends React.ComponentPropsWithoutRef<
+  typeof Dialog
+> {
   members: Row<Member>["original"][];
   stateId: string;
   showTrigger?: boolean;

@@ -44,8 +44,9 @@ import { cn } from "@workspace/ui/lib/utils";
 const OPEN_MENU_SHORTCUT = "s";
 const REMOVE_SORT_SHORTCUTS = ["backspace", "delete"];
 
-interface DataTableSortListProps<TData>
-  extends React.ComponentProps<typeof PopoverContent> {
+interface DataTableSortListProps<TData> extends React.ComponentProps<
+  typeof PopoverContent
+> {
   table: Table<TData>;
 }
 

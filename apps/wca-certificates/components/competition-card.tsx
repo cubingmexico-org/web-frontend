@@ -1,6 +1,6 @@
 "use client";
 
-import { format } from "date-fns";
+import { format, subMonths, isBefore } from "date-fns";
 import { es } from "date-fns/locale";
 import { MapPin, Calendar, Award, IdCard } from "lucide-react";
 import {
@@ -48,6 +48,15 @@ export function CompetitionCard({
   const visibleEvents = competition.event_ids.slice(0, maxVisibleEvents);
   const remainingEvents = competition.event_ids.length - maxVisibleEvents;
   const router = useRouter();
+
+  const resultsPostedAt = competition.results_posted_at
+    ? new Date(competition.results_posted_at)
+    : null;
+  const isResultsOlderThan3Months = resultsPostedAt
+    ? isBefore(resultsPostedAt, subMonths(new Date(), 3))
+    : false;
+  const isNotAvailable =
+    competition.announced_at === null || isResultsOlderThan3Months;
 
   return (
     <Card className="group overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-primary/50">
@@ -109,7 +118,7 @@ export function CompetitionCard({
         <Button
           className="w-full shadow-sm"
           size="sm"
-          disabled={competition.announced_at === null}
+          disabled={isNotAvailable}
           onClick={() => {
             router.push(`/certificates/${competition.id}`);
           }}
@@ -121,7 +130,7 @@ export function CompetitionCard({
           variant="outline"
           className="w-full"
           size="sm"
-          disabled={competition.announced_at === null}
+          disabled={isNotAvailable}
           onClick={() => {
             router.push(`/badges/${competition.id}`);
           }}

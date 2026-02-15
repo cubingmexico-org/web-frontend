@@ -57,6 +57,7 @@ export interface Competition {
   contact: string;
   registration_open: string;
   registration_close: string;
+  results_posted_at: string | null;
   use_wca_registration: boolean;
   guests_enabled: boolean;
   announced_at: string | null;

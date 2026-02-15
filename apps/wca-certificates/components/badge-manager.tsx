@@ -48,6 +48,7 @@ import type { State, Team } from "@/db/queries";
 import { revalidateWCIF } from "@/app/actions";
 import { Switch } from "@workspace/ui/components/switch";
 import { ExportBadgesButtonGroup } from "./export-badges-button-group";
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile";
 
 interface BadgeManagerProps {
   competition: Competition;
@@ -75,6 +76,8 @@ export function BadgeManager({
 
   const { setBackgroundImage, setBackgroundImageBack, enableBackSide } =
     useCanvasStore();
+
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (files.length > 0) {
@@ -165,6 +168,44 @@ export function BadgeManager({
     return { newcomers, delegates, organizers, volunteers, regulars };
   })();
 
+  if (isMobile) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Settings className="h-5 w-5" />
+            Función no disponible en móvil
+          </CardTitle>
+          <CardDescription>
+            El gestor de gafetes requiere una pantalla más grande
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Esta función está diseñada para ser utilizada en computadoras de
+            escritorio o tabletas debido a la complejidad de la interfaz y las
+            herramientas de diseño.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Por favor, accede desde un dispositivo con una pantalla más grande
+            para gestionar los gafetes de{" "}
+            <span className="font-medium">{competition.name}</span>.
+          </p>
+          <Link
+            href="/"
+            className={buttonVariants({
+              variant: "default",
+              className: "w-full",
+            })}
+          >
+            <Home />
+            Volver al inicio
+          </Link>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <Breadcrumb>
@@ -210,7 +251,7 @@ export function BadgeManager({
         </p>
       </div>
       <div className="space-y-6">
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card>
             <CardHeader>
               <CardTitle>Información de la Competencia</CardTitle>
@@ -225,6 +266,7 @@ export function BadgeManager({
                   className={buttonVariants({
                     variant: "default",
                     size: "sm",
+                    className: "gap-2",
                   })}
                 >
                   <WcaMonochrome />
@@ -299,12 +341,13 @@ export function BadgeManager({
                   <Button
                     variant="outline"
                     size="sm"
+                    className="gap-2 transition-all"
                     onClick={() => {
                       revalidateWCIF(competition.id);
                       setLastUpdate(new Date());
                     }}
                   >
-                    <RefreshCw />
+                    <RefreshCw className="h-4 w-4" />
                     Actualizar
                   </Button>
                 </div>
@@ -350,8 +393,11 @@ export function BadgeManager({
                       />
                     </div>
                   </div>
-                  <ScrollArea className="h-96" type="always">
-                    <div className="grid grid-cols-2 gap-2">
+                  <ScrollArea
+                    className="h-80 rounded-md border bg-muted/20 p-4"
+                    type="always"
+                  >
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {filteredPersons.length === 0 ? (
                         <p className="text-sm text-muted-foreground">
                           No se encontraron participantes
@@ -386,7 +432,7 @@ export function BadgeManager({
                             },
                           ].map(({ key, title, list }) =>
                             list.length > 0 ? (
-                              <div key={key} className="col-span-2">
+                              <div key={key} className="col-span-full">
                                 <div className="flex items-center justify-between mb-1">
                                   <div className="text-xs font-medium">
                                     {title} ({list.length})
@@ -395,6 +441,7 @@ export function BadgeManager({
                                     <Button
                                       size="sm"
                                       variant="ghost"
+                                      className="gap-1 transition-all"
                                       onClick={() => {
                                         setSelectedPersons((prev) => {
                                           const existingIds = new Set(
@@ -408,14 +455,14 @@ export function BadgeManager({
                                         });
                                       }}
                                     >
-                                      <Check />
-                                      <span className="ml-1 text-xs">
+                                      <Check className="h-3.5 w-3.5" />
+                                      <span className="text-xs">
                                         Seleccionar todo
                                       </span>
                                     </Button>
                                   </div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-2">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
                                   {list.map((person) => {
                                     const isChecked = selectedPersons.some(
                                       (p) => p.wcaUserId === person.wcaUserId,
@@ -423,7 +470,29 @@ export function BadgeManager({
                                     return (
                                       <div
                                         key={person.wcaUserId}
-                                        className="flex items-center space-x-2"
+                                        className="flex items-center space-x-2 rounded-md p-2 hover:bg-accent/50 transition-colors cursor-pointer"
+                                        onClick={() => {
+                                          const checked = !isChecked;
+                                          if (checked) {
+                                            setSelectedPersons((prev) =>
+                                              prev.some(
+                                                (p) =>
+                                                  p.registrantId ===
+                                                  person.registrantId,
+                                              )
+                                                ? prev
+                                                : [...prev, person],
+                                            );
+                                          } else {
+                                            setSelectedPersons((prev) =>
+                                              prev.filter(
+                                                (p) =>
+                                                  p.registrantId !==
+                                                  person.registrantId,
+                                              ),
+                                            );
+                                          }
+                                        }}
                                       >
                                         <Checkbox
                                           id={String(person.wcaUserId)}
@@ -452,8 +521,9 @@ export function BadgeManager({
                                         />
                                         <Label
                                           htmlFor={String(person.wcaUserId)}
+                                          className="cursor-pointer flex-1"
                                         >
-                                          <p className="text-xs">
+                                          <p className="text-xs truncate">
                                             {person.name}
                                           </p>
                                         </Label>
@@ -471,7 +541,7 @@ export function BadgeManager({
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col gap-2">
-                <div className="flex justify-start gap-2 w-full">
+                <div className="flex flex-wrap justify-start gap-2 w-full">
                   <Button
                     aria-label="Seleccionar todos"
                     disabled={selectedPersons.length === persons.length}
@@ -479,6 +549,7 @@ export function BadgeManager({
                       setSelectedPersons(persons);
                     }}
                     variant="ghost"
+                    className="gap-2 transition-all"
                   >
                     <Check />
                     Seleccionar todos
@@ -490,6 +561,7 @@ export function BadgeManager({
                         setSelectedPersons([]);
                       }}
                       variant="ghost"
+                      className="gap-2 transition-all"
                     >
                       <X />
                       Borrar selección

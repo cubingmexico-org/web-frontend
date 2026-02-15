@@ -52,7 +52,7 @@ export function HeaderNavigationMenu() {
             Resultados
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="grid w-[250px] gap-4">
+            <ul className="grid w-62.5 gap-4">
               <li>
                 <NavigationMenuLink asChild>
                   <Link
@@ -121,7 +121,7 @@ export function HeaderNavigationMenu() {
             Personas
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="grid w-[250px] gap-4">
+            <ul className="grid w-62.5 gap-4">
               <li>
                 <NavigationMenuLink asChild>
                   <Link href="/persons" className="flex-row items-center gap-2">
@@ -163,7 +163,7 @@ export function HeaderNavigationMenu() {
             Acerca de
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="grid w-[250px] gap-4">
+            <ul className="grid w-62.5 gap-4">
               <li>
                 <NavigationMenuLink asChild>
                   <Link href="/about" className="flex-row items-center gap-2">

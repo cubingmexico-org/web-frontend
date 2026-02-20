@@ -6,6 +6,9 @@ export async function GET(request: Request): Promise<Response> {
   const competitionId = searchParams.get("competitionId");
   const filterByCountry = searchParams.get("filterByCountry") === "true";
   const country = searchParams.get("country");
+  const template = searchParams.get("template");
+  const gender = template === "female" ? "f" : undefined;
+  const newcomer = template === "newcomer";
   const wcif = await getWCIFByCompetitionId({
     competitionId: competitionId!,
   });
@@ -15,7 +18,9 @@ export async function GET(request: Request): Promise<Response> {
   const personsWithRegistrantId = persons.filter(
     (person) =>
       person.registrantId !== null &&
-      (!filterByCountry || person.countryIso2 === country),
+      (!filterByCountry || person.countryIso2 === country) &&
+      (!gender || person.gender === gender) &&
+      (!newcomer || !person.wcaId),
   );
 
   const personIdToName: Record<string, string> = {};
@@ -53,21 +58,14 @@ export async function GET(request: Request): Promise<Response> {
           personIdToName[result.personId] !== undefined, // Only include filtered people
       )
       .sort((a, b) => {
-        const aResult = isBestOnlyEvent
-            ? a.best
-            : a.average;
-        const bResult = isBestOnlyEvent
-            ? b.best
-            : b.average;
+        const aResult = isBestOnlyEvent ? a.best : a.average;
+        const bResult = isBestOnlyEvent ? b.best : b.average;
         return aResult - bResult;
       })
       .slice(0, 3)
       .map((person) => ({
         personName: personIdToName[person.personId],
-        result:
-          isBestOnlyEvent
-            ? person.best
-            : person.average,
+        result: isBestOnlyEvent ? person.best : person.average,
       }));
 
     return results;

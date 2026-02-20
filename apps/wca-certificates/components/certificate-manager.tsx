@@ -162,6 +162,11 @@ export function CertificateManager({
     }
   }, [filesParticipants]);
 
+  useEffect(() => {
+    // Clear selected podiums when filter changes to prevent showing outdated selections
+    setSelectedPodiums([]);
+  }, [filterByCountry, selectedTemplate]);
+
   const {
     data: participantsData,
     isLoading: isLoadingParticipants,
@@ -179,7 +184,7 @@ export function CertificateManager({
     isLoading: isLoadingPodiums,
     mutate: mutatePodiums,
   } = useSWR<PodiumData[]>(
-    `/api/certificates/podium?competitionId=${competition.id}&filterByCountry=${filterByCountry}&country=${competition.country_iso2}`,
+    `/api/certificates/podium?competitionId=${competition.id}&filterByCountry=${filterByCountry}&country=${competition.country_iso2}&template=${selectedTemplate}`,
     fetcher,
     {
       fallbackData: [],
@@ -1056,17 +1061,26 @@ export function CertificateManager({
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="general">General</SelectItem>
-                            <SelectItem value="female" disabled>
-                              Femeniles
-                            </SelectItem>
-                            <SelectItem value="newcomers" disabled>
+                            <SelectItem value="female">Femeniles</SelectItem>
+                            <SelectItem value="newcomer">
                               Primera vez
                             </SelectItem>
                           </SelectContent>
                         </Select>
+                        {selectedTemplate === "newcomer" && (
+                          <p className="text-xs text-muted-foreground">
+                            Competidores que no tienen WCA ID (primera
+                            competencia), solo disponible antes de que se
+                            publiquen los resultados oficiales de la
+                            competencia.
+                          </p>
+                        )}
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="filterByCountry" className="text-sm font-medium">
+                        <Label
+                          htmlFor="filterByCountry"
+                          className="text-sm font-medium"
+                        >
                           Filtrar por país
                         </Label>
                         <div className="flex items-center gap-2 h-10 px-3">

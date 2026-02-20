@@ -11,6 +11,7 @@ This package provides three ESLint configurations:
 Base configuration for all TypeScript projects in the workspace.
 
 **Includes:**
+
 - ESLint recommended rules
 - TypeScript ESLint recommended rules
 - Prettier compatibility (eslint-config-prettier)
@@ -24,6 +25,7 @@ Base configuration for all TypeScript projects in the workspace.
 Extended configuration for Next.js applications.
 
 **Includes:**
+
 - All base configuration rules
 - React recommended rules
 - React Hooks rules
@@ -38,6 +40,7 @@ Extended configuration for Next.js applications.
 Configuration for internal React libraries and components.
 
 **Includes:**
+
 - All base configuration rules
 - React recommended rules
 - React Hooks rules
@@ -65,14 +68,14 @@ This package is automatically available in the monorepo workspace:
 Create an `eslint.config.js` file:
 
 ```javascript
-import { nextJsConfig } from "@workspace/eslint-config/next.js"
+import { nextJsConfig } from "@workspace/eslint-config/next.js";
 
 export default [
   ...nextJsConfig,
   {
     // Add custom rules here
-  }
-]
+  },
+];
 ```
 
 ### In React Libraries
@@ -80,14 +83,14 @@ export default [
 Create an `eslint.config.js` file:
 
 ```javascript
-import { config } from "@workspace/eslint-config/react-internal.js"
+import { config } from "@workspace/eslint-config/react-internal.js";
 
 export default [
   ...config,
   {
     // Add custom rules here
-  }
-]
+  },
+];
 ```
 
 ### In Base TypeScript Projects
@@ -95,14 +98,14 @@ export default [
 Create an `eslint.config.js` file:
 
 ```javascript
-import { config } from "@workspace/eslint-config/base.js"
+import { config } from "@workspace/eslint-config/base.js";
 
 export default [
   ...config,
   {
     // Add custom rules here
-  }
-]
+  },
+];
 ```
 
 ## 🔧 Common Customizations
@@ -110,30 +113,30 @@ export default [
 ### Adding File Ignores
 
 ```javascript
-import { nextJsConfig } from "@workspace/eslint-config/next.js"
+import { nextJsConfig } from "@workspace/eslint-config/next.js";
 
 export default [
   ...nextJsConfig,
   {
-    ignores: ["build/**", "dist/**", ".next/**"]
-  }
-]
+    ignores: ["build/**", "dist/**", ".next/**"],
+  },
+];
 ```
 
 ### Overriding Rules
 
 ```javascript
-import { nextJsConfig } from "@workspace/eslint-config/next.js"
+import { nextJsConfig } from "@workspace/eslint-config/next.js";
 
 export default [
   ...nextJsConfig,
   {
     rules: {
       "@typescript-eslint/no-unused-vars": "error",
-      "turbo/no-undeclared-env-vars": "off"
-    }
-  }
-]
+      "turbo/no-undeclared-env-vars": "off",
+    },
+  },
+];
 ```
 
 ## 📋 Included Plugins

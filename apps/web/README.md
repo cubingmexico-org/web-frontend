@@ -184,6 +184,7 @@ pnpm db:up
 ### Competition Management
 
 Browse and manage WCA competitions with:
+
 - Competition listings and details
 - Registration information
 - Results tracking
@@ -192,6 +193,7 @@ Browse and manage WCA competitions with:
 ### Rankings & Records
 
 Track performance with:
+
 - Event-specific rankings
 - National and regional records
 - Historical data
@@ -201,6 +203,7 @@ Track performance with:
 ### Community Features
 
 Manage community members including:
+
 - Delegate profiles and responsibilities
 - Organizer information
 - Team management
@@ -210,6 +213,7 @@ Manage community members including:
 ### Interactive Maps
 
 View competitions and locations with:
+
 - Leaflet-powered interactive maps
 - Location-based filtering
 - Geocoding integration
@@ -217,6 +221,7 @@ View competitions and locations with:
 ## 🔧 Configuration
 
 Configuration files:
+
 - `next.config.mjs` - Next.js configuration
 - `drizzle.config.ts` - Drizzle ORM configuration
 - `tsconfig.json` - TypeScript configuration

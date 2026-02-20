@@ -86,6 +86,7 @@ import { WcaMonochrome } from "@workspace/icons";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
 import { toast } from "sonner";
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile";
+import { Switch } from "@workspace/ui/components/switch";
 
 export function CertificateManager({
   competition,
@@ -133,6 +134,8 @@ export function CertificateManager({
   >("general");
   const [searchParticipant, setSearchParticipant] = useState("");
 
+  const [filterByCountry, setFilterByCountry] = useState(false);
+
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -176,7 +179,7 @@ export function CertificateManager({
     isLoading: isLoadingPodiums,
     mutate: mutatePodiums,
   } = useSWR<PodiumData[]>(
-    `/api/certificates/podium?competitionId=${competition.id}`,
+    `/api/certificates/podium?competitionId=${competition.id}&filterByCountry=${filterByCountry}&country=${competition.country_iso2}`,
     fetcher,
     {
       fallbackData: [],
@@ -1041,7 +1044,7 @@ export function CertificateManager({
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="podiumType">Tipo de podio</Label>
                         <Select
@@ -1062,20 +1065,23 @@ export function CertificateManager({
                           </SelectContent>
                         </Select>
                       </div>
-                      {/* <div className="flex gap-2 items-center">
-                        <Label htmlFor="filterByCountry">
+                      <div className="space-y-2">
+                        <Label htmlFor="filterByCountry" className="text-sm font-medium">
                           Filtrar por país
                         </Label>
-                        <Switch
-                          id="filterByCountry"
-                          checked={filterByCountry}
-                          onCheckedChange={(checked) =>
-                            setFilterByCountry(!!checked)
-                          }
-                        >
-                          Habilitar
-                        </Switch>
-                      </div> */}
+                        <div className="flex items-center gap-2 h-10 px-3">
+                          <Switch
+                            id="filterByCountry"
+                            checked={filterByCountry}
+                            onCheckedChange={(checked) =>
+                              setFilterByCountry(!!checked)
+                            }
+                          />
+                          <span className="text-sm text-muted-foreground">
+                            {filterByCountry ? "Habilitado" : "Deshabilitado"}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                     <div className="space-y-4">
                       <h4 className="text-sm font-medium">Eventos</h4>
@@ -1084,11 +1090,14 @@ export function CertificateManager({
                           <div
                             key={eventId}
                             className="flex items-center space-x-2 rounded-md p-2 hover:bg-muted/50 transition-colors cursor-pointer"
-                            onClick={() => {
-                              const checkbox = document.getElementById(
-                                `event-${eventId}`,
-                              ) as HTMLButtonElement;
-                              checkbox?.click();
+                            onClick={(e) => {
+                              // Only trigger if clicking the container, not the checkbox or label
+                              if (e.target === e.currentTarget) {
+                                const checkbox = document.getElementById(
+                                  `event-${eventId}`,
+                                );
+                                checkbox?.click();
+                              }
                             }}
                           >
                             <Checkbox

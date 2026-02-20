@@ -1,9 +1,11 @@
 import { getWCIFByCompetitionId } from "@/db/queries";
-import { Event, Person, PodiumData, Result } from "@/types/wcif";
+import type { Event, Person, PodiumData, Result } from "@/types/wcif";
 
 export async function GET(request: Request): Promise<Response> {
   const { searchParams } = new URL(request.url);
   const competitionId = searchParams.get("competitionId");
+  const filterByCountry = searchParams.get("filterByCountry") === "true";
+  const country = searchParams.get("country");
   const wcif = await getWCIFByCompetitionId({
     competitionId: competitionId!,
   });
@@ -11,7 +13,9 @@ export async function GET(request: Request): Promise<Response> {
   const persons = wcif?.persons || [];
 
   const personsWithRegistrantId = persons.filter(
-    (person) => person.registrantId !== null && person.countryIso2 === "MX",
+    (person) =>
+      person.registrantId !== null &&
+      (!filterByCountry || person.countryIso2 === country),
   );
 
   const personIdToName: Record<string, string> = {};
@@ -33,28 +37,26 @@ export async function GET(request: Request): Promise<Response> {
       return undefined;
     }
 
+    const isBestOnlyEvent =
+      event.id === "333bf" ||
+      event.id === "444bf" ||
+      event.id === "555bf" ||
+      event.id === "333mbf";
+
     const results = finalRound.results
       .filter(
         (result: Result) =>
           result.ranking !== null &&
           result.best !== -1 &&
           result.best !== -2 &&
-          result.average !== -1 &&
-          personIdToName[result.personId] !== undefined, // Only include Mexican people
+          (isBestOnlyEvent || result.average !== -1) && // Only check average for non-best-only events
+          personIdToName[result.personId] !== undefined, // Only include filtered people
       )
       .sort((a, b) => {
-        const aResult =
-          event.id === "333bf" ||
-          event.id === "444bf" ||
-          event.id === "555bf" ||
-          event.id === "333mbf"
+        const aResult = isBestOnlyEvent
             ? a.best
             : a.average;
-        const bResult =
-          event.id === "333bf" ||
-          event.id === "444bf" ||
-          event.id === "555bf" ||
-          event.id === "333mbf"
+        const bResult = isBestOnlyEvent
             ? b.best
             : b.average;
         return aResult - bResult;
@@ -63,10 +65,7 @@ export async function GET(request: Request): Promise<Response> {
       .map((person) => ({
         personName: personIdToName[person.personId],
         result:
-          event.id === "333bf" ||
-          event.id === "444bf" ||
-          event.id === "555bf" ||
-          event.id === "333mbf"
+          isBestOnlyEvent
             ? person.best
             : person.average,
       }));

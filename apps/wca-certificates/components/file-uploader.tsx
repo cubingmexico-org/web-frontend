@@ -19,9 +19,13 @@ import { toast } from "sonner";
 export function FileUploader({
   files,
   setFiles,
+  accept = "image/*",
+  maxFiles = 1,
 }: {
   files: File[];
   setFiles: React.Dispatch<React.SetStateAction<File[]>>;
+  accept?: string;
+  maxFiles?: number;
 }) {
   const onUpload = React.useCallback(
     async (
@@ -86,14 +90,14 @@ export function FileUploader({
 
   return (
     <FileUpload
-      disabled={files.length >= 1}
+      disabled={files.length >= maxFiles}
       value={files}
-      accept="image/*"
+      accept={accept}
       onValueChange={setFiles}
       onUpload={onUpload}
       onFileReject={onFileReject}
       maxSize={2 * 1024 * 1024} // 2MB
-      maxFiles={1}
+      maxFiles={maxFiles}
       className="w-full"
       multiple
     >

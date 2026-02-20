@@ -1,5 +1,21 @@
-import { getWCIFByCompetitionId } from "@/db/queries";
+import { getWCIFByCompetitionId, getCompetitionById } from "@/db/queries";
 import type { Event, Person, PodiumData, Result } from "@/types/wcif";
+
+// Helper function to calculate age at a specific date
+function calculateAge(birthdate: string, referenceDate: Date): number {
+  const birth = new Date(birthdate);
+  let age = referenceDate.getFullYear() - birth.getFullYear();
+  const monthDiff = referenceDate.getMonth() - birth.getMonth();
+
+  if (
+    monthDiff < 0 ||
+    (monthDiff === 0 && referenceDate.getDate() < birth.getDate())
+  ) {
+    age--;
+  }
+
+  return age;
+}
 
 export async function GET(request: Request): Promise<Response> {
   const { searchParams } = new URL(request.url);
@@ -9,19 +25,74 @@ export async function GET(request: Request): Promise<Response> {
   const template = searchParams.get("template");
   const gender = template === "female" ? "f" : undefined;
   const newcomer = template === "newcomer";
+
+  // Age filter parameters
+  const minAgeParam = searchParams.get("minAge");
+  const maxAgeParam = searchParams.get("maxAge");
+  const birthdatesParam = searchParams.get("birthdates");
+
+  const minAge = minAgeParam ? parseInt(minAgeParam) : undefined;
+  const maxAge = maxAgeParam ? parseInt(maxAgeParam) : undefined;
+
+  // Parse birthdate map from query parameter
+  let birthdateMap: Map<string, string> | undefined;
+  if (birthdatesParam) {
+    try {
+      const entries = JSON.parse(decodeURIComponent(birthdatesParam)) as [
+        string,
+        string,
+      ][];
+      birthdateMap = new Map(entries);
+    } catch (error) {
+      console.error("Failed to parse birthdates:", error);
+    }
+  }
+
   const wcif = await getWCIFByCompetitionId({
     competitionId: competitionId!,
   });
   const events = wcif?.events || [];
   const persons = wcif?.persons || [];
 
-  const personsWithRegistrantId = persons.filter(
-    (person) =>
-      person.registrantId !== null &&
-      (!filterByCountry || person.countryIso2 === country) &&
-      (!gender || person.gender === gender) &&
-      (!newcomer || !person.wcaId),
-  );
+  // Get competition end date for age calculation
+  let competitionEndDate: Date | undefined;
+  if (template === "age" && birthdateMap) {
+    const competition = await getCompetitionById({ id: competitionId! });
+    if (competition?.end_date) {
+      const [endYear, endMonth, endDay] = competition.end_date
+        .split("-")
+        .map(Number);
+      competitionEndDate = new Date(endYear!, endMonth! - 1, endDay);
+    }
+  }
+
+  const personsWithRegistrantId = persons.filter((person) => {
+    // Basic filters
+    if (person.registrantId === null) return false;
+    if (filterByCountry && person.countryIso2 !== country) return false;
+    if (gender && person.gender !== gender) return false;
+    if (newcomer && person.wcaId) return false;
+
+    // Age filter
+    if (
+      template === "age" &&
+      birthdateMap &&
+      competitionEndDate &&
+      minAge !== undefined &&
+      maxAge !== undefined
+    ) {
+      const birthdate = birthdateMap.get(
+        person.registrantId as unknown as string,
+      );
+      if (!birthdate) return false; // Exclude if no birthdate
+
+      const age = calculateAge(birthdate, competitionEndDate);
+      console.log(age);
+      if (age < minAge || age > maxAge) return false;
+    }
+
+    return true;
+  });
 
   const personIdToName: Record<string, string> = {};
   personsWithRegistrantId.forEach((person: Person) => {

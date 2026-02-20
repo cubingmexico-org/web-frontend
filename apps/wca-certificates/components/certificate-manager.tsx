@@ -87,6 +87,8 @@ import { ScrollArea } from "@workspace/ui/components/scroll-area";
 import { toast } from "sonner";
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile";
 import { Switch } from "@workspace/ui/components/switch";
+import { Slider } from "@workspace/ui/components/slider";
+import Papa from "papaparse";
 
 export function CertificateManager({
   competition,
@@ -130,11 +132,18 @@ export function CertificateManager({
     useState<string>();
 
   const [selectedTemplate, setSelectedTemplate] = useState<
-    "general" | "female" | "newcomer"
+    "general" | "female" | "newcomer" | "age"
   >("general");
   const [searchParticipant, setSearchParticipant] = useState("");
 
   const [filterByCountry, setFilterByCountry] = useState(false);
+
+  // Age filter states
+  const [csvFiles, setCsvFiles] = useState<File[]>([]);
+  const [birthdateMap, setBirthdateMap] = useState<Map<number, string>>();
+  const [ageRange, setAgeRange] = useState<[number, number]>([0, 100]);
+  const [tempAgeRange, setTempAgeRange] = useState<[number, number]>([0, 100]);
+  const [csvError, setCsvError] = useState<string>();
 
   const isMobile = useIsMobile();
 
@@ -165,7 +174,93 @@ export function CertificateManager({
   useEffect(() => {
     // Clear selected podiums when filter changes to prevent showing outdated selections
     setSelectedPodiums([]);
+
+    // Clear age-related state when switching away from age template
+    if (selectedTemplate !== "age") {
+      setCsvFiles([]);
+      setBirthdateMap(undefined);
+      setAgeRange([0, 100]);
+      setTempAgeRange([0, 100]);
+      setCsvError(undefined);
+    }
   }, [filterByCountry, selectedTemplate]);
+
+  // CSV parsing for age filter
+  useEffect(() => {
+    if (csvFiles.length > 0) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target?.result as string;
+        Papa.parse(text, {
+          header: true,
+          skipEmptyLines: true,
+          complete: (results) => {
+            try {
+              const map = new Map<number, string>();
+              let validCount = 0;
+
+              // Try different column name variations
+              const data = results.data as Array<Record<string, string>>;
+
+              for (const row of data) {
+                // Support multiple column name formats
+                const registrantId =
+                  row["Registrant Id"] ||
+                  row["registrantId"] ||
+                  row["registrant_id"];
+                const birthdate =
+                  row["Birth Date"] || row["birthdate"] || row["Birthdate"];
+
+                if (registrantId && birthdate) {
+                  // Validate date format (YYYY-MM-DD)
+                  if (/^\d{4}-\d{2}-\d{2}$/.test(birthdate)) {
+                    const id = parseInt(registrantId);
+                    if (!isNaN(id)) {
+                      map.set(id, birthdate.trim());
+                      validCount++;
+                    }
+                  }
+                }
+              }
+
+              if (validCount === 0) {
+                setCsvError("No se encontraron datos válidos en el CSV");
+                toast.error("CSV inválido", {
+                  description:
+                    "Asegúrate de que el archivo tenga columnas 'Registrant Id' y 'Birth Date' con formato YYYY-MM-DD",
+                });
+                setBirthdateMap(undefined);
+              } else {
+                setBirthdateMap(map);
+                setCsvError(undefined);
+                toast.success("CSV cargado", {
+                  description: `${validCount} competidor${validCount !== 1 ? "es" : ""} con fecha de nacimiento`,
+                });
+              }
+            } catch (error) {
+              setCsvError("Error al procesar el CSV");
+              toast.error("Error al procesar el CSV", {
+                description:
+                  error instanceof Error ? error.message : "Error desconocido",
+              });
+              setBirthdateMap(undefined);
+            }
+          },
+          error: (error: Error) => {
+            setCsvError("Error al leer el CSV");
+            toast.error("Error al leer el CSV", {
+              description: error.message,
+            });
+            setBirthdateMap(undefined);
+          },
+        });
+      };
+      reader.readAsText(csvFiles[0]!);
+    } else {
+      setBirthdateMap(undefined);
+      setCsvError(undefined);
+    }
+  }, [csvFiles]);
 
   const {
     data: participantsData,
@@ -179,17 +274,25 @@ export function CertificateManager({
     },
   );
 
+  // Build podium API URL with age parameters when needed
+  const buildPodiumUrl = () => {
+    let url = `/api/certificates/podium?competitionId=${competition.id}&filterByCountry=${filterByCountry}&country=${competition.country_iso2}&template=${selectedTemplate}`;
+
+    if (selectedTemplate === "age" && birthdateMap && birthdateMap.size > 0) {
+      url += `&minAge=${ageRange[0]}&maxAge=${ageRange[1]}`;
+      url += `&birthdates=${encodeURIComponent(JSON.stringify(Array.from(birthdateMap.entries())))}`;
+    }
+
+    return url;
+  };
+
   const {
     data: podiumsData,
     isLoading: isLoadingPodiums,
     mutate: mutatePodiums,
-  } = useSWR<PodiumData[]>(
-    `/api/certificates/podium?competitionId=${competition.id}&filterByCountry=${filterByCountry}&country=${competition.country_iso2}&template=${selectedTemplate}`,
-    fetcher,
-    {
-      fallbackData: [],
-    },
-  );
+  } = useSWR<PodiumData[]>(buildPodiumUrl(), fetcher, {
+    fallbackData: [],
+  });
 
   if (isMobile) {
     return (
@@ -807,7 +910,9 @@ export function CertificateManager({
     "333mbf": "3x3x3 Multi-Blind",
   };
 
-  const handleTemplateChange = (value: "general" | "female" | "newcomer") => {
+  const handleTemplateChange = (
+    value: "general" | "female" | "newcomer" | "age",
+  ) => {
     setSelectedTemplate(value);
   };
 
@@ -1062,8 +1167,11 @@ export function CertificateManager({
                           <SelectContent>
                             <SelectItem value="general">General</SelectItem>
                             <SelectItem value="female">Femeniles</SelectItem>
-                            <SelectItem value="newcomer">
+                            <SelectItem value="newcomer" disabled>
                               Primera vez
+                            </SelectItem>
+                            <SelectItem value="age" disabled>
+                              Edad
                             </SelectItem>
                           </SelectContent>
                         </Select>
@@ -1074,6 +1182,66 @@ export function CertificateManager({
                             publiquen los resultados oficiales de la
                             competencia.
                           </p>
+                        )}
+                        {selectedTemplate === "age" && (
+                          <div className="space-y-3 mt-2">
+                            <div className="space-y-2">
+                              <Label className="text-xs font-medium">
+                                Archivo CSV con fechas de nacimiento
+                              </Label>
+                              <Input
+                                type="file"
+                                accept=".csv,text/csv"
+                                onChange={(e) => {
+                                  const files = e.target.files;
+                                  if (files && files.length > 0) {
+                                    setCsvFiles([files[0]!]);
+                                  } else {
+                                    setCsvFiles([]);
+                                  }
+                                }}
+                              />
+                              <p className="text-xs text-muted-foreground">
+                                Sube un archivo CSV con columnas 'Registrant Id'
+                                y 'Birth Date' (formato: YYYY-MM-DD)
+                              </p>
+                              {csvError && (
+                                <p className="text-xs text-destructive">
+                                  {csvError}
+                                </p>
+                              )}
+                              {birthdateMap && birthdateMap.size > 0 && (
+                                <p className="text-xs text-green-600 dark:text-green-500">
+                                  ✓ {birthdateMap.size} competidor
+                                  {birthdateMap.size !== 1 ? "es" : ""} cargado
+                                  {birthdateMap.size !== 1 ? "s" : ""}
+                                </p>
+                              )}
+                            </div>
+                            {birthdateMap && birthdateMap.size > 0 && (
+                              <div className="space-y-2">
+                                <Label className="text-xs font-medium">
+                                  Rango de edad
+                                </Label>
+                                <Slider
+                                  value={tempAgeRange}
+                                  onValueChange={(value) =>
+                                    setTempAgeRange(value as [number, number])
+                                  }
+                                  onValueCommit={(value) =>
+                                    setAgeRange(value as [number, number])
+                                  }
+                                  min={0}
+                                  max={100}
+                                  step={1}
+                                  className="mt-2"
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                  {tempAgeRange[0]} - {tempAgeRange[1]} años
+                                </p>
+                              </div>
+                            )}
+                          </div>
                         )}
                       </div>
                       <div className="space-y-2">
@@ -1177,9 +1345,9 @@ export function CertificateManager({
                         size="sm"
                       >
                         {selectedPodiums.length === podiumsData?.length ? (
-                          <X className="h-4 w-4" />
+                          <X />
                         ) : (
-                          <Check className="h-4 w-4" />
+                          <Check />
                         )}
                         {selectedPodiums.length === podiumsData?.length
                           ? "Desmarcar todos"

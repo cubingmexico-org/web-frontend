@@ -122,6 +122,9 @@ importers:
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      papaparse:
+        specifier: ^5.4.1
+        version: 5.5.3
       pdfmake:
         specifier: ^0.2.10
         version: 0.2.23
@@ -162,6 +165,9 @@ importers:
       '@types/node':
         specifier: ^24.9.1
         version: 24.10.13
+      '@types/papaparse':
+        specifier: ^5.3.15
+        version: 5.5.2
       '@types/pdfmake':
         specifier: ^0.2.9
         version: 0.2.13

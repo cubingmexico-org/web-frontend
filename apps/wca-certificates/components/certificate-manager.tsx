@@ -80,13 +80,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
-import { Toggle } from "@workspace/ui/components/toggle";
 import { Input } from "@workspace/ui/components/input";
 import { FileUploader } from "./file-uploader";
 import { WcaMonochrome } from "@workspace/icons";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
 import { toast } from "sonner";
-import { Switch } from "@workspace/ui/components/switch";
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile";
 
 export function CertificateManager({
@@ -134,8 +132,6 @@ export function CertificateManager({
     "general" | "female" | "newcomer"
   >("general");
   const [searchParticipant, setSearchParticipant] = useState("");
-
-  const [filterByCountry, setFilterByCountry] = useState<boolean>(false);
 
   const isMobile = useIsMobile();
 
@@ -1298,11 +1294,14 @@ export function CertificateManager({
                                 <div
                                   key={person.registrantId}
                                   className="flex items-center space-x-2 rounded-md p-2 hover:bg-background/80 transition-colors cursor-pointer"
-                                  onClick={() => {
-                                    const checkbox = document.getElementById(
-                                      String(person.registrantId),
-                                    ) as HTMLButtonElement;
-                                    checkbox?.click();
+                                  onClick={(e) => {
+                                    // Only trigger if clicking the container, not the checkbox or label
+                                    if (e.target === e.currentTarget) {
+                                      const checkbox = document.getElementById(
+                                        String(person.registrantId),
+                                      );
+                                      checkbox?.click();
+                                    }
                                   }}
                                 >
                                   <Checkbox
@@ -1418,7 +1417,7 @@ export function CertificateManager({
                         onClick={() => generateParticipantPDF("download")}
                       >
                         <Download />
-                        Descargar ({Math.ceil(selectedParticipants.length / 3)})
+                        Descargar ({selectedParticipants.length})
                       </Button>
                     </div>
                   </CardFooter>

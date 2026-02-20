@@ -471,26 +471,29 @@ export function BadgeManager({
                                       <div
                                         key={person.wcaUserId}
                                         className="flex items-center space-x-2 rounded-md p-2 hover:bg-accent/50 transition-colors cursor-pointer"
-                                        onClick={() => {
-                                          const checked = !isChecked;
-                                          if (checked) {
-                                            setSelectedPersons((prev) =>
-                                              prev.some(
-                                                (p) =>
-                                                  p.registrantId ===
-                                                  person.registrantId,
-                                              )
-                                                ? prev
-                                                : [...prev, person],
-                                            );
-                                          } else {
-                                            setSelectedPersons((prev) =>
-                                              prev.filter(
-                                                (p) =>
-                                                  p.registrantId !==
-                                                  person.registrantId,
-                                              ),
-                                            );
+                                        onClick={(e) => {
+                                          // Only trigger if clicking the container, not the checkbox or label
+                                          if (e.target === e.currentTarget) {
+                                            const checked = !isChecked;
+                                            if (checked) {
+                                              setSelectedPersons((prev) =>
+                                                prev.some(
+                                                  (p) =>
+                                                    p.registrantId ===
+                                                    person.registrantId,
+                                                )
+                                                  ? prev
+                                                  : [...prev, person],
+                                              );
+                                            } else {
+                                              setSelectedPersons((prev) =>
+                                                prev.filter(
+                                                  (p) =>
+                                                    p.registrantId !==
+                                                    person.registrantId,
+                                                ),
+                                              );
+                                            }
                                           }
                                         }}
                                       >

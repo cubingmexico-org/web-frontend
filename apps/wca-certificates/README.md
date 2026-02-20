@@ -117,6 +117,7 @@ apps/wca-certificates/
 ### Certificate Designer
 
 The certificate designer allows organizers to:
+
 - Customize certificate content using a rich text editor
 - Position elements on a canvas
 - Add images, logos, and QR codes
@@ -126,6 +127,7 @@ The certificate designer allows organizers to:
 ### Badge Manager
 
 Create and manage competition badges with:
+
 - Participant information
 - Custom designs
 - Bulk operations
@@ -134,6 +136,7 @@ Create and manage competition badges with:
 ### WCA Integration
 
 Automatically fetch and use:
+
 - Competition details
 - Participant information
 - Results data
@@ -142,6 +145,7 @@ Automatically fetch and use:
 ## 🔧 Configuration
 
 Configuration files:
+
 - `next.config.mjs` - Next.js configuration
 - `tsconfig.json` - TypeScript configuration
 - `eslint.config.js` - ESLint rules
@@ -151,6 +155,7 @@ Configuration files:
 ## 📦 Dependencies
 
 Key dependencies include:
+
 - Next.js and React 19
 - Tiptap for rich text editing
 - Radix UI components

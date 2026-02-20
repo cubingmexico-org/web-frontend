@@ -16,6 +16,7 @@ Shared UI component library built with shadcn/ui, Radix UI, and Tailwind CSS for
 ## 📦 Available Components
 
 ### Form Inputs
+
 - `button` - Customizable button with variants
 - `input` - Text input field
 - `textarea` - Multi-line text input
@@ -32,6 +33,7 @@ Shared UI component library built with shadcn/ui, Radix UI, and Tailwind CSS for
 - `visually-hidden-input` - Accessible hidden input
 
 ### Layout
+
 - `card` - Container with header, content, footer
 - `separator` - Visual divider
 - `scroll-area` - Custom scrollable area
@@ -39,12 +41,14 @@ Shared UI component library built with shadcn/ui, Radix UI, and Tailwind CSS for
 - `accordion` - Collapsible sections
 
 ### Navigation
+
 - `breadcrumb` - Breadcrumb navigation
 - `navigation-menu` - Responsive navigation
 - `menubar` - Application menu bar
 - `command` - Command palette
 
 ### Overlays
+
 - `dialog` - Modal dialog
 - `sheet` - Slide-out panel
 - `drawer` - Bottom drawer
@@ -54,17 +58,20 @@ Shared UI component library built with shadcn/ui, Radix UI, and Tailwind CSS for
 - `tooltip` - Tooltip component
 
 ### Feedback
+
 - `alert` - Alert message component
 - `badge` - Status badge
 - `progress` - Progress indicator
 - `skeleton` - Loading skeleton
 
 ### Data Display
+
 - `table` - Data table
 - `avatar` - User avatar
 - `faceted` - Faceted filter component
 
 ### Utilities
+
 - `button-group` - Group of buttons
 - `toggle` - Toggle button
 - `toggle-group` - Group of toggle buttons
@@ -89,9 +96,9 @@ This package is automatically available in the monorepo workspace:
 
 ```tsx
 // Import individual components
-import { Button } from "@workspace/ui/components/button"
-import { Input } from "@workspace/ui/components/input"
-import { Card } from "@workspace/ui/components/card"
+import { Button } from "@workspace/ui/components/button";
+import { Input } from "@workspace/ui/components/input";
+import { Card } from "@workspace/ui/components/card";
 
 // Use in your component
 export function MyComponent() {
@@ -100,37 +107,29 @@ export function MyComponent() {
       <Input placeholder="Enter text..." />
       <Button>Submit</Button>
     </Card>
-  )
+  );
 }
 ```
 
 ### Using Utility Functions
 
 ```tsx
-import { cn } from "@workspace/ui/lib/utils"
+import { cn } from "@workspace/ui/lib/utils";
 
 export function MyComponent({ className }) {
-  return (
-    <div className={cn("px-4 py-2", className)}>
-      Content
-    </div>
-  )
+  return <div className={cn("px-4 py-2", className)}>Content</div>;
 }
 ```
 
 ### Using Hooks
 
 ```tsx
-import { useMediaQuery } from "@workspace/ui/hooks/use-media-query"
+import { useMediaQuery } from "@workspace/ui/hooks/use-media-query";
 
 export function MyComponent() {
-  const isMobile = useMediaQuery("(max-width: 768px)")
-  
-  return (
-    <div>
-      {isMobile ? "Mobile View" : "Desktop View"}
-    </div>
-  )
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
+  return <div>{isMobile ? "Mobile View" : "Desktop View"}</div>;
 }
 ```
 
@@ -143,7 +142,7 @@ The UI library uses CSS variables for theming, making it easy to customize color
 In your app's `tailwind.config.ts`:
 
 ```typescript
-import sharedConfig from "@workspace/ui/tailwind.config"
+import sharedConfig from "@workspace/ui/tailwind.config";
 
 const config = {
   presets: [sharedConfig],
@@ -153,9 +152,9 @@ const config = {
     // Include UI package components
     "../../packages/ui/src/**/*.{ts,tsx}",
   ],
-}
+};
 
-export default config
+export default config;
 ```
 
 ### CSS Variables
@@ -163,7 +162,7 @@ export default config
 Import the global styles in your app:
 
 ```tsx
-import "@workspace/ui/styles/globals.css"
+import "@workspace/ui/styles/globals.css";
 ```
 
 Colors are defined as CSS variables and can be customized in your app's CSS.
@@ -182,6 +181,7 @@ pnpm dlx shadcn@latest add dialog -c packages/ui
 ```
 
 This will:
+
 1. Download the component from shadcn/ui
 2. Place it in `packages/ui/src/components/`
 3. Make it available to all apps in the workspace
@@ -211,20 +211,16 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "@workspace/ui/components/card"
+} from "@workspace/ui/components/card";
 
 <Card>
   <CardHeader>
     <CardTitle>Card Title</CardTitle>
     <CardDescription>Card description</CardDescription>
   </CardHeader>
-  <CardContent>
-    Card content goes here
-  </CardContent>
-  <CardFooter>
-    Card footer
-  </CardFooter>
-</Card>
+  <CardContent>Card content goes here</CardContent>
+  <CardFooter>Card footer</CardFooter>
+</Card>;
 ```
 
 ### Dialog Component
@@ -237,7 +233,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@workspace/ui/components/dialog"
+} from "@workspace/ui/components/dialog";
 
 <Dialog>
   <DialogTrigger>Open Dialog</DialogTrigger>
@@ -248,7 +244,7 @@ import {
     </DialogHeader>
     {/* Dialog content */}
   </DialogContent>
-</Dialog>
+</Dialog>;
 ```
 
 ## 🛠️ Tech Stack

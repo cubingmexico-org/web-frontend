@@ -16,7 +16,6 @@ import { Metadata } from "next";
 import { MapContainer } from "../_components/map-container";
 import type { GeoJSONProps } from "react-leaflet";
 import { getStatesGeoJSON } from "@/db/queries";
-import { headers } from "next/headers";
 
 interface PageProps {
   searchParams: Promise<SearchParams>;
@@ -53,18 +52,13 @@ export default async function Page(props: PageProps) {
     getCompetitionsStatusCounts(),
   ]);
 
-  const locations = await getCompetitionsLocations({
-    ...search,
-    filters: validFilters,
-  });
-
-  const headersList = await headers();
-  const domain = headersList.get("host");
-  const isProduction = process.env.NODE_ENV === "production";
-
-  const statesData = await getStatesGeoJSON(
-    isProduction ? `https://${domain}` : `http://${domain}`,
-  );
+  const [locations, statesData] = await Promise.all([
+    getCompetitionsLocations({
+      ...search,
+      filters: validFilters,
+    }),
+    getStatesGeoJSON(),
+  ]);
 
   const statesIds = Array.from(
     new Set(locations.map((location) => location.stateId)),

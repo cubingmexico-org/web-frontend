@@ -15,7 +15,7 @@ export function MapContainer({
   statesData: GeoJSONProps["data"];
 }) {
   return (
-    <div className="bg-white-700 mx-auto my-5 w-[98%] h-[480px]">
+    <div className="bg-white-700 mx-auto my-5 w-[98%] h-120">
       <Map posix={[23.9345, -102.5528]} statesData={statesData} />
     </div>
   );

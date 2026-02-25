@@ -1,6 +1,8 @@
 "use cache";
 
 import "server-only";
+import { readFile } from "fs/promises";
+import { join } from "path";
 import { db } from "@/db";
 import {
   event,
@@ -397,15 +399,14 @@ interface StatesGeoJSON {
   }[];
 }
 
-export async function getStatesGeoJSON(
-  domain: string,
-): Promise<StatesGeoJSON | null> {
+export async function getStatesGeoJSON(): Promise<StatesGeoJSON | null> {
   cacheLife("max");
   cacheTag("geojson");
 
   try {
-    const response = await fetch(domain + "/states.geojson");
-    return response.json();
+    const filePath = join(process.cwd(), "public", "states.geojson");
+    const fileContent = await readFile(filePath, "utf-8");
+    return JSON.parse(fileContent) as StatesGeoJSON;
   } catch (err) {
     console.error(err);
     return null;

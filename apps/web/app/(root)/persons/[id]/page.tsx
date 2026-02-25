@@ -9,7 +9,7 @@ import {
   TableCell,
 } from "@workspace/ui/components/table";
 import Image from "next/image";
-import { getEvents, getPerson } from "@/db/queries";
+import { getEvents, getPerson, getStatesGeoJSON } from "@/db/queries";
 import {
   formatTime,
   formatTime333mbf,
@@ -28,7 +28,6 @@ import type { GeoJSONProps } from "react-leaflet";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { MapContainer } from "./_components/map-container";
-import { getStatesGeoJSON } from "@/db/queries";
 import {
   getAverageStateRanks,
   getIsOrganizer,
@@ -37,7 +36,6 @@ import {
   getSingleStateRanks,
   getWcaPersonData,
 } from "./_lib/queries";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import type { DelegateStatus } from "@/types/wca";
 
@@ -63,23 +61,34 @@ export default async function Page({
 }) {
   const id = (await params).id;
 
-  const [person, wcaData, events] = await Promise.all([
+  // Fetch events first — cached with cacheLife("max"), effectively free after first call.
+  // This unblocks getMembershipData so everything else can run in a single Promise.all.
+  const events = await getEvents();
+
+  const [
+    person,
+    wcaData,
+    statesData,
+    singleStateRanks,
+    averageStateRanks,
+    isOrganizer,
+    membershipData,
+  ] = await Promise.all([
     getPersonInfo(id),
     getWcaPersonData(id),
-    getEvents(),
+    getStatesGeoJSON(),
+    getSingleStateRanks(id),
+    getAverageStateRanks(id),
+    getIsOrganizer(id),
+    getMembershipData(
+      id,
+      events.map((event) => event.id),
+    ),
   ]);
 
   if (!person || !wcaData) {
     notFound();
   }
-
-  const headersList = await headers();
-  const domain = headersList.get("host");
-  const isProduction = process.env.NODE_ENV === "production";
-
-  const statesData = await getStatesGeoJSON(
-    isProduction ? `https://${domain}` : `http://${domain}`,
-  );
 
   const stateIds = person.statesNames;
 
@@ -87,42 +96,33 @@ export default async function Page({
     stateIds?.includes(feature.properties.id),
   ) as unknown as GeoJSONProps["data"];
 
-  const [singleStateRanks, averageStateRanks, membershipData, isOrganizer] =
-    await Promise.all([
-      getSingleStateRanks(id),
-      getAverageStateRanks(id),
-      getMembershipData(
-        id,
-        events.map((event) => event.id),
-      ),
-      getIsOrganizer(id),
-    ]);
-
   const isDelegate = wcaData.person.delegate_status !== null;
 
   const tier = getTier(membershipData);
 
+  // Create lookup maps for O(1) access instead of repeated find() calls
+  const singleRankMap = new Map(
+    singleStateRanks.map((rank) => [rank.eventId, rank.stateRank]),
+  );
+  const averageRankMap = new Map(
+    averageStateRanks.map((rank) => [rank.eventId, rank.stateRank]),
+  );
+
   const records = events
     .filter((event) => wcaData.personal_records[event.id])
     .map((event) => {
-      const singleStateRank = singleStateRanks.find(
-        (rank) => rank.eventId === event.id,
-      )?.stateRank;
-      const averageStateRank = averageStateRanks.find(
-        (rank) => rank.eventId === event.id,
-      )?.stateRank;
-
+      const personalRecord = wcaData.personal_records[event.id];
       return {
         event: event.id,
         record: {
-          ...wcaData.personal_records[event.id],
+          ...personalRecord,
           single: {
-            ...wcaData.personal_records[event.id]?.single,
-            state_rank: singleStateRank ?? undefined,
+            ...personalRecord?.single,
+            state_rank: singleRankMap.get(event.id),
           },
           average: {
-            ...wcaData.personal_records[event.id]?.average,
-            state_rank: averageStateRank ?? undefined,
+            ...personalRecord?.average,
+            state_rank: averageRankMap.get(event.id),
           },
         },
       };

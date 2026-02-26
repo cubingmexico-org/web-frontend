@@ -1,4 +1,4 @@
-"use cache";
+"use cache: remote";
 
 import "server-only";
 import { db } from "@/db";

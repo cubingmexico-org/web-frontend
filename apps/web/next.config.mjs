@@ -35,6 +35,7 @@ const nextConfig = {
     ],
     unoptimized: true,
   },
+  reactCompiler: true,
   experimental: {
     authInterrupts: true,
   },

@@ -44,6 +44,7 @@ export async function profileFormAction(
     });
 
     updateTag(`profile-person-${data.personId}`);
+    updateTag(`person-page-${data.personId}`);
 
     await fetch(process.env.URL + "/api/update-state-ranks", {
       method: "POST",

@@ -37,6 +37,7 @@ import {
   getWcaPersonData,
 } from "./_lib/queries";
 import { notFound } from "next/navigation";
+import { cacheLife, cacheTag } from "next/cache";
 import type { DelegateStatus } from "@/types/wca";
 
 type Props = {
@@ -54,12 +55,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const id = (await params).id;
+async function PersonPageContent({ id }: { id: string }) {
+  "use cache: remote";
+  cacheLife("hours");
+  cacheTag(`person-page-${id}`);
 
   // Fetch events first — cached with cacheLife("max"), effectively free after first call.
   // This unblocks getMembershipData so everything else can run in a single Promise.all.
@@ -429,4 +428,13 @@ export default async function Page({
       <MapContainer statesData={filteredStatesData} />
     </>
   );
+}
+
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const id = (await params).id;
+  return <PersonPageContent id={id} />;
 }

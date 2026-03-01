@@ -47,7 +47,7 @@ export function FooterSkeleton() {
           </span>
         </div>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-4">
-          <p className="inline-flex justify-center sm:justify-start flex-col sm:flex-row sm:items-center gap-2 text-sm">
+          <div className="inline-flex justify-center sm:justify-start flex-col sm:flex-row sm:items-center gap-2 text-sm">
             <span className="text-muted-foreground flex items-center">
               <Trophy className="h-4 w-4 mr-1" />
               Último: <Skeleton className="h-4 w-32 ml-1" />
@@ -58,7 +58,7 @@ export function FooterSkeleton() {
               Resultados pendientes (
               <Skeleton className="h-4 w-3 inline-block" />)
             </span>
-          </p>
+          </div>
         </div>
         <div className="mt-4 text-center text-xs text-muted-foreground">
           <p>

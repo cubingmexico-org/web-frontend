@@ -56,8 +56,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 async function PersonPageContent({ id }: { id: string }) {
-  "use cache: remote";
-  cacheLife("hours");
+  "use cache";
+  cacheLife("days");
   cacheTag(`person-page-${id}`);
 
   // Fetch events first — cached with cacheLife("max"), effectively free after first call.

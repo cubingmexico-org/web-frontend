@@ -1,5 +1,3 @@
-"use cache: remote";
-
 import "server-only";
 import { db } from "@/db";
 import {
@@ -23,7 +21,8 @@ import { cacheLife, cacheTag } from "next/cache";
 export async function getWcaPersonData(
   wcaId: string,
 ): Promise<WcaPersonResponse | null> {
-  cacheLife("hours");
+  "use cache";
+  cacheLife("days");
   cacheTag(`wca-person-data-${wcaId}`);
 
   try {
@@ -37,7 +36,8 @@ export async function getWcaPersonData(
 }
 
 export async function getPersonInfo(wcaId: string) {
-  cacheLife("hours");
+  "use cache";
+  cacheLife("days");
   cacheTag(`person-info-${wcaId}`);
 
   try {
@@ -63,7 +63,8 @@ export async function getPersonInfo(wcaId: string) {
 }
 
 export async function getSingleStateRanks(wcaId: string) {
-  cacheLife("hours");
+  "use cache";
+  cacheLife("days");
   cacheTag(`single-state-ranks-${wcaId}`);
 
   try {
@@ -81,7 +82,8 @@ export async function getSingleStateRanks(wcaId: string) {
 }
 
 export async function getAverageStateRanks(wcaId: string) {
-  cacheLife("hours");
+  "use cache";
+  cacheLife("days");
   cacheTag(`average-state-ranks-${wcaId}`);
 
   try {
@@ -99,6 +101,7 @@ export async function getAverageStateRanks(wcaId: string) {
 }
 
 export async function getMembershipData(wcaId: string, eventIds: string[]) {
+  "use cache";
   cacheLife("hours");
   cacheTag(`membership-data-${wcaId}`);
 
@@ -133,7 +136,8 @@ export async function getMembershipData(wcaId: string, eventIds: string[]) {
 }
 
 export async function getIsOrganizer(wcaId: string) {
-  cacheLife("hours");
+  "use cache";
+  cacheLife("days");
   cacheTag(`is-organizer-${wcaId}`);
 
   try {

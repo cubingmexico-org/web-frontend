@@ -5,23 +5,18 @@ import { Skeleton } from "@workspace/ui/components/skeleton";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
+import type { LeafletMapLocation } from "@/components/leaflet-map";
 
-const Map = dynamic(() => import("./map").then((mod) => mod.Map), {
-  ssr: false,
-  loading: () => <Skeleton className="w-full h-full" />,
-});
+const LeafletMap = dynamic(
+  () => import("@/components/leaflet-map").then((mod) => mod.LeafletMap),
+  { ssr: false, loading: () => <Skeleton className="w-full h-full" /> },
+);
 
 export function MapContainer({
   locations,
   statesData,
 }: {
-  locations: {
-    id: string;
-    name: string;
-    stateName: string | null;
-    latitude: number | null;
-    longitude: number | null;
-  }[];
+  locations: LeafletMapLocation[];
   statesData: GeoJSONProps["data"];
 }) {
   const [showOnlyStates, setShowOnlyStates] = useState(false);
@@ -39,12 +34,11 @@ export function MapContainer({
           </TabsList>
         </Tabs>
       </div>
-      <div className="h-[480px]">
-        <Map
+      <div className="h-120">
+        <LeafletMap
           posix={[23.9345, -102.5528]}
           locations={showOnlyStates ? [] : locations}
-          statesData={statesData}
-          showOnlyStates={showOnlyStates}
+          statesData={showOnlyStates ? statesData : undefined}
         />
       </div>
     </div>

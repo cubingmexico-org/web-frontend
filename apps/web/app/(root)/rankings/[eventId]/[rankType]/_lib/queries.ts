@@ -283,7 +283,6 @@ export async function getRankAveragesGenderCounts(eventId: Event["id"]) {
   cacheLife("days");
   cacheTag(`rank-averages-gender-counts-${eventId}`);
 
-
   try {
     return await db
       .select({

@@ -31,7 +31,7 @@ export async function getRankSingles(
   input: GetResultSinglesSchema,
   eventId: Event["id"],
 ) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("results-single");
 
   try {
@@ -119,7 +119,7 @@ export async function getRankSingles(
 }
 
 export async function getRankSinglesStateCounts(eventId: Event["id"]) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("results-single-state-counts");
 
   try {
@@ -153,7 +153,7 @@ export async function getRankSinglesStateCounts(eventId: Event["id"]) {
 }
 
 export async function getRankSinglesGenderCounts(eventId: Event["id"]) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("results-single-gender-counts");
 
   try {
@@ -189,7 +189,7 @@ export async function getRankAverages(
   input: GetResultAveragesSchema,
   eventId: Event["id"],
 ) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("results-average");
 
   try {
@@ -277,7 +277,7 @@ export async function getRankAverages(
 }
 
 export async function getRankAveragesStateCounts(eventId: Event["id"]) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("results-average-state-counts");
 
   try {
@@ -311,7 +311,7 @@ export async function getRankAveragesStateCounts(eventId: Event["id"]) {
 }
 
 export async function getRankAveragesGenderCounts(eventId: Event["id"]) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag(`results-average-gender-counts-${eventId}`);
 
   try {

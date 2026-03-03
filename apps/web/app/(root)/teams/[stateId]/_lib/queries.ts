@@ -29,7 +29,7 @@ import { type GetMembersSchema } from "./validations";
 import { cacheLife, cacheTag } from "next/cache";
 
 export async function getTeamInfo(stateId: string) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag(`team-info-${stateId}`);
 
   try {
@@ -56,7 +56,7 @@ export async function getTeamInfo(stateId: string) {
 }
 
 export async function getTotalMembers(stateId: string) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag(`total-members-${stateId}`);
 
   try {
@@ -73,7 +73,7 @@ export async function getTotalMembers(stateId: string) {
 }
 
 export async function getTeamCompetitions(stateId: string) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag(`team-competitions-${stateId}`);
 
   try {
@@ -98,7 +98,7 @@ export async function getTeamCompetitions(stateId: string) {
 }
 
 export async function getTeamPodiums(stateId: string) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag(`team-podiums-${stateId}`);
 
   try {
@@ -121,7 +121,7 @@ export async function getTeamPodiums(stateId: string) {
 }
 
 export async function getSingleNationalRecords(stateId: string) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag(`single-national-records-${stateId}`);
 
   try {
@@ -137,7 +137,7 @@ export async function getSingleNationalRecords(stateId: string) {
 }
 
 export async function getAverageNationalRecords(stateId: string) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag(`average-national-records-${stateId}`);
 
   try {
@@ -156,7 +156,7 @@ export async function getMembers(
   input: GetMembersSchema,
   stateId: Person["stateId"],
 ) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag(`members-list-${stateId}`);
 
   try {
@@ -267,7 +267,7 @@ export async function getMembers(
 }
 
 export async function getMembersGenderCounts(stateId: Person["stateId"]) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag(`members-gender-count-${stateId}`);
 
   try {
@@ -298,7 +298,7 @@ export async function getMembersGenderCounts(stateId: Person["stateId"]) {
 }
 
 export async function getIsTeamAdmin(stateId: string, personId: string) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag(`team-admin-${stateId}-${personId}`);
 
   try {

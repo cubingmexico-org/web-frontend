@@ -12,7 +12,7 @@ import {
   Calendar,
   Clock,
 } from "lucide-react";
-import { Button, buttonVariants } from "@workspace/ui/components/button";
+import { buttonVariants } from "@workspace/ui/components/button";
 import {
   Card,
   CardContent,
@@ -38,6 +38,13 @@ import { notFound } from "next/navigation";
 import { cn } from "@workspace/ui/lib/utils";
 import ReactMarkdown from "react-markdown";
 import { Map } from "./_components/map";
+import { RegistrationButton } from "./_components/registration-button";
+import { getCompetitions } from "@/db/queries";
+
+export async function generateStaticParams() {
+  const competitions = await getCompetitions();
+  return competitions.map((competition) => ({ id: competition.id }));
+}
 
 export default async function Page({
   params,
@@ -67,16 +74,8 @@ export default async function Page({
     }).format(amount / 100);
   };
 
-  const isRegistrationOpen = () => {
-    const now = new Date();
-    const openDate = new Date(competitionData.registration_open);
-    const closeDate = new Date(competitionData.registration_close);
-    return now >= openDate && now <= closeDate;
-  };
-
-  const registrationOpen = isRegistrationOpen();
-
-  function extractEmail(contact: string): string | null {
+  function extractEmail(contact: string | null | undefined): string | null {
+    if (!contact) return null;
     // Match [text](mailto:email) or just email
     const markdownMailto = contact.match(/\[.*?\]\(mailto:(.*?)\)/);
     if (markdownMailto) return markdownMailto[1] ?? null;
@@ -188,25 +187,11 @@ export default async function Page({
         </div>
 
         <div className="flex gap-3">
-          {registrationOpen ? (
-            <Link
-              className={cn(
-                buttonVariants({ variant: "default", size: "lg" }),
-                "bg-green-500 hover:bg-green-600 dark:bg-green-700 dark:hover:bg-green-800 text-white",
-              )}
-              href={competitionData.url + "/register"}
-            >
-              Inscribirse ahora
-            </Link>
-          ) : (
-            <Button
-              size="lg"
-              className="bg-green-500 hover:bg-green-600 dark:bg-green-700 dark:hover:bg-green-800 text-white"
-              disabled
-            >
-              Inscripciones cerradas
-            </Button>
-          )}
+          <RegistrationButton
+            registrationOpen={competitionData.registration_open}
+            registrationClose={competitionData.registration_close}
+            registrationUrl={competitionData.url}
+          />
           <Link
             className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
             href={competitionData.url}

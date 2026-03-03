@@ -5,8 +5,13 @@ import {
   getStates,
 } from "@/db/queries";
 import type { MetadataRoute } from "next";
+import { cacheLife, cacheTag } from "next/cache";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  "use cache";
+  cacheLife("days");
+  cacheTag("sitemap");
+
   const states = await getStates();
   const events = await getEvents();
   const persons = await getPersons();

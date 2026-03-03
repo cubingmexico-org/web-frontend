@@ -19,7 +19,7 @@ import { type GetPersonsSchema } from "./validations";
 import { cacheLife, cacheTag } from "next/cache";
 
 export async function getCompetitors(input: GetPersonsSchema) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("competitors");
 
   try {
@@ -117,7 +117,7 @@ export async function getCompetitors(input: GetPersonsSchema) {
 }
 
 export async function getCompetitorsStateCounts() {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("competitors-state-counts");
 
   try {
@@ -148,7 +148,7 @@ export async function getCompetitorsStateCounts() {
 }
 
 export async function getCompetitorsGenderCounts() {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("competitors-gender-counts");
 
   try {

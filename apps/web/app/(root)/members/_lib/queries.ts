@@ -12,7 +12,7 @@ import { and, countDistinct, eq, gt, inArray, sql } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 
 export async function getMollerzMembers() {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("mollerz-members");
 
   try {

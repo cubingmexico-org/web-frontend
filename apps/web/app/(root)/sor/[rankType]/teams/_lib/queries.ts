@@ -20,7 +20,7 @@ interface TeamData {
 }
 
 export async function getSORTeamsAverage(): Promise<TeamData[]> {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("sor-teams-average");
 
   try {
@@ -85,7 +85,7 @@ export async function getSORTeamsAverage(): Promise<TeamData[]> {
 }
 
 export async function getSORTeamsSingle(): Promise<TeamData[]> {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("sor-teams-single");
 
   try {

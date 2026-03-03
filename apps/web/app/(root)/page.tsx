@@ -20,7 +20,7 @@ export default function Page() {
     <main className="grow">
       {/* <Notification /> */}
 
-      <section className="relative h-[500px] md:h-[600px] lg:h-[700px] w-full overflow-hidden">
+      <section className="relative h-125 md:h-150 lg:h-175 w-full overflow-hidden">
         <Image
           alt="Competidores de speedcubing"
           className="object-cover object-center"

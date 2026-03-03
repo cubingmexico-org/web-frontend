@@ -29,7 +29,7 @@ import { type GetCompetitionsSchema } from "./validations";
 import { cacheLife, cacheTag } from "next/cache";
 
 export async function getCompetitions(input: GetCompetitionsSchema) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("competitions");
 
   try {
@@ -179,7 +179,7 @@ export async function getCompetitions(input: GetCompetitionsSchema) {
 }
 
 export async function getCompetitionsStateCounts() {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("competitions-state-counts");
 
   try {
@@ -209,7 +209,7 @@ export async function getCompetitionsStateCounts() {
 }
 
 export async function getCompetitionsEventCounts() {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("competitions-event-counts");
 
   try {
@@ -244,7 +244,7 @@ export async function getCompetitionsEventCounts() {
 }
 
 export async function getCompetitionsStatusCounts() {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("competitions-status-counts");
 
   try {
@@ -280,7 +280,7 @@ export async function getCompetitionsStatusCounts() {
 }
 
 export async function getCompetitionsLocations(input: GetCompetitionsSchema) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("competitions-locations");
 
   try {

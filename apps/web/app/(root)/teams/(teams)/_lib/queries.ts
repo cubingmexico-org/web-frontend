@@ -7,7 +7,7 @@ import { eq, desc, count } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 
 export async function getTeams() {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("teams-data");
 
   try {

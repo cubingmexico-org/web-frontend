@@ -16,7 +16,7 @@ import { GetRecordsSchema } from "./validations";
 import { cacheLife, cacheTag } from "next/cache";
 
 export async function getRecords(input: GetRecordsSchema) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("records");
 
   try {

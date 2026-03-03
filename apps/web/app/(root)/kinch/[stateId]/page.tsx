@@ -1,4 +1,3 @@
-import { SearchParams } from "@/types";
 import {
   Table,
   TableHeader,
@@ -19,6 +18,11 @@ type Props = {
   params: Promise<{ stateId: string }>;
 };
 
+export async function generateStaticParams() {
+  const states = await getStates();
+  return states.map((state) => ({ stateId: state.id }));
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const stateId = (await params).stateId;
 
@@ -32,7 +36,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page(props: {
   params: Promise<{ stateId: string }>;
-  searchParams: Promise<SearchParams>;
 }) {
   const stateId = (await props.params).stateId;
 

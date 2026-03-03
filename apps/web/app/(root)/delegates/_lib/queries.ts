@@ -24,7 +24,7 @@ import { type GetDelegatesSchema } from "./validations";
 import { cacheLife, cacheTag } from "next/cache";
 
 export async function getDelegates(input: GetDelegatesSchema) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("delegates");
 
   try {
@@ -113,7 +113,7 @@ export async function getDelegates(input: GetDelegatesSchema) {
 }
 
 export async function getDelegatesStateCounts() {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("delegates-state-counts");
 
   try {
@@ -145,7 +145,7 @@ export async function getDelegatesStateCounts() {
 }
 
 export async function getDelegatesGenderCounts() {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("delegates-gender-counts");
 
   try {
@@ -176,7 +176,7 @@ export async function getDelegatesGenderCounts() {
 }
 
 export async function getDelegateStatusCounts() {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("delegates-status-counts");
 
   try {

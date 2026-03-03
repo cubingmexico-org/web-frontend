@@ -19,7 +19,7 @@ interface KinchRanksTeams {
 }
 
 export async function getKinchRanksTeams(): Promise<KinchRanksTeams[]> {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("kinch-ranks-teams-data");
 
   try {

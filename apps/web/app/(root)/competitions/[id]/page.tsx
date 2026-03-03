@@ -38,6 +38,12 @@ import { notFound } from "next/navigation";
 import { cn } from "@workspace/ui/lib/utils";
 import ReactMarkdown from "react-markdown";
 import { Map } from "./_components/map";
+import { getCompetitions } from "@/db/queries";
+
+export async function generateStaticParams() {
+  const competitions = await getCompetitions();
+  return competitions.map((competition) => ({ id: competition.id }));
+}
 
 export default async function Page({
   params,

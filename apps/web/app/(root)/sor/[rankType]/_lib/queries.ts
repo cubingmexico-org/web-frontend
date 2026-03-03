@@ -11,7 +11,7 @@ export async function getSOR(
   input: GetSORSinglesSchema,
   rankType: "single" | "average",
 ) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag(`sor-${rankType}`);
 
   try {
@@ -89,7 +89,7 @@ export async function getSOR(
 }
 
 export async function getSORStateCounts(rankType: "single" | "average") {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag(`sor-state-counts-${rankType}`);
 
   try {
@@ -122,7 +122,7 @@ export async function getSORStateCounts(rankType: "single" | "average") {
 }
 
 export async function getSORGenderCounts(rankType: "single" | "average") {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag(`sor-gender-counts-${rankType}`);
 
   try {

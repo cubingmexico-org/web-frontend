@@ -24,7 +24,7 @@ import { type GetOrganizersSchema } from "./validations";
 import { cacheLife, cacheTag } from "next/cache";
 
 export async function getOrganizers(input: GetOrganizersSchema) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("organizers");
 
   try {
@@ -115,7 +115,7 @@ export async function getOrganizers(input: GetOrganizersSchema) {
 }
 
 export async function getOrganizersStateCounts() {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("organizers-state-counts");
 
   try {
@@ -147,7 +147,7 @@ export async function getOrganizersStateCounts() {
 }
 
 export async function getOrganizersGenderCounts() {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("organizers-gender-counts");
 
   try {
@@ -178,7 +178,7 @@ export async function getOrganizersGenderCounts() {
 }
 
 export async function getOrganizerStatusCounts() {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("organizers-status-counts");
 
   try {

@@ -1,31 +1,29 @@
 import * as React from "react";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import {
-  RankAveragesTable,
-  RankSinglesTable,
-} from "./_components/rankings-table";
-import {
-  getRankSinglesGenderCounts,
-  getRankSingles,
-  getRankSinglesStateCounts,
-  getRankAverages,
-  getRankAveragesStateCounts,
-  getRankAveragesGenderCounts,
-} from "./_lib/queries";
-import { SearchParams } from "@/types";
-import { getValidFilters } from "@/lib/data-table";
-import { searchParamsCache } from "./_lib/validations";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import { EventSelector } from "./_components/event-selector";
 import { getEvents } from "@/db/queries";
 import type { EventId } from "@/types/wca";
+import type { SearchParams } from "@/types";
+import {
+  RankSinglesLoader,
+  RankAveragesLoader,
+} from "./_components/rankings-loader";
 
 type Params = { eventId: EventId; rankType: "single" | "average" };
 
 type Props = {
   params: Promise<Params>;
 };
+
+export async function generateStaticParams() {
+  const events = await getEvents();
+  return events.flatMap((event) => [
+    { eventId: event.id, rankType: "single" },
+    { eventId: event.id, rankType: "average" },
+  ]);
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const rankType = (await params).rankType;
@@ -53,42 +51,12 @@ interface PageProps {
   searchParams: Promise<SearchParams>;
 }
 
-export default async function Page(props: PageProps) {
-  const searchParams = await props.searchParams;
-  const { eventId, rankType } = await props.params;
+export default async function Page({ params, searchParams }: PageProps) {
+  const { eventId, rankType } = await params;
 
   if (eventId === "333mbf" && rankType === "average") {
     redirect(`/rankings/333mbf/single`);
   }
-
-  const search = searchParamsCache.parse(searchParams);
-
-  const validFilters = getValidFilters(search.filters);
-
-  const promises =
-    rankType === "single"
-      ? Promise.all([
-          getRankSingles(
-            {
-              ...search,
-              filters: validFilters,
-            },
-            eventId,
-          ),
-          getRankSinglesStateCounts(eventId),
-          getRankSinglesGenderCounts(eventId),
-        ])
-      : Promise.all([
-          getRankAverages(
-            {
-              ...search,
-              filters: validFilters,
-            },
-            eventId,
-          ),
-          getRankAveragesStateCounts(eventId),
-          getRankAveragesGenderCounts(eventId),
-        ]);
 
   const events = await getEvents();
 
@@ -120,9 +88,9 @@ export default async function Page(props: PageProps) {
           }
         >
           {rankType === "single" ? (
-            <RankSinglesTable promises={promises} />
+            <RankSinglesLoader searchParams={searchParams} eventId={eventId} />
           ) : (
-            <RankAveragesTable promises={promises} />
+            <RankAveragesLoader searchParams={searchParams} eventId={eventId} />
           )}
         </React.Suspense>
       </div>

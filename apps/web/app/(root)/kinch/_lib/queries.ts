@@ -8,7 +8,7 @@ import { type GetKinchSinglesSchema } from "./validations";
 import { cacheLife, cacheTag } from "next/cache";
 
 export async function getKinchRanks(input: GetKinchSinglesSchema) {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("kinch-ranks");
 
   try {
@@ -85,7 +85,7 @@ export async function getKinchRanks(input: GetKinchSinglesSchema) {
 }
 
 export async function getKinchRanksStateCounts() {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("kinch-ranks-state-counts");
 
   try {
@@ -117,7 +117,7 @@ export async function getKinchRanksStateCounts() {
 }
 
 export async function getKinchRanksGenderCounts() {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("kinch-ranks-gender-counts");
 
   try {

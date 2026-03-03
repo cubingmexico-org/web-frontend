@@ -102,7 +102,7 @@ export async function getAverageStateRanks(wcaId: string) {
 
 export async function getMembershipData(wcaId: string, eventIds: string[]) {
   "use cache";
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag(`membership-data-${wcaId}`);
 
   try {

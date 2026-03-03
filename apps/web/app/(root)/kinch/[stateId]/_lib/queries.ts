@@ -16,7 +16,7 @@ interface KinchRanksState {
 export async function getKinchRanksState(
   stateId: string,
 ): Promise<KinchRanksState[]> {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("kinch-ranks-state");
 
   try {

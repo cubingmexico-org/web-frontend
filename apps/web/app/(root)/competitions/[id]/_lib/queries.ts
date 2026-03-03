@@ -7,7 +7,7 @@ import { cacheLife, cacheTag } from "next/cache";
 export async function getWcaCompetitionData(
   competitionId: string,
 ): Promise<Competition | null> {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag(`wca-competition-data-${competitionId}`);
 
   try {

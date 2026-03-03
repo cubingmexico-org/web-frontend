@@ -7,7 +7,7 @@ import { count, lt, eq, and, countDistinct } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 
 export async function getNumberOfPersons() {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("number-of-persons");
 
   try {
@@ -30,7 +30,7 @@ export async function getNumberOfPersons() {
 }
 
 export async function getNumberOfCompetitions() {
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("number-of-competitions");
 
   try {

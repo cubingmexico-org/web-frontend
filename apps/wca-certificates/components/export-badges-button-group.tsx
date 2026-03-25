@@ -762,6 +762,87 @@ export function ExportBadgesButtonGroup({
     );
   };
 
+  const exportToJPG = async () => {
+    setIsExporting(true);
+
+    toast.promise(
+      (async () => {
+        // Single badge export
+        if (selectedPersons.length === 1) {
+          const person = selectedPersons[0]!;
+
+          // Export front side
+          const frontCanvas = await createCanvasForSide(person, "front");
+          const frontDataUrl = frontCanvas.toDataURL("image/jpeg", 0.95);
+          const frontLink = document.createElement("a");
+          frontLink.href = frontDataUrl;
+          frontLink.download = `${person.name.replace(/\s/g, "_")}_badge_front.jpg`;
+          frontLink.click();
+
+          // Export back side if enabled
+          if (enableBackSide) {
+            const backCanvas = await createCanvasForSide(person, "back");
+            const backDataUrl = backCanvas.toDataURL("image/jpeg", 0.95);
+            const backLink = document.createElement("a");
+            backLink.href = backDataUrl;
+            backLink.download = `${person.name.replace(/\s/g, "_")}_badge_back.jpg`;
+            backLink.click();
+          }
+          return;
+        }
+
+        // Multiple badges export
+        const zip = new JSZip();
+
+        const promises = selectedPersons.flatMap((person) => {
+          const frontPromise = (async () => {
+            const canvas = await createCanvasForSide(person, "front");
+            const dataUrl = canvas.toDataURL("image/jpeg", 0.95);
+            const base64Data = dataUrl.split(",")[1];
+            if (base64Data) {
+              const filename = `${person.name.replace(/\s/g, "_")}_badge_front.jpg`;
+              zip.file(filename, base64Data, { base64: true });
+            }
+          })();
+
+          if (enableBackSide) {
+            const backPromise = (async () => {
+              const canvas = await createCanvasForSide(person, "back");
+              const dataUrl = canvas.toDataURL("image/jpeg", 0.95);
+              const base64Data = dataUrl.split(",")[1];
+              if (base64Data) {
+                const filename = `${person.name.replace(/\s/g, "_")}_badge_back.jpg`;
+                zip.file(filename, base64Data, { base64: true });
+              }
+            })();
+            return [frontPromise, backPromise];
+          }
+
+          return [frontPromise];
+        });
+
+        // Wait for all badges to be processed
+        await Promise.all(promises);
+
+        // Generate and download the ZIP file
+        const content = await zip.generateAsync({ type: "blob" });
+        const url = URL.createObjectURL(content);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${competition.name.replace(/\s/g, "_")}_badges_jpg.zip`;
+        a.click();
+        URL.revokeObjectURL(url);
+      })().finally(() => {
+        setIsExporting(false);
+      }),
+      {
+        loading: `Generando ${selectedPersons.length === 1 ? "gafete" : `${selectedPersons.length} gafetes`} JPG...`,
+        success: `${selectedPersons.length === 1 ? "Gafete JPG generado" : `${selectedPersons.length} gafetes JPG generados`} exitosamente`,
+        error: "Error al generar los JPG",
+      },
+    );
+  };
+
   const exportToPDF = async () => {
     setIsExporting(true);
 
@@ -1065,6 +1146,13 @@ export function ExportBadgesButtonGroup({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="[--radius:1rem]">
           <DropdownMenuGroup>
+            <DropdownMenuItem
+              disabled={selectedPersons.length === 0 || isExporting}
+              onClick={exportToJPG}
+            >
+              <Download />
+              Exportar JPG
+            </DropdownMenuItem>
             <DropdownMenuItem
               disabled={selectedPersons.length === 0 || isExporting}
               onClick={exportToPDF}

@@ -106,7 +106,7 @@ export async function getTeams(): Promise<Team[]> {
 
     const data = await res.json();
 
-    return data.teams;
+    return data;
   } catch (error) {
     console.error("Error fetching teams:", error);
     return [];
@@ -126,7 +126,7 @@ export async function getStates(): Promise<State[]> {
 
     const data = await res.json();
 
-    return data.states;
+    return data;
   } catch (error) {
     console.error("Error fetching states:", error);
     return [];
@@ -149,7 +149,7 @@ export async function getCompetitorStates(competitionId: string): Promise<
 
     const data = await res.json();
 
-    return data.competitors;
+    return data;
   } catch (error) {
     console.error("Error fetching competitors:", error);
     return [];

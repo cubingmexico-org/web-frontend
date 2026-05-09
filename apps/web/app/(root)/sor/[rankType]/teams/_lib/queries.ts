@@ -39,7 +39,7 @@ export async function getSORTeamsAverage(): Promise<TeamData[]> {
                 ev.rank AS event_rank,
                 p.wca_id AS person_id,
                 p.name AS person_name,
-                COALESCE(rs.country_rank, wr.worst_rank) AS best_rank,
+                COALESCE(NULLIF(rs.country_rank, 0), wr.worst_rank) AS best_rank,
                 wr.worst_rank
               FROM persons p
               CROSS JOIN all_events e
@@ -54,7 +54,7 @@ export async function getSORTeamsAverage(): Promise<TeamData[]> {
               ) wr
                 ON wr.event_id = e.event_id
               WHERE p.state_id IS NOT NULL
-              ORDER BY p.state_id, e.event_id, COALESCE(rs.country_rank, wr.worst_rank)
+              ORDER BY p.state_id, e.event_id, COALESCE(NULLIF(rs.country_rank, 0), wr.worst_rank)
             )
             SELECT
               bpe.name,
@@ -104,7 +104,7 @@ export async function getSORTeamsSingle(): Promise<TeamData[]> {
           ev.rank AS event_rank,
           p.wca_id AS person_id,
           p.name AS person_name,
-          COALESCE(rs.country_rank, wr.worst_rank) AS best_rank,
+          COALESCE(NULLIF(rs.country_rank, 0), wr.worst_rank) AS best_rank,
           wr.worst_rank
         FROM persons p
         CROSS JOIN all_events e
@@ -119,7 +119,7 @@ export async function getSORTeamsSingle(): Promise<TeamData[]> {
         ) wr
           ON wr.event_id = e.event_id
         WHERE p.state_id IS NOT NULL
-        ORDER BY p.state_id, e.event_id, COALESCE(rs.country_rank, wr.worst_rank)
+        ORDER BY p.state_id, e.event_id, COALESCE(NULLIF(rs.country_rank, 0), wr.worst_rank)
       )
       SELECT
         bpe.name,

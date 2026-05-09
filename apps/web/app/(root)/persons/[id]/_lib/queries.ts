@@ -26,9 +26,31 @@ export async function getWcaPersonData(
   cacheTag(`wca-person-data-${wcaId}`);
 
   try {
+    // Log that we're about to call the external WCA API (passive detection)
+    try {
+      console.log("wca-fetch", { wcaId, at: new Date().toISOString() });
+    } catch (_) {}
+
     const response = await fetch(
       `https://www.worldcubeassociation.org/api/v0/persons/${wcaId}`,
+      {
+        next: {
+          revalidate: 86400,
+          tags: ["wca-person", `wca-person-${wcaId}`],
+        },
+      },
     );
+
+    try {
+      console.log("wca-fetch-result", {
+        wcaId,
+        status: response.status,
+        cache: response.headers.get("x-vercel-cache") ?? null,
+      });
+    } catch (_) {}
+
+    if (!response.ok) return null;
+
     return response.json();
   } catch {
     return null;

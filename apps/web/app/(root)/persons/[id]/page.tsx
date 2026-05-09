@@ -258,43 +258,62 @@ async function PersonPageContent({ id }: { id: string }) {
                   className={cn(
                     "text-center",
                     record?.record?.single.state_rank === 1 &&
-                      "font-semibold text-blue-700",
+                    "font-semibold text-blue-700",
                   )}
                 >
-                  {record?.record?.single.state_rank ??
-                    (!record.event && (
-                      <span className="text-muted-foreground font-thin">
-                        N/A
-                      </span>
-                    ))}
+                  {record?.record?.single.state_rank === 0 || record?.record?.single.state_rank === null ? (
+                    <span className="text-muted-foreground font-thin">
+                      N/A
+                    </span>
+                  ) : (
+                    record?.record?.single.state_rank
+                  )}
                 </TableCell>
               )}
               <TableCell
                 className={cn(
                   "text-center",
                   record?.record?.single.country_rank === 1 &&
-                    "font-semibold text-blue-700",
+                  "font-semibold text-blue-700",
                 )}
               >
-                {record?.record?.single.country_rank}
+                {record?.record?.single.country_rank === 0 || record?.record?.single.country_rank === null ? (
+                  <span className="text-muted-foreground font-thin">
+                    N/A
+                  </span>
+                ) : (
+                  record?.record?.single.country_rank
+                )}
               </TableCell>
               <TableCell
                 className={cn(
                   "text-center",
                   record?.record?.single.continent_rank === 1 &&
-                    "font-semibold text-blue-700",
+                  "font-semibold text-blue-700",
                 )}
               >
-                {record?.record?.single.continent_rank}
+                {record?.record?.single.continent_rank === 0 || record?.record?.single.continent_rank === null ? (
+                  <span className="text-muted-foreground font-thin">
+                    N/A
+                  </span>
+                ) : (
+                  record?.record?.single.continent_rank
+                )}
               </TableCell>
               <TableCell
                 className={cn(
                   "text-center",
                   record?.record?.single.world_rank === 1 &&
-                    "font-semibold text-blue-700",
+                  "font-semibold text-blue-700",
                 )}
               >
-                {record?.record?.single.world_rank}
+                {record?.record?.single.world_rank === 0 || record?.record?.single.world_rank === null ? (
+                  <span className="text-muted-foreground font-thin">
+                    N/A
+                  </span>
+                ) : (
+                  record?.record?.single.world_rank
+                )}
               </TableCell>
               <TableCell className="text-center">
                 {record.event === "333mbf"
@@ -312,47 +331,67 @@ async function PersonPageContent({ id }: { id: string }) {
                 className={cn(
                   "text-center",
                   record?.record?.average.world_rank === 1 &&
-                    "font-semibold text-blue-700",
+                  "font-semibold text-blue-700",
                 )}
               >
-                {record?.record?.average?.world_rank}
+                {record?.record?.average?.world_rank === 0 || record?.record?.average?.world_rank === null ? (
+                  <span className="text-muted-foreground font-thin">
+                    N/A
+                  </span>
+                ) : (
+                  record?.record?.average?.world_rank
+                )}
               </TableCell>
               <TableCell
                 className={cn(
                   "text-center",
                   record?.record?.average.continent_rank === 1 &&
-                    "font-semibold text-blue-700",
+                  "font-semibold text-blue-700",
                 )}
               >
-                {record?.record?.average?.continent_rank}
+                {record?.record?.average?.continent_rank === 0 || record?.record?.average?.continent_rank === null ? (
+                  <span className="text-muted-foreground font-thin">
+                    N/A
+                  </span>
+                ) : (
+                  record?.record?.average?.continent_rank
+                )}
               </TableCell>
               <TableCell
                 className={cn(
                   "text-center",
                   record?.record?.average.country_rank === 1 &&
-                    "font-semibold text-blue-700",
+                  "font-semibold text-blue-700",
                 )}
               >
-                {record?.record?.average?.country_rank}
+                {record?.record?.average?.country_rank === 0 || record?.record?.average?.country_rank === null ? (
+                  <span className="text-muted-foreground font-thin">
+                    N/A
+                  </span>
+                ) : (
+                  record?.record?.average?.country_rank
+                )}
               </TableCell>
               {person.state && (
                 <TableCell
                   className={cn(
                     "text-center",
                     record?.record?.average.state_rank === 1 &&
-                      "font-semibold text-blue-700",
+                    "font-semibold text-blue-700",
                   )}
                 >
-                  {record?.record?.average.state_rank ??
-                    (!record.event && (
-                      <span className="text-muted-foreground font-thin">
-                        N/A
-                      </span>
-                    ))}
+                  {record?.record?.average.state_rank === 0 || record?.record?.average.state_rank === null ? (
+                    <span className="text-muted-foreground font-thin">
+                      N/A
+                    </span>
+                  ) : (
+                    record?.record?.average.state_rank
+                  )}
                 </TableCell>
               )}
             </TableRow>
-          ))}
+          )
+          )}
         </TableBody>
       </Table>
       <div className="grid md:grid-cols-2 grid-cols-1 gap-4 mt-6">

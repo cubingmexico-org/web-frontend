@@ -19,7 +19,7 @@ export default function Loading() {
       </div>
 
       <div className="w-full flex justify-center mb-6">
-        <Skeleton className="w-[300px] h-[300px] rounded" />
+        <Skeleton className="w-75 h-75 rounded" />
       </div>
 
       <Table>

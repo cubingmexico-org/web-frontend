@@ -87,7 +87,6 @@ export async function GET(request: Request): Promise<Response> {
       if (!birthdate) return false; // Exclude if no birthdate
 
       const age = calculateAge(birthdate, competitionEndDate);
-      console.log(age);
       if (age < minAge || age > maxAge) return false;
     }
 

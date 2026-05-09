@@ -26,6 +26,7 @@ import { cn } from "@workspace/ui/lib/utils";
 import { Badge } from "@workspace/ui/components/badge";
 import type { GeoJSONProps } from "react-leaflet";
 import Link from "next/link";
+import { headers } from "next/headers";
 import type { Metadata } from "next";
 import { MapContainer } from "./_components/map-container";
 import {
@@ -55,10 +56,33 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-async function PersonPageContent({ id }: { id: string }) {
+async function PersonPageContent({
+  id,
+  requestHeaders,
+}: {
+  id: string;
+  requestHeaders?: {
+    ua?: string | null;
+    ip?: string | null;
+    referer?: string | null;
+    prerender?: string | null;
+  };
+}) {
   "use cache";
   cacheLife("days");
   cacheTag(`person-page-${id}`);
+  // Passive header logging for bot detection — remove after investigation
+  try {
+    console.log("persons-invoke", {
+      id,
+      ua: requestHeaders?.ua ?? null,
+      ip: requestHeaders?.ip ?? null,
+      referer: requestHeaders?.referer ?? null,
+      prerender: requestHeaders?.prerender ?? null,
+    });
+  } catch (e) {
+    // best-effort logging, don't throw
+  }
 
   // Fetch events first — cached with cacheLife("max"), effectively free after first call.
   // This unblocks getMembershipData so everything else can run in a single Promise.all.
@@ -261,12 +285,12 @@ async function PersonPageContent({ id }: { id: string }) {
                       "font-semibold text-blue-700",
                   )}
                 >
-                  {record?.record?.single.state_rank ??
-                    (!record.event && (
-                      <span className="text-muted-foreground font-thin">
-                        N/A
-                      </span>
-                    ))}
+                  {record?.record?.single.state_rank === 0 ||
+                  record?.record?.single.state_rank === null ? (
+                    <span className="text-muted-foreground font-thin">N/A</span>
+                  ) : (
+                    record?.record?.single.state_rank
+                  )}
                 </TableCell>
               )}
               <TableCell
@@ -276,7 +300,12 @@ async function PersonPageContent({ id }: { id: string }) {
                     "font-semibold text-blue-700",
                 )}
               >
-                {record?.record?.single.country_rank}
+                {record?.record?.single.country_rank === 0 ||
+                record?.record?.single.country_rank === null ? (
+                  <span className="text-muted-foreground font-thin">N/A</span>
+                ) : (
+                  record?.record?.single.country_rank
+                )}
               </TableCell>
               <TableCell
                 className={cn(
@@ -285,7 +314,12 @@ async function PersonPageContent({ id }: { id: string }) {
                     "font-semibold text-blue-700",
                 )}
               >
-                {record?.record?.single.continent_rank}
+                {record?.record?.single.continent_rank === 0 ||
+                record?.record?.single.continent_rank === null ? (
+                  <span className="text-muted-foreground font-thin">N/A</span>
+                ) : (
+                  record?.record?.single.continent_rank
+                )}
               </TableCell>
               <TableCell
                 className={cn(
@@ -294,7 +328,12 @@ async function PersonPageContent({ id }: { id: string }) {
                     "font-semibold text-blue-700",
                 )}
               >
-                {record?.record?.single.world_rank}
+                {record?.record?.single.world_rank === 0 ||
+                record?.record?.single.world_rank === null ? (
+                  <span className="text-muted-foreground font-thin">N/A</span>
+                ) : (
+                  record?.record?.single.world_rank
+                )}
               </TableCell>
               <TableCell className="text-center">
                 {record.event === "333mbf"
@@ -315,7 +354,12 @@ async function PersonPageContent({ id }: { id: string }) {
                     "font-semibold text-blue-700",
                 )}
               >
-                {record?.record?.average?.world_rank}
+                {record?.record?.average?.world_rank === 0 ||
+                record?.record?.average?.world_rank === null ? (
+                  <span className="text-muted-foreground font-thin">N/A</span>
+                ) : (
+                  record?.record?.average?.world_rank
+                )}
               </TableCell>
               <TableCell
                 className={cn(
@@ -324,7 +368,12 @@ async function PersonPageContent({ id }: { id: string }) {
                     "font-semibold text-blue-700",
                 )}
               >
-                {record?.record?.average?.continent_rank}
+                {record?.record?.average?.continent_rank === 0 ||
+                record?.record?.average?.continent_rank === null ? (
+                  <span className="text-muted-foreground font-thin">N/A</span>
+                ) : (
+                  record?.record?.average?.continent_rank
+                )}
               </TableCell>
               <TableCell
                 className={cn(
@@ -333,7 +382,12 @@ async function PersonPageContent({ id }: { id: string }) {
                     "font-semibold text-blue-700",
                 )}
               >
-                {record?.record?.average?.country_rank}
+                {record?.record?.average?.country_rank === 0 ||
+                record?.record?.average?.country_rank === null ? (
+                  <span className="text-muted-foreground font-thin">N/A</span>
+                ) : (
+                  record?.record?.average?.country_rank
+                )}
               </TableCell>
               {person.state && (
                 <TableCell
@@ -343,12 +397,12 @@ async function PersonPageContent({ id }: { id: string }) {
                       "font-semibold text-blue-700",
                   )}
                 >
-                  {record?.record?.average.state_rank ??
-                    (!record.event && (
-                      <span className="text-muted-foreground font-thin">
-                        N/A
-                      </span>
-                    ))}
+                  {record?.record?.average.state_rank === 0 ||
+                  record?.record?.average.state_rank === null ? (
+                    <span className="text-muted-foreground font-thin">N/A</span>
+                  ) : (
+                    record?.record?.average.state_rank
+                  )}
                 </TableCell>
               )}
             </TableRow>
@@ -436,5 +490,14 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const id = (await params).id;
-  return <PersonPageContent id={id} />;
+  // Collect headers outside of cached scope and pass into the cached component
+  const h = await headers();
+  const requestHeaders = {
+    ua: h.get("user-agent"),
+    ip: h.get("x-forwarded-for"),
+    referer: h.get("referer"),
+    prerender: h.get("x-prerender") ?? null,
+  };
+
+  return <PersonPageContent id={id} requestHeaders={requestHeaders} />;
 }

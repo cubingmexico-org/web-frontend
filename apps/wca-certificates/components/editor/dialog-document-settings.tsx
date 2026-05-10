@@ -33,6 +33,7 @@ interface DialogDocumentSettingsProps {
   setPageSize: (value: PageSize) => void;
   pageMargins: Margins;
   setPageMargins: (value: Margins) => void;
+  certificateVariant: "participation" | "podium";
 }
 
 export function DialogDocumentSettings({
@@ -42,6 +43,7 @@ export function DialogDocumentSettings({
   setPageSize,
   pageMargins,
   setPageMargins,
+  certificateVariant,
 }: DialogDocumentSettingsProps): React.JSX.Element {
   const [open, setOpen] = useState(false);
   const [tempPageOrientation, setTempPageOrientation] =
@@ -59,6 +61,14 @@ export function DialogDocumentSettings({
     setPageOrientation(tempPageOrientation);
     setPageSize(tempPageSize);
     setPageMargins(tempPageMargins);
+  };
+
+  const handleReset = () => {
+    setTempPageOrientation(
+      certificateVariant === "participation" ? "portrait" : "landscape",
+    );
+    setTempPageSize("LETTER");
+    setTempPageMargins([40, 60, 40, 60]);
   };
 
   return (
@@ -230,6 +240,9 @@ export function DialogDocumentSettings({
           </div>
         </div>
         <DialogFooter>
+          <Button onClick={handleReset} variant="outline">
+            Restablecer
+          </Button>
           <Button onClick={() => setOpen(false)} variant="secondary">
             Cancelar
           </Button>

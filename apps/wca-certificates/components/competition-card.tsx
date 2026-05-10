@@ -52,11 +52,11 @@ export function CompetitionCard({
   const resultsPostedAt = competition.results_posted_at
     ? new Date(competition.results_posted_at)
     : null;
-  const isResultsOlderThan3Months = resultsPostedAt
-    ? isBefore(resultsPostedAt, subMonths(new Date(), 3))
+  const isResultsOlderThanAMonth = resultsPostedAt
+    ? isBefore(resultsPostedAt, subMonths(new Date(), 1))
     : false;
   const isNotAvailable =
-    competition.announced_at === null || isResultsOlderThan3Months;
+    competition.announced_at === null || isResultsOlderThanAMonth;
 
   return (
     <Card className="group overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-primary/50">

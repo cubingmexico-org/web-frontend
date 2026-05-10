@@ -56,36 +56,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-async function PersonPageContent({
-  id,
-  requestHeaders,
-}: {
-  id: string;
-  requestHeaders?: {
-    ua?: string | null;
-    ip?: string | null;
-    referer?: string | null;
-    prerender?: string | null;
-  };
-}) {
+async function PersonPageContent({ id }: { id: string }) {
   "use cache";
   cacheLife("days");
   cacheTag(`person-page-${id}`);
-  // Passive header logging for bot detection — remove after investigation
-  try {
-    console.log("persons-invoke", {
-      id,
-      ua: requestHeaders?.ua ?? null,
-      ip: requestHeaders?.ip ?? null,
-      referer: requestHeaders?.referer ?? null,
-      prerender: requestHeaders?.prerender ?? null,
-    });
-  } catch (e) {
-    // best-effort logging, don't throw
-  }
 
-  // Fetch events first — cached with cacheLife("max"), effectively free after first call.
-  // This unblocks getMembershipData so everything else can run in a single Promise.all.
   const events = await getEvents();
 
   const [
@@ -490,14 +465,6 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const id = (await params).id;
-  // Collect headers outside of cached scope and pass into the cached component
-  const h = await headers();
-  const requestHeaders = {
-    ua: h.get("user-agent"),
-    ip: h.get("x-forwarded-for"),
-    referer: h.get("referer"),
-    prerender: h.get("x-prerender") ?? null,
-  };
 
-  return <PersonPageContent id={id} requestHeaders={requestHeaders} />;
+  return <PersonPageContent id={id} />;
 }

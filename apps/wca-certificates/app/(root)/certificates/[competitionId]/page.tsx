@@ -23,11 +23,11 @@ export default async function Page({
   }
 
   const resultsPostedAt = new Date(competition.end_date);
-  const isResultsOlderThan3Months = resultsPostedAt
-    ? isBefore(resultsPostedAt, subMonths(new Date(), 3))
+  const isResultsOlderThanAMonth = resultsPostedAt
+    ? isBefore(resultsPostedAt, subMonths(new Date(), 1))
     : false;
 
-  if (isResultsOlderThan3Months) {
+  if (isResultsOlderThanAMonth) {
     return (
       <div className="relative border-2 border-amber-200 dark:border-amber-900/50 rounded-xl p-8 sm:p-10 shadow-lg bg-linear-to-br from-amber-50/50 to-orange-50/30 dark:from-amber-950/20 dark:to-orange-950/10 backdrop-blur-sm">
         <div className="absolute inset-0 bg-grid-amber-900/[0.02] dark:bg-grid-amber-100/[0.02] rounded-xl" />
@@ -44,7 +44,7 @@ export default async function Page({
           <div className="space-y-5 text-base">
             <div className="rounded-lg bg-white/60 dark:bg-gray-900/40 p-5 border border-amber-100 dark:border-amber-900/30">
               <p className="leading-relaxed text-gray-700 dark:text-gray-300">
-                Los resultados de esta competencia tienen más de 3 meses, por lo
+                Los resultados de esta competencia tienen más de 1 mes, por lo
                 que no están disponibles para generar certificados.
               </p>
             </div>

@@ -77,6 +77,30 @@ interface TiptapProps {
   background: string | undefined;
 }
 
+interface SavedDocumentFile {
+  content: JSONContent;
+  pageConfig: {
+    pageSize: PageSize;
+    pageOrientation: PageOrientation;
+    pageMargins: Margins;
+  };
+}
+
+const isSavedDocumentFile = (value: unknown): value is SavedDocumentFile => {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+  const pageConfig = candidate.pageConfig;
+
+  if (!pageConfig || typeof pageConfig !== "object") {
+    return false;
+  }
+
+  return "content" in candidate;
+};
+
 export default function Tiptap({
   content,
   pdfDisabled,
@@ -188,7 +212,15 @@ export default function Tiptap({
 
   const saveContent = () => {
     const content = editor.getJSON();
-    const jsonString = JSON.stringify(content);
+    const documentFile: SavedDocumentFile = {
+      content,
+      pageConfig: {
+        pageSize,
+        pageOrientation,
+        pageMargins,
+      },
+    };
+    const jsonString = JSON.stringify(documentFile);
     const blob = new Blob([jsonString], { type: "application/json" });
     const url = URL.createObjectURL(blob);
 
@@ -214,7 +246,18 @@ export default function Tiptap({
       }
 
       const jsonString = await file.text();
-      const content = JSON.parse(jsonString) as JSONContent;
+      const parsed = JSON.parse(jsonString) as unknown;
+
+      if (isSavedDocumentFile(parsed)) {
+        setPageSize(parsed.pageConfig.pageSize);
+        setPageOrientation(parsed.pageConfig.pageOrientation);
+        setPageMargins(parsed.pageConfig.pageMargins);
+        editor.commands.setContent(parsed.content);
+        handleChange(parsed.content);
+        return;
+      }
+
+      const content = parsed as JSONContent;
       editor.commands.setContent(content);
       handleChange(content);
     };
@@ -264,6 +307,7 @@ export default function Tiptap({
               setPageMargins={setPageMargins}
               setPageOrientation={setPageOrientation}
               setPageSize={setPageSize}
+              certificateVariant={variant}
             />
           </MenubarContent>
         </MenubarMenu>

@@ -26,7 +26,6 @@ import { cn } from "@workspace/ui/lib/utils";
 import { Badge } from "@workspace/ui/components/badge";
 import type { GeoJSONProps } from "react-leaflet";
 import Link from "next/link";
-import { headers } from "next/headers";
 import type { Metadata } from "next";
 import { MapContainer } from "./_components/map-container";
 import {
@@ -50,9 +49,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const person = await getPerson(id);
 
+  if (!person) {
+    return {
+      title: "Persona no encontrada | Cubing México",
+      description: "La persona solicitada no existe.",
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
+  }
+
   return {
-    title: `${person?.name} | Cubing México`,
-    description: `Resultados de ${person?.name}`,
+    title: `${person.name} | Cubing México`,
+    description: `Resultados de ${person.name}`,
   };
 }
 
@@ -61,10 +71,15 @@ async function PersonPageContent({ id }: { id: string }) {
   cacheLife("days");
   cacheTag(`person-page-${id}`);
 
+  const person = await getPersonInfo(id);
+
+  if (!person) {
+    notFound();
+  }
+
   const events = await getEvents();
 
   const [
-    person,
     wcaData,
     statesData,
     singleStateRanks,
@@ -72,7 +87,6 @@ async function PersonPageContent({ id }: { id: string }) {
     isOrganizer,
     membershipData,
   ] = await Promise.all([
-    getPersonInfo(id),
     getWcaPersonData(id),
     getStatesGeoJSON(),
     getSingleStateRanks(id),
@@ -84,7 +98,7 @@ async function PersonPageContent({ id }: { id: string }) {
     ),
   ]);
 
-  if (!person || !wcaData) {
+  if (!wcaData) {
     notFound();
   }
 

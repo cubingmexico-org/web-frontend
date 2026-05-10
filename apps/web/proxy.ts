@@ -1,14 +1,24 @@
-export { auth as proxy } from "@/auth";
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/auth";
+
+export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  if (pathname.startsWith("/records/")) {
+    return new NextResponse("Gone", { status: 410 });
+  }
+
+  if (/^\/rankings\/a\/[^/]+\/(single|average)\/[^/]+$/i.test(pathname)) {
+    return new NextResponse("Gone", { status: 410 });
+  }
+
+  if (pathname.startsWith("/team/")) {
+    return new NextResponse("Gone", { status: 410 });
+  }
+
+  return NextResponse.next();
+}
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api/auth (API routes for authentication)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    "/((?!api/auth|_next/static|_next/image|favicon.ico).*)",
-  ],
+  matcher: ["/((?!api/auth|_next/static|_next/image|favicon.ico).*)"],
 };

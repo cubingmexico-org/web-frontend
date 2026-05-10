@@ -10,6 +10,7 @@ import {
   CircleHelp,
   Info,
   Hammer,
+  Flame,
 } from "lucide-react";
 import {
   NavigationMenu,
@@ -109,6 +110,15 @@ export function HeaderNavigationMenu() {
                   >
                     <ChartBarBig className="size-4" />
                     Kinch Ranks (Teams)
+                  </Link>
+                </NavigationMenuLink>
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/streaks"
+                    className="flex-row items-center gap-2"
+                  >
+                    <Flame className="size-4" />
+                    Rachas de PRs
                   </Link>
                 </NavigationMenuLink>
               </li>

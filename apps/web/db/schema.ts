@@ -384,6 +384,21 @@ export const kinchRanks = pgTable(
 
 export type KinchRanks = InferSelectModel<typeof kinchRanks>;
 
+export const streakRanks = pgTable(
+  "streak_ranks",
+  {
+    rank: integer("rank").notNull(),
+    personId: varchar("person_id", { length: 10 })
+      .notNull()
+      .references(() => person.wcaId, { onDelete: "cascade" }),
+    currentStreak: integer("current_streak").notNull().default(0),
+    longestStreak: integer("longest_streak").notNull().default(0),
+  },
+  (t) => [primaryKey({ columns: [t.personId] })],
+);
+
+export type StreakRanks = InferSelectModel<typeof streakRanks>;
+
 export const exportMetadata = pgTable("export_metadata", {
   key: text("key").primaryKey(),
   value: text("value"),

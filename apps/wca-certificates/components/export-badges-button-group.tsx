@@ -942,6 +942,30 @@ export function ExportBadgesButtonGroup({
 
     toast.promise(
       (async () => {
+        const rotateCanvasForLandscapeExport = (
+          canvas: HTMLCanvasElement,
+        ): HTMLCanvasElement => {
+          if (canvas.width <= canvas.height) {
+            return canvas;
+          }
+
+          const rotatedCanvas = document.createElement("canvas");
+          rotatedCanvas.width = canvas.height;
+          rotatedCanvas.height = canvas.width;
+
+          const rotatedCtx = rotatedCanvas.getContext("2d");
+
+          if (!rotatedCtx) {
+            return canvas;
+          }
+
+          rotatedCtx.translate(rotatedCanvas.width, 0);
+          rotatedCtx.rotate(Math.PI / 2);
+          rotatedCtx.drawImage(canvas, 0, 0);
+
+          return rotatedCanvas;
+        };
+
         // US Letter dimensions in mm (landscape)
         const LETTER_WIDTH_MM = 11 * 25.4; // 279.4
         const LETTER_HEIGHT_MM = 8.5 * 25.4; // 215.9
@@ -1011,7 +1035,9 @@ export function ExportBadgesButtonGroup({
                 const baseX = MARGIN_MM + col * pairSlotWidth;
                 const baseY = MARGIN_MM + row * pairSlotHeight;
 
-                const frontCanvas = await createCanvasForSide(person, "front");
+                const frontCanvas = rotateCanvasForLandscapeExport(
+                  await createCanvasForSide(person, "front"),
+                );
                 const frontDataUrl = frontCanvas.toDataURL("image/png", 1.0);
 
                 // Place front
@@ -1025,7 +1051,9 @@ export function ExportBadgesButtonGroup({
                 );
 
                 // Place back (generate even if blank)
-                const backCanvas = await createCanvasForSide(person, "back");
+                const backCanvas = rotateCanvasForLandscapeExport(
+                  await createCanvasForSide(person, "back"),
+                );
                 const backDataUrl = backCanvas.toDataURL("image/png", 1.0);
 
                 pdf.addImage(
@@ -1084,7 +1112,9 @@ export function ExportBadgesButtonGroup({
                 const x = MARGIN_MM + col * slotWidth;
                 const y = MARGIN_MM + row * slotHeight;
 
-                const frontCanvas = await createCanvasForSide(person, "front");
+                const frontCanvas = rotateCanvasForLandscapeExport(
+                  await createCanvasForSide(person, "front"),
+                );
                 const frontDataUrl = frontCanvas.toDataURL("image/png", 1.0);
 
                 pdf.addImage(frontDataUrl, "PNG", x, y, slotWidth, slotHeight);

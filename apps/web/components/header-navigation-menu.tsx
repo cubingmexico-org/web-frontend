@@ -10,7 +10,7 @@ import {
   CircleHelp,
   Info,
   Hammer,
-  Flame,
+  // Flame,
 } from "lucide-react";
 import {
   NavigationMenu,
@@ -89,6 +89,15 @@ export function HeaderNavigationMenu() {
                   </Link>
                 </NavigationMenuLink>
                 <NavigationMenuLink asChild>
+                  <Link
+                    href="/sosr/MEX/single"
+                    className="flex-row items-center gap-2"
+                  >
+                    <PlusCircle className="size-4" />
+                    Sum of State Ranks
+                  </Link>
+                </NavigationMenuLink>
+                <NavigationMenuLink asChild>
                   <Link href="/kinch" className="flex-row items-center gap-2">
                     <ChartBarBig className="size-4" />
                     Kinch Ranks
@@ -112,7 +121,7 @@ export function HeaderNavigationMenu() {
                     Kinch Ranks (Teams)
                   </Link>
                 </NavigationMenuLink>
-                <NavigationMenuLink asChild>
+                {/* <NavigationMenuLink asChild>
                   <Link
                     href="/streaks"
                     className="flex-row items-center gap-2"
@@ -120,7 +129,7 @@ export function HeaderNavigationMenu() {
                     <Flame className="size-4" />
                     Rachas de PRs
                   </Link>
-                </NavigationMenuLink>
+                </NavigationMenuLink> */}
               </li>
             </ul>
           </NavigationMenuContent>

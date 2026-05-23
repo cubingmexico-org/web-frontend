@@ -4,33 +4,24 @@ import * as React from "react";
 import { useDataTable } from "@/hooks/use-data-table";
 import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
-import type {
-  getStreakRanks,
-  getStreakRanksGenderCounts,
-  getStreakRanksStateCounts,
-} from "../_lib/queries";
-import { getColumns } from "./streak-table-columns";
+import type { getSOSR, getSOSRGenderCounts } from "../_lib/queries";
+import { getColumns } from "./sosr-table-columns";
 
-interface StreakTableProps {
+interface SOSRTableProps {
   promises: Promise<
     [
-      Awaited<ReturnType<typeof getStreakRanks>>,
-      Awaited<ReturnType<typeof getStreakRanksStateCounts>>,
-      Awaited<ReturnType<typeof getStreakRanksGenderCounts>>,
+      Awaited<ReturnType<typeof getSOSR>>,
+      Awaited<ReturnType<typeof getSOSRGenderCounts>>,
     ]
   >;
 }
 
-export function StreakTable({ promises }: StreakTableProps) {
-  const [{ data, pageCount }, stateCounts, genderCounts] = React.use(promises);
+export function SOSRTable({ promises }: SOSRTableProps) {
+  const [{ data, pageCount }, genderCounts] = React.use(promises);
 
   const columns = React.useMemo(
-    () =>
-      getColumns({
-        stateCounts,
-        genderCounts,
-      }),
-    [stateCounts, genderCounts],
+    () => getColumns({ genderCounts }),
+    [genderCounts],
   );
 
   const { table } = useDataTable({
@@ -41,7 +32,6 @@ export function StreakTable({ promises }: StreakTableProps) {
       sorting: [{ id: "rank", desc: false }],
       columnVisibility: {
         gender: false,
-        state: false,
       },
     },
     getRowId: (originalRow) => originalRow.personId,

@@ -35,6 +35,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   });
 
+  const sosrSingleUrls = events.map((event) => {
+    return {
+      url: `https://www.cubingmexico.net/sosr/${event.id}/single`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    };
+  });
+
+  const sosrAverageUrls = events.map((event) => {
+    return {
+      url: `https://www.cubingmexico.net/sosr/${event.id}/average`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    };
+  });
+
   const singleRankingUrls = events.map((event) => {
     return {
       url: `https://www.cubingmexico.net/rankings/${event.id}/single`,
@@ -116,6 +134,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.7,
     },
+    ...sosrSingleUrls,
+    ...sosrAverageUrls,
     ...singleRankingUrls,
     ...averageRankingUrls,
     ...singleResultsRankingUrls,

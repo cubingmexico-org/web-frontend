@@ -75,25 +75,25 @@ export function getColumns({
       ),
       enableHiding: false,
     },
-    {
-      accessorKey: "state",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Estado" />
-      ),
-      cell: ({ row }) => {
-        const state = row.getValue("state");
-        return <div className="flex space-x-2">{state}</div>;
-      },
-      meta: {
-        label: "Estado",
-        variant: "filter",
-        options: Object.entries(stateCounts).map(([name, count]) => ({
-          label: `${name} (${count})`,
-          value: name,
-        })),
-      },
-      enableColumnFilter: true,
-    },
+    // {
+    //   accessorKey: "state",
+    //   header: ({ column }) => (
+    //     <DataTableColumnHeader column={column} title="Estado" />
+    //   ),
+    //   cell: ({ row }) => {
+    //     const state = row.getValue("state");
+    //     return <div className="flex space-x-2">{state}</div>;
+    //   },
+    //   meta: {
+    //     label: "Estado",
+    //     variant: "filter",
+    //     options: Object.entries(stateCounts).map(([name, count]) => ({
+    //       label: `${name} (${count})`,
+    //       value: name,
+    //     })),
+    //   },
+    //   enableColumnFilter: true,
+    // },
     {
       accessorKey: "gender",
       header: ({ column }) => (
@@ -112,21 +112,21 @@ export function getColumns({
           </div>
         );
       },
-      meta: {
-        label: "Género",
-        variant: "filter",
-        options: Object.entries(genderCounts).map(([gender, count]) => {
-          const genderMap: Record<string, string> = {
-            m: "Masculino",
-            f: "Femenino",
-            o: "Otro",
-          };
-          return {
-            label: `${genderMap[gender]} (${count})`,
-            value: gender,
-          };
-        }),
-      },
+      // meta: {
+      //   label: "Género",
+      //   variant: "filter",
+      //   options: Object.entries(genderCounts).map(([gender, count]) => {
+      //     const genderMap: Record<string, string> = {
+      //       m: "Masculino",
+      //       f: "Femenino",
+      //       o: "Otro",
+      //     };
+      //     return {
+      //       label: `${genderMap[gender]} (${count})`,
+      //       value: gender,
+      //     };
+      //   }),
+      // },
       enableColumnFilter: true,
     },
   ];

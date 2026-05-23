@@ -63,7 +63,7 @@
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@types/webfontloader": "^1.6.38",
-    "@workspace/eslint-config": "workspace:^",
+    "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
     "typescript": "^5.9.3"
   }

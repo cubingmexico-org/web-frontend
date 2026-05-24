@@ -345,7 +345,11 @@ export async function getLastCompetitionWithResults() {
           eq(competition.countryId, "Mexico"),
           lt(competition.endDate, new Date()),
           isNull(result.competitionId),
-          notInArray(competition.id, ["PerryOpen2013", "ChapingoOpen2020", "FMCTijuasII2026"]),
+          notInArray(competition.id, [
+            "PerryOpen2013",
+            "ChapingoOpen2020",
+            "FMCTijuasII2026",
+          ]),
         ),
       );
     return { lastCompetitionWithResults, competitionsWithNoResults };

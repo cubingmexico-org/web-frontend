@@ -114,7 +114,7 @@ export default async function Page(props: PageProps) {
             />
           }
         >
-          <SOSRTable promises={promises} />
+          <SOSRTable promises={promises} rankType={rankType} />
         </React.Suspense>
       </div>
     </>

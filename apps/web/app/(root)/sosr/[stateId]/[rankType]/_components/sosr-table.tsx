@@ -14,14 +14,15 @@ interface SOSRTableProps {
       Awaited<ReturnType<typeof getSOSRGenderCounts>>,
     ]
   >;
+  rankType: "single" | "average";
 }
 
-export function SOSRTable({ promises }: SOSRTableProps) {
+export function SOSRTable({ promises, rankType }: SOSRTableProps) {
   const [{ data, pageCount }, genderCounts] = React.use(promises);
 
   const columns = React.useMemo(
-    () => getColumns({ genderCounts }),
-    [genderCounts],
+    () => getColumns({ rankType, genderCounts }),
+    [rankType, genderCounts],
   );
 
   const { table } = useDataTable({

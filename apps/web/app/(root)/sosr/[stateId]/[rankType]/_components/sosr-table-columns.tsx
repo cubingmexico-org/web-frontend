@@ -15,13 +15,15 @@ interface Event {
 }
 
 interface GetColumnsProps {
+  rankType: "single" | "average";
   genderCounts: Record<string, number>;
 }
 
 export function getColumns({
+  rankType,
   genderCounts,
 }: GetColumnsProps): ColumnDef<SumOfStateRanks>[] {
-  return [
+  const columns: ColumnDef<SumOfStateRanks>[] = [
     {
       accessorKey: "rank",
       header: ({ column }) => (
@@ -517,4 +519,36 @@ export function getColumns({
       enableColumnFilter: true,
     },
   ];
+
+  if (rankType === "single") {
+    columns.push({
+      accessorKey: "events_333mbf",
+      header: () => (
+        <div className="flex items-center justify-center">
+          <span className="cubing-icon event-333mbf" />
+        </div>
+      ),
+      cell: ({ row }) => {
+        const events = row.original.events as Event[];
+        const event = events.find((event) => event.eventId === "333mbf");
+        return (
+          <div
+            className={cn(
+              "flex space-x-2 justify-center",
+              event?.stateRank !== undefined &&
+                event.stateRank <= 10 &&
+                "text-green-500 font-semibold",
+              !event?.completed && "text-red-500 font-semibold",
+            )}
+          >
+            {event?.stateRank ?? "N/A"}
+          </div>
+        );
+      },
+      enableSorting: false,
+      enableHiding: false,
+    });
+  }
+
+  return columns;
 }

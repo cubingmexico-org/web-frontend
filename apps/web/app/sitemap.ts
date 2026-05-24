@@ -35,18 +35,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   });
 
-  const sosrSingleUrls = events.map((event) => {
+  const sosrSingleUrls = states.map((state) => {
     return {
-      url: `https://www.cubingmexico.net/sosr/${event.id}/single`,
+      url: `https://www.cubingmexico.net/sosr/${state.id}/single`,
       lastModified: new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.6,
     };
   });
 
-  const sosrAverageUrls = events.map((event) => {
+  const sosrAverageUrls = states.map((state) => {
     return {
-      url: `https://www.cubingmexico.net/sosr/${event.id}/average`,
+      url: `https://www.cubingmexico.net/sosr/${state.id}/average`,
       lastModified: new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.6,

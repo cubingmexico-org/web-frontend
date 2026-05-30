@@ -2,10 +2,16 @@
 
 import { useEffect, useState } from "react";
 import type { GeoJSONProps } from "react-leaflet";
+import dynamic from "next/dynamic";
 import { Input } from "@workspace/ui/components/input";
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
 import { Search } from "lucide-react";
-import { TeamsStateMap } from "./teams-state-map";
+import { Skeleton } from "@workspace/ui/components/skeleton";
+
+const TeamsStateMap = dynamic(
+  () => import("./teams-state-map").then((mod) => mod.TeamsStateMap),
+  { ssr: false, loading: () => <Skeleton className="h-full w-full" /> },
+);
 
 export interface Team {
   id: string;

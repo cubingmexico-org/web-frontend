@@ -18,8 +18,6 @@ import Link from "next/link";
 export default function Page() {
   return (
     <main className="grow">
-      {/* <Notification /> */}
-
       <section className="relative h-125 md:h-150 lg:h-175 w-full overflow-hidden">
         <Image
           alt="Competidores de speedcubing"

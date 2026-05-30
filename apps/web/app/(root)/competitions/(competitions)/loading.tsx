@@ -29,7 +29,7 @@ export default function Loading() {
         <div className="flex gap-2 items-center justify-start mb-2">
           <Skeleton className="h-9 w-45" />
         </div>
-        <div className="h-[480px]">
+        <div className="h-120">
           <Skeleton className="w-full h-full" />
         </div>
       </div>

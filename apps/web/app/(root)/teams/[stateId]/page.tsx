@@ -143,7 +143,7 @@ export default async function Page(props: {
 
   return (
     <>
-      <div className="relative h-[400px] bg-gray-200">
+      <div className="relative h-100 bg-gray-200">
         <Image
           src={team.coverImage || "/placeholder.svg"}
           alt={`${team.name} cover`}
@@ -449,6 +449,13 @@ export default async function Page(props: {
                           >
                             <Plus className="w-4 h-4 mr-2" />
                             Sum of Ranks de {team.state}
+                          </Link>
+                          <Link
+                            href={`/sosr/${stateId}/single`}
+                            className="text-sm flex items-center text-blue-600 hover:underline"
+                          >
+                            <Plus className="w-4 h-4 mr-2" />
+                            Sum of State Ranks de {team.state}
                           </Link>
                           <Link
                             href={`/kinch/${stateId}`}

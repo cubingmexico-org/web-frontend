@@ -31,6 +31,16 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: "/rankings/333mbf/average",
+        destination: "/rankings/333mbf/single",
+        permanent: true,
+      },
+      {
+        source: "/rankings/333mbf/average/results",
+        destination: "/rankings/333mbf/single/results",
+        permanent: true,
+      },
+      {
         source: "/team/:id",
         destination: "/teams/:id",
         permanent: true,

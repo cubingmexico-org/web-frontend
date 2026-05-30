@@ -1,6 +1,5 @@
 import * as React from "react";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import { EventSelector } from "./_components/event-selector";
 import { getEvents } from "@/db/queries";
@@ -53,10 +52,6 @@ interface PageProps {
 
 export default async function Page({ params, searchParams }: PageProps) {
   const { eventId, rankType } = await params;
-
-  if (eventId === "333mbf" && rankType === "average") {
-    redirect(`/rankings/333mbf/single`);
-  }
 
   const events = await getEvents();
 

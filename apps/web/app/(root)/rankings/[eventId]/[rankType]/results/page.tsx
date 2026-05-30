@@ -18,7 +18,6 @@ import {
   searchAverageParamsCache,
   searchSingleParamsCache,
 } from "./_lib/validations";
-import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import { EventSelector } from "../_components/event-selector";
 import { getEvents } from "@/db/queries";
@@ -62,10 +61,6 @@ interface PageProps {
 export default async function Page(props: PageProps) {
   const searchParams = await props.searchParams;
   const { eventId, rankType } = await props.params;
-
-  if (eventId === "333mbf" && rankType === "average") {
-    redirect(`/rankings/333mbf/single`);
-  }
 
   const searchSingle = searchSingleParamsCache.parse(searchParams);
   const searchAverage = searchAverageParamsCache.parse(searchParams);

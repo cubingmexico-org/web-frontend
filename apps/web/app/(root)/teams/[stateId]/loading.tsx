@@ -11,7 +11,7 @@ import {
 export default function Loading() {
   return (
     <>
-      <div className="relative h-[400px] bg-gray-200">
+      <div className="relative h-100 bg-gray-200">
         <Skeleton className="w-full h-full rounded-none" />
         <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/60 to-transparent p-6">
           <div className="container mx-auto flex flex-col sm:flex-row items-end gap-6">

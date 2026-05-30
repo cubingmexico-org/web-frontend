@@ -2,17 +2,23 @@
 
 import "server-only";
 import { db } from "@/db";
-import {
-  event,
-  person,
-  result,
-  state,
-  resultAttempts,
-  formats,
-} from "@/db/schema";
+import { event, person, result, state } from "@/db/schema";
 import type { Competition } from "@/types/wca";
-import { eq, inArray } from "drizzle-orm";
+import { and, count, eq, gt, gte, inArray, lte, or } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
+
+export interface CompetitionResultRow {
+  eventId: string;
+  eventName: string;
+  eventRank: number;
+  personId: string;
+  personName: string | null;
+  personState: string | null;
+  roundTypeId: string | null;
+  position: number | null;
+  best: number;
+  average: number;
+}
 
 export async function getWcaCompetitionData(
   competitionId: string,
@@ -31,15 +37,31 @@ export async function getWcaCompetitionData(
   }
 }
 
-export async function getCompetitionResults(competitionId: string) {
+export async function getCompetitionMainEventResults(
+  competitionId: string,
+  mainEventId?: string | null,
+) {
   cacheLife("days");
-  cacheTag(`competition-results-${competitionId}`);
+  cacheTag(`competition-main-event-results-${competitionId}`);
 
   try {
     return await db.transaction(async (tx) => {
-      const rows = await tx
+      const hasResultsCount = await tx
+        .select({ value: count() })
+        .from(result)
+        .where(eq(result.competitionId, competitionId));
+
+      const hasResults = (hasResultsCount[0]?.value ?? 0) > 0;
+
+      if (!mainEventId) {
+        return {
+          hasResults,
+          mainEventResults: [] as CompetitionResultRow[],
+        };
+      }
+
+      const mainEventResults = await tx
         .select({
-          resultId: result.id,
           eventId: result.eventId,
           eventName: event.name,
           eventRank: event.rank,
@@ -50,80 +72,34 @@ export async function getCompetitionResults(competitionId: string) {
           position: result.pos,
           best: result.best,
           average: result.average,
-          formatId: result.formatId,
         })
         .from(result)
         .innerJoin(event, eq(result.eventId, event.id))
         .innerJoin(person, eq(result.personId, person.wcaId))
         .leftJoin(state, eq(person.stateId, state.id))
-        .where(eq(result.competitionId, competitionId))
-        .orderBy(event.rank, result.pos, result.best);
+        .where(
+          and(
+            eq(result.competitionId, competitionId),
+            eq(result.eventId, mainEventId),
+            gte(result.pos, 1),
+            lte(result.pos, 3),
+            inArray(result.roundTypeId, ["f", "c"]),
+            or(gt(result.best, 0), gt(result.average, 0)),
+          ),
+        )
+        .orderBy(result.pos)
+        .limit(3);
 
-      const resultIds = rows
-        .map((r) => r.resultId)
-        .filter((id): id is string => id != null);
-
-      // If there are no results return rows with empty attempts/format
-      if (resultIds.length === 0) {
-        return rows.map((r) => ({
-          ...r,
-          attempts: [] as number[],
-          format: null,
-        }));
-      }
-
-      const attempts = await tx
-        .select({
-          resultId: resultAttempts.resultId,
-          attemptNumber: resultAttempts.attemptNumber,
-          value: resultAttempts.value,
-        })
-        .from(resultAttempts)
-        .where(inArray(resultAttempts.resultId, resultIds))
-        .orderBy(resultAttempts.resultId, resultAttempts.attemptNumber);
-
-      const attemptsByResultId = attempts.reduce(
-        (acc, a) => {
-          if (a.resultId == null) return acc;
-          const id = String(a.resultId);
-          if (!acc[id]) acc[id] = [];
-          acc[id].push(a.value);
-          return acc;
-        },
-        {} as Record<string, number[]>,
-      );
-
-      const formatIds = Array.from(
-        new Set(
-          rows.map((r) => r.formatId).filter((id): id is string => id != null),
-        ),
-      );
-      const formatRows = await tx
-        .select({
-          id: formats.id,
-          expectedSolveCount: formats.expectedSolveCount,
-          trimFastestN: formats.trimFastestN,
-          trimSlowestN: formats.trimSlowestN,
-        })
-        .from(formats)
-        .where(inArray(formats.id, formatIds));
-
-      const formatById = Object.fromEntries(
-        formatRows.map((f) => [String(f.id), f]),
-      );
-
-      return rows.map((r) => {
-        const rid = r.resultId == null ? "" : String(r.resultId);
-        const fid = r.formatId == null ? undefined : String(r.formatId);
-        return {
-          ...r,
-          attempts: attemptsByResultId[rid] ?? [],
-          format: fid ? (formatById[fid] ?? null) : null,
-        };
-      });
+      return {
+        hasResults,
+        mainEventResults,
+      };
     });
   } catch (err) {
     console.error(err);
-    return [];
+    return {
+      hasResults: false,
+      mainEventResults: [] as CompetitionResultRow[],
+    };
   }
 }

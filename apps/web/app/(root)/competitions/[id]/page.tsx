@@ -41,39 +41,10 @@ import { Map as CompetitionMap } from "./_components/map";
 import { RegistrationButton } from "./_components/registration-button";
 import { getCompetitions } from "@/db/queries";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@workspace/ui/components/table";
-import { formatTime, formatTime333mbf } from "@/lib/utils";
-
-function roundTypeLabel(id?: string | null) {
-  if (!id) return "";
-  switch (id) {
-    case "0":
-    case "h":
-      return "Ronda clasificatoria";
-    case "1":
-    case "d":
-      return "Primera ronda";
-    case "2":
-    case "e":
-      return "Segunda ronda";
-    case "3":
-    case "g":
-      return "Semi Final";
-    case "b":
-      return "B Final";
-    case "c":
-    case "f":
-      return "Final";
-    default:
-      return id;
-  }
-}
+  buildCompetitionResultsViewData,
+  formatAverageResult,
+  formatBestResult,
+} from "./_lib/results";
 
 export async function generateStaticParams() {
   const competitions = await getCompetitions();
@@ -96,124 +67,10 @@ export default async function Page({
     notFound();
   }
 
-  const hasResults = competitionResults.length > 0;
-  const hasPositiveResult = (resultRow: (typeof competitionResults)[number]) =>
-    resultRow.best > 0 || resultRow.average > 0;
-
-  const mainEventResults = competitionResults
-    .filter(
-      (resultRow) =>
-        resultRow.eventId === competitionData.main_event_id &&
-        (resultRow.position ?? 0) >= 1 &&
-        (resultRow.position ?? 0) <= 3 &&
-        (resultRow.roundTypeId === "f" || resultRow.roundTypeId === "c"),
-    )
-    .filter(hasPositiveResult)
-    .sort((left, right) => (left.position ?? 999) - (right.position ?? 999))
-    .slice(0, 3);
-
-  const podiumResults = competitionResults
-    .filter(
-      (resultRow) =>
-        (resultRow.position ?? 0) >= 1 &&
-        (resultRow.position ?? 0) <= 3 &&
-        (resultRow.roundTypeId === "f" || resultRow.roundTypeId === "c"),
-    )
-    .filter(hasPositiveResult)
-    .sort((left, right) => {
-      if (left.eventRank !== right.eventRank) {
-        return left.eventRank - right.eventRank;
-      }
-
-      if ((left.position ?? 0) !== (right.position ?? 0)) {
-        return (left.position ?? 0) - (right.position ?? 0);
-      }
-
-      return left.best - right.best;
-    });
-
-  const podiumGroups = Array.from(
-    podiumResults.reduce((accumulator, resultRow) => {
-      const list = accumulator.get(resultRow.eventId) ?? [];
-      list.push(resultRow);
-      accumulator.set(resultRow.eventId, list);
-      return accumulator;
-    }, new Map<string, typeof podiumResults>()),
+  const { hasResults, mainEventResults } = buildCompetitionResultsViewData(
+    competitionResults,
+    competitionData.main_event_id,
   );
-
-  const resultsByPerson = competitionResults.reduce(
-    (accumulator, resultRow) => {
-      const existing = accumulator.get(resultRow.personId) ?? {
-        personId: resultRow.personId,
-        personName: resultRow.personName,
-        results: [] as typeof competitionResults,
-      };
-
-      existing.results.push(resultRow);
-      accumulator.set(resultRow.personId, existing);
-
-      return accumulator;
-    },
-    new Map<
-      string,
-      {
-        personId: string;
-        personName: string | null;
-        results: typeof competitionResults;
-      }
-    >(),
-  );
-
-  const groupedByPerson = Array.from(resultsByPerson.values()).sort(
-    (left, right) => {
-      const leftName = left.personName ?? left.personId;
-      const rightName = right.personName ?? right.personId;
-
-      return leftName.localeCompare(rightName, "es-MX");
-    },
-  );
-
-  const roundRank = (id?: string) => {
-    if (!id) return 3;
-    const finals = ["f", "c"];
-    const second = ["2", "e"];
-    const first = ["1", "d"];
-    if (finals.includes(id)) return 0;
-    if (second.includes(id)) return 1;
-    if (first.includes(id)) return 2;
-    return 3;
-  };
-
-  const groupedResultsByEvent = Array.from(
-    competitionResults.reduce((accumulator, resultRow) => {
-      const eventId = resultRow.eventId ?? "";
-      const rounds =
-        accumulator.get(eventId) ??
-        new Map<string, typeof competitionResults>();
-      const roundId = resultRow.roundTypeId ?? "";
-      const list = rounds.get(roundId) ?? [];
-      list.push(resultRow);
-      rounds.set(roundId, list);
-      accumulator.set(eventId, rounds);
-      return accumulator;
-    }, new Map<string, Map<string, typeof competitionResults>>()),
-  ).map(([eventId, roundsMap]) => ({
-    eventId,
-    eventName: eventNames[eventId] || eventId,
-    rounds: Array.from(roundsMap.entries())
-      .map(([roundTypeId, rows]) => ({
-        roundTypeId,
-        roundLabel: roundTypeLabel(roundTypeId),
-        rows: rows
-          .slice()
-          .sort(
-            (left, right) =>
-              left.eventRank - right.eventRank ||
-              (left.position ?? 999) - (right.position ?? 999),
-          ),
-      }))
-      .sort((a, b) => roundRank(a.roundTypeId) - roundRank(b.roundTypeId)),
-  }));
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("es-MX", {
@@ -377,7 +234,7 @@ export default async function Page({
           </Link>
         </div>
 
-        {mainEventResults.length > 0 && (
+        {hasResults && (
           <Card className="mt-6 border-primary/30 bg-primary/5">
             <CardHeader className="pb-3">
               <CardTitle className="text-base">
@@ -388,42 +245,54 @@ export default async function Page({
                   competitionData.main_event_id}
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
-              {mainEventResults.map((resultRow) => (
-                <div
-                  key={`${resultRow.eventId}-${resultRow.personId}-${resultRow.position ?? 0}`}
-                  className={cn(
-                    "flex flex-wrap items-center justify-between gap-3 rounded-lg border px-3 py-2",
-                    resultRow.position === 1
-                      ? "border-primary bg-background"
-                      : "border-border bg-background/60",
-                  )}
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span className="w-6 text-sm font-semibold text-muted-foreground">
-                      {resultRow.position ?? "-"}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="truncate font-medium">
-                        {resultRow.personName ?? resultRow.personId}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {resultRow.personId}
-                      </p>
+            <CardContent className="space-y-3">
+              {mainEventResults.length > 0 ? (
+                mainEventResults.map((resultRow) => (
+                  <div
+                    key={`${resultRow.eventId}-${resultRow.personId}-${resultRow.position ?? 0}`}
+                    className={cn(
+                      "flex flex-wrap items-center justify-between gap-3 rounded-lg border px-3 py-2",
+                      resultRow.position === 1
+                        ? "border-primary bg-background"
+                        : "border-border bg-background/60",
+                    )}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="w-6 text-sm font-semibold text-muted-foreground">
+                        {resultRow.position ?? "-"}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate font-medium">
+                          {resultRow.personName ?? resultRow.personId}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {resultRow.personId}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <span>{formatBestResult(resultRow)}</span>
+                      <span>{formatAverageResult(resultRow)}</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <span>
-                      {resultRow.best > 0 ? formatTime(resultRow.best) : "—"}
-                    </span>
-                    <span>
-                      {resultRow.average > 0
-                        ? formatTime(resultRow.average)
-                        : "—"}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Hay resultados registrados, pero todavía no hay podio del
+                  evento principal.
+                </p>
+              )}
+              <div className="flex justify-end">
+                <Link
+                  className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "bg-background",
+                  )}
+                  href={`/competitions/${id}/results/podiums`}
+                >
+                  Ver resultados completos
+                </Link>
+              </div>
             </CardContent>
           </Card>
         )}
@@ -432,15 +301,9 @@ export default async function Page({
       <Separator className="my-8" />
 
       <Tabs defaultValue="info" className="mb-8">
-        <TabsList
-          className={cn(
-            "grid w-full",
-            hasResults ? "grid-cols-5" : "grid-cols-4",
-          )}
-        >
+        <TabsList className={cn("grid w-full grid-cols-4")}>
           <TabsTrigger value="info">Información</TabsTrigger>
           <TabsTrigger value="events">Eventos</TabsTrigger>
-          {hasResults && <TabsTrigger value="results">Resultados</TabsTrigger>}
           <TabsTrigger value="venue">Sede</TabsTrigger>
           <TabsTrigger value="team">Organización</TabsTrigger>
         </TabsList>
@@ -610,308 +473,6 @@ export default async function Page({
             </CardContent>
           </Card>
         </TabsContent>
-
-        {hasResults && (
-          <TabsContent value="results" className="mt-6">
-            <Tabs defaultValue="podiums" className="space-y-4">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="podiums">Podios</TabsTrigger>
-                <TabsTrigger value="all">Todos</TabsTrigger>
-                <TabsTrigger value="by-person">Por Persona</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="podiums" className="mt-0 space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Podios</CardTitle>
-                    <CardDescription>
-                      Los resultados mexicanos del podio por evento.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    {podiumGroups.length === 0 ? (
-                      <p className="text-sm text-muted-foreground">
-                        No hay podios disponibles.
-                      </p>
-                    ) : (
-                      podiumGroups.map(([eventId, eventResults]) => (
-                        <div key={eventId} className="space-y-3">
-                          <h3 className="text-base font-semibold">
-                            {eventNames[eventId] || eventId}
-                          </h3>
-                          <div className="overflow-x-auto">
-                            <Table>
-                              <TableHeader>
-                                <TableRow>
-                                  <TableHead>Posición</TableHead>
-                                  <TableHead>Competidor</TableHead>
-                                  <TableHead>Ronda</TableHead>
-                                  <TableHead className="text-right">
-                                    Single
-                                  </TableHead>
-                                  <TableHead className="text-right">
-                                    Average
-                                  </TableHead>
-                                  <TableHead className="text-right">
-                                    Solves
-                                  </TableHead>
-                                </TableRow>
-                              </TableHeader>
-                              <TableBody>
-                                {eventResults
-                                  .sort(
-                                    (left, right) =>
-                                      (left.position ?? 999) -
-                                      (right.position ?? 999),
-                                  )
-                                  .map((resultRow) => (
-                                    <TableRow
-                                      key={`${resultRow.eventId}-${resultRow.personId}-${resultRow.position ?? 0}`}
-                                    >
-                                      <TableCell>
-                                        {resultRow.position ?? "—"}
-                                      </TableCell>
-                                      <TableCell className="font-medium">
-                                        <div>
-                                          {resultRow.personName ??
-                                            resultRow.personId}
-                                        </div>
-                                        {resultRow.personState && (
-                                          <div className="text-xs text-muted-foreground">
-                                            {resultRow.personState}
-                                          </div>
-                                        )}
-                                      </TableCell>
-                                      <TableCell>
-                                        {roundTypeLabel(resultRow.roundTypeId)}
-                                      </TableCell>
-                                      <TableCell className="text-right">
-                                        {resultRow.best > 0
-                                          ? resultRow.eventId === "333fm"
-                                            ? resultRow.best
-                                            : resultRow.eventId === "333mbf"
-                                              ? formatTime333mbf(resultRow.best)
-                                              : formatTime(resultRow.best)
-                                          : "—"}
-                                      </TableCell>
-                                      <TableCell className="text-right">
-                                        {resultRow.average > 0
-                                          ? formatTime(resultRow.average)
-                                          : "—"}
-                                      </TableCell>
-                                      <TableCell className="text-right">
-                                        -
-                                      </TableCell>
-                                    </TableRow>
-                                  ))}
-                              </TableBody>
-                            </Table>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="all" className="mt-0">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Resultados registrados</CardTitle>
-                    <CardDescription>
-                      Resultados guardados en la base de datos para esta
-                      competencia.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {groupedResultsByEvent.length === 0 ? (
-                        <div className="text-sm text-muted-foreground">
-                          No hay resultados registrados.
-                        </div>
-                      ) : (
-                        groupedResultsByEvent.map((event) => (
-                          <div key={event.eventId} className="space-y-3">
-                            <h3 className="text-base font-semibold flex items-center gap-2">
-                              <span
-                                className={`cubing-icon event-${event.eventId} text-xl`}
-                              />
-                              {event.eventName}
-                            </h3>
-                            {event.rounds.map((round) => (
-                              <div
-                                key={`${event.eventId}-${round.roundTypeId}`}
-                                className="space-y-2"
-                              >
-                                <h4 className="text-sm font-medium">
-                                  {round.roundLabel}
-                                </h4>
-                                <div className="overflow-x-auto">
-                                  <Table>
-                                    <TableHeader>
-                                      <TableRow>
-                                        <TableHead>Posición</TableHead>
-                                        <TableHead>Competidor</TableHead>
-                                        <TableHead>Ronda</TableHead>
-                                        <TableHead className="text-right">
-                                          Single
-                                        </TableHead>
-                                        <TableHead className="text-right">
-                                          Average
-                                        </TableHead>
-                                        <TableHead className="text-right">
-                                          Solves
-                                        </TableHead>
-                                      </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                      {round.rows.map((resultRow) => (
-                                        <TableRow
-                                          key={`${resultRow.eventId}-${resultRow.personId}-${resultRow.position ?? 0}`}
-                                        >
-                                          <TableCell>
-                                            {resultRow.position ?? "—"}
-                                          </TableCell>
-                                          <TableCell className="font-medium">
-                                            <div>
-                                              {resultRow.personName ??
-                                                resultRow.personId}
-                                            </div>
-                                            {resultRow.personState && (
-                                              <div className="text-xs text-muted-foreground">
-                                                {resultRow.personState}
-                                              </div>
-                                            )}
-                                          </TableCell>
-                                          <TableCell>
-                                            {round.roundLabel}
-                                          </TableCell>
-                                          <TableCell className="text-right">
-                                            {resultRow.best > 0
-                                              ? resultRow.eventId === "333fm"
-                                                ? resultRow.best
-                                                : resultRow.eventId === "333mbf"
-                                                  ? formatTime333mbf(
-                                                      resultRow.best,
-                                                    )
-                                                  : formatTime(resultRow.best)
-                                              : "—"}
-                                          </TableCell>
-                                          <TableCell className="text-right">
-                                            {resultRow.average > 0
-                                              ? formatTime(resultRow.average)
-                                              : "—"}
-                                          </TableCell>
-                                          <TableCell className="text-right">
-                                            -
-                                          </TableCell>
-                                        </TableRow>
-                                      ))}
-                                    </TableBody>
-                                  </Table>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="by-person" className="mt-0 space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Por Persona</CardTitle>
-                    <CardDescription>
-                      Resultados agrupados por competidor.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    {groupedByPerson.map((personGroup) => (
-                      <div key={personGroup.personId} className="space-y-3">
-                        <h3 className="text-base font-semibold">
-                          {personGroup.personName ?? personGroup.personId}
-                          {personGroup.results[0]?.personState && (
-                            <span className="ml-2 text-sm text-muted-foreground">
-                              {personGroup.results[0].personState}
-                            </span>
-                          )}
-                        </h3>
-                        <div className="overflow-x-auto">
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead>Evento</TableHead>
-                                <TableHead>Ronda</TableHead>
-                                <TableHead>#</TableHead>
-                                <TableHead>Single</TableHead>
-                                <TableHead>Average</TableHead>
-                                <TableHead className="text-right">
-                                  Resoluciones
-                                </TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {personGroup.results
-                                .slice()
-                                .sort(
-                                  (left, right) =>
-                                    left.eventRank - right.eventRank ||
-                                    (left.position ?? 999) -
-                                      (right.position ?? 999),
-                                )
-                                .map((resultRow) => (
-                                  <TableRow
-                                    key={`${resultRow.eventId}-${resultRow.personId}-${resultRow.position ?? 0}-${resultRow.roundTypeId}`}
-                                  >
-                                    <TableCell className="font-medium">
-                                      <div className="flex items-center gap-2">
-                                        <span
-                                          className={`cubing-icon event-${resultRow.eventId} text-lg`}
-                                        />
-                                        <span>{resultRow.eventName}</span>
-                                      </div>
-                                    </TableCell>
-                                    <TableCell>
-                                      {roundTypeLabel(resultRow.roundTypeId)}
-                                    </TableCell>
-                                    <TableCell>
-                                      {resultRow.position
-                                        ? resultRow.position
-                                        : "—"}
-                                    </TableCell>
-                                    <TableCell>
-                                      {resultRow.best > 0
-                                        ? resultRow.eventId === "333fm"
-                                          ? resultRow.best
-                                          : resultRow.eventId === "333mbf"
-                                            ? formatTime333mbf(resultRow.best)
-                                            : formatTime(resultRow.best)
-                                        : "—"}
-                                    </TableCell>
-                                    <TableCell>
-                                      {resultRow.average > 0
-                                        ? formatTime(resultRow.average)
-                                        : "—"}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                      -
-                                    </TableCell>
-                                  </TableRow>
-                                ))}
-                            </TableBody>
-                          </Table>
-                        </div>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </TabsContent>
-        )}
 
         <TabsContent value="venue" className="mt-6">
           <div className="grid gap-6 md:grid-cols-2">

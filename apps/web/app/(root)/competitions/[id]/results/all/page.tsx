@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getCompetitions } from "@/db/queries";
-import { getCompetitionResults, getWcaCompetitionData } from "../../_lib/queries";
-import { buildCompetitionResultsViewData } from "../../_lib/results";
+import { getWcaCompetitionData } from "../../_lib/queries";
+import { getCompetitionResultsGroupedByEvent } from "./_lib/queries";
 import { ResultsHeader } from "../_components/results-header";
 import { ResultsAllView } from "../_components/results-views";
 
@@ -19,9 +19,9 @@ export default async function Page({
 }) {
   const [{ id }, searchParamsValue] = await Promise.all([params, searchParams]);
 
-  const [competitionData, competitionResults] = await Promise.all([
+  const [competitionData, groupedResultsByEvent] = await Promise.all([
     getWcaCompetitionData(id),
-    getCompetitionResults(id),
+    getCompetitionResultsGroupedByEvent(id),
   ]);
 
   if (!competitionData) {
@@ -36,11 +36,6 @@ export default async function Page({
   const selectedEventId =
     competitionData.event_ids.find((eventId) => eventId === searchEventId) ??
     defaultEventId;
-
-  const { groupedResultsByEvent } = buildCompetitionResultsViewData(
-    competitionResults,
-    competitionData.main_event_id,
-  );
 
   return (
     <main className="grow container mx-auto px-4 py-8 space-y-6">

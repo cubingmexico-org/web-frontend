@@ -33,7 +33,10 @@ import {
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
 import { eventNames } from "@/lib/constants";
-import { getCompetitionResults, getWcaCompetitionData } from "./_lib/queries";
+import {
+  getCompetitionMainEventResults,
+  getWcaCompetitionData,
+} from "./_lib/queries";
 import { notFound } from "next/navigation";
 import { cn } from "@workspace/ui/lib/utils";
 import ReactMarkdown from "react-markdown";
@@ -41,7 +44,6 @@ import { Map as CompetitionMap } from "./_components/map";
 import { RegistrationButton } from "./_components/registration-button";
 import { getCompetitions } from "@/db/queries";
 import {
-  buildCompetitionResultsViewData,
   formatAverageResult,
   formatBestResult,
 } from "./_lib/results";
@@ -58,17 +60,14 @@ export default async function Page({
 }) {
   const id = (await params).id;
 
-  const [competitionData, competitionResults] = await Promise.all([
-    getWcaCompetitionData(id),
-    getCompetitionResults(id),
-  ]);
+  const competitionData = await getWcaCompetitionData(id);
 
   if (!competitionData) {
     notFound();
   }
 
-  const { hasResults, mainEventResults } = buildCompetitionResultsViewData(
-    competitionResults,
+  const { hasResults, mainEventResults } = await getCompetitionMainEventResults(
+    id,
     competitionData.main_event_id,
   );
 

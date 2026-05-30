@@ -43,10 +43,7 @@ import ReactMarkdown from "react-markdown";
 import { Map as CompetitionMap } from "./_components/map";
 import { RegistrationButton } from "./_components/registration-button";
 import { getCompetitions } from "@/db/queries";
-import {
-  formatAverageResult,
-  formatBestResult,
-} from "./_lib/results";
+import { formatAverageResult, formatBestResult } from "./_lib/results";
 
 export async function generateStaticParams() {
   const competitions = await getCompetitions();

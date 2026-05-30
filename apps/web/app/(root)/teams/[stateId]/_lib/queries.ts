@@ -55,6 +55,94 @@ export async function getTeamInfo(stateId: string) {
   }
 }
 
+export async function getTeamShellData(stateId: string, personId: string) {
+  const [teamInfo, totalMembers, isAdmin] = await Promise.all([
+    getTeamInfo(stateId),
+    getTotalMembers(stateId),
+    getIsTeamAdmin(stateId, personId),
+  ]);
+
+  if (!teamInfo) {
+    return null;
+  }
+
+  return {
+    team: teamInfo,
+    totalMembers,
+    isAdmin,
+  };
+}
+
+export async function getTeamOverviewData(stateId: string) {
+  const [
+    team,
+    competitions,
+    totalPodiums,
+    totalSingleNationalRecords,
+    totalAverageNationalRecords,
+  ] = await Promise.all([
+    getTeamInfo(stateId),
+    getTeamCompetitions(stateId),
+    getTeamPodiums(stateId),
+    getSingleNationalRecords(stateId),
+    getAverageNationalRecords(stateId),
+  ]);
+
+  if (!team) {
+    return null;
+  }
+
+  const upcomingCompetitions = competitions.filter(
+    (competition) => competition.startDate >= new Date(),
+  );
+
+  const totalNationalRecords =
+    totalSingleNationalRecords.length + totalAverageNationalRecords.length;
+
+  return {
+    team,
+    competitions,
+    upcomingCompetitions,
+    totalPodiums,
+    totalNationalRecords,
+  };
+}
+
+export async function getTeamStatisticsData(stateId: string) {
+  const [
+    team,
+    competitions,
+    totalPodiums,
+    totalSingleNationalRecords,
+    totalAverageNationalRecords,
+  ] = await Promise.all([
+    getTeamInfo(stateId),
+    getTeamCompetitions(stateId),
+    getTeamPodiums(stateId),
+    getSingleNationalRecords(stateId),
+    getAverageNationalRecords(stateId),
+  ]);
+
+  if (!team) {
+    return null;
+  }
+
+  const totalNationalRecords =
+    totalSingleNationalRecords.length + totalAverageNationalRecords.length;
+
+  const foundedYear = team.founded
+    ? new Date(team.founded).getFullYear()
+    : new Date().getFullYear();
+
+  return {
+    team,
+    competitions,
+    totalPodiums,
+    totalNationalRecords,
+    activeYears: new Date().getFullYear() - foundedYear,
+  };
+}
+
 export async function getTotalMembers(stateId: string) {
   cacheLife("days");
   cacheTag(`total-members-${stateId}`);

@@ -91,14 +91,18 @@ export function ResultsPodiumsView({ podiumGroups }: ResultsPodiumsViewProps) {
                         >
                           <TableCell>{resultRow.position ?? "—"}</TableCell>
                           <TableCell className="font-medium">
-                            <div>{resultRow.personName ?? resultRow.personId}</div>
+                            <div>
+                              {resultRow.personName ?? resultRow.personId}
+                            </div>
                             {resultRow.personState && (
                               <div className="text-xs text-muted-foreground">
                                 {resultRow.personState}
                               </div>
                             )}
                           </TableCell>
-                          <TableCell>{roundTypeLabel(resultRow.roundTypeId)}</TableCell>
+                          <TableCell>
+                            {roundTypeLabel(resultRow.roundTypeId)}
+                          </TableCell>
                           <TableCell className="text-right">
                             {formatBestResult(resultRow)}
                           </TableCell>
@@ -149,7 +153,8 @@ export function ResultsAllView({
                 href={href}
                 className={cn(
                   buttonVariants({
-                    variant: eventId === selectedEventId ? "default" : "outline",
+                    variant:
+                      eventId === selectedEventId ? "default" : "outline",
                     size: "sm",
                   }),
                 )}
@@ -168,7 +173,9 @@ export function ResultsAllView({
         ) : (
           <div className="space-y-3">
             <h3 className="text-base font-semibold flex items-center gap-2">
-              <span className={`cubing-icon event-${activeEvent.eventId} text-xl`} />
+              <span
+                className={`cubing-icon event-${activeEvent.eventId} text-xl`}
+              />
               {activeEvent.eventName}
             </h3>
             {activeEvent.rounds.length === 0 ? (
@@ -177,7 +184,10 @@ export function ResultsAllView({
               </p>
             ) : (
               activeEvent.rounds.map((round) => (
-                <div key={`${activeEvent.eventId}-${round.roundTypeId}`} className="space-y-2">
+                <div
+                  key={`${activeEvent.eventId}-${round.roundTypeId}`}
+                  className="space-y-2"
+                >
                   <h4 className="text-sm font-medium">{round.roundLabel}</h4>
                   <div className="overflow-x-auto">
                     <Table>
@@ -198,7 +208,9 @@ export function ResultsAllView({
                           >
                             <TableCell>{resultRow.position ?? "—"}</TableCell>
                             <TableCell className="font-medium">
-                              <div>{resultRow.personName ?? resultRow.personId}</div>
+                              <div>
+                                {resultRow.personName ?? resultRow.personId}
+                              </div>
                               {resultRow.personState && (
                                 <div className="text-xs text-muted-foreground">
                                   {resultRow.personState}
@@ -279,14 +291,20 @@ export function ResultsByPersonView({
                         >
                           <TableCell className="font-medium">
                             <div className="flex items-center gap-2">
-                              <span className={`cubing-icon event-${resultRow.eventId} text-lg`} />
+                              <span
+                                className={`cubing-icon event-${resultRow.eventId} text-lg`}
+                              />
                               <span>{resultRow.eventName}</span>
                             </div>
                           </TableCell>
-                          <TableCell>{roundTypeLabel(resultRow.roundTypeId)}</TableCell>
+                          <TableCell>
+                            {roundTypeLabel(resultRow.roundTypeId)}
+                          </TableCell>
                           <TableCell>{resultRow.position ?? "—"}</TableCell>
                           <TableCell>{formatBestResult(resultRow)}</TableCell>
-                          <TableCell>{formatAverageResult(resultRow)}</TableCell>
+                          <TableCell>
+                            {formatAverageResult(resultRow)}
+                          </TableCell>
                           <TableCell className="text-right">-</TableCell>
                         </TableRow>
                       ))}

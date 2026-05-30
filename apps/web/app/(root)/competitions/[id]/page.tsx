@@ -48,7 +48,7 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
-import { formatTime } from "@/lib/utils";
+import { formatTime, formatTime333mbf } from "@/lib/utils";
 
 function roundTypeLabel(id?: string | null) {
   if (!id) return "";
@@ -73,26 +73,6 @@ function roundTypeLabel(id?: string | null) {
     default:
       return id;
   }
-}
-
-function attemptsUsedForAverage(attempts: number[] | undefined, format: any) {
-  const vals = (attempts ?? []).slice();
-  if (vals.length === 0) return [] as number[];
-
-  // If format indicates trimming, remove one fastest and/or one slowest
-  if (format?.trimFastestN) {
-    const min = Math.min(...vals);
-    const idx = vals.indexOf(min);
-    if (idx >= 0) vals.splice(idx, 1);
-  }
-
-  if (format?.trimSlowestN) {
-    const max = Math.max(...vals);
-    const idx = vals.indexOf(max);
-    if (idx >= 0) vals.splice(idx, 1);
-  }
-
-  return vals;
 }
 
 export async function generateStaticParams() {
@@ -707,7 +687,11 @@ export default async function Page({
                                       </TableCell>
                                       <TableCell className="text-right">
                                         {resultRow.best > 0
-                                          ? formatTime(resultRow.best)
+                                          ? resultRow.eventId === "333fm"
+                                            ? resultRow.best
+                                            : resultRow.eventId === "333mbf"
+                                              ? formatTime333mbf(resultRow.best)
+                                              : formatTime(resultRow.best)
                                           : "—"}
                                       </TableCell>
                                       <TableCell className="text-right">
@@ -716,15 +700,7 @@ export default async function Page({
                                           : "—"}
                                       </TableCell>
                                       <TableCell className="text-right">
-                                        {resultRow.attempts &&
-                                        resultRow.attempts.length > 0
-                                          ? attemptsUsedForAverage(
-                                              resultRow.attempts,
-                                              resultRow.format,
-                                            )
-                                              .map((v) => formatTime(v))
-                                              .join(", ")
-                                          : "—"}
+                                        -
                                       </TableCell>
                                     </TableRow>
                                   ))}
@@ -812,7 +788,13 @@ export default async function Page({
                                           </TableCell>
                                           <TableCell className="text-right">
                                             {resultRow.best > 0
-                                              ? formatTime(resultRow.best)
+                                              ? resultRow.eventId === "333fm"
+                                                ? resultRow.best
+                                                : resultRow.eventId === "333mbf"
+                                                  ? formatTime333mbf(
+                                                      resultRow.best,
+                                                    )
+                                                  : formatTime(resultRow.best)
                                               : "—"}
                                           </TableCell>
                                           <TableCell className="text-right">
@@ -821,15 +803,7 @@ export default async function Page({
                                               : "—"}
                                           </TableCell>
                                           <TableCell className="text-right">
-                                            {resultRow.attempts &&
-                                            resultRow.attempts.length > 0
-                                              ? attemptsUsedForAverage(
-                                                  resultRow.attempts,
-                                                  resultRow.format,
-                                                )
-                                                  .map((v) => formatTime(v))
-                                                  .join(", ")
-                                              : "—"}
+                                            -
                                           </TableCell>
                                         </TableRow>
                                       ))}
@@ -910,7 +884,11 @@ export default async function Page({
                                     </TableCell>
                                     <TableCell>
                                       {resultRow.best > 0
-                                        ? formatTime(resultRow.best)
+                                        ? resultRow.eventId === "333fm"
+                                          ? resultRow.best
+                                          : resultRow.eventId === "333mbf"
+                                            ? formatTime333mbf(resultRow.best)
+                                            : formatTime(resultRow.best)
                                         : "—"}
                                     </TableCell>
                                     <TableCell>
@@ -919,15 +897,7 @@ export default async function Page({
                                         : "—"}
                                     </TableCell>
                                     <TableCell className="text-right">
-                                      {resultRow.attempts &&
-                                      resultRow.attempts.length > 0
-                                        ? attemptsUsedForAverage(
-                                            resultRow.attempts,
-                                            resultRow.format,
-                                          )
-                                            .map((v) => formatTime(v))
-                                            .join(", ")
-                                        : "—"}
+                                      -
                                     </TableCell>
                                   </TableRow>
                                 ))}

@@ -168,3 +168,28 @@ export function getTierClass(tier: Tier): string {
       return "bg-gradient-to-r from-amber-500 to-amber-700 border-0";
   }
 }
+
+export function roundTypeLabel(id?: string | null) {
+  if (!id) return "";
+  switch (id) {
+    case "0":
+    case "h":
+      return "Ronda clasificatoria";
+    case "1":
+    case "d":
+      return "Primera ronda";
+    case "2":
+    case "e":
+      return "Segunda ronda";
+    case "3":
+    case "g":
+      return "Semi Final";
+    case "b":
+      return "B Final";
+    case "c":
+    case "f":
+      return "Final";
+    default:
+      return id;
+  }
+}

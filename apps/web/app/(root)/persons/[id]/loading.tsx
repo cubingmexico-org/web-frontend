@@ -140,11 +140,14 @@ export default function Loading() {
         </div>
       </div>
 
-      <div className="flex items-center justify-center gap-2 my-4">
-        <Skeleton className="h-7 w-40" />
-        <Skeleton className="h-6 w-8" />
+      <div className="mt-6">
+        <div className="grid grid-cols-2 gap-2 mb-4">
+          <Skeleton className="h-9 rounded-md" />
+          <Skeleton className="h-9 rounded-md" />
+        </div>
+        <Skeleton className="h-8 w-40 mx-auto mb-4" />
+        <Skeleton className="w-full h-96 rounded-lg" />
       </div>
-      <Skeleton className="w-full h-96 rounded-lg" />
     </>
   );
 }

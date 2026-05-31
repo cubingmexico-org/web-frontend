@@ -15,7 +15,7 @@ export default async function Page({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ eventId?: string | string[] }>;
+  searchParams: Promise<{ event?: string | string[] }>;
 }) {
   const [{ id }, searchParamsValue] = await Promise.all([params, searchParams]);
 
@@ -30,9 +30,10 @@ export default async function Page({
 
   const defaultEventId =
     competitionData.main_event_id ?? competitionData.event_ids[0] ?? "";
-  const searchEventId = Array.isArray(searchParamsValue.eventId)
-    ? searchParamsValue.eventId[0]
-    : searchParamsValue.eventId;
+  const searchEventId = Array.isArray(searchParamsValue.event)
+    ? searchParamsValue.event[0]
+    : searchParamsValue.event;
+
   const selectedEventId =
     competitionData.event_ids.find((eventId) => eventId === searchEventId) ??
     defaultEventId;

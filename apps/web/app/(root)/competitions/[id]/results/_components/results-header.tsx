@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { buttonVariants } from "@workspace/ui/components/button";
 import {
@@ -9,6 +12,7 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card";
 import { cn } from "@workspace/ui/lib/utils";
+import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
 
 interface ResultsHeaderProps {
   competitionId: string;
@@ -23,6 +27,31 @@ export function ResultsHeader({
   competitionCity,
   defaultEventId,
 }: ResultsHeaderProps) {
+  const pathname = usePathname() || "";
+
+  const tabs = [
+    {
+      key: "podiums",
+      href: `/competitions/${competitionId}/results/podiums`,
+      path: `/competitions/${competitionId}/results/podiums`,
+      label: "Podios",
+    },
+    {
+      key: "all",
+      href: `/competitions/${competitionId}/results/all?event=${defaultEventId}`,
+      path: `/competitions/${competitionId}/results/all`,
+      label: "Todos",
+    },
+    {
+      key: "py_person",
+      href: `/competitions/${competitionId}/results/py_person`,
+      path: `/competitions/${competitionId}/results/py_person`,
+      label: "Por persona",
+    },
+  ];
+
+  const activeTab = tabs.find((tab) => pathname === tab.path)?.key;
+
   return (
     <Card className="border-primary/10 bg-muted/20">
       <CardHeader>
@@ -44,24 +73,17 @@ export function ResultsHeader({
         </div>
       </CardHeader>
       <CardContent className="flex flex-wrap gap-3">
-        <Link
-          href={`/competitions/${competitionId}/results/podiums`}
-          className={cn(buttonVariants({ variant: "outline" }))}
-        >
-          Podios
-        </Link>
-        <Link
-          href={`/competitions/${competitionId}/results/all?eventId=${defaultEventId}`}
-          className={cn(buttonVariants({ variant: "outline" }))}
-        >
-          Todos
-        </Link>
-        <Link
-          href={`/competitions/${competitionId}/results/py_person`}
-          className={cn(buttonVariants({ variant: "outline" }))}
-        >
-          Por persona
-        </Link>
+        <Tabs value={activeTab} className="w-fit">
+          <TabsList className="w-fit">
+            {tabs.map((tab) => {
+              return (
+                <TabsTrigger key={tab.key} value={tab.key} asChild>
+                  <Link href={tab.href}>{tab.label}</Link>
+                </TabsTrigger>
+              );
+            })}
+          </TabsList>
+        </Tabs>
       </CardContent>
     </Card>
   );

@@ -8,15 +8,67 @@ import {
   rankAverage,
   rankSingle,
   result,
+  resultAttempts,
   state,
+  event,
 } from "@/db/schema";
 import {
   SPEEDSOLVING_AVERAGES_EVENTS,
   BLD_FMC_MEANS_EVENTS,
 } from "@/lib/constants";
 import type { WcaPersonResponse } from "@/types/wca";
-import { and, countDistinct, eq, gt, inArray, sql } from "drizzle-orm";
+import { and, countDistinct, desc, eq, gt, inArray, sql } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
+
+export interface PersonCompetitionLocation {
+  id: string;
+  name: string;
+  stateName: string | null;
+  latitude: number | null;
+  longitude: number | null;
+}
+
+type PersonCompetitionResultRow = {
+  resultId: string;
+  eventId: string;
+  eventName: string;
+  eventRank: number;
+  competitionId: string;
+  competitionName: string;
+  competitionStartDate: string;
+  roundTypeId: string | null;
+  position: number | null;
+  best: number;
+  average: number;
+  solves: number[];
+};
+
+export interface PersonResultsByEventGroup {
+  eventId: string;
+  eventName: string;
+  eventRank: number;
+  results: PersonCompetitionResultRow[];
+}
+
+export interface PersonResultsEventOption {
+  eventId: string;
+  eventName: string;
+  eventRank: number;
+}
+
+function roundRank(id?: string | null) {
+  if (!id) return 3;
+
+  const finals = ["f", "c"];
+  const second = ["2", "e"];
+  const first = ["1", "d"];
+
+  if (finals.includes(id)) return 0;
+  if (second.includes(id)) return 1;
+  if (first.includes(id)) return 2;
+
+  return 3;
+}
 
 export async function getWcaPersonData(
   wcaId: string,
@@ -157,5 +209,172 @@ export async function getIsOrganizer(wcaId: string) {
   } catch (err) {
     console.error(err);
     return false;
+  }
+}
+
+export async function getPersonCompetitionEventOptions(wcaId: string) {
+  "use cache";
+  cacheLife("days");
+  cacheTag(`person-competition-event-options-${wcaId}`);
+
+  try {
+    return await db
+      .select({
+        eventId: event.id,
+        eventName: event.name,
+        eventRank: event.rank,
+      })
+      .from(result)
+      .innerJoin(event, eq(result.eventId, event.id))
+      .where(eq(result.personId, wcaId))
+      .groupBy(event.id, event.name, event.rank)
+      .orderBy(event.rank);
+  } catch (err) {
+    console.error(err);
+    return [] satisfies PersonResultsEventOption[];
+  }
+}
+
+export async function getPersonCompetitionLocations(wcaId: string) {
+  "use cache";
+  cacheLife("days");
+  cacheTag(`person-competition-locations-${wcaId}`);
+
+  try {
+    return await db
+      .select({
+        id: competition.id,
+        name: competition.name,
+        stateName: state.name,
+        latitude: competition.latitudeMicrodegrees,
+        longitude: competition.longitudeMicrodegrees,
+      })
+      .from(result)
+      .innerJoin(competition, eq(result.competitionId, competition.id))
+      .leftJoin(state, eq(competition.stateId, state.id))
+      .where(eq(result.personId, wcaId))
+      .groupBy(
+        competition.id,
+        competition.name,
+        state.name,
+        competition.latitudeMicrodegrees,
+        competition.longitudeMicrodegrees,
+      )
+      .orderBy(desc(competition.startDate));
+  } catch (err) {
+    console.error(err);
+    return [] satisfies PersonCompetitionLocation[];
+  }
+}
+
+export async function getPersonCompetitionResults(
+  wcaId: string,
+  eventId: string,
+) {
+  "use cache";
+  cacheLife("days");
+  cacheTag(`person-competition-results-${wcaId}`);
+
+  try {
+    const rows = await db
+      .select({
+        resultId: result.id,
+        eventId: result.eventId,
+        eventName: event.name,
+        eventRank: event.rank,
+        competitionId: competition.id,
+        competitionName: competition.name,
+        competitionStartDate: competition.startDate,
+        roundTypeId: result.roundTypeId,
+        position: result.pos,
+        best: result.best,
+        average: result.average,
+      })
+      .from(result)
+      .innerJoin(event, eq(result.eventId, event.id))
+      .innerJoin(competition, eq(result.competitionId, competition.id))
+      .where(and(eq(result.personId, wcaId), eq(result.eventId, eventId)))
+      .orderBy(
+        event.rank,
+        desc(competition.startDate),
+        result.pos,
+        result.best,
+      );
+
+    if (rows.length === 0) {
+      return null;
+    }
+
+    const attempts = await db
+      .select({
+        resultId: resultAttempts.resultId,
+        attemptNumber: resultAttempts.attemptNumber,
+        value: resultAttempts.value,
+      })
+      .from(resultAttempts)
+      .where(
+        inArray(
+          resultAttempts.resultId,
+          rows.map((row) => row.resultId),
+        ),
+      )
+      .orderBy(resultAttempts.resultId, resultAttempts.attemptNumber);
+
+    const attemptsByResultId = attempts.reduce((accumulator, attempt) => {
+      const values = accumulator.get(attempt.resultId) ?? [];
+      values.push(attempt.value);
+      accumulator.set(attempt.resultId, values);
+      return accumulator;
+    }, new Map<string, number[]>());
+
+    const grouped = rows.reduce((accumulator, row) => {
+      const eventGroup = accumulator.get(row.eventId) ?? {
+        eventId: row.eventId,
+        eventName: row.eventName,
+        eventRank: row.eventRank,
+        results: [] as PersonCompetitionResultRow[],
+      };
+
+      eventGroup.results.push({
+        ...row,
+        competitionStartDate: row.competitionStartDate.toISOString(),
+        solves: attemptsByResultId.get(row.resultId) ?? [],
+      });
+
+      accumulator.set(row.eventId, eventGroup);
+      return accumulator;
+    }, new Map<string, PersonResultsByEventGroup>());
+
+    const [selectedEventGroup] = Array.from(grouped.values())
+      .map((group) => ({
+        ...group,
+        results: group.results.slice().sort((left, right) => {
+          const startDateDelta =
+            Date.parse(right.competitionStartDate) -
+            Date.parse(left.competitionStartDate);
+
+          if (startDateDelta !== 0) {
+            return startDateDelta;
+          }
+
+          const roundDelta =
+            roundRank(left.roundTypeId) - roundRank(right.roundTypeId);
+
+          if (roundDelta !== 0) {
+            return roundDelta;
+          }
+
+          return (
+            (left.position ?? 999) - (right.position ?? 999) ||
+            left.best - right.best
+          );
+        }),
+      }))
+      .sort((left, right) => left.eventRank - right.eventRank);
+
+    return selectedEventGroup ?? null;
+  } catch (err) {
+    console.error(err);
+    return null;
   }
 }

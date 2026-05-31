@@ -26,6 +26,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   });
 
+  const teamSectionUrls = states.flatMap((state) => {
+    return [
+      {
+        url: `https://www.cubingmexico.net/teams/${state.id}/members`,
+        lastModified: new Date(),
+        changeFrequency: "monthly" as const,
+        priority: 0.7,
+      },
+      {
+        url: `https://www.cubingmexico.net/teams/${state.id}/competitions`,
+        lastModified: new Date(),
+        changeFrequency: "monthly" as const,
+        priority: 0.7,
+      },
+      {
+        url: `https://www.cubingmexico.net/teams/${state.id}/statistics`,
+        lastModified: new Date(),
+        changeFrequency: "monthly" as const,
+        priority: 0.7,
+      },
+    ];
+  });
+
   const stateKinchUrls = states.map((state) => {
     return {
       url: `https://www.cubingmexico.net/kinch/${state.id}`,
@@ -146,6 +169,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     ...teamUrls,
+    ...teamSectionUrls,
     {
       url: "https://www.cubingmexico.net/competitions",
       lastModified: new Date(),

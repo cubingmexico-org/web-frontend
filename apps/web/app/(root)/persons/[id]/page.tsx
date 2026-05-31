@@ -46,7 +46,7 @@ import {
 import type { PersonalRecordWithStateRank } from "./_lib/queries";
 import { notFound } from "next/navigation";
 import { cacheLife, cacheTag } from "next/cache";
-import type { DelegateStatus } from "@/types/wca";
+import { formatDelegateLevel } from "@/lib/delegate-level";
 import type { SearchParams } from "@/types";
 
 type Props = {
@@ -169,31 +169,6 @@ async function PersonPageContent({
     return total + singleRank + averageRank;
   }, 0);
 
-  function formatDelegateStatus(
-    status: DelegateStatus,
-    gender?: string | null,
-  ) {
-    switch (status) {
-      case "junior_delegate":
-        return gender === "m" ? "Delegado Junior" : "Delegada Junior";
-      case "senior_delegate":
-        return gender === "m" ? "Delegado Senior" : "Delegada Senior";
-      case "trainee_delegate":
-        return gender === "m"
-          ? "Delegado en Entrenamiento"
-          : "Delegada en Entrenamiento";
-      case "regional_delegate":
-        return gender === "m" ? "Delegado Regional" : "Delegada Regional";
-      case "full_delegate":
-      default:
-        return gender === "m"
-          ? "Delegado"
-          : gender === "f"
-            ? "Delegada"
-            : "Delegado";
-    }
-  }
-
   return (
     <>
       <h1 className="text-center font-semibold text-2xl mb-4 hover:underline">
@@ -209,7 +184,7 @@ async function PersonPageContent({
         {tier && <Badge className={getTierClass(tier)}>Miembro {tier}</Badge>}
         {isDelegate && (
           <Badge>
-            {formatDelegateStatus(person.delegateStatus, person.gender)}
+            {formatDelegateLevel(person.delegateStatus, person.gender)}
           </Badge>
         )}
         {isOrganizer && organizerStatus && (

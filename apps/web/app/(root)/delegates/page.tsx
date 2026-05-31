@@ -8,6 +8,7 @@ import {
   getDelegatesStateCounts,
   getDelegatesGenderCounts,
   getDelegateStatusCounts,
+  getDelegateLevelCounts,
 } from "./_lib/queries";
 import { getValidFilters } from "@/lib/data-table";
 
@@ -29,6 +30,7 @@ export default async function Page(props: PageProps) {
     getDelegatesStateCounts(),
     getDelegatesGenderCounts(),
     getDelegateStatusCounts(),
+    getDelegateLevelCounts(),
   ]);
 
   return (
@@ -36,7 +38,7 @@ export default async function Page(props: PageProps) {
       fallback={
         <DataTableSkeleton
           columnCount={7}
-          filterCount={2}
+          filterCount={3}
           cellWidths={[
             "10rem",
             "30rem",

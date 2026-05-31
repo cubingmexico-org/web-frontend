@@ -78,7 +78,9 @@ export function organizerLevelSql(
   END`;
 }
 
-export function organizerLevelFilterSql(competitionCountExpr: SQL): SQL<string> {
+export function organizerLevelFilterSql(
+  competitionCountExpr: SQL,
+): SQL<string> {
   return sql<string>`CASE
     WHEN ${competitionCountExpr} = 1 THEN 'Debutante'
     WHEN ${competitionCountExpr} = 2 THEN 'Super'

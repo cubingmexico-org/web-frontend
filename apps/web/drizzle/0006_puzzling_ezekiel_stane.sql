@@ -1,0 +1,1 @@
+ALTER TABLE "delegates" ADD COLUMN "level" varchar(50) DEFAULT 'trainee_delegate';

@@ -4,6 +4,7 @@ import {
   championship,
   competition,
   competitionOrganizer,
+  delegate,
   organizer,
   person,
   rankAverage,
@@ -18,10 +19,7 @@ import {
   BLD_FMC_MEANS_EVENTS,
 } from "@/lib/constants";
 import type { DelegateStatus, Medals, Records } from "@/types/wca";
-import {
-  getOrganizerLevel,
-  type OrganizerLevel,
-} from "@/lib/organizer-level";
+import { getOrganizerLevel, type OrganizerLevel } from "@/lib/organizer-level";
 import { and, countDistinct, desc, eq, gt, inArray, sql } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 
@@ -139,6 +137,13 @@ export async function getPersonData(wcaId: string): Promise<{
 
     if (!personDataRow) return null;
 
+    const delegateRow = await db
+      .select({ level: delegate.level })
+      .from(delegate)
+      .where(and(eq(delegate.personId, wcaId), eq(delegate.status, "active")))
+      .limit(1)
+      .then((res) => res[0]);
+
     const competitionCountRow = await db
       .select({
         competitionCount: sql<number>`COUNT(DISTINCT ${result.competitionId})`,
@@ -251,7 +256,7 @@ export async function getPersonData(wcaId: string): Promise<{
         wcaId: personDataRow.wcaId,
         name: personDataRow.name,
         gender: personDataRow.gender,
-        delegateStatus: null,
+        delegateStatus: delegateRow?.level ?? null,
         state: personDataRow.state ?? null,
       },
       competitionCount,

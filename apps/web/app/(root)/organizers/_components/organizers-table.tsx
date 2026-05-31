@@ -5,7 +5,7 @@ import { useDataTable } from "@/hooks/use-data-table";
 import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import type {
-  getOrganizerStatusCounts,
+  getOrganizerLevelCounts,
   getOrganizers,
   getOrganizersGenderCounts,
   getOrganizersStateCounts,
@@ -18,13 +18,13 @@ interface OrganizersTableProps {
       Awaited<ReturnType<typeof getOrganizers>>,
       Awaited<ReturnType<typeof getOrganizersStateCounts>>,
       Awaited<ReturnType<typeof getOrganizersGenderCounts>>,
-      Awaited<ReturnType<typeof getOrganizerStatusCounts>>,
+      Awaited<ReturnType<typeof getOrganizerLevelCounts>>,
     ]
   >;
 }
 
 export function OrganizersTable({ promises }: OrganizersTableProps) {
-  const [{ data, pageCount }, stateCounts, genderCounts, statusCounts] =
+  const [{ data, pageCount }, stateCounts, genderCounts, levelCounts] =
     React.use(promises);
 
   const columns = React.useMemo(
@@ -32,9 +32,9 @@ export function OrganizersTable({ promises }: OrganizersTableProps) {
       getColumns({
         stateCounts,
         genderCounts,
-        statusCounts,
+        levelCounts,
       }),
-    [stateCounts, genderCounts, statusCounts],
+    [stateCounts, genderCounts, levelCounts],
   );
 
   const { table } = useDataTable({
@@ -45,7 +45,7 @@ export function OrganizersTable({ promises }: OrganizersTableProps) {
       sorting: [{ id: "name", desc: false }],
       columnVisibility: {
         gender: false,
-        status: false,
+        level: false,
       },
     },
     getRowId: (originalRow) => originalRow.wcaId,

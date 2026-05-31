@@ -22,6 +22,7 @@ import {
 } from "drizzle-orm";
 import { type GetDelegatesSchema } from "./validations";
 import { cacheLife, cacheTag } from "next/cache";
+import type { DelegateLevel } from "@/lib/delegate-level";
 
 export async function getDelegates(input: GetDelegatesSchema) {
   cacheLife("days");
@@ -39,6 +40,7 @@ export async function getDelegates(input: GetDelegatesSchema) {
       input.gender.length > 0
         ? inArray(person.gender, input.gender)
         : undefined,
+      input.level.length > 0 ? inArray(delegate.level, input.level) : undefined,
     );
 
     const orderBy =
@@ -53,6 +55,8 @@ export async function getDelegates(input: GetDelegatesSchema) {
                   : asc(countDistinct(competitionDelegate.competitionId));
               case "status":
                 return item.desc ? desc(delegate.status) : asc(delegate.status);
+              case "level":
+                return item.desc ? desc(delegate.level) : asc(delegate.level);
               default:
                 return item.desc ? desc(person[item.id]) : asc(person[item.id]);
             }
@@ -67,6 +71,7 @@ export async function getDelegates(input: GetDelegatesSchema) {
           gender: person.gender,
           state: state.name,
           status: delegate.status,
+          level: delegate.level,
           competitions: countDistinct(competitionDelegate.competitionId),
         })
         .from(delegate)
@@ -79,7 +84,7 @@ export async function getDelegates(input: GetDelegatesSchema) {
         .limit(input.perPage)
         .offset(offset)
         .where(where)
-        .groupBy(person.wcaId, state.name, delegate.status)
+        .groupBy(person.wcaId, state.name, delegate.status, delegate.level)
         .orderBy(...orderBy);
 
       const total = (await tx
@@ -94,7 +99,7 @@ export async function getDelegates(input: GetDelegatesSchema) {
         .innerJoin(person, eq(delegate.personId, person.wcaId))
         .leftJoin(state, eq(person.stateId, state.id))
         .where(where)
-        .groupBy(person.wcaId, state.name, delegate.status)
+        .groupBy(person.wcaId, state.name, delegate.status, delegate.level)
         .execute()
         .then((res) => res.length)) as number;
 
@@ -202,5 +207,35 @@ export async function getDelegateStatusCounts() {
   } catch (err) {
     console.error(err);
     return {} as Record<string, number>;
+  }
+}
+
+export async function getDelegateLevelCounts() {
+  cacheLife("days");
+  cacheTag("delegates-level-counts");
+
+  try {
+    return await db
+      .select({
+        level: delegate.level,
+        count: count(),
+      })
+      .from(delegate)
+      .groupBy(delegate.level)
+      .having(gt(count(), 0))
+      .orderBy(delegate.level)
+      .then((res) =>
+        res.reduce(
+          (acc, { level, count }) => {
+            if (!level) return acc;
+            acc[level] = count;
+            return acc;
+          },
+          {} as Record<DelegateLevel, number>,
+        ),
+      );
+  } catch (err) {
+    console.error(err);
+    return {} as Record<DelegateLevel, number>;
   }
 }

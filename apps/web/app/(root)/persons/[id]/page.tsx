@@ -36,19 +36,17 @@ import {
 import { MapContainer } from "./_components/map-container";
 import { PersonResultsTab } from "./_components/results-tab";
 import {
-  getAverageStateRanks,
-  getIsOrganizer,
+  getPersonData,
+  getOrganizerStatus,
   getMembershipData,
   getPersonCompetitionEventOptions,
   getPersonCompetitionLocations,
-  getPersonInfo,
   getPersonCompetitionResults,
-  getSingleStateRanks,
-  getWcaPersonData,
 } from "./_lib/queries";
+import type { PersonalRecordWithStateRank } from "./_lib/queries";
 import { notFound } from "next/navigation";
 import { cacheLife, cacheTag } from "next/cache";
-import type { DelegateStatus } from "@/types/wca";
+import { formatDelegateLevel } from "@/lib/delegate-level";
 import type { SearchParams } from "@/types";
 
 type Props = {
@@ -89,12 +87,6 @@ async function PersonPageContent({
   cacheLife("days");
   cacheTag(`person-page-${id}`);
 
-  const person = await getPersonInfo(id);
-
-  if (!person) {
-    notFound();
-  }
-
   const events = await getEvents();
   const queryParams = await searchParams;
   const requestedEventId = Array.isArray(queryParams.event)
@@ -102,33 +94,35 @@ async function PersonPageContent({
     : queryParams.event;
 
   const [
-    wcaData,
-    statesData,
-    locations,
-    singleStateRanks,
-    averageStateRanks,
-    isOrganizer,
+    personData,
+    organizerStatus,
     membershipData,
     eventOptions,
+    locations,
+    statesData,
   ] = await Promise.all([
-    getWcaPersonData(id),
-    getStatesGeoJSON(),
-    getPersonCompetitionLocations(id),
-    getSingleStateRanks(id),
-    getAverageStateRanks(id),
-    getIsOrganizer(id),
+    getPersonData(id),
+    getOrganizerStatus(id),
     getMembershipData(
       id,
       events.map((event) => event.id),
     ),
     getPersonCompetitionEventOptions(id),
+    getPersonCompetitionLocations(id),
+    getStatesGeoJSON(),
   ]);
 
-  if (!wcaData) {
+  if (!personData) {
     notFound();
   }
 
-  const stateIds = person.statesNames;
+  const { person, competitionCount, personalRecords, medals, regionalRecords } =
+    personData;
+  const isOrganizer = organizerStatus !== null;
+
+  const stateIds = locations
+    .map((location) => location.stateId)
+    .filter((stateId): stateId is string => stateId !== null);
 
   const filteredStatesData = statesData?.features.filter((feature) =>
     stateIds?.includes(feature.properties.id),
@@ -141,11 +135,11 @@ async function PersonPageContent({
     return latitude !== 0 && longitude !== 0;
   });
 
-  const isDelegate = wcaData.person.delegate_status !== null;
+  const isDelegate = person.delegateStatus !== null;
 
   const tier = getTier(membershipData);
   const selectedEventId =
-    eventOptions.find((event) => event.eventId === requestedEventId)?.eventId ??
+    eventOptions.find((e) => e.eventId === requestedEventId)?.eventId ??
     eventOptions[0]?.eventId ??
     "";
 
@@ -153,59 +147,27 @@ async function PersonPageContent({
     ? await getPersonCompetitionResults(id, selectedEventId)
     : null;
 
-  // Create lookup maps for O(1) access instead of repeated find() calls
-  const singleRankMap = new Map(
-    singleStateRanks.map((rank) => [rank.eventId, rank.stateRank]),
-  );
-  const averageRankMap = new Map(
-    averageStateRanks.map((rank) => [rank.eventId, rank.stateRank]),
-  );
-
-  const records = events
-    .filter((event) => wcaData.personal_records[event.id])
-    .map((event) => {
-      const personalRecord = wcaData.personal_records[event.id];
-      return {
-        event: event.id,
-        record: {
-          ...personalRecord,
-          single: {
-            ...personalRecord?.single,
-            state_rank: singleRankMap.get(event.id),
-          },
-          average: {
-            ...personalRecord?.average,
-            state_rank: averageRankMap.get(event.id),
-          },
-        },
-      };
-    });
-
-  const SRcount =
-    singleStateRanks.filter((rank) => rank.stateRank === 1).length +
-    averageStateRanks.filter((rank) => rank.stateRank === 1).length;
-
-  function formatDelegateStatus(status: DelegateStatus, gender: string) {
-    switch (status) {
-      case "junior_delegate":
-        return gender === "m" ? "Delegado Junior" : "Delegada Junior";
-      case "senior_delegate":
-        return gender === "m" ? "Delegado Senior" : "Delegada Senior";
-      case "trainee_delegate":
-        return gender === "m"
-          ? "Delegado en Entrenamiento"
-          : "Delegada en Entrenamiento";
-      case "regional_delegate":
-        return gender === "m" ? "Delegado Regional" : "Delegada Regional";
-      case "full_delegate":
-      default:
-        return gender === "m"
-          ? "Delegado"
-          : gender === "f"
-            ? "Delegada"
-            : "Delegado";
+  const records = events.reduce<
+    Array<{ event: string; record: PersonalRecordWithStateRank }>
+  >((accumulator, event) => {
+    const personalRecord = personalRecords[event.id];
+    if (!personalRecord) {
+      return accumulator;
     }
-  }
+
+    accumulator.push({
+      event: event.id,
+      record: personalRecord,
+    });
+    return accumulator;
+  }, []);
+
+  const SRcount = records.reduce((total, record) => {
+    const singleRank = record.record.single?.stateRank === 1 ? 1 : 0;
+    const averageRank = record.record.average?.stateRank === 1 ? 1 : 0;
+
+    return total + singleRank + averageRank;
+  }, 0);
 
   return (
     <>
@@ -215,32 +177,26 @@ async function PersonPageContent({
           target="_blank"
           rel="noopener noreferrer"
         >
-          {wcaData?.person.name}
+          {person.name ?? id}
         </Link>
       </h1>
       <div className="w-full flex justify-center gap-2 mb-2">
         {tier && <Badge className={getTierClass(tier)}>Miembro {tier}</Badge>}
         {isDelegate && (
           <Badge>
-            {formatDelegateStatus(
-              wcaData.person.delegate_status,
-              wcaData.person.gender,
-            )}
+            {formatDelegateLevel(person.delegateStatus, person.gender)}
           </Badge>
         )}
-        {isOrganizer && (
+        {isOrganizer && organizerStatus && (
           <Badge variant="outline">
-            {wcaData?.person.gender === "m"
-              ? "Organizador"
-              : wcaData?.person.gender === "f"
-                ? "Organizadora"
-                : null}
+            Organizador{person.gender === "f" ? "a" : ""}{" "}
+            {organizerStatus.level}
           </Badge>
         )}
       </div>
       <div className="w-full flex justify-center mb-6">
         <Image
-          src={wcaData?.person.avatar.url || "/placeholder.svg"}
+          src="/placeholder.svg"
           alt="Avatar"
           width={300}
           height={300}
@@ -263,19 +219,15 @@ async function PersonPageContent({
                 <span className="text-muted-foreground font-thin">N/A</span>
               )}
             </TableCell>
+            <TableCell className="text-center">{person.wcaId}</TableCell>
             <TableCell className="text-center">
-              {wcaData.person.wca_id}
-            </TableCell>
-            <TableCell className="text-center">
-              {wcaData.person.gender === "m"
+              {person.gender === "m"
                 ? "Masculino"
-                : wcaData.person.gender === "f"
+                : person.gender === "f"
                   ? "Femenino"
                   : "Otro"}
             </TableCell>
-            <TableCell className="text-center">
-              {wcaData.competition_count}
-            </TableCell>
+            <TableCell className="text-center">{competitionCount}</TableCell>
           </TableRow>
         </TableBody>
       </Table>
@@ -306,63 +258,66 @@ async function PersonPageContent({
                   key={record.event}
                   className={`cubing-icon event-${record.event}`}
                 />
+                <span className="ml-2">
+                  {events.find((e) => e.id === record.event)?.name}
+                </span>
               </TableCell>
               {person.state && (
                 <TableCell
                   className={cn(
                     "text-center",
-                    record?.record?.single.state_rank === 1 &&
+                    record?.record?.single.stateRank === 1 &&
                       "font-semibold text-blue-700",
                   )}
                 >
-                  {record?.record?.single.state_rank === 0 ||
-                  record?.record?.single.state_rank === null ? (
+                  {record?.record?.single.stateRank === 0 ||
+                  record?.record?.single.stateRank === null ? (
                     <span className="text-muted-foreground font-thin">N/A</span>
                   ) : (
-                    record?.record?.single.state_rank
+                    record?.record?.single.stateRank
                   )}
                 </TableCell>
               )}
               <TableCell
                 className={cn(
                   "text-center",
-                  record?.record?.single.country_rank === 1 &&
+                  record?.record?.single.countryRank === 1 &&
                     "font-semibold text-blue-700",
                 )}
               >
-                {record?.record?.single.country_rank === 0 ||
-                record?.record?.single.country_rank === null ? (
+                {record?.record?.single.countryRank === 0 ||
+                record?.record?.single.countryRank === null ? (
                   <span className="text-muted-foreground font-thin">N/A</span>
                 ) : (
-                  record?.record?.single.country_rank
+                  record?.record?.single.countryRank
                 )}
               </TableCell>
               <TableCell
                 className={cn(
                   "text-center",
-                  record?.record?.single.continent_rank === 1 &&
+                  record?.record?.single.continentRank === 1 &&
                     "font-semibold text-blue-700",
                 )}
               >
-                {record?.record?.single.continent_rank === 0 ||
-                record?.record?.single.continent_rank === null ? (
+                {record?.record?.single.continentRank === 0 ||
+                record?.record?.single.continentRank === null ? (
                   <span className="text-muted-foreground font-thin">N/A</span>
                 ) : (
-                  record?.record?.single.continent_rank
+                  record?.record?.single.continentRank
                 )}
               </TableCell>
               <TableCell
                 className={cn(
                   "text-center",
-                  record?.record?.single.world_rank === 1 &&
+                  record?.record?.single.worldRank === 1 &&
                     "font-semibold text-blue-700",
                 )}
               >
-                {record?.record?.single.world_rank === 0 ||
-                record?.record?.single.world_rank === null ? (
+                {record?.record?.single.worldRank === 0 ||
+                record?.record?.single.worldRank === null ? (
                   <span className="text-muted-foreground font-thin">N/A</span>
                 ) : (
-                  record?.record?.single.world_rank
+                  record?.record?.single.worldRank
                 )}
               </TableCell>
               <TableCell className="text-center">
@@ -380,58 +335,58 @@ async function PersonPageContent({
               <TableCell
                 className={cn(
                   "text-center",
-                  record?.record?.average.world_rank === 1 &&
+                  record?.record?.average?.worldRank === 1 &&
                     "font-semibold text-blue-700",
                 )}
               >
-                {record?.record?.average?.world_rank === 0 ||
-                record?.record?.average?.world_rank === null ? (
+                {record?.record?.average?.worldRank === 0 ||
+                record?.record?.average?.worldRank === null ? (
                   <span className="text-muted-foreground font-thin">N/A</span>
                 ) : (
-                  record?.record?.average?.world_rank
+                  record?.record?.average?.worldRank
                 )}
               </TableCell>
               <TableCell
                 className={cn(
                   "text-center",
-                  record?.record?.average.continent_rank === 1 &&
+                  record?.record?.average?.continentRank === 1 &&
                     "font-semibold text-blue-700",
                 )}
               >
-                {record?.record?.average?.continent_rank === 0 ||
-                record?.record?.average?.continent_rank === null ? (
+                {record?.record?.average?.continentRank === 0 ||
+                record?.record?.average?.continentRank === null ? (
                   <span className="text-muted-foreground font-thin">N/A</span>
                 ) : (
-                  record?.record?.average?.continent_rank
+                  record?.record?.average?.continentRank
                 )}
               </TableCell>
               <TableCell
                 className={cn(
                   "text-center",
-                  record?.record?.average.country_rank === 1 &&
+                  record?.record?.average?.countryRank === 1 &&
                     "font-semibold text-blue-700",
                 )}
               >
-                {record?.record?.average?.country_rank === 0 ||
-                record?.record?.average?.country_rank === null ? (
+                {record?.record?.average?.countryRank === 0 ||
+                record?.record?.average?.countryRank === null ? (
                   <span className="text-muted-foreground font-thin">N/A</span>
                 ) : (
-                  record?.record?.average?.country_rank
+                  record?.record?.average?.countryRank
                 )}
               </TableCell>
               {person.state && (
                 <TableCell
                   className={cn(
                     "text-center",
-                    record?.record?.average.state_rank === 1 &&
+                    record?.record?.average?.stateRank === 1 &&
                       "font-semibold text-blue-700",
                   )}
                 >
-                  {record?.record?.average.state_rank === 0 ||
-                  record?.record?.average.state_rank === null ? (
+                  {record?.record?.average?.stateRank === 0 ||
+                  record?.record?.average?.stateRank === null ? (
                     <span className="text-muted-foreground font-thin">N/A</span>
                   ) : (
-                    record?.record?.average.state_rank
+                    record?.record?.average?.stateRank
                   )}
                 </TableCell>
               )}
@@ -452,15 +407,9 @@ async function PersonPageContent({
             </TableHeader>
             <TableBody>
               <TableRow>
-                <TableCell className="text-center">
-                  {wcaData.medals.gold}
-                </TableCell>
-                <TableCell className="text-center">
-                  {wcaData.medals.silver}
-                </TableCell>
-                <TableCell className="text-center">
-                  {wcaData.medals.bronze}
-                </TableCell>
+                <TableCell className="text-center">{medals.gold}</TableCell>
+                <TableCell className="text-center">{medals.silver}</TableCell>
+                <TableCell className="text-center">{medals.bronze}</TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -489,13 +438,13 @@ async function PersonPageContent({
             <TableBody>
               <TableRow>
                 <TableCell className="text-center">
-                  {wcaData.records.world}
+                  {regionalRecords.world}
                 </TableCell>
                 <TableCell className="text-center">
-                  {wcaData.records.continental}
+                  {regionalRecords.continental}
                 </TableCell>
                 <TableCell className="text-center">
-                  {wcaData.records.national}
+                  {regionalRecords.national}
                 </TableCell>
                 <TableCell className="text-center">{SRcount}</TableCell>
               </TableRow>

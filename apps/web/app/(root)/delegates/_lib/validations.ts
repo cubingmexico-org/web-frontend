@@ -23,6 +23,9 @@ export const searchParamsCache = createSearchParamsCache({
   status: parseAsArrayOf(
     parseAsStringEnum(delegate.status.enumValues),
   ).withDefault([]),
+  level: parseAsArrayOf(
+    parseAsStringEnum(delegate.level.enumValues),
+  ).withDefault([]),
   // advanced filter
   filters: getFiltersStateParser().withDefault([]),
   joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),

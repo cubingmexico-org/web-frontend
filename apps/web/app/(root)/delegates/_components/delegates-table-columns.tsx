@@ -7,17 +7,24 @@ import { Person } from "../_types";
 import { Badge } from "@workspace/ui/components/badge";
 import Link from "next/link";
 import { Check, X } from "lucide-react";
+import {
+  formatDelegateLevel,
+  getDelegateLevelFilterOptions,
+  type DelegateLevel,
+} from "@/lib/delegate-level";
 
 interface GetColumnsProps {
   stateCounts: Record<string, number>;
   genderCounts: Record<string, number>;
   statusCounts: Record<string, number>;
+  levelCounts: Record<DelegateLevel, number>;
 }
 
 export function getColumns({
   stateCounts,
   genderCounts,
   statusCounts,
+  levelCounts,
 }: GetColumnsProps): ColumnDef<Person>[] {
   return [
     {
@@ -37,13 +44,15 @@ export function getColumns({
         <DataTableColumnHeader column={column} title="Nombre" />
       ),
       cell: ({ row }) => {
-        const status = row.original.status;
+        const level = row.original.level;
 
         return (
           <div className="flex space-x-2 whitespace-nowrap">
-            <Badge variant={status === "active" ? "default" : "outline"}>
-              {status === "active" ? "Activo" : "Inactivo"}
-            </Badge>
+            {level && (
+              <Badge variant="outline">
+                {formatDelegateLevel(level, row.original.gender)}
+              </Badge>
+            )}
             <Link
               className="hover:underline text-accent-foreground"
               href={`/persons/${row.original.wcaId}`}
@@ -102,20 +111,12 @@ export function getColumns({
       enableColumnFilter: true,
     },
     {
-      id: "status",
-      accessorKey: "status",
+      id: "level",
+      accessorKey: "level",
       meta: {
-        label: "Estatus",
+        label: "Nivel",
         variant: "multiSelect",
-        options: Object.keys(statusCounts).map((name) => {
-          const statusName = name as "inactive" | "active";
-          return {
-            label: statusName === "active" ? "Activo" : "Inactivo",
-            value: statusName,
-            icon: statusName === "active" ? Check : X,
-            count: statusCounts[statusName],
-          };
-        }),
+        options: getDelegateLevelFilterOptions(levelCounts),
       },
       enableColumnFilter: true,
     },

@@ -5,6 +5,7 @@ import { useDataTable } from "@/hooks/use-data-table";
 import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import type {
+  getDelegateLevelCounts,
   getDelegateStatusCounts,
   getDelegates,
   getDelegatesGenderCounts,
@@ -19,13 +20,19 @@ interface DelegatesTableProps {
       Awaited<ReturnType<typeof getDelegatesStateCounts>>,
       Awaited<ReturnType<typeof getDelegatesGenderCounts>>,
       Awaited<ReturnType<typeof getDelegateStatusCounts>>,
+      Awaited<ReturnType<typeof getDelegateLevelCounts>>,
     ]
   >;
 }
 
 export function DelegatesTable({ promises }: DelegatesTableProps) {
-  const [{ data, pageCount }, stateCounts, genderCounts, statusCounts] =
-    React.use(promises);
+  const [
+    { data, pageCount },
+    stateCounts,
+    genderCounts,
+    statusCounts,
+    levelCounts,
+  ] = React.use(promises);
 
   const columns = React.useMemo(
     () =>
@@ -33,8 +40,9 @@ export function DelegatesTable({ promises }: DelegatesTableProps) {
         stateCounts,
         genderCounts,
         statusCounts,
+        levelCounts,
       }),
-    [stateCounts, genderCounts, statusCounts],
+    [stateCounts, genderCounts, statusCounts, levelCounts],
   );
 
   const { table } = useDataTable({
@@ -46,6 +54,7 @@ export function DelegatesTable({ promises }: DelegatesTableProps) {
       columnVisibility: {
         gender: false,
         status: false,
+        level: false,
       },
     },
     getRowId: (originalRow) => originalRow.wcaId,

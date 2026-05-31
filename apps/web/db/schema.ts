@@ -164,6 +164,16 @@ export const delegate = pgTable("delegates", {
     length: 50,
     enum: ["active", "inactive"],
   }).default("active"),
+  level: varchar("level", {
+    length: 50,
+    enum: [
+      "trainee_delegate",
+      "junior_delegate",
+      "full_delegate",
+      "senior_delegate",
+      "regional_delegate",
+    ],
+  }).default("trainee_delegate"),
 });
 
 export type Delegate = InferSelectModel<typeof delegate>;

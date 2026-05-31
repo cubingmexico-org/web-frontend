@@ -258,9 +258,12 @@ export default async function Page({
                         {resultRow.position ?? "-"}
                       </span>
                       <div className="min-w-0">
-                        <p className="truncate font-medium">
+                        <Link
+                          href={`/persons/${resultRow.personId}`}
+                          className="truncate font-medium hover:underline"
+                        >
                           {resultRow.personName ?? resultRow.personId}
-                        </p>
+                        </Link>
                         <p className="text-xs text-muted-foreground">
                           {resultRow.personId}
                         </p>

@@ -1,3 +1,6 @@
+"use client";
+
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   Card,
@@ -14,8 +17,10 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
+import { Input } from "@workspace/ui/components/input";
 import { cn } from "@workspace/ui/lib/utils";
-import { buttonVariants } from "@workspace/ui/components/button";
+// Styling matches event-selector: use icon + text with hover/selected color
+import { Search } from "lucide-react";
 import { eventNames } from "@/lib/constants";
 import {
   formatAverageResult,
@@ -63,7 +68,8 @@ export function ResultsPodiumsView({ podiumGroups }: ResultsPodiumsViewProps) {
         ) : (
           podiumGroups.map(([eventId, eventResults]) => (
             <div key={eventId} className="space-y-3">
-              <h3 className="text-base font-semibold">
+              <h3 className="text-base font-semibold flex items-center gap-2">
+                <span className={`cubing-icon event-${eventId} text-xl`} />
                 {eventNames[eventId] || eventId}
               </h3>
               <div className="overflow-x-auto">
@@ -92,7 +98,12 @@ export function ResultsPodiumsView({ podiumGroups }: ResultsPodiumsViewProps) {
                           <TableCell>{resultRow.position ?? "—"}</TableCell>
                           <TableCell className="font-medium">
                             <div>
-                              {resultRow.personName ?? resultRow.personId}
+                              <Link
+                                href={`/persons/${resultRow.personId}`}
+                                className="hover:underline"
+                              >
+                                {resultRow.personName ?? resultRow.personId}
+                              </Link>
                             </div>
                             {resultRow.personState && (
                               <div className="text-xs text-muted-foreground">
@@ -143,25 +154,19 @@ export function ResultsAllView({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 text-muted-foreground">
           {competitionData.event_ids.map((eventId) => {
-            const href = `/competitions/${competitionId}/results/all?eventId=${eventId}`;
+            const href = `/competitions/${competitionId}/results/all?event=${eventId}`;
 
             return (
               <Link
                 key={eventId}
                 href={href}
                 className={cn(
-                  buttonVariants({
-                    variant:
-                      eventId === selectedEventId ? "default" : "outline",
-                    size: "sm",
-                  }),
+                  `cubing-icon event-${eventId} text-2xl hover:text-primary/50 transition-colors`,
+                  selectedEventId === eventId && "text-primary",
                 )}
-              >
-                <span className={`cubing-icon event-${eventId} text-base`} />
-                {eventNames[eventId] || eventId}
-              </Link>
+              />
             );
           })}
         </div>
@@ -209,7 +214,12 @@ export function ResultsAllView({
                             <TableCell>{resultRow.position ?? "—"}</TableCell>
                             <TableCell className="font-medium">
                               <div>
-                                {resultRow.personName ?? resultRow.personId}
+                                <Link
+                                  href={`/persons/${resultRow.personId}`}
+                                  className="hover:underline"
+                                >
+                                  {resultRow.personName ?? resultRow.personId}
+                                </Link>
                               </div>
                               {resultRow.personState && (
                                 <div className="text-xs text-muted-foreground">
@@ -243,6 +253,26 @@ export function ResultsAllView({
 export function ResultsByPersonView({
   groupedByPerson,
 }: ResultsByPersonViewProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredGroups = useMemo(() => {
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+
+    if (!normalizedQuery) {
+      return groupedByPerson;
+    }
+
+    return groupedByPerson.filter((personGroup) => {
+      const personName = personGroup.personName?.toLowerCase() ?? "";
+      const personId = personGroup.personId.toLowerCase();
+
+      return (
+        personName.includes(normalizedQuery) ||
+        personId.includes(normalizedQuery)
+      );
+    });
+  }, [groupedByPerson, searchQuery]);
+
   return (
     <Card>
       <CardHeader>
@@ -250,15 +280,33 @@ export function ResultsByPersonView({
         <CardDescription>Resultados agrupados por competidor.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {groupedByPerson.length === 0 ? (
+        <div className="relative max-w-md">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder="Buscar por nombre..."
+            aria-label="Buscar competidor por nombre"
+            className="pl-9"
+          />
+        </div>
+
+        {filteredGroups.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            No hay resultados agrupados por persona.
+            {searchQuery
+              ? "No hay competidores que coincidan con tu búsqueda."
+              : "No hay resultados agrupados por persona."}
           </p>
         ) : (
-          groupedByPerson.map((personGroup) => (
+          filteredGroups.map((personGroup) => (
             <div key={personGroup.personId} className="space-y-3">
               <h3 className="text-base font-semibold">
-                {personGroup.personName ?? personGroup.personId}
+                <Link
+                  href={`/persons/${personGroup.personId}`}
+                  className="hover:underline"
+                >
+                  {personGroup.personName ?? personGroup.personId}
+                </Link>
                 {personGroup.results[0]?.personState && (
                   <span className="ml-2 text-sm text-muted-foreground">
                     {personGroup.results[0].personState}

@@ -6,8 +6,9 @@ import {
   parseAsStringEnum,
 } from "nuqs/server";
 import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers";
+import { ORGANIZER_LEVEL_FILTERS } from "@/lib/organizer-level";
 import type { Person } from "../_types";
-import { organizer, person } from "@/db/schema";
+import { person } from "@/db/schema";
 
 export const searchParamsCache = createSearchParamsCache({
   page: parseAsInteger.withDefault(1),
@@ -20,8 +21,8 @@ export const searchParamsCache = createSearchParamsCache({
   gender: parseAsArrayOf(
     parseAsStringEnum(person.gender.enumValues),
   ).withDefault([]),
-  status: parseAsArrayOf(
-    parseAsStringEnum(organizer.status.enumValues),
+  level: parseAsArrayOf(
+    parseAsStringEnum([...ORGANIZER_LEVEL_FILTERS]),
   ).withDefault([]),
   // advanced filter
   filters: getFiltersStateParser().withDefault([]),

@@ -4,7 +4,7 @@ import { searchParamsCache } from "./_lib/validations";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
 import { OrganizersTable } from "./_components/organizers-table";
 import {
-  getOrganizerStatusCounts,
+  getOrganizerLevelCounts,
   getOrganizers,
   getOrganizersGenderCounts,
   getOrganizersStateCounts,
@@ -28,7 +28,7 @@ export default async function Page(props: PageProps) {
     }),
     getOrganizersStateCounts(),
     getOrganizersGenderCounts(),
-    getOrganizerStatusCounts(),
+    getOrganizerLevelCounts(),
   ]);
 
   return (

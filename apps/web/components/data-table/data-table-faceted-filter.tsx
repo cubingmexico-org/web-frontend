@@ -138,10 +138,15 @@ export function DataTableFacetedFilter<TData, TValue>({
             <CommandGroup className="max-h-75 overflow-y-auto overflow-x-hidden">
               {options.map((option) => {
                 const isSelected = selectedValues.has(option.value);
+                const commandValue =
+                  option.sortIndex !== undefined
+                    ? `${String(option.sortIndex).padStart(2, "0")} ${option.value}`
+                    : option.value;
 
                 return (
                   <CommandItem
                     key={option.value}
+                    value={commandValue}
                     onSelect={() => onItemSelect(option, isSelected)}
                   >
                     <div

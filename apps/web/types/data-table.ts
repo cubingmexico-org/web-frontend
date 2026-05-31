@@ -33,6 +33,7 @@ export interface Option {
   value: string;
   count?: number;
   icon?: React.FC<React.SVGProps<SVGSVGElement>>;
+  sortIndex?: number;
 }
 
 export type FilterOperator = DataTableConfig["operators"][number];

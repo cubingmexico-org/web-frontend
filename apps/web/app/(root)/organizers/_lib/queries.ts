@@ -10,6 +10,10 @@ import {
   competitionOrganizer,
 } from "@/db/schema";
 import {
+  organizerLevelFilterSql,
+  type OrganizerLevelFilter,
+} from "@/lib/organizer-level";
+import {
   and,
   count,
   ilike,
@@ -19,9 +23,15 @@ import {
   asc,
   inArray,
   countDistinct,
+  sql,
 } from "drizzle-orm";
 import { type GetOrganizersSchema } from "./validations";
 import { cacheLife, cacheTag } from "next/cache";
+
+const organizedCompetitionCount = countDistinct(
+  competitionOrganizer.competitionId,
+);
+const organizerLevel = organizerLevelFilterSql(organizedCompetitionCount);
 
 export async function getOrganizers(input: GetOrganizersSchema) {
   cacheLife("days");
@@ -30,12 +40,17 @@ export async function getOrganizers(input: GetOrganizersSchema) {
   try {
     const offset = (input.page - 1) * input.perPage;
 
+    const levelFilter =
+      input.level.length > 0
+        ? sql`${organizerLevel} IN (${sql.join(
+            input.level.map((level) => sql`${level}`),
+            sql`, `,
+          )})`
+        : undefined;
+
     const where = and(
       input.name ? ilike(person.name, `%${input.name}%`) : undefined,
       input.state.length > 0 ? inArray(state.name, input.state) : undefined,
-      input.status.length > 0
-        ? inArray(organizer.status, input.status)
-        : undefined,
       input.gender.length > 0
         ? inArray(person.gender, input.gender)
         : undefined,
@@ -48,13 +63,10 @@ export async function getOrganizers(input: GetOrganizersSchema) {
               case "state":
                 return item.desc ? desc(state.name) : asc(state.name);
               case "competitions":
+              case "level":
                 return item.desc
-                  ? desc(countDistinct(competitionOrganizer.competitionId))
-                  : asc(countDistinct(competitionOrganizer.competitionId));
-              case "status":
-                return item.desc
-                  ? desc(organizer.status)
-                  : asc(organizer.status);
+                  ? desc(organizedCompetitionCount)
+                  : asc(organizedCompetitionCount);
               default:
                 return item.desc ? desc(person[item.id]) : asc(person[item.id]);
             }
@@ -68,8 +80,8 @@ export async function getOrganizers(input: GetOrganizersSchema) {
           name: person.name,
           gender: person.gender,
           state: state.name,
-          status: organizer.status,
-          competitions: countDistinct(competitionOrganizer.competitionId),
+          level: organizerLevel.as("level"),
+          competitions: organizedCompetitionCount,
         })
         .from(organizer)
         .innerJoin(
@@ -81,7 +93,8 @@ export async function getOrganizers(input: GetOrganizersSchema) {
         .limit(input.perPage)
         .offset(offset)
         .where(where)
-        .groupBy(person.wcaId, state.name, organizer.status)
+        .groupBy(person.wcaId, state.name, person.gender)
+        .having(levelFilter)
         .orderBy(...orderBy);
 
       const total = (await tx
@@ -96,7 +109,8 @@ export async function getOrganizers(input: GetOrganizersSchema) {
         .innerJoin(person, eq(organizer.personId, person.wcaId))
         .leftJoin(state, eq(person.stateId, state.id))
         .where(where)
-        .groupBy(person.wcaId, state.name, organizer.status)
+        .groupBy(person.wcaId, state.name, person.gender)
+        .having(levelFilter)
         .execute()
         .then((res) => res.length)) as number;
 
@@ -107,7 +121,13 @@ export async function getOrganizers(input: GetOrganizersSchema) {
     });
 
     const pageCount = Math.ceil(total / input.perPage);
-    return { data, pageCount };
+    return {
+      data: data.map((row) => ({
+        ...row,
+        level: row.level as OrganizerLevelFilter,
+      })),
+      pageCount,
+    };
   } catch (err) {
     console.error(err);
     return { data: [], pageCount: 0 };
@@ -177,32 +197,45 @@ export async function getOrganizersGenderCounts() {
   }
 }
 
-export async function getOrganizerStatusCounts() {
+export async function getOrganizerLevelCounts() {
   cacheLife("days");
-  cacheTag("organizers-status-counts");
+  cacheTag("organizers-level-counts");
 
   try {
-    return await db
-      .select({
-        status: organizer.status,
-        count: count(),
-      })
-      .from(organizer)
-      .groupBy(organizer.status)
-      .having(gt(count(), 0))
-      .orderBy(organizer.status)
-      .then((res) =>
-        res.reduce(
-          (acc, { status, count }) => {
-            if (!status) return acc;
-            acc[status] = count;
-            return acc;
-          },
-          {} as Record<string, number>,
-        ),
-      );
+    const innerLevel = organizerLevelFilterSql(
+      sql`COUNT(DISTINCT ${competitionOrganizer.competitionId})`,
+    );
+
+    const rows = (await db.execute(sql`
+      SELECT level, COUNT(*)::int AS count
+      FROM (
+        SELECT ${innerLevel} AS level
+        FROM ${organizer}
+        INNER JOIN ${competitionOrganizer}
+          ON ${competitionOrganizer.organizerId} = ${organizer.id}
+        INNER JOIN ${person}
+          ON ${organizer.personId} = ${person.wcaId}
+        GROUP BY ${person.wcaId}
+      ) AS organizers_by_level
+      GROUP BY level
+      ORDER BY CASE level
+        WHEN 'Debutante' THEN 1
+        WHEN 'Super' THEN 2
+        WHEN 'Experto' THEN 3
+        WHEN 'Maestro' THEN 4
+        WHEN 'Leyenda' THEN 5
+      END
+    `)) as unknown as { level: OrganizerLevelFilter; count: number }[];
+
+    return rows.reduce(
+      (acc, { level, count }) => {
+        acc[level] = count;
+        return acc;
+      },
+      {} as Record<OrganizerLevelFilter, number>,
+    );
   } catch (err) {
     console.error(err);
-    return {} as Record<string, number>;
+    return {} as Record<OrganizerLevelFilter, number>;
   }
 }

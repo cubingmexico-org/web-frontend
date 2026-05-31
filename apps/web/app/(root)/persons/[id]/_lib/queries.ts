@@ -18,8 +18,14 @@ import {
   BLD_FMC_MEANS_EVENTS,
 } from "@/lib/constants";
 import type { DelegateStatus, Medals, Records } from "@/types/wca";
+import {
+  getOrganizerLevel,
+  type OrganizerLevel,
+} from "@/lib/organizer-level";
 import { and, countDistinct, desc, eq, gt, inArray, sql } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
+
+export type { OrganizerLevel };
 
 export interface PersonCompetitionLocation {
   id: string;
@@ -81,15 +87,6 @@ export type MembershipData = {
   hasWorldChampionshipPodium: boolean;
   eventsWon: number;
 } | null;
-
-export type OrganizerLevel =
-  | "Debutante"
-  | "Super"
-  | "Experto"
-  | "Experta"
-  | "Maestro"
-  | "Maestra"
-  | "Leyenda";
 
 export type OrganizerStatus = {
   organizedCompetitionCount: number;
@@ -340,21 +337,7 @@ export async function getOrganizerStatus(
       .then((res) => res[0]);
 
     const gender = personRow?.gender ?? null;
-    const isFemale = gender === "f";
-
-    let level: OrganizerLevel;
-
-    if (organizedCompetitionCount === 1) {
-      level = "Debutante";
-    } else if (organizedCompetitionCount === 2) {
-      level = "Super";
-    } else if (organizedCompetitionCount <= 4) {
-      level = isFemale ? "Experta" : "Experto";
-    } else if (organizedCompetitionCount === 5) {
-      level = isFemale ? "Maestra" : "Maestro";
-    } else {
-      level = "Leyenda";
-    }
+    const level = getOrganizerLevel(organizedCompetitionCount, gender);
 
     return {
       organizedCompetitionCount,

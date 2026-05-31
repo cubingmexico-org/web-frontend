@@ -27,21 +27,33 @@ import { Badge } from "@workspace/ui/components/badge";
 import type { GeoJSONProps } from "react-leaflet";
 import Link from "next/link";
 import type { Metadata } from "next";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@workspace/ui/components/tabs";
 import { MapContainer } from "./_components/map-container";
+import { PersonResultsTab } from "./_components/results-tab";
 import {
   getAverageStateRanks,
   getIsOrganizer,
   getMembershipData,
+  getPersonCompetitionEventOptions,
+  getPersonCompetitionLocations,
   getPersonInfo,
+  getPersonCompetitionResults,
   getSingleStateRanks,
   getWcaPersonData,
 } from "./_lib/queries";
 import { notFound } from "next/navigation";
 import { cacheLife, cacheTag } from "next/cache";
 import type { DelegateStatus } from "@/types/wca";
+import type { SearchParams } from "@/types";
 
 type Props = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<SearchParams>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -66,7 +78,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-async function PersonPageContent({ id }: { id: string }) {
+async function PersonPageContent({
+  id,
+  searchParams,
+}: {
+  id: string;
+  searchParams: Promise<SearchParams>;
+}) {
   "use cache";
   cacheLife("days");
   cacheTag(`person-page-${id}`);
@@ -78,17 +96,24 @@ async function PersonPageContent({ id }: { id: string }) {
   }
 
   const events = await getEvents();
+  const queryParams = await searchParams;
+  const requestedEventId = Array.isArray(queryParams.event)
+    ? queryParams.event[0]
+    : queryParams.event;
 
   const [
     wcaData,
     statesData,
+    locations,
     singleStateRanks,
     averageStateRanks,
     isOrganizer,
     membershipData,
+    eventOptions,
   ] = await Promise.all([
     getWcaPersonData(id),
     getStatesGeoJSON(),
+    getPersonCompetitionLocations(id),
     getSingleStateRanks(id),
     getAverageStateRanks(id),
     getIsOrganizer(id),
@@ -96,6 +121,7 @@ async function PersonPageContent({ id }: { id: string }) {
       id,
       events.map((event) => event.id),
     ),
+    getPersonCompetitionEventOptions(id),
   ]);
 
   if (!wcaData) {
@@ -108,9 +134,24 @@ async function PersonPageContent({ id }: { id: string }) {
     stateIds?.includes(feature.properties.id),
   ) as unknown as GeoJSONProps["data"];
 
+  const filteredLocations = locations.filter((location) => {
+    const latitude = location.latitude ?? 0;
+    const longitude = location.longitude ?? 0;
+
+    return latitude !== 0 && longitude !== 0;
+  });
+
   const isDelegate = wcaData.person.delegate_status !== null;
 
   const tier = getTier(membershipData);
+  const selectedEventId =
+    eventOptions.find((event) => event.eventId === requestedEventId)?.eventId ??
+    eventOptions[0]?.eventId ??
+    "";
+
+  const selectedResults = selectedEventId
+    ? await getPersonCompetitionResults(id, selectedEventId)
+    : null;
 
   // Create lookup maps for O(1) access instead of repeated find() calls
   const singleRankMap = new Map(
@@ -462,23 +503,47 @@ async function PersonPageContent({ id }: { id: string }) {
           </Table>
         </div>
       </div>
-      <h2 className="flex items-center justify-center gap-2 text-lg font-semibold my-4">
-        <span>Estados visitados</span>
-        <Badge>
-          {stateIds?.[0] === null || stateIds === null ? 0 : stateIds?.length}
-        </Badge>
-      </h2>
-      <MapContainer statesData={filteredStatesData} />
+      <Tabs defaultValue="results" className="mt-6">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="results">Resultados</TabsTrigger>
+          <TabsTrigger value="map">Mapa</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="map" className="mt-6">
+          <h2 className="flex items-center justify-center gap-2 text-lg font-semibold my-4">
+            <span>Estados visitados</span>
+            <Badge>
+              {stateIds?.[0] === null || stateIds === null
+                ? 0
+                : stateIds?.length}
+            </Badge>
+          </h2>
+          <MapContainer
+            locations={filteredLocations}
+            statesData={filteredStatesData}
+          />
+        </TabsContent>
+
+        <TabsContent value="results" className="mt-6">
+          <PersonResultsTab
+            eventOptions={eventOptions}
+            selectedEventId={selectedEventId}
+            selectedResults={selectedResults}
+          />
+        </TabsContent>
+      </Tabs>
     </>
   );
 }
 
 export default async function Page({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<SearchParams>;
 }) {
   const id = (await params).id;
 
-  return <PersonPageContent id={id} />;
+  return <PersonPageContent id={id} searchParams={searchParams} />;
 }

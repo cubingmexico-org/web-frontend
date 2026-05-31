@@ -7,10 +7,10 @@ import { eventNames } from "@/lib/constants";
 import { eq } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 import {
-  roundTypeLabel,
   type CompetitionResultRow,
   type ResultsByEventGroup,
 } from "../../../_lib/results";
+import { roundTypeLabel } from "@/lib/utils";
 
 function roundRank(id?: string) {
   if (!id) return 3;

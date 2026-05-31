@@ -25,11 +25,11 @@ import { eventNames } from "@/lib/constants";
 import {
   formatAverageResult,
   formatBestResult,
-  roundTypeLabel,
   type CompetitionResultRow,
   type ResultsByEventGroup,
   type ResultsByPersonGroup,
 } from "../../_lib/results";
+import { roundTypeLabel } from "@/lib/utils";
 
 interface CompetitionHeaderData {
   event_ids: string[];

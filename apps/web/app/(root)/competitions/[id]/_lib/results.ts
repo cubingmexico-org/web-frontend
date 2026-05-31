@@ -21,31 +21,6 @@ export interface ResultsByEventGroup {
   rounds: EventRoundGroup[];
 }
 
-export function roundTypeLabel(id?: string | null) {
-  if (!id) return "";
-  switch (id) {
-    case "0":
-    case "h":
-      return "Ronda clasificatoria";
-    case "1":
-    case "d":
-      return "Primera ronda";
-    case "2":
-    case "e":
-      return "Segunda ronda";
-    case "3":
-    case "g":
-      return "Semi Final";
-    case "b":
-      return "B Final";
-    case "c":
-    case "f":
-      return "Final";
-    default:
-      return id;
-  }
-}
-
 export function formatBestResult(resultRow: CompetitionResultRow): string {
   if (resultRow.best <= 0) return "—";
 

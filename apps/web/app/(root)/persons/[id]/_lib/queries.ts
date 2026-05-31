@@ -3,6 +3,7 @@ import { db } from "@/db";
 import {
   championship,
   competition,
+  competitionOrganizer,
   organizer,
   person,
   rankAverage,
@@ -16,13 +17,14 @@ import {
   SPEEDSOLVING_AVERAGES_EVENTS,
   BLD_FMC_MEANS_EVENTS,
 } from "@/lib/constants";
-import type { WcaPersonResponse } from "@/types/wca";
+import type { DelegateStatus, Medals, Records } from "@/types/wca";
 import { and, countDistinct, desc, eq, gt, inArray, sql } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 
 export interface PersonCompetitionLocation {
   id: string;
   name: string;
+  stateId: string | null;
   stateName: string | null;
   latitude: number | null;
   longitude: number | null;
@@ -56,6 +58,44 @@ export interface PersonResultsEventOption {
   eventRank: number;
 }
 
+type RecordWithStateRank = {
+  id: number;
+  personId: string;
+  eventId: string;
+  best: number;
+  worldRank: number;
+  continentRank: number;
+  countryRank: number;
+  stateRank: number | null;
+};
+
+export type PersonalRecordWithStateRank = {
+  single: RecordWithStateRank;
+  average?: RecordWithStateRank;
+};
+
+export type MembershipData = {
+  numberOfSpeedsolvingAverages: number;
+  numberOfBLDFMCMeans: number;
+  hasWorldRecord: boolean;
+  hasWorldChampionshipPodium: boolean;
+  eventsWon: number;
+} | null;
+
+export type OrganizerLevel =
+  | "Debutante"
+  | "Super"
+  | "Experto"
+  | "Experta"
+  | "Maestro"
+  | "Maestra"
+  | "Leyenda";
+
+export type OrganizerStatus = {
+  organizedCompetitionCount: number;
+  level: OrganizerLevel;
+} | null;
+
 function roundRank(id?: string | null) {
   if (!id) return 3;
 
@@ -70,90 +110,163 @@ function roundRank(id?: string | null) {
   return 3;
 }
 
-export async function getWcaPersonData(
-  wcaId: string,
-): Promise<WcaPersonResponse | null> {
+export async function getPersonData(wcaId: string): Promise<{
+  person: {
+    wcaId: string;
+    name: string | null;
+    gender: string | null;
+    delegateStatus: DelegateStatus;
+    state: string | null;
+  };
+  competitionCount: number;
+  personalRecords: Record<string, PersonalRecordWithStateRank>;
+  medals: Medals;
+  regionalRecords: Records;
+} | null> {
   "use cache";
   cacheLife("days");
-  cacheTag(`wca-person-data-${wcaId}`);
+  cacheTag(`person-data-${wcaId}`);
 
   try {
-    const response = await fetch(
-      `https://www.worldcubeassociation.org/api/v0/persons/${wcaId}`,
-    );
-
-    if (!response.ok) {
-      return null;
-    }
-
-    return response.json();
-  } catch {
-    return null;
-  }
-}
-
-export async function getPersonInfo(wcaId: string) {
-  "use cache";
-  cacheLife("days");
-  cacheTag(`person-info-${wcaId}`);
-
-  try {
-    const data = await db
+    const personDataRow = await db
       .select({
+        name: person.name,
+        gender: person.gender,
+        wcaId: person.wcaId,
         state: state.name,
-        statesNames: sql<
-          string[] | null
-        >`array_agg(DISTINCT ${competition.stateId}) FILTER (WHERE ${competition.stateId} IS NOT NULL)`,
       })
       .from(person)
       .leftJoin(state, eq(person.stateId, state.id))
-      .leftJoin(result, eq(person.wcaId, result.personId))
-      .leftJoin(competition, eq(result.competitionId, competition.id))
       .where(eq(person.wcaId, wcaId))
-      .groupBy(state.name);
+      .then((res) => res[0]);
 
-    return data[0] ?? null;
-  } catch (err) {
-    console.error(err);
-    return null;
-  }
-}
+    if (!personDataRow) return null;
 
-export async function getSingleStateRanks(wcaId: string) {
-  "use cache";
-  cacheLife("days");
-  cacheTag(`single-state-ranks-${wcaId}`);
-
-  try {
-    return await db
+    const competitionCountRow = await db
       .select({
-        stateRank: rankSingle.stateRank,
+        competitionCount: sql<number>`COUNT(DISTINCT ${result.competitionId})`,
+      })
+      .from(result)
+      .where(eq(result.personId, wcaId));
+
+    const competitionCount = Number(
+      competitionCountRow[0]?.competitionCount ?? 0,
+    );
+
+    const medalsRow = await db
+      .select({
+        gold: sql<number>`COUNT(*) FILTER (WHERE ${result.pos} = 1 AND ${result.roundTypeId} IN('f','c'))`,
+        silver: sql<number>`COUNT(*) FILTER (WHERE ${result.pos} = 2 AND ${result.roundTypeId} IN('f','c'))`,
+        bronze: sql<number>`COUNT(*) FILTER (WHERE ${result.pos} = 3 AND ${result.roundTypeId} IN('f','c'))`,
+      })
+      .from(result)
+      .where(and(eq(result.personId, wcaId), gt(result.best, 0)));
+
+    const medals = {
+      gold: Number(medalsRow[0]?.gold ?? 0),
+      silver: Number(medalsRow[0]?.silver ?? 0),
+      bronze: Number(medalsRow[0]?.bronze ?? 0),
+      total:
+        Number(medalsRow[0]?.gold ?? 0) +
+        Number(medalsRow[0]?.silver ?? 0) +
+        Number(medalsRow[0]?.bronze ?? 0),
+    };
+
+    const recordsRow = await db
+      .select({
+        world: sql<number>`COUNT(DISTINCT CASE WHEN ${result.regionalSingleRecord} = 'WR' OR ${result.regionalAverageRecord} = 'WR' THEN ${result.eventId} ELSE NULL END)`,
+        continental: sql<number>`COUNT(DISTINCT CASE WHEN ${result.regionalSingleRecord} = 'CR' OR ${result.regionalAverageRecord} = 'CR' THEN ${result.eventId} ELSE NULL END)`,
+        national: sql<number>`COUNT(DISTINCT CASE WHEN ${result.regionalSingleRecord} = 'NR' OR ${result.regionalAverageRecord} = 'NR' THEN ${result.eventId} ELSE NULL END)`,
+      })
+      .from(result)
+      .where(eq(result.personId, wcaId));
+
+    const regionalRecords = {
+      world: Number(recordsRow[0]?.world ?? 0),
+      continental: Number(recordsRow[0]?.continental ?? 0),
+      national: Number(recordsRow[0]?.national ?? 0),
+      total:
+        Number(recordsRow[0]?.world ?? 0) +
+        Number(recordsRow[0]?.continental ?? 0) +
+        Number(recordsRow[0]?.national ?? 0),
+    };
+
+    const singles = await db
+      .select({
         eventId: rankSingle.eventId,
+        best: rankSingle.best,
+        worldRank: rankSingle.worldRank,
+        continentRank: rankSingle.continentRank,
+        countryRank: rankSingle.countryRank,
+        stateRank: rankSingle.stateRank,
       })
       .from(rankSingle)
       .where(eq(rankSingle.personId, wcaId));
-  } catch (err) {
-    console.error(err);
-    return [];
-  }
-}
 
-export async function getAverageStateRanks(wcaId: string) {
-  "use cache";
-  cacheLife("days");
-  cacheTag(`average-state-ranks-${wcaId}`);
-
-  try {
-    return await db
+    const averages = await db
       .select({
-        stateRank: rankAverage.stateRank,
         eventId: rankAverage.eventId,
+        best: rankAverage.best,
+        worldRank: rankAverage.worldRank,
+        continentRank: rankAverage.continentRank,
+        countryRank: rankAverage.countryRank,
+        stateRank: rankAverage.stateRank,
       })
       .from(rankAverage)
       .where(eq(rankAverage.personId, wcaId));
+
+    const personalRecords: Record<string, PersonalRecordWithStateRank> = {};
+
+    for (const s of singles) {
+      const existingRecord =
+        personalRecords[s.eventId] ?? ({} as PersonalRecordWithStateRank);
+      existingRecord.single = {
+        id: 0,
+        personId: wcaId,
+        eventId: s.eventId,
+        best: s.best,
+        worldRank: s.worldRank ?? 0,
+        continentRank: s.continentRank ?? 0,
+        countryRank: s.countryRank ?? 0,
+        stateRank: s.stateRank,
+      };
+      personalRecords[s.eventId] = existingRecord;
+    }
+
+    for (const a of averages) {
+      const existingRecord =
+        personalRecords[a.eventId] ?? ({} as PersonalRecordWithStateRank);
+      existingRecord.average = {
+        id: 0,
+        personId: wcaId,
+        eventId: a.eventId,
+        best: a.best,
+        worldRank: a.worldRank ?? 0,
+        continentRank: a.continentRank ?? 0,
+        countryRank: a.countryRank ?? 0,
+        stateRank: a.stateRank,
+      };
+      personalRecords[a.eventId] = existingRecord;
+    }
+
+    const resultObject = {
+      person: {
+        wcaId: personDataRow.wcaId,
+        name: personDataRow.name,
+        gender: personDataRow.gender,
+        delegateStatus: null,
+        state: personDataRow.state ?? null,
+      },
+      competitionCount,
+      personalRecords,
+      medals,
+      regionalRecords,
+    };
+
+    return resultObject;
   } catch (err) {
     console.error(err);
-    return [];
+    return null;
   }
 }
 
@@ -192,23 +305,64 @@ export async function getMembershipData(wcaId: string, eventIds: string[]) {
   }
 }
 
-export async function getIsOrganizer(wcaId: string) {
+export async function getOrganizerStatus(
+  wcaId: string,
+): Promise<OrganizerStatus> {
   "use cache";
   cacheLife("days");
-  cacheTag(`is-organizer-${wcaId}`);
+  cacheTag(`organizer-status-${wcaId}`);
 
   try {
     const data = await db
-      .select()
+      .select({
+        organizedCompetitionCount: sql<number>`COUNT(DISTINCT ${competitionOrganizer.competitionId})`,
+      })
       .from(organizer)
-      .where(
-        and(eq(organizer.personId, wcaId), eq(organizer.status, "active")),
-      );
+      .leftJoin(
+        competitionOrganizer,
+        eq(competitionOrganizer.organizerId, organizer.id),
+      )
+      .where(and(eq(organizer.personId, wcaId), eq(organizer.status, "active")))
+      .then((res) => res[0]);
 
-    return data.length > 0;
+    const organizedCompetitionCount = Number(
+      data?.organizedCompetitionCount ?? 0,
+    );
+
+    if (organizedCompetitionCount === 0) {
+      return null;
+    }
+
+    const personRow = await db
+      .select({ gender: person.gender })
+      .from(person)
+      .where(eq(person.wcaId, wcaId))
+      .then((res) => res[0]);
+
+    const gender = personRow?.gender ?? null;
+    const isFemale = gender === "f";
+
+    let level: OrganizerLevel;
+
+    if (organizedCompetitionCount === 1) {
+      level = "Debutante";
+    } else if (organizedCompetitionCount === 2) {
+      level = "Super";
+    } else if (organizedCompetitionCount <= 4) {
+      level = isFemale ? "Experta" : "Experto";
+    } else if (organizedCompetitionCount === 5) {
+      level = isFemale ? "Maestra" : "Maestro";
+    } else {
+      level = "Leyenda";
+    }
+
+    return {
+      organizedCompetitionCount,
+      level,
+    };
   } catch (err) {
     console.error(err);
-    return false;
+    return null;
   }
 }
 
@@ -245,6 +399,7 @@ export async function getPersonCompetitionLocations(wcaId: string) {
       .select({
         id: competition.id,
         name: competition.name,
+        stateId: competition.stateId,
         stateName: state.name,
         latitude: competition.latitudeMicrodegrees,
         longitude: competition.longitudeMicrodegrees,

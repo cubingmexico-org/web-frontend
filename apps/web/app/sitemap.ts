@@ -20,7 +20,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const teamUrls = states.map((state) => {
     return {
       url: `https://www.cubingmexico.net/teams/${state.id}`,
-      lastModified: new Date(),
       changeFrequency: "monthly" as const,
       priority: 0.8,
     };
@@ -30,19 +29,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return [
       {
         url: `https://www.cubingmexico.net/teams/${state.id}/members`,
-        lastModified: new Date(),
+
         changeFrequency: "monthly" as const,
         priority: 0.7,
       },
       {
         url: `https://www.cubingmexico.net/teams/${state.id}/competitions`,
-        lastModified: new Date(),
+
         changeFrequency: "monthly" as const,
         priority: 0.7,
       },
       {
         url: `https://www.cubingmexico.net/teams/${state.id}/statistics`,
-        lastModified: new Date(),
+
         changeFrequency: "monthly" as const,
         priority: 0.7,
       },
@@ -52,7 +51,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const stateKinchUrls = states.map((state) => {
     return {
       url: `https://www.cubingmexico.net/kinch/${state.id}`,
-      lastModified: new Date(),
       changeFrequency: "monthly" as const,
       priority: 0.6,
     };
@@ -61,7 +59,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const sosrSingleUrls = states.map((state) => {
     return {
       url: `https://www.cubingmexico.net/sosr/${state.id}/single`,
-      lastModified: new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.6,
     };
@@ -70,7 +67,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const sosrAverageUrls = states.map((state) => {
     return {
       url: `https://www.cubingmexico.net/sosr/${state.id}/average`,
-      lastModified: new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.6,
     };
@@ -79,7 +75,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const singleRankingUrls = events.map((event) => {
     return {
       url: `https://www.cubingmexico.net/rankings/${event.id}/single`,
-      lastModified: new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.6,
     };
@@ -88,7 +83,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const averageRankingUrls = events.map((event) => {
     return {
       url: `https://www.cubingmexico.net/rankings/${event.id}/average`,
-      lastModified: new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.6,
     };
@@ -97,7 +91,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const singleResultsRankingUrls = events.map((event) => {
     return {
       url: `https://www.cubingmexico.net/rankings/${event.id}/single/results`,
-      lastModified: new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.6,
     };
@@ -106,7 +99,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const averageResultsRankingUrls = events.map((event) => {
     return {
       url: `https://www.cubingmexico.net/rankings/${event.id}/average/results`,
-      lastModified: new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.6,
     };
@@ -115,8 +107,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const personUrls = persons.map((person) => {
     return {
       url: `https://www.cubingmexico.net/persons/${person.wcaId}`,
-      lastModified: new Date(),
-      changeFrequency: "weekly" as const,
+      changeFrequency: "monthly" as const,
       priority: 0.5,
     };
   });
@@ -124,8 +115,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const competitionUrls = competitions.map((competition) => {
     return {
       url: `https://www.cubingmexico.net/competitions/${competition.id}`,
-      lastModified: new Date(),
-      changeFrequency: "weekly" as const,
+      changeFrequency: "monthly" as const,
       priority: 0.7,
     };
   });
@@ -136,20 +126,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return [
       {
         url: `${base}/podiums`,
-        lastModified: new Date(),
-        changeFrequency: "weekly" as const,
+
+        changeFrequency: "monthly" as const,
         priority: 0.6,
       },
       {
         url: `${base}/all`,
-        lastModified: new Date(),
-        changeFrequency: "weekly" as const,
+
+        changeFrequency: "monthly" as const,
         priority: 0.6,
       },
       {
         url: `${base}/py_person`,
-        lastModified: new Date(),
-        changeFrequency: "weekly" as const,
+
+        changeFrequency: "monthly" as const,
         priority: 0.6,
       },
     ];
@@ -158,13 +148,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     {
       url: "https://www.cubingmexico.net",
-      lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 1,
     },
     {
       url: "https://www.cubingmexico.net/teams",
-      lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.9,
     },
@@ -172,7 +160,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...teamSectionUrls,
     {
       url: "https://www.cubingmexico.net/competitions",
-      lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.8,
     },
@@ -180,7 +167,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...competitionResultsUrls,
     {
       url: "https://www.cubingmexico.net/about",
-      lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.7,
     },
@@ -192,87 +178,73 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...averageResultsRankingUrls,
     {
       url: "https://www.cubingmexico.net/records",
-      lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.6,
     },
     {
       url: "https://www.cubingmexico.net/kinch",
-      lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.6,
     },
     ...stateKinchUrls,
     {
       url: "https://www.cubingmexico.net/kinch/teams",
-      lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.6,
     },
     {
       url: "https://www.cubingmexico.net/sor/single",
-      lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.6,
     },
     {
       url: "https://www.cubingmexico.net/sor/average",
-      lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.6,
     },
     {
       url: "https://www.cubingmexico.net/sor/single/teams",
-      lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.6,
     },
     {
       url: "https://www.cubingmexico.net/sor/average/teams",
-      lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.6,
     },
     {
       url: "https://www.cubingmexico.net/persons",
-      lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.5,
     },
     ...personUrls,
     {
       url: "https://www.cubingmexico.net/organizers",
-      lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.5,
     },
     {
       url: "https://www.cubingmexico.net/delegates",
-      lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.5,
     },
     {
       url: "https://www.cubingmexico.net/members",
-      lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.5,
     },
     {
       url: "https://www.cubingmexico.net/faq",
-      lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.3,
     },
     {
       url: "https://www.cubingmexico.net/logo",
-      lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.4,
     },
     {
       url: "https://www.cubingmexico.net/tools",
-      lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.7,
     },

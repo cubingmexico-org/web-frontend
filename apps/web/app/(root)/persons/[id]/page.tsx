@@ -212,6 +212,7 @@ async function PersonPageContent({
             <TableHead className="text-center">WCA ID</TableHead>
             <TableHead className="text-center">Sexo</TableHead>
             <TableHead className="text-center">Competencias</TableHead>
+            {/* <TableHead className="text-center">Resoluciones</TableHead> */}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -230,6 +231,7 @@ async function PersonPageContent({
                   : "Otro"}
             </TableCell>
             <TableCell className="text-center">{competitionCount}</TableCell>
+            {/* <TableCell className="text-center">{solveCount}</TableCell> */}
           </TableRow>
         </TableBody>
       </Table>
@@ -460,24 +462,22 @@ async function PersonPageContent({
           <TabsTrigger value="map">Mapa</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="map" className="mt-6">
-          <h2 className="flex items-center justify-center gap-2 text-lg font-semibold my-4">
-            <span>Estados visitados</span>
-            <Badge>
-              {visitedStateCount}
-            </Badge>
-          </h2>
-          <MapContainer
-            locations={filteredLocations}
-            statesData={filteredStatesData}
-          />
-        </TabsContent>
-
         <TabsContent value="results" className="mt-6">
           <PersonResultsTab
             eventOptions={eventOptions}
             selectedEventId={selectedEventId}
             selectedResults={selectedResults}
+          />
+        </TabsContent>
+
+        <TabsContent value="map" className="mt-6">
+          <h2 className="flex items-center justify-center gap-2 text-lg font-semibold my-4">
+            <span>Estados visitados</span>
+            <Badge>{visitedStateCount}</Badge>
+          </h2>
+          <MapContainer
+            locations={filteredLocations}
+            statesData={filteredStatesData}
           />
         </TabsContent>
       </Tabs>

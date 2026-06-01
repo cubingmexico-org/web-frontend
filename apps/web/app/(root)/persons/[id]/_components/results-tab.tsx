@@ -116,9 +116,11 @@ export function PersonResultsTab({
                 <TableHead rowSpan={2} className="text-center">
                   Single
                 </TableHead>
-                <TableHead rowSpan={2} className="text-center">
-                  Average
-                </TableHead>
+                {selectedResults.eventId !== "333mbf" && (
+                  <TableHead rowSpan={2} className="text-center">
+                    Average
+                  </TableHead>
+                )}
                 <TableHead colSpan={solveCount} className="text-center">
                   Resoluciones
                 </TableHead>
@@ -154,19 +156,36 @@ export function PersonResultsTab({
                     <TableCell className="text-center">
                       {resultRow.position ?? "—"}
                     </TableCell>
-                    <TableCell className="text-center whitespace-nowrap font-medium">
+                    <TableCell
+                      className={cn(
+                        "text-center whitespace-nowrap font-medium",
+                        resultRow.isPersonalRecordSingle &&
+                          "font-semibold text-blue-700",
+                      )}
+                    >
                       {resultRow.best === 0
-                        ? "N/A"
+                        ? null
                         : formatAttemptValue(resultRow.eventId, resultRow.best)}
                     </TableCell>
-                    <TableCell className="text-center whitespace-nowrap font-medium">
-                      {resultRow.average === 0
-                        ? "N/A"
-                        : formatAttemptValue(
-                            resultRow.eventId,
-                            resultRow.average,
-                          )}
-                    </TableCell>
+                    {resultRow.eventId !== "333mbf" && (
+                      <TableCell
+                        className={cn(
+                          "text-center whitespace-nowrap font-medium",
+                          resultRow.isPersonalRecordAverage &&
+                            "font-semibold text-blue-700",
+                        )}
+                      >
+                        {resultRow.average === 0
+                          ? null
+                          : resultRow.eventId === "333fm" &&
+                              resultRow.average > 0
+                            ? resultRow.average / 100
+                            : formatAttemptValue(
+                                resultRow.eventId,
+                                resultRow.average,
+                              )}
+                      </TableCell>
+                    )}
                     {Array.from({ length: solveCount }).map((_, index) => {
                       const value = resultRow.solves[index];
                       const formattedValue =

@@ -18,7 +18,12 @@ import {
   SPEEDSOLVING_AVERAGES_EVENTS,
   BLD_FMC_MEANS_EVENTS,
 } from "@/lib/constants";
-import type { DelegateStatus, Medals, Records } from "@/types/wca";
+import type {
+  DelegateStatus,
+  Medals,
+  Records,
+  WcaPersonResponse,
+} from "@/types/wca";
 import { getOrganizerLevel, type OrganizerLevel } from "@/lib/organizer-level";
 import { and, countDistinct, desc, eq, gt, inArray, sql } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
@@ -47,6 +52,9 @@ type PersonCompetitionResultRow = {
   best: number;
   average: number;
   solves: number[];
+  // Indicates this result set a personal record at the time (history)
+  isPersonalRecordSingle?: boolean;
+  isPersonalRecordAverage?: boolean;
 };
 
 export interface PersonResultsByEventGroup {
@@ -114,6 +122,7 @@ export async function getPersonData(wcaId: string): Promise<{
     state: string | null;
   };
   competitionCount: number;
+  solveCount: number;
   personalRecords: Record<string, PersonalRecordWithStateRank>;
   medals: Medals;
   regionalRecords: Records;
@@ -154,6 +163,16 @@ export async function getPersonData(wcaId: string): Promise<{
     const competitionCount = Number(
       competitionCountRow[0]?.competitionCount ?? 0,
     );
+
+    const solveCountRow = await db
+      .select({
+        solveCount: sql<number>`COUNT(*) FILTER (WHERE ${resultAttempts.value} > 0)`,
+      })
+      .from(result)
+      .innerJoin(resultAttempts, eq(resultAttempts.resultId, result.id))
+      .where(eq(result.personId, wcaId));
+
+    const solveCount = Number(solveCountRow[0]?.solveCount ?? 0);
 
     const medalsRow = await db
       .select({
@@ -260,6 +279,7 @@ export async function getPersonData(wcaId: string): Promise<{
         state: personDataRow.state ?? null,
       },
       competitionCount,
+      solveCount,
       personalRecords,
       medals,
       regionalRecords,
@@ -515,7 +535,81 @@ export async function getPersonCompetitionResults(
       }))
       .sort((left, right) => left.eventRank - right.eventRank);
 
+    // Compute personal record history per event group: iterate chronologically
+    if (selectedEventGroup) {
+      // Sort ascending by date to walk through history. When dates are equal,
+      // order by round properly (first rounds before second rounds before finals),
+      // then by position and best as tie-breakers.
+      const chronological = selectedEventGroup.results.slice().sort((a, b) => {
+        const dateDelta =
+          Date.parse(a.competitionStartDate) -
+          Date.parse(b.competitionStartDate);
+        if (dateDelta !== 0) return dateDelta;
+
+        const roundDelta = roundRank(b.roundTypeId) - roundRank(a.roundTypeId);
+        if (roundDelta !== 0) return roundDelta;
+
+        return (a.position ?? 999) - (b.position ?? 999) || a.best - b.best;
+      });
+
+      let bestSingleSeen = 0;
+      let bestAverageSeen = 0;
+
+      for (const r of chronological) {
+        // single: lower is better
+        if (r.best > 0 && (bestSingleSeen === 0 || r.best < bestSingleSeen)) {
+          r.isPersonalRecordSingle = true;
+          bestSingleSeen = r.best;
+        } else {
+          r.isPersonalRecordSingle = false;
+        }
+
+        // average: lower is better and must be > 0
+        if (
+          r.average > 0 &&
+          (bestAverageSeen === 0 || r.average < bestAverageSeen)
+        ) {
+          r.isPersonalRecordAverage = true;
+          bestAverageSeen = r.average;
+        } else {
+          r.isPersonalRecordAverage = false;
+        }
+      }
+    }
+
     return selectedEventGroup ?? null;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
+
+export async function getPersonDataFromWCA(
+  wcaId: string,
+): Promise<WcaPersonResponse | null> {
+  "use cache";
+  cacheLife("days");
+  cacheTag(`person-data-wca-${wcaId}`);
+
+  try {
+    const response = await fetch(
+      `https://www.worldcubeassociation.org/api/v0/persons/${wcaId}`,
+      {
+        next: {
+          revalidate: 60 * 60 * 24, // 1 day
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch person data from WCA API: ${response.statusText}`,
+      );
+    }
+
+    const data = await response.json();
+
+    return data;
   } catch (err) {
     console.error(err);
     return null;

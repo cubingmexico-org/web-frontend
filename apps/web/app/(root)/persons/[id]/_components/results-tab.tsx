@@ -44,6 +44,27 @@ function formatAttemptValue(eventId: string, value: number) {
   return formatTime(value);
 }
 
+function getPodiumRowClass(
+  position?: number | null,
+  roundTypeId?: string | null,
+  best?: number | null,
+) {
+  if ((roundTypeId !== "c" && roundTypeId !== "f") || !best || best <= 0) {
+    return "";
+  }
+
+  switch (position) {
+    case 1:
+      return "border-amber-500/30 bg-amber-500/10";
+    case 2:
+      return "border-slate-400/30 bg-slate-400/10";
+    case 3:
+      return "border-yellow-500/30 bg-yellow-500/10";
+    default:
+      return "";
+  }
+}
+
 export function PersonResultsTab({
   eventOptions,
   selectedEventId,
@@ -116,9 +137,11 @@ export function PersonResultsTab({
                 <TableHead rowSpan={2} className="text-center">
                   Single
                 </TableHead>
-                <TableHead rowSpan={2} className="text-center">
-                  Average
-                </TableHead>
+                {selectedResults.eventId !== "333mbf" && (
+                  <TableHead rowSpan={2} className="text-center">
+                    Average
+                  </TableHead>
+                )}
                 <TableHead colSpan={solveCount} className="text-center">
                   Resoluciones
                 </TableHead>
@@ -135,9 +158,17 @@ export function PersonResultsTab({
                 const max = hasFiveSolves
                   ? Math.max(...resultRow.solves)
                   : undefined;
+                const podiumRowClass = getPodiumRowClass(
+                  resultRow.position,
+                  resultRow.roundTypeId,
+                  resultRow.best,
+                );
 
                 return (
-                  <TableRow key={resultRow.resultId}>
+                  <TableRow
+                    key={resultRow.resultId}
+                    className={cn(podiumRowClass, "transition-colors")}
+                  >
                     <TableCell className="whitespace-nowrap">
                       {isFirstForCompetition ? (
                         <Link
@@ -154,19 +185,36 @@ export function PersonResultsTab({
                     <TableCell className="text-center">
                       {resultRow.position ?? "—"}
                     </TableCell>
-                    <TableCell className="text-center whitespace-nowrap font-medium">
+                    <TableCell
+                      className={cn(
+                        "text-center whitespace-nowrap font-medium",
+                        resultRow.isPersonalRecordSingle &&
+                          "font-semibold text-blue-700",
+                      )}
+                    >
                       {resultRow.best === 0
-                        ? "N/A"
+                        ? null
                         : formatAttemptValue(resultRow.eventId, resultRow.best)}
                     </TableCell>
-                    <TableCell className="text-center whitespace-nowrap font-medium">
-                      {resultRow.average === 0
-                        ? "N/A"
-                        : formatAttemptValue(
-                            resultRow.eventId,
-                            resultRow.average,
-                          )}
-                    </TableCell>
+                    {resultRow.eventId !== "333mbf" && (
+                      <TableCell
+                        className={cn(
+                          "text-center whitespace-nowrap font-medium",
+                          resultRow.isPersonalRecordAverage &&
+                            "font-semibold text-blue-700",
+                        )}
+                      >
+                        {resultRow.average === 0
+                          ? null
+                          : resultRow.eventId === "333fm" &&
+                              resultRow.average > 0
+                            ? resultRow.average / 100
+                            : formatAttemptValue(
+                                resultRow.eventId,
+                                resultRow.average,
+                              )}
+                      </TableCell>
+                    )}
                     {Array.from({ length: solveCount }).map((_, index) => {
                       const value = resultRow.solves[index];
                       const formattedValue =

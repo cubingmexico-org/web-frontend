@@ -128,6 +128,8 @@ async function PersonPageContent({
     stateIds?.includes(feature.properties.id),
   ) as unknown as GeoJSONProps["data"];
 
+  const visitedStateCount = new Set(stateIds).size;
+
   const filteredLocations = locations.filter((location) => {
     const latitude = location.latitude ?? 0;
     const longitude = location.longitude ?? 0;
@@ -210,6 +212,7 @@ async function PersonPageContent({
             <TableHead className="text-center">WCA ID</TableHead>
             <TableHead className="text-center">Sexo</TableHead>
             <TableHead className="text-center">Competencias</TableHead>
+            {/* <TableHead className="text-center">Resoluciones</TableHead> */}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -228,6 +231,7 @@ async function PersonPageContent({
                   : "Otro"}
             </TableCell>
             <TableCell className="text-center">{competitionCount}</TableCell>
+            {/* <TableCell className="text-center">{solveCount}</TableCell> */}
           </TableRow>
         </TableBody>
       </Table>
@@ -320,14 +324,14 @@ async function PersonPageContent({
                   record?.record?.single.worldRank
                 )}
               </TableCell>
-              <TableCell className="text-center">
+              <TableCell className="text-center font-semibold">
                 {record.event === "333mbf"
                   ? formatTime333mbf(record?.record?.single.best!)
                   : record.event === "333fm"
                     ? record?.record?.single.best
                     : formatTime(record?.record?.single.best!)}
               </TableCell>
-              <TableCell className="text-center">
+              <TableCell className="text-center font-semibold">
                 {record?.record?.average?.best
                   ? formatTime(record?.record?.average?.best)
                   : null}
@@ -452,32 +456,28 @@ async function PersonPageContent({
           </Table>
         </div>
       </div>
-      <Tabs defaultValue="results" className="mt-6">
+      <Tabs defaultValue="results-by-event" className="mt-6">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="results">Resultados</TabsTrigger>
+          <TabsTrigger value="results-by-event">Resultados</TabsTrigger>
           <TabsTrigger value="map">Mapa</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="map" className="mt-6">
-          <h2 className="flex items-center justify-center gap-2 text-lg font-semibold my-4">
-            <span>Estados visitados</span>
-            <Badge>
-              {stateIds?.[0] === null || stateIds === null
-                ? 0
-                : stateIds?.length}
-            </Badge>
-          </h2>
-          <MapContainer
-            locations={filteredLocations}
-            statesData={filteredStatesData}
-          />
-        </TabsContent>
-
-        <TabsContent value="results" className="mt-6">
+        <TabsContent value="results-by-event" className="mt-6">
           <PersonResultsTab
             eventOptions={eventOptions}
             selectedEventId={selectedEventId}
             selectedResults={selectedResults}
+          />
+        </TabsContent>
+
+        <TabsContent value="map" className="mt-6">
+          <h2 className="flex items-center justify-center gap-2 text-lg font-semibold my-4">
+            <span>Estados visitados</span>
+            <Badge>{visitedStateCount}</Badge>
+          </h2>
+          <MapContainer
+            locations={filteredLocations}
+            statesData={filteredStatesData}
           />
         </TabsContent>
       </Tabs>

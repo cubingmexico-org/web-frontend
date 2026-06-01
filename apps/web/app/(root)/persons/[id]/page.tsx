@@ -128,6 +128,8 @@ async function PersonPageContent({
     stateIds?.includes(feature.properties.id),
   ) as unknown as GeoJSONProps["data"];
 
+  const visitedStateCount = new Set(stateIds).size;
+
   const filteredLocations = locations.filter((location) => {
     const latitude = location.latitude ?? 0;
     const longitude = location.longitude ?? 0;
@@ -462,9 +464,7 @@ async function PersonPageContent({
           <h2 className="flex items-center justify-center gap-2 text-lg font-semibold my-4">
             <span>Estados visitados</span>
             <Badge>
-              {stateIds?.[0] === null || stateIds === null
-                ? 0
-                : stateIds?.length}
+              {visitedStateCount}
             </Badge>
           </h2>
           <MapContainer

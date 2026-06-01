@@ -44,6 +44,27 @@ function formatAttemptValue(eventId: string, value: number) {
   return formatTime(value);
 }
 
+function getPodiumRowClass(
+  position?: number | null,
+  roundTypeId?: string | null,
+  best?: number | null,
+) {
+  if ((roundTypeId !== "c" && roundTypeId !== "f") || !best || best <= 0) {
+    return "";
+  }
+
+  switch (position) {
+    case 1:
+      return "border-amber-500/30 bg-amber-500/10";
+    case 2:
+      return "border-slate-400/30 bg-slate-400/10";
+    case 3:
+      return "border-yellow-500/30 bg-yellow-500/10";
+    default:
+      return "";
+  }
+}
+
 export function PersonResultsTab({
   eventOptions,
   selectedEventId,
@@ -137,9 +158,17 @@ export function PersonResultsTab({
                 const max = hasFiveSolves
                   ? Math.max(...resultRow.solves)
                   : undefined;
+                const podiumRowClass = getPodiumRowClass(
+                  resultRow.position,
+                  resultRow.roundTypeId,
+                  resultRow.best,
+                );
 
                 return (
-                  <TableRow key={resultRow.resultId}>
+                  <TableRow
+                    key={resultRow.resultId}
+                    className={cn(podiumRowClass, "transition-colors")}
+                  >
                     <TableCell className="whitespace-nowrap">
                       {isFirstForCompetition ? (
                         <Link

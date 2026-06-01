@@ -324,14 +324,14 @@ async function PersonPageContent({
                   record?.record?.single.worldRank
                 )}
               </TableCell>
-              <TableCell className="text-center">
+              <TableCell className="text-center font-semibold">
                 {record.event === "333mbf"
                   ? formatTime333mbf(record?.record?.single.best!)
                   : record.event === "333fm"
                     ? record?.record?.single.best
                     : formatTime(record?.record?.single.best!)}
               </TableCell>
-              <TableCell className="text-center">
+              <TableCell className="text-center font-semibold">
                 {record?.record?.average?.best
                   ? formatTime(record?.record?.average?.best)
                   : null}
@@ -456,13 +456,13 @@ async function PersonPageContent({
           </Table>
         </div>
       </div>
-      <Tabs defaultValue="results" className="mt-6">
+      <Tabs defaultValue="results-by-event" className="mt-6">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="results">Resultados</TabsTrigger>
+          <TabsTrigger value="results-by-event">Resultados</TabsTrigger>
           <TabsTrigger value="map">Mapa</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="results" className="mt-6">
+        <TabsContent value="results-by-event" className="mt-6">
           <PersonResultsTab
             eventOptions={eventOptions}
             selectedEventId={selectedEventId}

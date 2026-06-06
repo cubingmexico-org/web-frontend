@@ -1,9 +1,4 @@
-import {
-  getCompetitions,
-  getEvents,
-  getPersons,
-  getStates,
-} from "@/db/queries";
+import { getCompetitions, getEvents, getStates } from "@/db/queries";
 import type { MetadataRoute } from "next";
 import { cacheLife, cacheTag } from "next/cache";
 
@@ -14,7 +9,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const states = await getStates();
   const events = await getEvents();
-  const persons = await getPersons();
   const competitions = await getCompetitions();
 
   const teamUrls = states.map((state) => {
@@ -101,14 +95,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `https://www.cubingmexico.net/rankings/${event.id}/average/results`,
       changeFrequency: "weekly" as const,
       priority: 0.6,
-    };
-  });
-
-  const personUrls = persons.map((person) => {
-    return {
-      url: `https://www.cubingmexico.net/persons/${person.wcaId}`,
-      changeFrequency: "monthly" as const,
-      priority: 0.5,
     };
   });
 
@@ -217,7 +203,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.5,
     },
-    ...personUrls,
     {
       url: "https://www.cubingmexico.net/organizers",
       changeFrequency: "weekly",

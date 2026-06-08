@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: "/private/",
+        disallow: ["/private/", "/persons/"],
         crawlDelay: 10,
       },
       {

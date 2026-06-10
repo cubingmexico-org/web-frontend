@@ -1,7 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { connection } from "next/server";
 import { getPersonsWithoutState } from "@/db/queries";
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  await connection();
+
   try {
     const searchParams = request.nextUrl.searchParams;
     const search = searchParams.get("search");

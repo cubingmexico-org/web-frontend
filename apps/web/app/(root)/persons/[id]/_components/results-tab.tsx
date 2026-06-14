@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
-import { formatTime, formatTime333mbf, roundTypeLabel } from "@/lib/utils";
+import { roundTypeLabel, formatAttemptValue } from "@/lib/utils";
 import { cn } from "@workspace/ui/lib/utils";
 import type {
   PersonResultsByEventGroup,
@@ -25,24 +25,6 @@ type PersonResultsTabProps = {
   selectedEventId: string;
   selectedResults: PersonResultsByEventGroup | null;
 };
-
-function formatAttemptValue(eventId: string, value: number) {
-  if (value === 0) {
-    return null;
-  }
-
-  if (eventId === "333mbf") {
-    return formatTime333mbf(value);
-  }
-
-  if (eventId === "333fm") {
-    if (value === -1) return "DNF";
-    if (value === -2) return "DNS";
-    return `${value}`;
-  }
-
-  return formatTime(value);
-}
 
 function getPodiumRowClass(
   position?: number | null,
@@ -187,7 +169,7 @@ export function PersonResultsTab({
                     </TableCell>
                     <TableCell
                       className={cn(
-                        "text-center whitespace-nowrap font-medium",
+                        "text-center whitespace-nowrap font-bold",
                         resultRow.isPersonalRecordSingle &&
                           "font-semibold text-blue-700",
                       )}
@@ -199,7 +181,7 @@ export function PersonResultsTab({
                     {resultRow.eventId !== "333mbf" && (
                       <TableCell
                         className={cn(
-                          "text-center whitespace-nowrap font-medium",
+                          "text-center whitespace-nowrap font-bold",
                           resultRow.isPersonalRecordAverage &&
                             "font-semibold text-blue-700",
                         )}

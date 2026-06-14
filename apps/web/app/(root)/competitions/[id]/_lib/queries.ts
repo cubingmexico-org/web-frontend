@@ -8,6 +8,7 @@ import { and, count, eq, gt, gte, inArray, lte, or } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 
 export interface CompetitionResultRow {
+  resultId: string;
   eventId: string;
   eventName: string;
   eventRank: number;
@@ -18,6 +19,7 @@ export interface CompetitionResultRow {
   position: number | null;
   best: number;
   average: number;
+  solves: number[];
 }
 
 export async function getWcaCompetitionData(
@@ -62,6 +64,7 @@ export async function getCompetitionMainEventResults(
 
       const mainEventResults = await tx
         .select({
+          resultId: result.id,
           eventId: result.eventId,
           eventName: event.name,
           eventRank: event.rank,
@@ -92,7 +95,10 @@ export async function getCompetitionMainEventResults(
 
       return {
         hasResults,
-        mainEventResults,
+        mainEventResults: mainEventResults.map((row) => ({
+          ...row,
+          solves: [],
+        })),
       };
     });
   } catch (err) {

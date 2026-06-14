@@ -193,3 +193,38 @@ export function roundTypeLabel(id?: string | null) {
       return id;
   }
 }
+
+export function formatAttemptValue(
+  eventId: string,
+  value: number,
+): string | null {
+  if (value === 0) {
+    return null;
+  }
+
+  if (eventId === "333mbf") {
+    return formatTime333mbf(value);
+  }
+
+  if (eventId === "333fm") {
+    if (value === -1) return "DNF";
+    if (value === -2) return "DNS";
+    return `${value}`;
+  }
+
+  return formatTime(value);
+}
+
+export function roundRank(id?: string | null): number {
+  if (!id) return 3;
+
+  const finals = ["f", "c"];
+  const second = ["2", "e"];
+  const first = ["1", "d"];
+
+  if (finals.includes(id)) return 0;
+  if (second.includes(id)) return 1;
+  if (first.includes(id)) return 2;
+
+  return 3;
+}

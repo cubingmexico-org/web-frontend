@@ -2,26 +2,15 @@
 
 import "server-only";
 import { db } from "@/db";
-import { event, person, result, state } from "@/db/schema";
+import { event, person, result, state, resultAttempts } from "@/db/schema";
 import { eventNames } from "@/lib/constants";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 import {
   type CompetitionResultRow,
   type ResultsByEventGroup,
 } from "../../../_lib/results";
-import { roundTypeLabel } from "@/lib/utils";
-
-function roundRank(id?: string) {
-  if (!id) return 3;
-  const finals = ["f", "c"];
-  const second = ["2", "e"];
-  const first = ["1", "d"];
-  if (finals.includes(id)) return 0;
-  if (second.includes(id)) return 1;
-  if (first.includes(id)) return 2;
-  return 3;
-}
+import { roundTypeLabel, roundRank } from "@/lib/utils";
 
 export async function getCompetitionResultsGroupedByEvent(
   competitionId: string,
@@ -32,6 +21,7 @@ export async function getCompetitionResultsGroupedByEvent(
   try {
     const rows = await db
       .select({
+        resultId: result.id,
         eventId: result.eventId,
         eventName: event.name,
         eventRank: event.rank,
@@ -50,8 +40,39 @@ export async function getCompetitionResultsGroupedByEvent(
       .where(eq(result.competitionId, competitionId))
       .orderBy(event.rank, result.pos, result.best);
 
+    if (rows.length === 0) {
+      return [];
+    }
+
+    const attempts = await db
+      .select({
+        resultId: resultAttempts.resultId,
+        attemptNumber: resultAttempts.attemptNumber,
+        value: resultAttempts.value,
+      })
+      .from(resultAttempts)
+      .where(
+        inArray(
+          resultAttempts.resultId,
+          rows.map((row) => row.resultId),
+        ),
+      )
+      .orderBy(resultAttempts.resultId, resultAttempts.attemptNumber);
+
+    const attemptsByResultId = attempts.reduce((accumulator, attempt) => {
+      const values = accumulator.get(attempt.resultId) ?? [];
+      values.push(attempt.value);
+      accumulator.set(attempt.resultId, values);
+      return accumulator;
+    }, new Map<string, number[]>());
+
+    const rowsWithSolves = rows.map((row) => ({
+      ...row,
+      solves: attemptsByResultId.get(row.resultId) ?? [],
+    }));
+
     return Array.from(
-      rows.reduce((accumulator, resultRow) => {
+      rowsWithSolves.reduce((accumulator, resultRow) => {
         const eventId = resultRow.eventId ?? "";
         const rounds =
           accumulator.get(eventId) ?? new Map<string, CompetitionResultRow[]>();

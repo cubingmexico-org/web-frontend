@@ -1,5 +1,6 @@
 import "server-only";
 import { db } from "@/db";
+import { roundRank } from "@/lib/utils";
 import {
   championship,
   competition,
@@ -98,20 +99,6 @@ export type OrganizerStatus = {
   organizedCompetitionCount: number;
   level: OrganizerLevel;
 } | null;
-
-function roundRank(id?: string | null) {
-  if (!id) return 3;
-
-  const finals = ["f", "c"];
-  const second = ["2", "e"];
-  const first = ["1", "d"];
-
-  if (finals.includes(id)) return 0;
-  if (second.includes(id)) return 1;
-  if (first.includes(id)) return 2;
-
-  return 3;
-}
 
 export async function getPersonData(wcaId: string): Promise<{
   person: {

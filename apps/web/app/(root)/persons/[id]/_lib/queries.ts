@@ -544,7 +544,7 @@ export async function getPersonCompetitionResults(
 
       for (const r of chronological) {
         // single: lower is better
-        if (r.best > 0 && (bestSingleSeen === 0 || r.best < bestSingleSeen)) {
+        if (r.best > 0 && (bestSingleSeen === 0 || r.best <= bestSingleSeen)) {
           r.isPersonalRecordSingle = true;
           bestSingleSeen = r.best;
         } else {
@@ -554,7 +554,7 @@ export async function getPersonCompetitionResults(
         // average: lower is better and must be > 0
         if (
           r.average > 0 &&
-          (bestAverageSeen === 0 || r.average < bestAverageSeen)
+          (bestAverageSeen === 0 || r.average <= bestAverageSeen)
         ) {
           r.isPersonalRecordAverage = true;
           bestAverageSeen = r.average;

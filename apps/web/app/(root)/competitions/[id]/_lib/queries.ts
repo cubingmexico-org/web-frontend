@@ -4,7 +4,7 @@ import "server-only";
 import { db } from "@/db";
 import { event, person, result, state } from "@/db/schema";
 import type { Competition } from "@/types/wca";
-import { and, count, eq, gt, gte, inArray, lte, or } from "drizzle-orm";
+import { and, count, eq, gt, inArray, or } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 
 export interface CompetitionResultRow {
@@ -84,19 +84,21 @@ export async function getCompetitionMainEventResults(
           and(
             eq(result.competitionId, competitionId),
             eq(result.eventId, mainEventId),
-            gte(result.pos, 1),
-            lte(result.pos, 3),
             inArray(result.roundTypeId, ["f", "c"]),
             or(gt(result.best, 0), gt(result.average, 0)),
           ),
         )
-        .orderBy(result.pos)
-        .limit(3);
+        .orderBy(result.pos);
+
+      const top3 = mainEventResults
+        .sort((a, b) => (a.position ?? 999) - (b.position ?? 999))
+        .slice(0, 3);
 
       return {
         hasResults,
-        mainEventResults: mainEventResults.map((row) => ({
+        mainEventResults: top3.map((row, index) => ({
           ...row,
+          position: index + 1,
           solves: [],
         })),
       };

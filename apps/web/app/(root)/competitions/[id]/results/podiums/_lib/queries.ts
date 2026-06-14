@@ -3,7 +3,7 @@
 import "server-only";
 import { db } from "@/db";
 import { event, person, result, state, resultAttempts } from "@/db/schema";
-import { and, eq, gt, gte, inArray, lte, or } from "drizzle-orm";
+import { and, eq, gt, inArray, or } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 import type { CompetitionResultRow } from "../../../_lib/results";
 
@@ -35,8 +35,6 @@ export async function getCompetitionPodiumGroups(
       .where(
         and(
           eq(result.competitionId, competitionId),
-          gte(result.pos, 1),
-          lte(result.pos, 3),
           inArray(result.roundTypeId, ["f", "c"]),
           or(gt(result.best, 0), gt(result.average, 0)),
         ),
@@ -81,7 +79,14 @@ export async function getCompetitionPodiumGroups(
         accumulator.set(resultRow.eventId, list);
         return accumulator;
       }, new Map<string, CompetitionResultRow[]>()),
-    );
+    ).map(([eventId, eventRows]) => {
+      const top3 = eventRows
+        .sort((a, b) => (a.position ?? 999) - (b.position ?? 999))
+        .slice(0, 3)
+        .map((row, index) => ({ ...row, position: index + 1 }));
+
+      return [eventId, top3] as [string, CompetitionResultRow[]];
+    });
   } catch (err) {
     console.error(err);
     return [];

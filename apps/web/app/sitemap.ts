@@ -106,31 +106,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   });
 
-  const competitionResultsUrls = competitions.flatMap((competition) => {
-    const base = `https://www.cubingmexico.net/competitions/${competition.id}/results`;
-
-    return [
-      {
-        url: `${base}/podiums`,
-
-        changeFrequency: "monthly" as const,
-        priority: 0.6,
-      },
-      {
-        url: `${base}/all`,
-
-        changeFrequency: "monthly" as const,
-        priority: 0.6,
-      },
-      {
-        url: `${base}/py_person`,
-
-        changeFrequency: "monthly" as const,
-        priority: 0.6,
-      },
-    ];
-  });
-
   return [
     {
       url: "https://www.cubingmexico.net",
@@ -150,7 +125,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     ...competitionUrls,
-    ...competitionResultsUrls,
     {
       url: "https://www.cubingmexico.net/about",
       changeFrequency: "monthly",

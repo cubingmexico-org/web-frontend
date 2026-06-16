@@ -42,6 +42,7 @@ import {
   getPersonCompetitionEventOptions,
   getPersonCompetitionLocations,
   getPersonCompetitionResults,
+  getPersonDataFromWCA,
 } from "./_lib/queries";
 import type { PersonalRecordWithStateRank } from "./_lib/queries";
 import { notFound } from "next/navigation";
@@ -92,6 +93,12 @@ async function PersonPageContent({
   const requestedEventId = Array.isArray(queryParams.event)
     ? queryParams.event[0]
     : queryParams.event;
+
+  const wcaData = await getPersonDataFromWCA(id);
+
+  if (!wcaData) {
+    notFound();
+  }
 
   const [
     personData,
@@ -198,10 +205,10 @@ async function PersonPageContent({
       </div>
       <div className="w-full flex justify-center mb-6">
         <Image
-          src="/placeholder.svg"
+          src={wcaData?.person.avatar.url}
           alt="Avatar"
-          width={300}
-          height={300}
+          width={wcaData.person.avatar.is_default ? 100 : 300}
+          height={wcaData.person.avatar.is_default ? 100 : 300}
           className="rounded"
         />
       </div>

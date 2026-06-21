@@ -24,6 +24,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${competitionData.name} | Cubing México`,
     description: `Resultados de ${competitionData.name}`,
+    robots: {
+      index: false,
+      follow: false,
+    },
   };
 }
 

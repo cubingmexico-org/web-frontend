@@ -4,12 +4,12 @@ import { genericOAuth } from "better-auth/plugins";
 
 interface WCAProfile {
   me: {
-    id: string;
-    wca_id: string;
+    id: string | number;
+    wca_id: string | null;
     name: string;
     avatar: {
-      url: string;
-      thumb_url: string;
+      url: string | null;
+      thumb_url: string | null;
       pending_url: string;
     };
   };
@@ -27,6 +27,10 @@ export const auth = betterAuth({
   account: {
     storeStateStrategy: "cookie",
     storeAccountCookie: true, // Store account data after OAuth flow in a cookie (useful for database-less flows)
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ["wca"],
+    },
   },
   plugins: [
     genericOAuth({
@@ -88,14 +92,15 @@ export const auth = betterAuth({
 
             const data = (await response.json()) as WCAProfile;
 
+            const userId = data.me.wca_id || data.me.id.toString();
             return {
-              id: data.me.wca_id,
+              id: userId,
               name: data.me.name,
-              email: `user@wca.org`,
-              image: data.me.avatar.url
+              email: `${userId.toLowerCase()}@wca.org`,
+              image: (data.me.avatar.url
                 ? data.me.avatar.thumb_url
-                : data.me.avatar.pending_url,
-              emailVerified: false,
+                : data.me.avatar.pending_url) ?? undefined,
+              emailVerified: true,
             };
           },
         },

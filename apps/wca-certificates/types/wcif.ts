@@ -29,6 +29,7 @@ export type Role =
   | "staff-scrambler"
   | "staff-judge"
   | "delegate"
+  | "trainee-delegate"
   | "organizer";
 
 export interface Person {

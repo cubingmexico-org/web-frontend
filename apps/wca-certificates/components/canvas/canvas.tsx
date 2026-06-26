@@ -61,9 +61,11 @@ export function Canvas({
 
   const competitionId = params.competitionId;
 
+  const currentYear = new Date().getFullYear();
+
   const currentPerson = {
     name: session.data?.user?.name || "Leonardo Del Toro",
-    wcaId: session.data?.user?.id || null,
+    wcaId: `${currentYear}ABCD01`,
     avatar: {
       url: session.data?.user?.image || "/avatar.png",
       thumbUrl: session.data?.user?.image || "/avatar.png",

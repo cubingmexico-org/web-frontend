@@ -97,9 +97,10 @@ export const auth = betterAuth({
               id: userId,
               name: data.me.name,
               email: `${userId.toLowerCase()}@wca.org`,
-              image: (data.me.avatar.url
-                ? data.me.avatar.thumb_url
-                : data.me.avatar.pending_url) ?? undefined,
+              image:
+                (data.me.avatar.url
+                  ? data.me.avatar.thumb_url
+                  : data.me.avatar.pending_url) ?? undefined,
               emailVerified: true,
             };
           },

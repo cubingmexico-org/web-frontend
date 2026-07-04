@@ -4,6 +4,7 @@ import { roundRank } from "@/lib/utils";
 import {
   championship,
   competition,
+  competitionDelegate,
   competitionOrganizer,
   delegate,
   organizer,
@@ -39,6 +40,16 @@ export interface PersonCompetitionLocation {
   latitude: number | null;
   longitude: number | null;
 }
+
+export type PersonStaffCompetition = {
+  id: string;
+  name: string;
+  startDate: Date;
+  endDate: Date;
+  stateName: string | null;
+  cityName: string;
+  cancelled: boolean;
+};
 
 type PersonCompetitionResultRow = {
   resultId: string;
@@ -361,6 +372,81 @@ export async function getOrganizerStatus(
   }
 }
 
+const staffCompetitionSelect = {
+  id: competition.id,
+  name: competition.name,
+  startDate: competition.startDate,
+  endDate: competition.endDate,
+  stateName: state.name,
+  cityName: competition.cityName,
+  cancelled: competition.cancelled,
+};
+
+export async function getPersonStaffCompetitions(wcaId: string): Promise<{
+  organized: PersonStaffCompetition[];
+  delegated: PersonStaffCompetition[];
+}> {
+  "use cache";
+  cacheLife("days");
+  cacheTag(`person-staff-competitions-${wcaId}`);
+
+  try {
+    const [organized, delegated] = await Promise.all([
+      db
+        .select(staffCompetitionSelect)
+        .from(organizer)
+        .innerJoin(
+          competitionOrganizer,
+          eq(competitionOrganizer.organizerId, organizer.id),
+        )
+        .innerJoin(
+          competition,
+          eq(competitionOrganizer.competitionId, competition.id),
+        )
+        .leftJoin(state, eq(competition.stateId, state.id))
+        .where(eq(organizer.personId, wcaId))
+        .groupBy(
+          competition.id,
+          competition.name,
+          competition.startDate,
+          competition.endDate,
+          state.name,
+          competition.cityName,
+          competition.cancelled,
+        )
+        .orderBy(desc(competition.startDate)),
+      db
+        .select(staffCompetitionSelect)
+        .from(delegate)
+        .innerJoin(
+          competitionDelegate,
+          eq(competitionDelegate.delegateId, delegate.id),
+        )
+        .innerJoin(
+          competition,
+          eq(competitionDelegate.competitionId, competition.id),
+        )
+        .leftJoin(state, eq(competition.stateId, state.id))
+        .where(eq(delegate.personId, wcaId))
+        .groupBy(
+          competition.id,
+          competition.name,
+          competition.startDate,
+          competition.endDate,
+          state.name,
+          competition.cityName,
+          competition.cancelled,
+        )
+        .orderBy(desc(competition.startDate)),
+    ]);
+
+    return { organized, delegated };
+  } catch (err) {
+    console.error(err);
+    return { organized: [], delegated: [] };
+  }
+}
+
 export async function getPersonCompetitionEventOptions(wcaId: string) {
   "use cache";
   cacheLife("days");
@@ -575,17 +661,12 @@ export async function getPersonDataFromWCA(
   wcaId: string,
 ): Promise<WcaPersonResponse | null> {
   "use cache";
-  cacheLife("days");
+  cacheLife("weeks");
   cacheTag(`person-data-wca-${wcaId}`);
 
   try {
     const response = await fetch(
       `https://www.worldcubeassociation.org/api/v0/persons/${wcaId}`,
-      {
-        next: {
-          revalidate: 60 * 60 * 24, // 1 day
-        },
-      },
     );
 
     if (!response.ok) {

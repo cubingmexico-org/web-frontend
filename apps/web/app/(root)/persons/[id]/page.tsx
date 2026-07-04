@@ -35,6 +35,7 @@ import {
 } from "@workspace/ui/components/tabs";
 import { MapContainer } from "./_components/map-container";
 import { PersonResultsTab } from "./_components/results-tab";
+import { PersonStaffCompetitionsTab } from "./_components/staff-competitions-tab";
 import {
   getPersonData,
   getOrganizerStatus,
@@ -43,6 +44,7 @@ import {
   getPersonCompetitionLocations,
   getPersonCompetitionResults,
   getPersonDataFromWCA,
+  getPersonStaffCompetitions,
 } from "./_lib/queries";
 import type { PersonalRecordWithStateRank } from "./_lib/queries";
 import { notFound } from "next/navigation";
@@ -111,6 +113,7 @@ async function PersonPageContent({
     eventOptions,
     locations,
     statesData,
+    staffCompetitions,
   ] = await Promise.all([
     getPersonData(id),
     getOrganizerStatus(id),
@@ -121,6 +124,7 @@ async function PersonPageContent({
     getPersonCompetitionEventOptions(id),
     getPersonCompetitionLocations(id),
     getStatesGeoJSON(),
+    getPersonStaffCompetitions(id),
   ]);
 
   if (!personData) {
@@ -129,6 +133,8 @@ async function PersonPageContent({
 
   const { person, competitionCount, personalRecords, medals, regionalRecords } =
     personData;
+  const { organized, delegated } = staffCompetitions;
+  const hasStaffCompetitions = organized.length > 0 || delegated.length > 0;
   const isOrganizer = organizerStatus !== null;
 
   const stateIds = locations
@@ -468,9 +474,17 @@ async function PersonPageContent({
         </div>
       </div>
       <Tabs defaultValue="results-by-event" className="mt-6">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList
+          className={cn(
+            "grid w-full",
+            hasStaffCompetitions ? "grid-cols-3" : "grid-cols-2",
+          )}
+        >
           <TabsTrigger value="results-by-event">Resultados</TabsTrigger>
           <TabsTrigger value="map">Mapa</TabsTrigger>
+          {hasStaffCompetitions && (
+            <TabsTrigger value="staff-competitions">Organización</TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="results-by-event" className="mt-6">
@@ -491,6 +505,15 @@ async function PersonPageContent({
             statesData={filteredStatesData}
           />
         </TabsContent>
+
+        {hasStaffCompetitions && (
+          <TabsContent value="staff-competitions" className="mt-6">
+            <PersonStaffCompetitionsTab
+              organized={organized}
+              delegated={delegated}
+            />
+          </TabsContent>
+        )}
       </Tabs>
     </>
   );

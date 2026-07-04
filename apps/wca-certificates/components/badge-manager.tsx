@@ -147,7 +147,8 @@ export function BadgeManager({
 
     for (const p of filteredPersons) {
       // prioritize delegate over organizer
-      const isDelegate = p.roles?.includes("delegate") || p.roles?.includes("trainee-delegate");
+      const isDelegate =
+        p.roles?.includes("delegate") || p.roles?.includes("trainee-delegate");
       const isOrganizer = p.roles?.includes("organizer");
       const isVolunteer = p.roles?.find((r) => r.startsWith("staff-"));
 

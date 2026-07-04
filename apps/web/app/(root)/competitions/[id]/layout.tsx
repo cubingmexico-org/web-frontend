@@ -9,7 +9,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const id = (await params).id;
 
   const competitionData = await getWcaCompetitionData(id);
-  console.log(competitionData);
 
   if (!competitionData) {
     return {

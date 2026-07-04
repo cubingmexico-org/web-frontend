@@ -32,6 +32,7 @@ export async function getWcaCompetitionData(
     const response = await fetch(
       `https://www.worldcubeassociation.org/api/v0/competitions/${competitionId}`,
     );
+    console.log("response", response);
     if (!response.ok) return null;
     return response.json();
   } catch {

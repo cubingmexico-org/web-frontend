@@ -7,25 +7,13 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const id = (await params).id;
-
-  console.log("layout-id", id);
   const competitionData = await getWcaCompetitionData(id);
-  console.log("layout-competitionData", competitionData);
-
-  if (!competitionData) {
-    return {
-      title: "Competencia no encontrada | Cubing México",
-      description: "La competencia solicitada no existe.",
-      robots: {
-        index: false,
-        follow: false,
-      },
-    };
-  }
 
   return {
-    title: `${competitionData.name} | Cubing México`,
-    description: `Resultados de ${competitionData.name}`,
+    title: `${competitionData?.name ?? "Competencia no encontrada"} | Cubing México`,
+    description: competitionData
+      ? `Resultados de ${competitionData.name}`
+      : "La competencia no existe o no se encontró.",
     robots: {
       index: false,
       follow: false,

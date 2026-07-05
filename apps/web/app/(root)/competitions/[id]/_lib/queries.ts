@@ -25,16 +25,13 @@ export interface CompetitionResultRow {
 export async function getWcaCompetitionData(
   competitionId: string,
 ): Promise<Competition | null> {
-  console.log("competitionId", competitionId);
   cacheLife("weeks");
   cacheTag(`wca-competition-data-${competitionId}`);
 
   try {
-    console.log("wca");
     const response = await fetch(
       `https://www.worldcubeassociation.org/api/v0/competitions/${competitionId}`,
     );
-    console.log("response", response);
     if (!response.ok) return null;
     return response.json();
   } catch {

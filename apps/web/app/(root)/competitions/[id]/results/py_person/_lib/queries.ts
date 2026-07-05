@@ -13,7 +13,7 @@ import type {
 export async function getCompetitionResultsGroupedByPerson(
   competitionId: string,
 ): Promise<ResultsByPersonGroup[]> {
-  cacheLife("days");
+  cacheLife("weeks");
   cacheTag(`competition-results-by-person-${competitionId}`);
 
   try {

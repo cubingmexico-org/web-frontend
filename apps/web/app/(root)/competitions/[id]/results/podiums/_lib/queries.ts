@@ -10,7 +10,7 @@ import type { CompetitionResultRow } from "../../../_lib/results";
 export async function getCompetitionPodiumGroups(
   competitionId: string,
 ): Promise<[string, CompetitionResultRow[]][]> {
-  cacheLife("days");
+  cacheLife("weeks");
   cacheTag(`competition-results-podiums-${competitionId}`);
 
   try {

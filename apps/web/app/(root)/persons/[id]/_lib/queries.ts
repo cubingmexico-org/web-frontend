@@ -126,7 +126,7 @@ export async function getPersonData(wcaId: string): Promise<{
   regionalRecords: Records;
 } | null> {
   "use cache";
-  cacheLife("days");
+  cacheLife("weeks");
   cacheTag(`person-data-${wcaId}`);
 
   try {
@@ -292,7 +292,7 @@ export async function getPersonData(wcaId: string): Promise<{
 
 export async function getMembershipData(wcaId: string, eventIds: string[]) {
   "use cache";
-  cacheLife("days");
+  cacheLife("weeks");
   cacheTag(`membership-data-${wcaId}`);
 
   try {
@@ -329,7 +329,7 @@ export async function getOrganizerStatus(
   wcaId: string,
 ): Promise<OrganizerStatus> {
   "use cache";
-  cacheLife("days");
+  cacheLife("weeks");
   cacheTag(`organizer-status-${wcaId}`);
 
   try {
@@ -387,7 +387,7 @@ export async function getPersonStaffCompetitions(wcaId: string): Promise<{
   delegated: PersonStaffCompetition[];
 }> {
   "use cache";
-  cacheLife("days");
+  cacheLife("weeks");
   cacheTag(`person-staff-competitions-${wcaId}`);
 
   try {
@@ -449,7 +449,7 @@ export async function getPersonStaffCompetitions(wcaId: string): Promise<{
 
 export async function getPersonCompetitionEventOptions(wcaId: string) {
   "use cache";
-  cacheLife("days");
+  cacheLife("weeks");
   cacheTag(`person-competition-event-options-${wcaId}`);
 
   try {
@@ -472,7 +472,7 @@ export async function getPersonCompetitionEventOptions(wcaId: string) {
 
 export async function getPersonCompetitionLocations(wcaId: string) {
   "use cache";
-  cacheLife("days");
+  cacheLife("weeks");
   cacheTag(`person-competition-locations-${wcaId}`);
 
   try {
@@ -508,7 +508,7 @@ export async function getPersonCompetitionResults(
   eventId: string,
 ) {
   "use cache";
-  cacheLife("days");
+  cacheLife("weeks");
   cacheTag(`person-competition-results-${wcaId}`);
 
   try {

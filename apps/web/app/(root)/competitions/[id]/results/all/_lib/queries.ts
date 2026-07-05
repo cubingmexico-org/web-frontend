@@ -15,7 +15,7 @@ import { roundTypeLabel, roundRank } from "@/lib/utils";
 export async function getCompetitionResultsGroupedByEvent(
   competitionId: string,
 ): Promise<ResultsByEventGroup[]> {
-  cacheLife("days");
+  cacheLife("weeks");
   cacheTag(`competition-results-all-${competitionId}`);
 
   try {

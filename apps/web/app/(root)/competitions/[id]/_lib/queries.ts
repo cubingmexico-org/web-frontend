@@ -25,7 +25,7 @@ export interface CompetitionResultRow {
 export async function getWcaCompetitionData(
   competitionId: string,
 ): Promise<Competition | null> {
-  cacheLife("days");
+  cacheLife("weeks");
   cacheTag(`wca-competition-data-${competitionId}`);
 
   try {
@@ -44,7 +44,7 @@ export async function getCompetitionMainEventResults(
   competitionId: string,
   mainEventId?: string | null,
 ) {
-  cacheLife("days");
+  cacheLife("weeks");
   cacheTag(`competition-main-event-results-${competitionId}`);
 
   try {

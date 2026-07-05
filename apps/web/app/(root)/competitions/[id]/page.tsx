@@ -57,7 +57,9 @@ export default async function Page({
 }) {
   const id = (await params).id;
 
+  console.log("page-id", id);
   const competitionData = await getWcaCompetitionData(id);
+  console.log("page-competitionData", competitionData);
 
   if (!competitionData) {
     notFound();

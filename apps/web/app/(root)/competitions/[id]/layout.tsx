@@ -8,7 +8,9 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const id = (await params).id;
 
+  console.log("layout-id", id);
   const competitionData = await getWcaCompetitionData(id);
+  console.log("layout-competitionData", competitionData);
 
   if (!competitionData) {
     return {

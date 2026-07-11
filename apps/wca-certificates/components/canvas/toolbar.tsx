@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@workspace/ui/components/button";
-import { Type, ImageIcon, QrCode } from "lucide-react";
+import { Type, ImageIcon, QrCode, Square } from "lucide-react";
 import { useCanvasStore } from "@/lib/canvas-store";
 
 export function Toolbar() {
@@ -25,18 +25,18 @@ export function Toolbar() {
     });
   };
 
-  // const addRectangle = () => {
-  //   addElement({
-  //     id: `rect-${Date.now()}`,
-  //     type: "rectangle",
-  //     x: 150,
-  //     y: 150,
-  //     width: 200,
-  //     height: 150,
-  //     rotation: 0,
-  //     backgroundColor: "#3b82f6",
-  //   });
-  // };
+  const addRectangle = () => {
+    addElement({
+      id: `rect-${Date.now()}`,
+      type: "rectangle",
+      x: 150,
+      y: 150,
+      width: 200,
+      height: 150,
+      rotation: 0,
+      backgroundColor: "#3b82f6",
+    });
+  };
 
   // const addCircle = () => {
   //   addElement({
@@ -98,28 +98,6 @@ export function Toolbar() {
         <span className="text-xs">Texto</span>
       </Button>
 
-      {/* <Button
-        variant="ghost"
-        size="icon"
-        className="w-14 h-14 flex flex-col gap-1"
-        onClick={addRectangle}
-        title="Add Rectangle"
-      >
-        <Square className="h-5 w-5" />
-        <span className="text-xs">Cuadro</span>
-      </Button>
-
-      <Button
-        variant="ghost"
-        size="icon"
-        className="w-14 h-14 flex flex-col gap-1"
-        onClick={addCircle}
-        title="Add Circle"
-      >
-        <Circle className="h-5 w-5" />
-        <span className="text-xs">Círculo</span>
-      </Button> */}
-
       <Button
         variant="ghost"
         size="icon"
@@ -141,6 +119,28 @@ export function Toolbar() {
         <QrCode className="h-5 w-5" />
         <span className="text-xs">QR</span>
       </Button>
+
+      <Button
+        variant="ghost"
+        size="icon"
+        className="w-14 h-14 flex flex-col gap-1"
+        onClick={addRectangle}
+        title="Add Rectangle"
+      >
+        <Square className="h-5 w-5" />
+        <span className="text-xs">Cuadro</span>
+      </Button>
+
+      {/* <Button
+        variant="ghost"
+        size="icon"
+        className="w-14 h-14 flex flex-col gap-1"
+        onClick={addCircle}
+        title="Add Circle"
+      >
+        <Circle className="h-5 w-5" />
+        <span className="text-xs">Círculo</span>
+      </Button> */}
     </div>
   );
 }

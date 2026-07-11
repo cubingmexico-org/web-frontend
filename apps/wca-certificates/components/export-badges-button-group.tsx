@@ -36,6 +36,22 @@ export function ExportBadgesButtonGroup({
 }: ExportBadgesButtonGroupProps) {
   const [isExporting, setIsExporting] = useState(false);
 
+  const blankPerson: ExtendedPerson = {
+    name: "",
+    wcaUserId: 0,
+    wcaId: "",
+    registrantId: 0,
+    countryIso2: "",
+    gender: null,
+    registration: null,
+    avatar: null,
+    roles: [],
+    assignments: [],
+    personalBests: [],
+    extensions: [],
+    stateId: null,
+  } as unknown as ExtendedPerson;
+
   const {
     elements,
     canvasWidth,
@@ -148,53 +164,66 @@ export function ExportBadgesButtonGroup({
 
           // Replace placeholder text with person's data
           let content = element.content || "";
-          content = content.replace(/@nombre/gi, currentPerson.name);
-          content = content.replace(/@wcaid/gi, currentPerson.wcaId || "Nuevo");
+          if (!currentPerson.name) {
+            content = content.replace(/@nombre/gi, "");
+            content = content.replace(/@wcaid/gi, "");
+            content = content.replace(/@rol/gi, "");
+            content = content.replace(/@id/gi, "");
+            content = content.replace(/@país/gi, "");
+            content = content.replace(/@estado/gi, "");
+            content = content.replace(/@team/gi, "");
+          } else {
+            content = content.replace(/@nombre/gi, currentPerson.name);
+            content = content.replace(
+              /@wcaid/gi,
+              currentPerson.wcaId || "Nuevo",
+            );
 
-          const rol = currentPerson.roles.includes("delegate")
-            ? currentPerson.gender === "f"
-              ? "Delegada"
-              : "Delegado"
-            : currentPerson.roles.includes("organizer")
+            const rol = currentPerson.roles.includes("delegate")
               ? currentPerson.gender === "f"
-                ? "Organizadora"
-                : "Organizador"
-              : currentPerson.roles.find((r) => r.startsWith("staff-"))
+                ? "Delegada"
+                : "Delegado"
+              : currentPerson.roles.includes("organizer")
                 ? currentPerson.gender === "f"
-                  ? "Voluntaria"
-                  : "Voluntario"
-                : currentPerson.gender === "f"
-                  ? "Competidora"
-                  : "Competidor";
+                  ? "Organizadora"
+                  : "Organizador"
+                : currentPerson.roles.find((r) => r.startsWith("staff-"))
+                  ? currentPerson.gender === "f"
+                    ? "Voluntaria"
+                    : "Voluntario"
+                  : currentPerson.gender === "f"
+                    ? "Competidora"
+                    : "Competidor";
 
-          content = content.replace(/@rol/gi, rol);
+            content = content.replace(/@rol/gi, rol);
 
-          content = content.replace(
-            /@id/gi,
-            String(currentPerson.registrantId) || "Desconocido",
-          );
+            content = content.replace(
+              /@id/gi,
+              String(currentPerson.registrantId) || "Desconocido",
+            );
 
-          const regionNames = new Intl.DisplayNames(["es"], {
-            type: "region",
-          });
-          const countryName =
-            regionNames.of(currentPerson.countryIso2) || "Desconocido";
+            const regionNames = new Intl.DisplayNames(["es"], {
+              type: "region",
+            });
+            const countryName =
+              regionNames.of(currentPerson.countryIso2) || "Desconocido";
 
-          content = content.replace(/@país/gi, countryName);
+            content = content.replace(/@país/gi, countryName);
 
-          content = content.replace(/@país/gi, countryName);
+            content = content.replace(/@país/gi, countryName);
 
-          const stateName = states.find(
-            (s) => s.id === currentPerson.stateId,
-          )?.name;
+            const stateName = states.find(
+              (s) => s.id === currentPerson.stateId,
+            )?.name;
 
-          content = content.replace(/@estado/gi, stateName || "Desconocido");
+            content = content.replace(/@estado/gi, stateName || "Desconocido");
 
-          const teamName = teams.find(
-            (t) => t.stateId === currentPerson.stateId,
-          )?.name;
+            const teamName = teams.find(
+              (t) => t.stateId === currentPerson.stateId,
+            )?.name;
 
-          content = content.replace(/@team/gi, teamName || "Desconocido");
+            content = content.replace(/@team/gi, teamName || "Desconocido");
+          }
 
           // Calculate optimal font size and split into lines
           const { fontSize: optimalFontSize, lines } =
@@ -259,6 +288,13 @@ export function ExportBadgesButtonGroup({
             const isCountryFlag = element.imageUrl === "/country.svg";
             const isEventsIcon = element.imageUrl === "/events.svg";
 
+            if (
+              !currentPerson.name &&
+              (isWcaAvatar || isTeamLogo || isCountryFlag)
+            ) {
+              break;
+            }
+
             const teamImage = teams.find(
               (t) => t.stateId === currentPerson.stateId,
             )?.image;
@@ -267,7 +303,9 @@ export function ExportBadgesButtonGroup({
               const eventsOrdered = competition.event_ids;
 
               // Get person's event IDs
-              const personEventIds = currentPerson.registration?.eventIds || [];
+              const personEventIds = !currentPerson.name
+                ? [...competition.event_ids]
+                : [...(currentPerson.registration?.eventIds || [])];
 
               if (personEventIds.length > 0) {
                 // Sort person's events according to eventsOrdered
@@ -449,6 +487,12 @@ export function ExportBadgesButtonGroup({
           }
           break;
         case "qrcode": {
+          if (
+            !currentPerson.name &&
+            element.qrDataSource === "competition-groups"
+          ) {
+            break;
+          }
           // Replace placeholder text with person's data
           const qrData =
             element.qrDataSource === "wca-live"
@@ -667,12 +711,15 @@ export function ExportBadgesButtonGroup({
   const exportToPNG = async () => {
     setIsExporting(true);
 
+    const personsToExport =
+      selectedPersons.length > 0 ? selectedPersons : [blankPerson];
+
     // Wrap the entire export logic in toast.promise
     toast.promise(
       (async () => {
         // Single badge export
-        if (selectedPersons.length === 1) {
-          const person = selectedPersons[0]!;
+        if (personsToExport.length === 1) {
+          const person = personsToExport[0]!;
 
           // Export front side
           const frontCanvas = await createCanvasForSide(person, "front");
@@ -707,7 +754,7 @@ export function ExportBadgesButtonGroup({
         // Multiple badges export
         const zip = new JSZip();
 
-        const promises = selectedPersons.flatMap((person) => {
+        const promises = personsToExport.flatMap((person) => {
           const frontPromise = (async () => {
             const canvas = await createCanvasForSide(person, "front");
             return new Promise<void>((resolve) => {
@@ -755,8 +802,8 @@ export function ExportBadgesButtonGroup({
         setIsExporting(false);
       }),
       {
-        loading: `Generando ${selectedPersons.length === 1 ? "gafete" : `${selectedPersons.length} gafetes`}...`,
-        success: `${selectedPersons.length === 1 ? "Gafete generado" : `${selectedPersons.length} gafetes generados`} exitosamente`,
+        loading: `Generando ${personsToExport.length === 1 ? "gafete" : `${personsToExport.length} gafetes`}...`,
+        success: `${personsToExport.length === 1 ? "Gafete generado" : `${personsToExport.length} gafetes generados`} exitosamente`,
         error: "Error al generar los gafetes",
       },
     );
@@ -765,11 +812,14 @@ export function ExportBadgesButtonGroup({
   const exportToJPG = async () => {
     setIsExporting(true);
 
+    const personsToExport =
+      selectedPersons.length > 0 ? selectedPersons : [blankPerson];
+
     toast.promise(
       (async () => {
         // Single badge export
-        if (selectedPersons.length === 1) {
-          const person = selectedPersons[0]!;
+        if (personsToExport.length === 1) {
+          const person = personsToExport[0]!;
 
           // Export front side
           const frontCanvas = await createCanvasForSide(person, "front");
@@ -794,7 +844,7 @@ export function ExportBadgesButtonGroup({
         // Multiple badges export
         const zip = new JSZip();
 
-        const promises = selectedPersons.flatMap((person) => {
+        const promises = personsToExport.flatMap((person) => {
           const frontPromise = (async () => {
             const canvas = await createCanvasForSide(person, "front");
             const dataUrl = canvas.toDataURL("image/jpeg", 0.95);
@@ -836,8 +886,8 @@ export function ExportBadgesButtonGroup({
         setIsExporting(false);
       }),
       {
-        loading: `Generando ${selectedPersons.length === 1 ? "gafete" : `${selectedPersons.length} gafetes`} JPG...`,
-        success: `${selectedPersons.length === 1 ? "Gafete JPG generado" : `${selectedPersons.length} gafetes JPG generados`} exitosamente`,
+        loading: `Generando ${personsToExport.length === 1 ? "gafete" : `${personsToExport.length} gafetes`} JPG...`,
+        success: `${personsToExport.length === 1 ? "Gafete JPG generado" : `${personsToExport.length} gafetes JPG generados`} exitosamente`,
         error: "Error al generar los JPG",
       },
     );
@@ -846,6 +896,9 @@ export function ExportBadgesButtonGroup({
   const exportToPDF = async () => {
     setIsExporting(true);
 
+    const personsToExport =
+      selectedPersons.length > 0 ? selectedPersons : [blankPerson];
+
     toast.promise(
       (async () => {
         // Calculate page dimensions in mm
@@ -853,8 +906,8 @@ export function ExportBadgesButtonGroup({
         const pageHeightMm = pxToMm(canvasHeight);
 
         // Single person PDF export
-        if (selectedPersons.length === 1) {
-          const person = selectedPersons[0]!;
+        if (personsToExport.length === 1) {
+          const person = personsToExport[0]!;
 
           // Create PDF with custom page size
           const pdf = new jsPDF({
@@ -886,7 +939,7 @@ export function ExportBadgesButtonGroup({
         // Multiple persons - create ZIP with individual PDFs
         const zip = new JSZip();
 
-        const promises = selectedPersons.map(async (person) => {
+        const promises = personsToExport.map(async (person) => {
           // Create PDF with custom page size
           const pdf = new jsPDF({
             orientation: pageWidthMm > pageHeightMm ? "landscape" : "portrait",
@@ -930,8 +983,8 @@ export function ExportBadgesButtonGroup({
         setIsExporting(false);
       }),
       {
-        loading: `Generando PDF${selectedPersons.length === 1 ? "" : "s"}...`,
-        success: `PDF${selectedPersons.length === 1 ? "" : "s"} generado${selectedPersons.length === 1 ? "" : "s"} exitosamente`,
+        loading: `Generando PDF${personsToExport.length === 1 ? "" : "s"}...`,
+        success: `PDF${personsToExport.length === 1 ? "" : "s"} generado${personsToExport.length === 1 ? "" : "s"} exitosamente`,
         error: "Error al generar los PDFs",
       },
     );
@@ -939,6 +992,22 @@ export function ExportBadgesButtonGroup({
 
   const exportToPDF2x2 = async () => {
     setIsExporting(true);
+
+    const blankCount = enableBackSide ? 4 : 8;
+    const personsToExport =
+      selectedPersons.length > 0
+        ? [...selectedPersons]
+        : Array(blankCount).fill(blankPerson);
+
+    if (selectedPersons.length > 0) {
+      const remainder = personsToExport.length % blankCount;
+      if (remainder !== 0) {
+        const paddingNeeded = blankCount - remainder;
+        for (let i = 0; i < paddingNeeded; i++) {
+          personsToExport.push(blankPerson);
+        }
+      }
+    }
 
     toast.promise(
       (async () => {
@@ -1019,8 +1088,8 @@ export function ExportBadgesButtonGroup({
 
           let firstPage = true;
 
-          for (let i = 0; i < selectedPersons.length; i += pairsPerPage) {
-            const chunk = selectedPersons.slice(i, i + pairsPerPage);
+          for (let i = 0; i < personsToExport.length; i += pairsPerPage) {
+            const chunk = personsToExport.slice(i, i + pairsPerPage);
 
             if (!firstPage) {
               pdf.addPage([LETTER_WIDTH_MM, LETTER_HEIGHT_MM]);
@@ -1097,8 +1166,8 @@ export function ExportBadgesButtonGroup({
 
           let firstPage = true;
 
-          for (let i = 0; i < selectedPersons.length; i += slotsPerPage) {
-            const chunk = selectedPersons.slice(i, i + slotsPerPage);
+          for (let i = 0; i < personsToExport.length; i += slotsPerPage) {
+            const chunk = personsToExport.slice(i, i + slotsPerPage);
 
             if (!firstPage) {
               pdf.addPage([LETTER_WIDTH_MM, LETTER_HEIGHT_MM]);
@@ -1151,11 +1220,7 @@ export function ExportBadgesButtonGroup({
 
   return (
     <ButtonGroup>
-      <Button
-        variant="outline"
-        disabled={selectedPersons.length === 0 || isExporting}
-        onClick={exportToPNG}
-      >
+      <Button variant="outline" disabled={isExporting} onClick={exportToPNG}>
         {isExporting ? (
           <>
             <Loader2 className="animate-spin" />
@@ -1176,24 +1241,15 @@ export function ExportBadgesButtonGroup({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="[--radius:1rem]">
           <DropdownMenuGroup>
-            <DropdownMenuItem
-              disabled={selectedPersons.length === 0 || isExporting}
-              onClick={exportToJPG}
-            >
+            <DropdownMenuItem disabled={isExporting} onClick={exportToJPG}>
               <Download />
               Exportar JPG
             </DropdownMenuItem>
-            <DropdownMenuItem
-              disabled={selectedPersons.length === 0 || isExporting}
-              onClick={exportToPDF}
-            >
+            <DropdownMenuItem disabled={isExporting} onClick={exportToPDF}>
               <Download />
               Exportar PDF
             </DropdownMenuItem>
-            <DropdownMenuItem
-              disabled={selectedPersons.length === 0 || isExporting}
-              onClick={exportToPDF2x2}
-            >
+            <DropdownMenuItem disabled={isExporting} onClick={exportToPDF2x2}>
               <Download />
               Exportar PDF (2x2)
             </DropdownMenuItem>

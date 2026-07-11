@@ -70,7 +70,7 @@ export function CanvasSettings() {
           <Settings />
         </Button>
       </SheetTrigger>
-      <SheetContent>
+      <SheetContent className="overflow-y-auto pb-4">
         <SheetHeader>
           <SheetTitle>Configuración del lienzo</SheetTitle>
           <SheetDescription>

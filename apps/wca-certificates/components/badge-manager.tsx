@@ -572,6 +572,9 @@ export function BadgeManager({
                     </Button>
                   )}
                 </div>
+                {selectedPersons.length === 0 && (
+                  <p className="text-sm font-semibold text-destructive py-2">Ningún competidor seleccionado. Se exportarán gafetes en blanco.</p>
+                )}
                 <div className="flex justify-end gap-2 w-full">
                   <ExportBadgesButtonGroup
                     selectedPersons={selectedPersons}

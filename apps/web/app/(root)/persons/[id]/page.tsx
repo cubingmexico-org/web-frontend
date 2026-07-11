@@ -35,6 +35,7 @@ import {
 } from "@workspace/ui/components/tabs";
 import { MapContainer } from "./_components/map-container";
 import { PersonResultsTab } from "./_components/results-tab";
+import { PersonResultsChartTab } from "./_components/results-chart-tab";
 import { PersonStaffCompetitionsTab } from "./_components/staff-competitions-tab";
 import {
   getPersonData,
@@ -477,10 +478,11 @@ async function PersonPageContent({
         <TabsList
           className={cn(
             "grid w-full",
-            hasStaffCompetitions ? "grid-cols-3" : "grid-cols-2",
+            hasStaffCompetitions ? "grid-cols-4" : "grid-cols-3",
           )}
         >
           <TabsTrigger value="results-by-event">Resultados</TabsTrigger>
+          <TabsTrigger value="results-chart">Gráfica</TabsTrigger>
           <TabsTrigger value="map">Mapa</TabsTrigger>
           {hasStaffCompetitions && (
             <TabsTrigger value="staff-competitions">Organización</TabsTrigger>
@@ -489,6 +491,14 @@ async function PersonPageContent({
 
         <TabsContent value="results-by-event" className="mt-6">
           <PersonResultsTab
+            eventOptions={eventOptions}
+            selectedEventId={selectedEventId}
+            selectedResults={selectedResults}
+          />
+        </TabsContent>
+
+        <TabsContent value="results-chart" className="mt-6">
+          <PersonResultsChartTab
             eventOptions={eventOptions}
             selectedEventId={selectedEventId}
             selectedResults={selectedResults}

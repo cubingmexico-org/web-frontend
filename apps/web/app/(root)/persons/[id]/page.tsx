@@ -45,8 +45,12 @@ import {
   getPersonCompetitionResults,
   getPersonDataFromWCA,
   getPersonStaffCompetitions,
+  getPersonRecordHistory,
+  getPersonChampionshipPodiums,
 } from "./_lib/queries";
 import type { PersonalRecordWithStateRank } from "./_lib/queries";
+import { PersonRecordsTab } from "./_components/records-tab";
+import { PersonChampionshipPodiumsTab } from "./_components/championship-podiums-tab";
 import { notFound } from "next/navigation";
 import { cacheLife, cacheTag } from "next/cache";
 import { formatDelegateLevel } from "@/lib/delegate-level";
@@ -99,6 +103,21 @@ async function PersonPageContent({
   const requestedEventId = Array.isArray(queryParams.event)
     ? queryParams.event[0]
     : queryParams.event;
+  const selectedTab = (() => {
+    const raw = Array.isArray(queryParams.tab)
+      ? queryParams.tab[0]
+      : queryParams.tab;
+    const valid = [
+      "results-by-event",
+      "records",
+      "championship-podiums",
+      "map",
+      "staff-competitions",
+    ];
+    return valid.includes(raw ?? "")
+      ? (raw ?? "results-by-event")
+      : "results-by-event";
+  })();
 
   const wcaData = await getPersonDataFromWCA(id);
 
@@ -114,6 +133,8 @@ async function PersonPageContent({
     locations,
     statesData,
     staffCompetitions,
+    recordHistory,
+    championshipPodiums,
   ] = await Promise.all([
     getPersonData(id),
     getOrganizerStatus(id),
@@ -125,6 +146,8 @@ async function PersonPageContent({
     getPersonCompetitionLocations(id),
     getStatesGeoJSON(),
     getPersonStaffCompetitions(id),
+    getPersonRecordHistory(id),
+    getPersonChampionshipPodiums(id),
   ]);
 
   if (!personData) {
@@ -136,6 +159,13 @@ async function PersonPageContent({
   const { organized, delegated } = staffCompetitions;
   const hasStaffCompetitions = organized.length > 0 || delegated.length > 0;
   const isOrganizer = organizerStatus !== null;
+  const hasRecords = regionalRecords.total > 0;
+  const hasPodiums = championshipPodiums.length > 0;
+  const tabCount =
+    2 +
+    (hasRecords ? 1 : 0) +
+    (hasPodiums ? 1 : 0) +
+    (hasStaffCompetitions ? 1 : 0);
 
   const stateIds = locations
     .map((location) => location.stateId)
@@ -473,17 +503,39 @@ async function PersonPageContent({
           </Table>
         </div>
       </div>
-      <Tabs defaultValue="results-by-event" className="mt-6">
+      <Tabs value={selectedTab} className="mt-6">
         <TabsList
           className={cn(
-            "grid w-full",
-            hasStaffCompetitions ? "grid-cols-3" : "grid-cols-2",
+            "flex flex-col h-auto w-full gap-1.5 p-1.5",
+            "md:h-10 md:grid",
+            tabCount === 2 && "md:grid-cols-2",
+            tabCount === 3 && "md:grid-cols-3",
+            tabCount === 4 && "md:grid-cols-4",
+            tabCount >= 5 && "md:grid-cols-5",
           )}
         >
-          <TabsTrigger value="results-by-event">Resultados</TabsTrigger>
-          <TabsTrigger value="map">Mapa</TabsTrigger>
+          <TabsTrigger value="results-by-event" asChild>
+            <Link href="?tab=results-by-event">Resultados</Link>
+          </TabsTrigger>
+          {hasRecords && (
+            <TabsTrigger value="records" asChild>
+              <Link href="?tab=records">Récords</Link>
+            </TabsTrigger>
+          )}
+          {hasPodiums && (
+            <TabsTrigger value="championship-podiums" asChild>
+              <Link href="?tab=championship-podiums">
+                Podios en Campeonatos
+              </Link>
+            </TabsTrigger>
+          )}
+          <TabsTrigger value="map" asChild>
+            <Link href="?tab=map">Mapa</Link>
+          </TabsTrigger>
           {hasStaffCompetitions && (
-            <TabsTrigger value="staff-competitions">Organización</TabsTrigger>
+            <TabsTrigger value="staff-competitions" asChild>
+              <Link href="?tab=staff-competitions">Organización</Link>
+            </TabsTrigger>
           )}
         </TabsList>
 
@@ -494,6 +546,18 @@ async function PersonPageContent({
             selectedResults={selectedResults}
           />
         </TabsContent>
+
+        {hasRecords && (
+          <TabsContent value="records" className="mt-6">
+            <PersonRecordsTab records={recordHistory} />
+          </TabsContent>
+        )}
+
+        {hasPodiums && (
+          <TabsContent value="championship-podiums" className="mt-6">
+            <PersonChampionshipPodiumsTab podiums={championshipPodiums} />
+          </TabsContent>
+        )}
 
         <TabsContent value="map" className="mt-6">
           <h2 className="flex items-center justify-center gap-2 text-lg font-semibold my-4">

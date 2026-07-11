@@ -27,7 +27,16 @@ import type {
   WcaPersonResponse,
 } from "@/types/wca";
 import { getOrganizerLevel, type OrganizerLevel } from "@/lib/organizer-level";
-import { and, countDistinct, desc, eq, gt, inArray, sql } from "drizzle-orm";
+import {
+  and,
+  countDistinct,
+  desc,
+  eq,
+  gt,
+  inArray,
+  or,
+  sql,
+} from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 
 export type { OrganizerLevel };
@@ -193,9 +202,9 @@ export async function getPersonData(wcaId: string): Promise<{
 
     const recordsRow = await db
       .select({
-        world: sql<number>`COUNT(DISTINCT CASE WHEN ${result.regionalSingleRecord} = 'WR' OR ${result.regionalAverageRecord} = 'WR' THEN ${result.eventId} ELSE NULL END)`,
-        continental: sql<number>`COUNT(DISTINCT CASE WHEN ${result.regionalSingleRecord} = 'CR' OR ${result.regionalAverageRecord} = 'CR' THEN ${result.eventId} ELSE NULL END)`,
-        national: sql<number>`COUNT(DISTINCT CASE WHEN ${result.regionalSingleRecord} = 'NR' OR ${result.regionalAverageRecord} = 'NR' THEN ${result.eventId} ELSE NULL END)`,
+        world: sql<number>`SUM((CASE WHEN ${result.regionalSingleRecord} = 'WR' THEN 1 ELSE 0 END) + (CASE WHEN ${result.regionalAverageRecord} = 'WR' THEN 1 ELSE 0 END))`,
+        continental: sql<number>`SUM((CASE WHEN ${result.regionalSingleRecord} = 'NAR' THEN 1 ELSE 0 END) + (CASE WHEN ${result.regionalAverageRecord} = 'NAR' THEN 1 ELSE 0 END))`,
+        national: sql<number>`SUM((CASE WHEN ${result.regionalSingleRecord} = 'NR' THEN 1 ELSE 0 END) + (CASE WHEN ${result.regionalAverageRecord} = 'NR' THEN 1 ELSE 0 END))`,
       })
       .from(result)
       .where(eq(result.personId, wcaId));
@@ -681,5 +690,183 @@ export async function getPersonDataFromWCA(
   } catch (err) {
     console.error(err);
     return null;
+  }
+}
+
+export type PersonRecordHistoryEntry = {
+  resultId: string;
+  eventId: string;
+  eventName: string;
+  eventRank: number;
+  competitionId: string;
+  competitionName: string;
+  competitionStartDate: string;
+  roundTypeId: string | null;
+  position: number | null;
+  best: number;
+  average: number;
+  regionalSingleRecord: string | null;
+  regionalAverageRecord: string | null;
+  solves: number[];
+};
+
+export type PersonChampionshipPodium = {
+  resultId: string;
+  eventId: string;
+  eventName: string;
+  eventRank: number;
+  competitionId: string;
+  competitionName: string;
+  competitionStartDate: string;
+  championshipType: string;
+  roundTypeId: string | null;
+  position: number | null;
+  best: number;
+  average: number;
+  solves: number[];
+};
+
+export async function getPersonRecordHistory(
+  wcaId: string,
+): Promise<PersonRecordHistoryEntry[]> {
+  "use cache";
+  cacheLife("weeks");
+  cacheTag(`person-record-history-${wcaId}`);
+
+  try {
+    const rows = await db
+      .select({
+        resultId: result.id,
+        eventId: result.eventId,
+        eventName: event.name,
+        eventRank: event.rank,
+        competitionId: competition.id,
+        competitionName: competition.name,
+        competitionStartDate: competition.startDate,
+        roundTypeId: result.roundTypeId,
+        position: result.pos,
+        best: result.best,
+        average: result.average,
+        regionalSingleRecord: result.regionalSingleRecord,
+        regionalAverageRecord: result.regionalAverageRecord,
+      })
+      .from(result)
+      .innerJoin(event, eq(result.eventId, event.id))
+      .innerJoin(competition, eq(result.competitionId, competition.id))
+      .where(
+        and(
+          eq(result.personId, wcaId),
+          or(
+            inArray(result.regionalSingleRecord, ["NR", "NAR", "WR"]),
+            inArray(result.regionalAverageRecord, ["NR", "NAR", "WR"]),
+          ),
+        ),
+      )
+      .orderBy(event.rank, desc(competition.startDate));
+
+    if (rows.length === 0) return [];
+
+    const attempts = await db
+      .select({
+        resultId: resultAttempts.resultId,
+        attemptNumber: resultAttempts.attemptNumber,
+        value: resultAttempts.value,
+      })
+      .from(resultAttempts)
+      .where(
+        inArray(
+          resultAttempts.resultId,
+          rows.map((r) => r.resultId),
+        ),
+      )
+      .orderBy(resultAttempts.resultId, resultAttempts.attemptNumber);
+
+    const attemptsByResultId = attempts.reduce((acc, attempt) => {
+      const values = acc.get(attempt.resultId) ?? [];
+      values.push(attempt.value);
+      acc.set(attempt.resultId, values);
+      return acc;
+    }, new Map<string, number[]>());
+
+    return rows.map((row) => ({
+      ...row,
+      competitionStartDate: row.competitionStartDate.toISOString(),
+      solves: attemptsByResultId.get(row.resultId) ?? [],
+    }));
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+}
+
+export async function getPersonChampionshipPodiums(
+  wcaId: string,
+): Promise<PersonChampionshipPodium[]> {
+  "use cache";
+  cacheLife("weeks");
+  cacheTag(`person-championship-podiums-${wcaId}`);
+
+  try {
+    const rows = await db
+      .select({
+        resultId: result.id,
+        eventId: result.eventId,
+        eventName: event.name,
+        eventRank: event.rank,
+        competitionId: competition.id,
+        competitionName: competition.name,
+        competitionStartDate: competition.startDate,
+        championshipType: championship.championshipType,
+        roundTypeId: result.roundTypeId,
+        position: result.pos,
+        best: result.best,
+        average: result.average,
+      })
+      .from(result)
+      .innerJoin(event, eq(result.eventId, event.id))
+      .innerJoin(competition, eq(result.competitionId, competition.id))
+      .innerJoin(championship, eq(championship.competitionId, competition.id))
+      .where(
+        and(
+          eq(result.personId, wcaId),
+          inArray(result.roundTypeId, ["f", "c"]),
+          gt(result.best, 0),
+          sql`${result.pos} IN (1, 2, 3)`,
+        ),
+      )
+      .orderBy(desc(competition.startDate), event.rank);
+
+    if (rows.length === 0) return [];
+
+    const attempts = await db
+      .select({
+        resultId: resultAttempts.resultId,
+        attemptNumber: resultAttempts.attemptNumber,
+        value: resultAttempts.value,
+      })
+      .from(resultAttempts)
+      .where(
+        inArray(
+          resultAttempts.resultId,
+          rows.map((r) => r.resultId),
+        ),
+      )
+      .orderBy(resultAttempts.resultId, resultAttempts.attemptNumber);
+
+    const attemptsByResultId = attempts.reduce((acc, attempt) => {
+      const values = acc.get(attempt.resultId) ?? [];
+      values.push(attempt.value);
+      acc.set(attempt.resultId, values);
+      return acc;
+    }, new Map<string, number[]>());
+
+    return rows.map((row) => ({
+      ...row,
+      competitionStartDate: row.competitionStartDate.toISOString(),
+      solves: attemptsByResultId.get(row.resultId) ?? [],
+    }));
+  } catch (err) {
+    console.error(err);
+    return [];
   }
 }

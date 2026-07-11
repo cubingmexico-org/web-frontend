@@ -24,18 +24,19 @@ export default async function Page(): Promise<React.JSX.Element> {
     token: tokenData?.accessToken || "",
   });
 
-  const currentDate = new Date();
+  const todayStr = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Mexico_City",
+  }).format(new Date());
+
   const upcomingCompetitions = competitions.filter(
-    (competition) =>
-      new Date(`${competition.start_date}T00:00:00`) > currentDate,
+    (competition) => competition.start_date > todayStr,
   );
   const onGoingCompetitions = competitions.filter(
     (competition) =>
-      new Date(`${competition.start_date}T00:00:00`) <= currentDate &&
-      new Date(`${competition.end_date}T00:00:00`) >= currentDate,
+      competition.start_date <= todayStr && competition.end_date >= todayStr,
   );
   const pastCompetitions = competitions.filter(
-    (competition) => new Date(`${competition.end_date}T00:00:00`) < currentDate,
+    (competition) => competition.end_date < todayStr,
   );
 
   return (

@@ -8,4 +8,5 @@ export interface Competition {
   endDate: Date;
   status: unknown;
   isChampionship: unknown;
+  competitorCount: number | null;
 }

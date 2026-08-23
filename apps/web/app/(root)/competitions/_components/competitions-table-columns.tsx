@@ -150,6 +150,26 @@ export function getColumns({
       enableHiding: false,
     },
     {
+      accessorKey: "competitorCount",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Competidores" />
+      ),
+      cell: ({ row }) => {
+        const count = row.original.competitorCount;
+        return (
+          <div className="flex space-x-2">
+            {count != null && count > 0 ? (
+              <span className="font-medium">{count}</span>
+            ) : (
+              <span className="text-muted-foreground">—</span>
+            )}
+          </div>
+        );
+      },
+      enableSorting: true,
+      enableHiding: false,
+    },
+    {
       accessorKey: "kinch",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Kinch Ranks" />

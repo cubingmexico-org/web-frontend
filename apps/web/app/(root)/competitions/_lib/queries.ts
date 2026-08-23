@@ -10,11 +10,13 @@ import {
   type Event,
   competitionEvent,
   championship,
+  result,
 } from "@workspace/db/schema";
 import {
   and,
   asc,
   count,
+  countDistinct,
   desc,
   sql,
   gt,
@@ -59,6 +61,15 @@ export async function getCompetitions(input: GetCompetitionsSchema) {
     toDate ? lte(competition.endDate, toDate) : undefined,
   );
 
+  const competitorCounts = db
+    .select({
+      competitionId: result.competitionId,
+      competitorCount: countDistinct(result.personId).as("competitor_count"),
+    })
+    .from(result)
+    .groupBy(result.competitionId)
+    .as("competitor_counts");
+
   const orderBy =
     input.sort.length > 0
       ? input.sort.map((item) => {
@@ -97,6 +108,10 @@ export async function getCompetitions(input: GetCompetitionsSchema) {
               return item.desc
                 ? desc(championship.competitionId)
                 : asc(championship.competitionId);
+            case "competitorCount":
+              return item.desc
+                ? sql`${competitorCounts.competitorCount} DESC NULLS LAST`
+                : sql`${competitorCounts.competitorCount} ASC NULLS LAST`;
             default:
               return item.desc
                 ? desc(competition[item.id])
@@ -128,6 +143,7 @@ export async function getCompetitions(input: GetCompetitionsSchema) {
                 ELSE false
               END
             `.as("isChampionship"),
+        competitorCount: competitorCounts.competitorCount,
       })
       .from(competition)
       .leftJoin(state, eq(competition.stateId, state.id))
@@ -137,6 +153,10 @@ export async function getCompetitions(input: GetCompetitionsSchema) {
       )
       .leftJoin(event, eq(competitionEvent.eventId, event.id))
       .leftJoin(championship, eq(competition.id, championship.competitionId))
+      .leftJoin(
+        competitorCounts,
+        eq(competition.id, competitorCounts.competitionId),
+      )
       .limit(input.perPage)
       .offset(offset)
       .where(where)
@@ -146,6 +166,7 @@ export async function getCompetitions(input: GetCompetitionsSchema) {
         competition.startDate,
         competition.endDate,
         championship.competitionId,
+        competitorCounts.competitorCount,
       )
       .orderBy(...orderBy);
 

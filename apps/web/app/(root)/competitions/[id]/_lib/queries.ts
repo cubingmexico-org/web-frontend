@@ -10,7 +10,7 @@ import {
   state,
 } from "@workspace/db/schema";
 import type { Competition } from "@/types/wca";
-import { and, count, eq, gt, inArray, or } from "drizzle-orm";
+import { and, countDistinct, eq, gt, inArray, or } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 
 export interface CompetitionResultRow {
@@ -101,16 +101,18 @@ export async function getCompetitionMainEventResults(
   cacheTag(`competition-main-event-results-${competitionId}`);
 
   return await db.transaction(async (tx) => {
-    const hasResultsCount = await tx
-      .select({ value: count() })
+    const competitorCountRow = await tx
+      .select({ value: countDistinct(result.personId) })
       .from(result)
       .where(eq(result.competitionId, competitionId));
 
-    const hasResults = (hasResultsCount[0]?.value ?? 0) > 0;
+    const competitorCount = competitorCountRow[0]?.value ?? 0;
+    const hasResults = competitorCount > 0;
 
     if (!mainEventId) {
       return {
         hasResults,
+        competitorCount,
         mainEventResults: [] as CompetitionResultRow[],
       };
     }
@@ -149,6 +151,7 @@ export async function getCompetitionMainEventResults(
 
     return {
       hasResults,
+      competitorCount,
       mainEventResults: top3.map((row, index) => ({
         ...row,
         position: index + 1,

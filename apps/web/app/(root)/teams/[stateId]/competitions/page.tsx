@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getTeam } from "@/db/queries";
 import { buttonVariants } from "@workspace/ui/components/button";
-import { Calendar, MapPin } from "lucide-react";
+import { Calendar, MapPin, Users } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { getCompetitionsPageData } from "./_lib/queries";
 import { CompetitionLogo } from "@/components/competition-logo";
@@ -28,6 +28,8 @@ function CompetitionItem({
     ReturnType<typeof getCompetitionsPageData>
   >["competitions"][number];
 }) {
+  const competitorCount = competition.competitorCount;
+
   return (
     <div className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-start">
       <CompetitionLogo
@@ -77,6 +79,15 @@ function CompetitionItem({
               , {competition.cityName}
             </span>
           </div>
+          {competitorCount != null && competitorCount > 0 ? (
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 shrink-0" />
+              <span>
+                {competitorCount} competidor
+                {competitorCount !== 1 ? "es" : ""}
+              </span>
+            </div>
+          ) : null}
         </div>
       </div>
       <Link

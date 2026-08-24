@@ -71,7 +71,7 @@ export async function pushGroupsWcif(
     const authorized = await getAuthorizedWcif(competitionId, token);
     const payload = buildWcifPatchPayload(authorized, draftWcif);
 
-    const check = await checkWcif(competitionId, token, payload);
+    const check = await checkWcif(token, payload);
     if (!check.ok) {
       return { ok: false, error: check.error };
     }

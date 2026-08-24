@@ -30,6 +30,7 @@ const EVENT_NAMES: Record<string, string> = {
   "444bf": "4x4x4 a ciegas",
   "555bf": "5x5x5 a ciegas",
   "333mbf": "3x3x3 multi a ciegas",
+  fto: "FTO",
 };
 
 export function RoundSelector({
@@ -45,7 +46,11 @@ export function RoundSelector({
     return wcif.events.flatMap((event) =>
       event.rounds.map((round, index) => ({
         id: round.id,
-        label: `${EVENT_NAMES[event.id] ?? event.id} — Ronda ${index + 1}`,
+        label: `${EVENT_NAMES[event.id] ?? event.id} — Ronda ${index + 1}${
+          round.linkedRounds != null && round.linkedRounds.length > 0
+            ? " (dual)"
+            : ""
+        }`,
       })),
     );
   }, [wcif.events]);

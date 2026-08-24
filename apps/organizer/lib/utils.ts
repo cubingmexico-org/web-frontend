@@ -120,6 +120,8 @@ export function formatEvents(eventId: EventId) {
       return "5x5x5 A Ciegas";
     case "333mbf":
       return "3x3x3 Múltiples A Ciegas";
+    case "fto":
+      return "FTO";
     default:
       return eventId;
   }

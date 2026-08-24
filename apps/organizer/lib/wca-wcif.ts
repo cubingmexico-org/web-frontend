@@ -1,8 +1,7 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import type { WCIF } from "@/types/wcif";
-
-const WCA_API = "https://www.worldcubeassociation.org/api/v0";
+import { wcifCheckUrl, wcifLatestUrl, wcifPatchUrl } from "@/lib/wcif-api";
 
 export async function requireWcaAccessToken(): Promise<string> {
   const headersList = await headers();
@@ -24,7 +23,7 @@ export async function getAuthorizedWcif(
   competitionId: string,
   token: string,
 ): Promise<WCIF> {
-  const res = await fetch(`${WCA_API}/competitions/${competitionId}/wcif`, {
+  const res = await fetch(wcifLatestUrl(competitionId), {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -46,22 +45,18 @@ export type WcifCheckResult =
   | { ok: false; error: string; details?: unknown };
 
 export async function checkWcif(
-  competitionId: string,
   token: string,
   payload: unknown,
 ): Promise<WcifCheckResult> {
-  const res = await fetch(
-    `${WCA_API}/competitions/${competitionId}/wcif/check`,
-    {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-      cache: "no-store",
+  const res = await fetch(wcifCheckUrl(), {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
     },
-  );
+    body: JSON.stringify(payload),
+    cache: "no-store",
+  });
 
   if (res.ok || res.status === 204) {
     return { ok: true };
@@ -97,7 +92,7 @@ export async function patchWcif(
   token: string,
   payload: unknown,
 ): Promise<WcifPatchResult> {
-  const res = await fetch(`${WCA_API}/competitions/${competitionId}/wcif`, {
+  const res = await fetch(wcifPatchUrl(competitionId), {
     method: "PATCH",
     headers: {
       Authorization: `Bearer ${token}`,

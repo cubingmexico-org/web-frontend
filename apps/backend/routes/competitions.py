@@ -168,7 +168,7 @@ def get_competition_by_id(competition_id):
 def get_competitor_states(competition_id):
     try:
         wcif_url = (
-            f"https://www.worldcubeassociation.org/api/v0/competitions/{competition_id}/wcif/public"
+            f"https://www.worldcubeassociation.org/api/v0/competitions/{competition_id}/wcif/latest"
         )
         log.info("Fetching WCIF data from %s", wcif_url)
 

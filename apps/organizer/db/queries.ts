@@ -1,5 +1,6 @@
 import type { WCIF } from "@/types/wcif";
 import type { Competition } from "@/types/wca";
+import { wcifLatestUrl } from "@/lib/wcif-api";
 import { db } from "@workspace/db";
 import { competition as competitionTable } from "@workspace/db/schema";
 import { eq, inArray } from "drizzle-orm";
@@ -38,14 +39,11 @@ export async function getWCIFByCompetitionId({
   competitionId: string;
 }): Promise<WCIF | undefined> {
   try {
-    const res = await fetch(
-      `https://worldcubeassociation.org/api/v0/competitions/${competitionId}/wcif/public`,
-      {
-        next: {
-          tags: [`wcif-${competitionId}`],
-        },
+    const res = await fetch(wcifLatestUrl(competitionId), {
+      next: {
+        tags: [`wcif-${competitionId}`],
       },
-    );
+    });
 
     if (!res.ok) {
       throw new Error("Failed to fetch data");

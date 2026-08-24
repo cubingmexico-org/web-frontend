@@ -1,4 +1,5 @@
 import type { Assignment, EventId, Person, WCIF } from "@/types/wcif";
+import { personalBestValue } from "@/types/wcif";
 import {
   getActivityConfig,
   getCompetitionConfig,
@@ -9,6 +10,7 @@ import {
   type CompetitorsSortingRule,
 } from "@/lib/groups/config";
 import { suggestedJudges } from "@/lib/groups/formulas";
+import { seedRankFromWcif } from "@/lib/groups/wcif-seed";
 import {
   createGroupsForRound,
   deepCloneWcif,
@@ -112,30 +114,7 @@ function staffAssignmentCount(person: Person): number {
 }
 
 function seedRank(person: Person, eventId: string, wcif: WCIF): number {
-  if (person.registrantId != null) {
-    const event = wcif.events.find((e) => e.id === eventId);
-    if (event) {
-      for (let i = event.rounds.length - 1; i >= 0; i--) {
-        const roundResults = event.rounds[i]?.results;
-        const result = roundResults?.find(
-          (r) => r.personId === person.registrantId && r.ranking != null,
-        );
-        if (result?.ranking != null) return result.ranking;
-      }
-    }
-  }
-
-  const pb =
-    (person.personalBests ?? []).find(
-      (b) => b.eventId === eventId && b.type === "average",
-    ) ??
-    (person.personalBests ?? []).find(
-      (b) => b.eventId === eventId && b.type === "single",
-    );
-
-  if (pb?.worldRanking != null) return pb.worldRanking;
-  if (pb?.best != null && pb.best > 0) return pb.best;
-  return Number.MAX_SAFE_INTEGER;
+  return seedRankFromWcif(person, eventId, wcif);
 }
 
 function bestAverageAndSingle(
@@ -143,13 +122,17 @@ function bestAverageAndSingle(
   eventId: string,
 ): [number, number] {
   const avg =
-    (person.personalBests ?? []).find(
-      (b) => b.eventId === eventId && b.type === "average",
-    )?.best ?? Number.MAX_SAFE_INTEGER;
+    personalBestValue(
+      (person.personalBests ?? []).find(
+        (b) => b.eventId === eventId && b.type === "average",
+      ),
+    ) ?? Number.MAX_SAFE_INTEGER;
   const single =
-    (person.personalBests ?? []).find(
-      (b) => b.eventId === eventId && b.type === "single",
-    )?.best ?? Number.MAX_SAFE_INTEGER;
+    personalBestValue(
+      (person.personalBests ?? []).find(
+        (b) => b.eventId === eventId && b.type === "single",
+      ),
+    ) ?? Number.MAX_SAFE_INTEGER;
   if (["333bf", "444bf", "555bf", "333mbf"].includes(eventId)) {
     return [single, avg];
   }

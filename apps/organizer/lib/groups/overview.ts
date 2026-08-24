@@ -48,6 +48,7 @@ const EVENT_NAMES: Record<string, string> = {
   "444bf": "4x4x4 a ciegas",
   "555bf": "5x5x5 a ciegas",
   "333mbf": "3x3x3 Multi BLD",
+  fto: "FTO",
 };
 
 export function eventDisplayName(eventId: string): string {

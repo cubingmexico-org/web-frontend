@@ -914,6 +914,7 @@ export function CertificateManager({
     "444bf": "4x4x4 Blindfolded",
     "555bf": "5x5x5 Blindfolded",
     "333mbf": "3x3x3 Multi-Blind",
+    fto: "FTO",
   };
 
   const handleTemplateChange = (

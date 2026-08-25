@@ -10,6 +10,13 @@ export const profileFormSchema = z.object({
   }),
 });
 
+export const preferencesFormSchema = z.object({
+  personId: z.string().min(10, {
+    message: "Selecciona una persona",
+  }),
+  specialties: z.string().optional(),
+});
+
 export const teamFormSchema = z.object({
   stateId: z.string(),
   name: z

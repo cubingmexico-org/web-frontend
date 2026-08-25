@@ -6,6 +6,7 @@ import {
   deleteTeamLogo,
   getCurrentUserTeam,
   saveProfile,
+  saveProfileSpecialties,
   saveTeam,
   updateTeamCover,
   updateTeamLogo,
@@ -28,6 +29,7 @@ import {
 } from "@/lib/update-state-records";
 import {
   addMemberFormSchema,
+  preferencesFormSchema,
   profileFormSchema,
   teamFormSchema,
 } from "@/lib/validations";
@@ -101,6 +103,75 @@ export async function profileFormAction(
       defaultValues: {
         stateId: data.stateId,
         personId: data.personId,
+      },
+      success: true,
+      errors: null,
+    };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return {
+        defaultValues,
+        success: false,
+        errors: getErrorMessage(error),
+      };
+    }
+
+    throw error;
+  }
+}
+
+export async function preferencesFormAction(
+  _prevState: unknown,
+  formData: FormData,
+) {
+  const formDataEntries = Object.fromEntries(formData.entries());
+
+  const defaultValues = z.record(z.string(), z.string()).parse(formDataEntries);
+
+  try {
+    const data = preferencesFormSchema.parse(Object.fromEntries(formData));
+    const userId = await getSessionUserId();
+
+    if (!userId || userId !== data.personId) {
+      unauthorized();
+    }
+
+    const existing = await db
+      .select({ stateId: person.stateId })
+      .from(person)
+      .where(eq(person.wcaId, data.personId))
+      .limit(1);
+
+    const stateId = existing[0]?.stateId ?? null;
+
+    if (!stateId) {
+      return {
+        defaultValues: {
+          personId: data.personId,
+          specialties: data.specialties ?? "",
+        },
+        success: false,
+        errors:
+          "Debes seleccionar un estado en General antes de guardar especialidades.",
+      };
+    }
+
+    const specialties = data.specialties
+      ? data.specialties.split(",").map((speciality) => speciality.trim())
+      : [];
+
+    await saveProfileSpecialties({
+      personId: data.personId,
+      specialties,
+    });
+
+    updateTag(`profile-person-${data.personId}`);
+    invalidateStateMemberTags(stateId);
+
+    return {
+      defaultValues: {
+        personId: data.personId,
+        specialties: specialties.join(","),
       },
       success: true,
       errors: null,

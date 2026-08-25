@@ -26,7 +26,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@workspace/ui/components/dialog";
-import { EventsCheckboxes } from "./events-checkboxes";
+import { EventsCheckboxes } from "@/components/events-checkboxes";
 import { MembersTable } from "./members-table";
 import { PersonsCombobox } from "./persons-combobox";
 import { getMembers, getMembersGenderCounts } from "../../_lib/queries";

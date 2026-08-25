@@ -15,9 +15,7 @@ export default function Loading() {
         <div className="border-b mb-6">
           <TabsList className="w-full justify-start">
             <TabsTrigger value="general">General</TabsTrigger>
-            <TabsTrigger disabled value="preferences">
-              Preferencias
-            </TabsTrigger>
+            <TabsTrigger value="preferences">Preferencias</TabsTrigger>
           </TabsList>
         </div>
 

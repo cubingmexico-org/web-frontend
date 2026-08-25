@@ -13,7 +13,7 @@ import {
   SheetTitle,
 } from "@workspace/ui/components/sheet";
 
-import { EventsCheckboxes } from "./events-checkboxes";
+import { EventsCheckboxes } from "@/components/events-checkboxes";
 import { useActionState } from "react";
 import { updateMember } from "../_lib/actions";
 import { useParams } from "next/navigation";

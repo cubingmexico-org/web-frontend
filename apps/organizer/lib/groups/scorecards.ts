@@ -38,6 +38,7 @@ const EVENT_NAMES: Record<string, string> = {
   "444bf": "4x4x4 BLD",
   "555bf": "5x5x5 BLD",
   "333mbf": "3x3x3 MBLD",
+  fto: "FTO",
 };
 
 const NO_SCRAMBLE_CHECKER = new Set(["555", "666", "777", "minx"]);
@@ -396,10 +397,7 @@ function pbLineText(
 }
 
 function timeLimitText(round: Round | undefined): string | null {
-  const tl = round?.timeLimit as
-    | { centiseconds?: number; cumulativeRoundIds?: string[] }
-    | null
-    | undefined;
+  const tl = round?.timeLimit;
   if (!tl?.centiseconds || tl.centiseconds <= 0) return null;
   return `Límite: ${formatCentiseconds(tl.centiseconds)}`;
 }
@@ -408,16 +406,13 @@ function cutoffText(
   round: Round | undefined,
   eventId: string | undefined,
 ): string | null {
-  const cutoff = round?.cutoff as
-    | { numberOfAttempts?: number; attemptResult?: number }
-    | null
-    | undefined;
-  if (!cutoff?.attemptResult || cutoff.attemptResult <= 0) return null;
+  const cutoff = round?.cutoff;
+  if (!cutoff?.resultValue || cutoff.resultValue <= 0) return null;
   const attempts = cutoff.numberOfAttempts ?? 2;
   if (eventId === "333fm") {
-    return `Corte: ${cutoff.attemptResult} mov. (${attempts} int.)`;
+    return `Corte: ${cutoff.resultValue} mov. (${attempts} int.)`;
   }
-  return `Corte: ${formatCentiseconds(cutoff.attemptResult)} (${attempts} int.)`;
+  return `Corte: ${formatCentiseconds(cutoff.resultValue)} (${attempts} int.)`;
 }
 
 function labelCell(text: string, style: Record<string, unknown> = {}): Content {
@@ -1051,8 +1046,8 @@ function rankingsForPerson(
     worldRankingSingle: single?.worldRanking ?? null,
     worldRankingAverage: average?.worldRanking ?? null,
     nationalRankingAverage: average?.nationalRanking ?? null,
-    pbSingle: single?.best ?? null,
-    pbAverage: average?.best ?? null,
+    pbSingle: single?.value ?? null,
+    pbAverage: average?.value ?? null,
   };
 }
 
@@ -1183,10 +1178,7 @@ function collectScorecardVariants(
       const layout = attemptLayoutOf(formatInfo);
       const key = `${layout}:${round.format ?? "a"}:${event.id}:${printScrambleChecker}`;
       if (seen.has(key)) continue;
-      const cutoff = round.cutoff as
-        | { numberOfAttempts?: number }
-        | null
-        | undefined;
+      const cutoff = round.cutoff;
       seen.set(key, {
         key,
         eventId: event.id,
@@ -1294,10 +1286,7 @@ async function buildCardList(
     .find((e) => e.id === eventId)
     ?.rounds.find((r) => r.id === roundActivityCode);
   const formatInfo = getFormatInfo(round?.format ?? "a", eventId);
-  const cutoff = round?.cutoff as
-    | { numberOfAttempts?: number }
-    | null
-    | undefined;
+  const cutoff = round?.cutoff;
   const cutoffAttempts = cutoff?.numberOfAttempts ?? null;
   const labels = scorecardLabels();
   const tl = timeLimitText(round);

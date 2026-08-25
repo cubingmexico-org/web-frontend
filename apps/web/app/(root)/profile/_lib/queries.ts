@@ -2,7 +2,7 @@
 
 import "server-only";
 import { db } from "@workspace/db";
-import { person } from "@workspace/db/schema";
+import { person, teamMember } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 
@@ -16,8 +16,10 @@ export async function getProfile(userId: string) {
       name: person.name,
       gender: person.gender,
       stateId: person.stateId,
+      specialties: teamMember.specialties,
     })
     .from(person)
+    .leftJoin(teamMember, eq(person.wcaId, teamMember.personId))
     .where(eq(person.wcaId, userId));
 
   return persons.length > 0 ? persons[0] : null;

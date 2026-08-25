@@ -687,7 +687,7 @@ async function getCompetitionForSchedule(competitionId: string) {
 
 async function fetchPublicWcif(competitionId: string) {
   const response = await fetch(
-    `https://www.worldcubeassociation.org/api/v0/competitions/${competitionId}/wcif/public`,
+    `https://www.worldcubeassociation.org/api/v0/competitions/${competitionId}/wcif/latest`,
     { cache: "no-store" },
   );
   if (response.status === 404) {

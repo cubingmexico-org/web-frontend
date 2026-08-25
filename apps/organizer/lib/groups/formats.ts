@@ -14,8 +14,10 @@ const FORMAT_MAP: Record<string, { attempts: number; mean?: boolean }> = {
   "1": { attempts: 1 },
   "2": { attempts: 2 },
   "3": { attempts: 3 },
+  "5": { attempts: 5 },
   a: { attempts: 5 },
   m: { attempts: 3, mean: true },
+  h: { attempts: 1 },
 };
 
 export function getFormatInfo(format: string, eventId?: string): FormatInfo {

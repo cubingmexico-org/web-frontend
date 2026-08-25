@@ -38,6 +38,7 @@ export function buildWcifPatchPayload(
   authorizedBase: WCIF,
   draft: WCIF,
 ): {
+  formatVersion: string;
   id: string;
   persons: Person[];
   schedule: WCIF["schedule"];
@@ -92,6 +93,7 @@ export function buildWcifPatchPayload(
   }
 
   return {
+    formatVersion: authorizedBase.formatVersion,
     id: base.id,
     persons: base.persons,
     schedule: base.schedule,

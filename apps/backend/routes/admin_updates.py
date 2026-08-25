@@ -1511,7 +1511,7 @@ def update_state_records():
 
 
 def _fetch_public_wcif(competition_id: str):
-    url = f"https://www.worldcubeassociation.org/api/v0/competitions/{competition_id}/wcif/public"
+    url = f"https://www.worldcubeassociation.org/api/v0/competitions/{competition_id}/wcif/latest"
     response = requests.get(url, timeout=30)
     if response.status_code == 404:
         return None

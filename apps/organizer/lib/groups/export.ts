@@ -69,7 +69,7 @@ export function exportAssignmentsCsv(
 
 export function exportDraftJson(wcif: WCIF, competitionId: string): void {
   const payload = {
-    formatVersion: wcif.formatVersion ?? "1.0",
+    formatVersion: wcif.formatVersion,
     id: wcif.id,
     name: wcif.name,
     schedule: wcif.schedule,

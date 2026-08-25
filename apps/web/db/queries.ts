@@ -179,6 +179,32 @@ export async function saveProfile({
   }
 }
 
+export async function saveProfileSpecialties({
+  personId,
+  specialties,
+}: {
+  personId: Person["wcaId"];
+  specialties: TeamMember["specialties"];
+}) {
+  try {
+    await db
+      .insert(teamMember)
+      .values({
+        personId,
+        specialties,
+      })
+      .onConflictDoUpdate({
+        target: [teamMember.personId],
+        set: {
+          specialties,
+        },
+      });
+  } catch (error) {
+    console.error("Failed to save profile specialties in database");
+    throw error;
+  }
+}
+
 export async function deleteTeamLogo({ stateId }: { stateId: State["id"] }) {
   try {
     await db

@@ -1,45 +1,9 @@
 import type { EventId, WCIF } from "@/types/wcif";
+import { seedRankFromWcif } from "@/lib/groups/wcif-seed";
 import {
   deepCloneWcif,
   getGroupActivitiesForRound,
 } from "@/lib/groups/wcif-schedule";
-
-function seedRank(
-  person: {
-    registrantId: number | null;
-    personalBests?: Array<{
-      eventId: string;
-      type: string;
-      worldRanking: number | null;
-      best: number;
-    }>;
-    name: string;
-  },
-  eventId: string,
-  wcif: WCIF,
-): number {
-  if (person.registrantId != null) {
-    const event = wcif.events.find((e) => e.id === eventId);
-    if (event) {
-      for (let i = event.rounds.length - 1; i >= 0; i--) {
-        const result = event.rounds[i]?.results?.find(
-          (r) => r.personId === person.registrantId && r.ranking != null,
-        );
-        if (result?.ranking != null) return result.ranking;
-      }
-    }
-  }
-  const pb =
-    (person.personalBests ?? []).find(
-      (b) => b.eventId === eventId && b.type === "average",
-    ) ??
-    (person.personalBests ?? []).find(
-      (b) => b.eventId === eventId && b.type === "single",
-    );
-  if (pb?.worldRanking != null) return pb.worldRanking;
-  if (pb?.best != null && pb.best > 0) return pb.best;
-  return Number.MAX_SAFE_INTEGER;
-}
 
 /**
  * Assign sequential station numbers to competitor assignments within each group.
@@ -67,8 +31,8 @@ export function assignStationsForRound(
       .filter((row): row is NonNullable<typeof row> => row != null)
       .sort((a, b) => {
         const seedDiff =
-          seedRank(a.person, eventId, draft) -
-          seedRank(b.person, eventId, draft);
+          seedRankFromWcif(a.person, eventId, draft) -
+          seedRankFromWcif(b.person, eventId, draft);
         if (seedDiff !== 0) return -seedDiff; // better (lower rank) → earlier station
         return a.person.name.localeCompare(b.person.name, "es");
       });

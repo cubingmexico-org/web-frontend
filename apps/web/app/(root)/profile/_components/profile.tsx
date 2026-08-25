@@ -24,9 +24,10 @@ import type { User } from "better-auth";
 import { Label } from "@workspace/ui/components/label";
 import { State } from "@workspace/db/schema";
 import { StateFlag } from "@/components/state-flag";
+import { EventsCheckboxes } from "@/components/events-checkboxes";
 import { Check, Info, X } from "lucide-react";
 import { useActionState } from "react";
-import { profileFormAction } from "@/app/actions";
+import { preferencesFormAction, profileFormAction } from "@/app/actions";
 import {
   Tooltip,
   TooltipContent,
@@ -42,6 +43,7 @@ interface ProfileProps {
     name: string | null;
     gender: "m" | "f" | "o" | null;
     stateId: string | null;
+    specialties: string[] | null;
   };
   states: State[];
 }
@@ -55,6 +57,18 @@ export function Profile({ user, person, states }: ProfileProps) {
     success: false,
     errors: null,
   });
+
+  const [prefsState, prefsFormAction, prefsPending] = useActionState(
+    preferencesFormAction,
+    {
+      defaultValues: {
+        personId: person.wcaId,
+        specialties: (person.specialties ?? []).join(","),
+      },
+      success: false,
+      errors: null,
+    },
+  );
 
   return (
     <>
@@ -75,43 +89,41 @@ export function Profile({ user, person, states }: ProfileProps) {
         </Alert>
       )}
 
-      {state.success ? (
-        <Alert className="bg-green-50 border-green-500 dark:border-green-600 dark:bg-green-900 mb-6">
-          <Check className="h-4 w-4 text-green-600" />
-          <AlertTitle className="text-green-800 dark:text-green-200">
-            Éxito
-          </AlertTitle>
-          <AlertDescription className="text-green-700 dark:text-green-300 inline">
-            Los cambios se han guardado correctamente.
-          </AlertDescription>
-        </Alert>
-      ) : (
-        <>
-          {state.errors && (
-            <Alert className="bg-red-50 border-red-500 dark:border-red-600 dark:bg-red-900 mb-6">
-              <X className="h-4 w-4 text-red-600" />
-              <AlertTitle className="text-red-800 dark:text-red-200">
-                Error
-              </AlertTitle>
-              <AlertDescription className="text-red-700 dark:text-red-300 inline">
-                {Object.values(state.errors).join(", ")}
-              </AlertDescription>
-            </Alert>
-          )}
-        </>
-      )}
-
       <Tabs defaultValue="general" className="w-full">
         <div className="border-b mb-6">
           <TabsList className="w-full justify-start">
             <TabsTrigger value="general">General</TabsTrigger>
-            <TabsTrigger disabled value="preferences">
-              Preferencias
-            </TabsTrigger>
+            <TabsTrigger value="preferences">Preferencias</TabsTrigger>
           </TabsList>
         </div>
 
         <TabsContent value="general">
+          {state.success ? (
+            <Alert className="bg-green-50 border-green-500 dark:border-green-600 dark:bg-green-900 mb-6">
+              <Check className="h-4 w-4 text-green-600" />
+              <AlertTitle className="text-green-800 dark:text-green-200">
+                Éxito
+              </AlertTitle>
+              <AlertDescription className="text-green-700 dark:text-green-300 inline">
+                Los cambios se han guardado correctamente.
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <>
+              {state.errors && (
+                <Alert className="bg-red-50 border-red-500 dark:border-red-600 dark:bg-red-900 mb-6">
+                  <X className="h-4 w-4 text-red-600" />
+                  <AlertTitle className="text-red-800 dark:text-red-200">
+                    Error
+                  </AlertTitle>
+                  <AlertDescription className="text-red-700 dark:text-red-300 inline">
+                    {Object.values(state.errors).join(", ")}
+                  </AlertDescription>
+                </Alert>
+              )}
+            </>
+          )}
+
           <form action={formAction} className="space-y-6">
             <input
               type="hidden"
@@ -206,6 +218,61 @@ export function Profile({ user, person, states }: ProfileProps) {
                 disabled={person.stateId !== null || pending}
               >
                 {pending ? "Guardando..." : "Guardar"}
+              </Button>
+            </div>
+          </form>
+        </TabsContent>
+
+        <TabsContent value="preferences">
+          {prefsState.success ? (
+            <Alert className="bg-green-50 border-green-500 dark:border-green-600 dark:bg-green-900 mb-6">
+              <Check className="h-4 w-4 text-green-600" />
+              <AlertTitle className="text-green-800 dark:text-green-200">
+                Éxito
+              </AlertTitle>
+              <AlertDescription className="text-green-700 dark:text-green-300 inline">
+                Tus especialidades se han guardado correctamente.
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <>
+              {prefsState.errors && (
+                <Alert className="bg-red-50 border-red-500 dark:border-red-600 dark:bg-red-900 mb-6">
+                  <X className="h-4 w-4 text-red-600" />
+                  <AlertTitle className="text-red-800 dark:text-red-200">
+                    Error
+                  </AlertTitle>
+                  <AlertDescription className="text-red-700 dark:text-red-300 inline">
+                    {prefsState.errors}
+                  </AlertDescription>
+                </Alert>
+              )}
+            </>
+          )}
+
+          {!person.stateId && (
+            <Alert className="bg-yellow-50 border-yellow-200 dark:border-yellow-300 dark:bg-yellow-900 mb-6">
+              <Info className="h-4 w-4" />
+              <AlertDescription className="inline text-black dark:text-white">
+                Selecciona un estado en la pestaña General antes de agregar
+                especialidades. Aparecerán en la vista de tu equipo estatal.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          <form action={prefsFormAction} className="space-y-6">
+            <input
+              type="hidden"
+              name="personId"
+              defaultValue={person.wcaId}
+              readOnly
+            />
+
+            <EventsCheckboxes defaultValue={person.specialties ?? []} />
+
+            <div>
+              <Button type="submit" disabled={!person.stateId || prefsPending}>
+                {prefsPending ? "Guardando..." : "Guardar"}
               </Button>
             </div>
           </form>

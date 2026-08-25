@@ -1,8 +1,8 @@
 /**
  * WCIF types used by Organización.
  *
- * Source of truth: https://github.com/thewca/wcif (stable = 1.1)
- * Fetch: GET /api/v0/competitions/:id/wcif/public
+ * Source of truth: https://github.com/thewca/wcif (v2.2)
+ * Fetch: GET /api/v0/competitions/:id/wcif/latest
  *
  * Consumed today:
  * - persons: name, wcaId, registrantId, countryIso2, gender, roles,
@@ -12,13 +12,15 @@
  * - schedule → venues → rooms → activities / childActivities (Grupos draft)
  *
  * Typed for future modules but not consumed yet:
- * - competitorLimit
+ * - competitorLimit, participationRuleset, qualification
  *
- * Grupos 3b+: optional PATCH via PUT …/wcif/check then PATCH …/wcif;
- * surface response.error on failure. Extensions are read for Groupifier/DD
- * interop; Organización writes `organizacion.CompetitionConfig`,
+ * Grupos 3b+: optional PATCH via PUT /api/v0/competitions/wcif/check then
+ * PATCH …/wcif; surface response.error on failure. Extensions are read for
+ * Groupifier/DD interop; Organización writes `organizacion.CompetitionConfig`,
  * `organizacion.RoomConfig`, and `organizacion.ActivityConfig` on the local draft.
  */
+
+export const WCIF_VERSION = "2.2";
 
 export type EventId =
   | "333"
@@ -38,7 +40,10 @@ export type EventId =
   | "sq1"
   | "444bf"
   | "555bf"
-  | "333mbf";
+  | "333mbf"
+  | "fto";
+
+export type RoundFormat = "1" | "2" | "3" | "5" | "a" | "m" | "h";
 
 export interface Avatar {
   url: string;
@@ -95,27 +100,98 @@ export interface Assignment {
 
 export interface PersonalBest {
   eventId: EventId;
-  best: number;
+  value: number;
   worldRanking: number | null;
   continentalRanking: number | null;
   nationalRanking: number | null;
   type: "single" | "average";
 }
 
+export function personalBestValue(
+  pb: Pick<PersonalBest, "value"> | null | undefined,
+): number | null {
+  if (pb?.value == null) return null;
+  return pb.value;
+}
+
+export interface Attempt {
+  value: number;
+  reconstruction?: string | null;
+}
+
 export interface Result {
   personId: number;
   ranking: number | null;
-  attempts: unknown[];
+  attempts: Attempt[];
   best: number;
   average: number;
 }
 
+export interface TimeLimit {
+  centiseconds: number;
+  cumulativeRoundIds: string[];
+}
+
+export interface Cutoff {
+  numberOfAttempts: number;
+  resultValue: number;
+}
+
+export type ResultConditionScope = "single" | "average";
+
+export type ResultCondition =
+  | {
+      type: "resultAchieved";
+      scope: ResultConditionScope;
+      value: number | null;
+    }
+  | {
+      type: "ranking";
+      scope: ResultConditionScope;
+      value: number;
+    }
+  | {
+      type: "percent";
+      scope: ResultConditionScope;
+      value: number;
+    };
+
+export type ParticipationSource =
+  | { type: "registrations" }
+  | {
+      type: "round";
+      roundId: string;
+      resultCondition: ResultCondition;
+    }
+  | {
+      type: "linkedRounds";
+      roundIds: string[];
+      resultCondition: ResultCondition;
+    };
+
+export interface ReservedPlaces {
+  countries: string[];
+  count: number;
+}
+
+export interface ParticipationRuleset {
+  participationSource: ParticipationSource | null;
+  reservedPlaces: ReservedPlaces | null;
+}
+
+export interface Qualification {
+  earliestResultDate: string | null;
+  latestResultDate: string;
+  resultCondition: ResultCondition;
+}
+
 export interface Round {
   id: string;
-  format: string;
-  timeLimit: unknown;
-  cutoff: unknown;
-  advancementCondition: unknown;
+  format: RoundFormat | string;
+  timeLimit: TimeLimit | null;
+  cutoff: Cutoff | null;
+  participationRuleset: ParticipationRuleset | null;
+  linkedRounds: string[] | null;
   scrambleSetCount: number;
   results: Result[];
   extensions: WcifExtension[];
@@ -125,11 +201,11 @@ export interface Event {
   id: EventId;
   rounds: Round[];
   extensions: WcifExtension[];
-  qualification: unknown;
+  qualification: Qualification | null;
 }
 
 export interface WCIF {
-  formatVersion?: string;
+  formatVersion: string;
   id: string;
   name: string;
   shortName?: string;

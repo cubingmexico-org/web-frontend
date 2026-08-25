@@ -243,9 +243,7 @@ export function Profile({ user, person, states }: ProfileProps) {
                     Error
                   </AlertTitle>
                   <AlertDescription className="text-red-700 dark:text-red-300 inline">
-                    {typeof prefsState.errors === "string"
-                      ? prefsState.errors
-                      : Object.values(prefsState.errors).join(", ")}
+                    {prefsState.errors}
                   </AlertDescription>
                 </Alert>
               )}

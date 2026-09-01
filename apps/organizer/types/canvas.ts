@@ -33,7 +33,11 @@ export interface CanvasElement {
   qrForeground?: string;
   qrBackground?: string;
   qrErrorCorrection?: "L" | "M" | "Q" | "H";
-  qrDataSource?: "wca-live" | "competition-groups" | "custom";
+  qrDataSource?:
+    | "wca-live"
+    | "wca-integrated-results"
+    | "competition-groups"
+    | "custom";
   qrIncludeIcon?: boolean;
 }
 

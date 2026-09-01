@@ -928,14 +928,17 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
                   updateElement(selectedElement.id, {
                     qrDataSource: value as
                       | "wca-live"
+                      | "wca-integrated-results"
                       | "competition-groups"
                       | "custom",
                     qrData:
                       value === "wca-live"
                         ? "https://live.worldcubeassociation.org/"
-                        : value === "competition-groups"
-                          ? "https://www.competitiongroups.com/"
-                          : "",
+                        : value === "wca-integrated-results"
+                          ? "https://www.worldcubeassociation.org/competitions/Example2025/live"
+                          : value === "competition-groups"
+                            ? "https://www.competitiongroups.com/"
+                            : "",
                     qrIncludeIcon:
                       value === "custom"
                         ? false
@@ -951,6 +954,19 @@ export function PropertiesPanel({ eventIds }: PropertiesPanelProps) {
                   >
                     <WcaMonochrome className="size-4" />
                     WCA Live de la competencia
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="wca-integrated-results"
+                    id="wca-integrated-results"
+                  />
+                  <Label
+                    htmlFor="wca-integrated-results"
+                    className="text-xs font-normal cursor-pointer"
+                  >
+                    <WcaMonochrome className="size-4" />
+                    WCA Integrated Results
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">

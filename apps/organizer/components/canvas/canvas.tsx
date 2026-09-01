@@ -552,16 +552,19 @@ export function Canvas({
           const qrData =
             element.qrDataSource === "wca-live"
               ? `https://live.worldcubeassociation.org/link/competitions/${competitionId}`
-              : element.qrDataSource === "competition-groups"
-                ? `https://www.competitiongroups.com/competitions/${competitionId}/persons/${currentPerson.registrantId}`
-                : element.qrData;
+              : element.qrDataSource === "wca-integrated-results"
+                ? `https://www.worldcubeassociation.org/competitions/${competitionId}/live`
+                : element.qrDataSource === "competition-groups"
+                  ? `https://www.competitiongroups.com/competitions/${competitionId}/persons/${currentPerson.registrantId}`
+                  : element.qrData;
 
           if (qrData) {
             try {
               // Generate QR code as data URL
               const qrDataUrl = await QRCode.toDataURL(qrData, {
                 errorCorrectionLevel:
-                  element.qrDataSource === "wca-live"
+                  element.qrDataSource === "wca-live" ||
+                  element.qrDataSource === "wca-integrated-results"
                     ? "H"
                     : element.qrErrorCorrection || "M",
                 margin: 1,
@@ -584,9 +587,10 @@ export function Canvas({
                     element.height,
                   );
 
-                  // Add WCA Live logo in the center if it's a wca-live data source
+                  // Add WCA logo in the center for WCA QR data sources
                   if (
-                    element.qrDataSource === "wca-live" &&
+                    (element.qrDataSource === "wca-live" ||
+                      element.qrDataSource === "wca-integrated-results") &&
                     element.qrIncludeIcon
                   ) {
                     const logoImg = new Image();

@@ -58,6 +58,67 @@ def get_states():
         return jsonify({"success": False, "message": "Error fetching states"}), 500
 
 
+@misc_bp.route("/rank/<type>/<event_id>", methods=["GET"])
+def get_national_rank(type, event_id):
+    if type not in ("single", "average"):
+        return jsonify({"success": False, "message": "type must be single or average"}), 400
+
+    try:
+        with get_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.NamedTupleCursor) as cur:
+                log.info("Fetching national ranks for type: %s, event: %s", type, event_id)
+
+                table_name = "ranks_single" if type == "single" else "ranks_average"
+
+                cur.execute(
+                    f"""
+                    SELECT
+                        rs.person_id,
+                        p.name,
+                        p.state_id,
+                        rs.event_id,
+                        rs.best,
+                        rs.world_rank,
+                        rs.continent_rank,
+                        rs.country_rank,
+                        rs.state_rank
+                    FROM {table_name} rs
+                    INNER JOIN persons p ON rs.person_id = p.wca_id
+                    WHERE rs.event_id = %s AND rs.country_rank <> 0
+                    ORDER BY rs.country_rank ASC
+                    """,
+                    (event_id,),
+                )
+
+                ranks = cur.fetchall()
+                if ranks:
+                    rank_data = [
+                        {
+                            "rankType": type,
+                            "personId": rank.person_id,
+                            "personName": rank.name,
+                            "eventId": rank.event_id,
+                            "best": rank.best,
+                            "stateId": rank.state_id,
+                            "rank": {
+                                "world": rank.world_rank,
+                                "continent": rank.continent_rank,
+                                "country": rank.country_rank,
+                                "state": rank.state_rank,
+                            },
+                        }
+                        for rank in ranks
+                    ]
+                    log.info("Fetched %s national ranks", len(rank_data))
+                    return jsonify(rank_data)
+
+                log.warning("No national ranks found for type: %s, event: %s", type, event_id)
+                return jsonify({"success": False, "message": "Ranks not found"}), 404
+    except Exception as e:
+        log.error("Error fetching national ranks: %s", e)
+        return jsonify({"success": False, "message": "Error fetching ranks"}), 500
+
+
 @misc_bp.route("/rank/<state_id>/<type>/<event_id>", methods=["GET"])
 def get_rank(state_id, type, event_id):
     try:

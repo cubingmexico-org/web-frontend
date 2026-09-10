@@ -85,6 +85,7 @@ The app will be available at `http://localhost:5000`.
   - `GET /states` — List all states
 
 - **Ranks & Records**
+  - `GET /rank/<type>/<event_id>` — Get national ranks for a type (`single`|`average`) and event
   - `GET /rank/<state_id>/<type>/<event_id>` — Get ranks for a state, type (`single`|`average`), and event
   - `GET /records/<state_id>` — Get state records (single and average)
 

@@ -286,6 +286,40 @@ const endpoints: Record<Category, Endpoint[]> = {
   ranks: [
     {
       method: "GET",
+      path: "/rank/:type/:eventId",
+      title: "Rankings nacionales",
+      description:
+        "Devuelve los rankings nacionales de México para un evento y tipo (single o average).",
+      pathParams: [
+        {
+          name: "type",
+          description: "Tipo de ranking: single o average.",
+        },
+        {
+          name: "eventId",
+          description: "Id del evento WCA (por ejemplo 333, 333oh).",
+        },
+      ],
+      curl: `curl "${BASE_URL}/rank/single/333"`,
+      sampleResponse: `[
+  {
+    "rankType": "single",
+    "personId": "2015EXAM01",
+    "personName": "Ejemplo Cubero",
+    "eventId": "333",
+    "best": 850,
+    "stateId": "CMX",
+    "rank": {
+      "world": 1000,
+      "continent": 50,
+      "country": 10,
+      "state": 1
+    }
+  }
+]`,
+    },
+    {
+      method: "GET",
       path: "/rank/:stateId/:type/:eventId",
       title: "Rankings por estado",
       description:

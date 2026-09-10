@@ -5,6 +5,8 @@ import type { GeoJSONProps } from "react-leaflet";
 import type { Map as LeafletMap } from "leaflet";
 import { useTheme } from "next-themes";
 
+import { getMapTileConfig } from "@/lib/map-tiles";
+
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
@@ -46,14 +48,10 @@ export function TeamStateMap({ statesData }: TeamStateMapProps) {
 
     mapRef.current = map;
 
-    const tileUrl =
-      resolvedTheme === "dark"
-        ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-        : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-
-    L.tileLayer(tileUrl, {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    const tiles = getMapTileConfig(resolvedTheme);
+    L.tileLayer(tiles.url, {
+      attribution: tiles.attribution,
+      ...(tiles.subdomains ? { subdomains: tiles.subdomains } : {}),
     }).addTo(map);
 
     const geoJsonLayer = L.geoJSON(

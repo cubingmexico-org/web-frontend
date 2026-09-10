@@ -12,6 +12,7 @@ import "leaflet-defaulticon-compatibility";
 
 import type { Team } from "./teams";
 import { useRouter } from "next/navigation";
+import { getMapTileConfig } from "@/lib/map-tiles";
 import { normalizeSearchText } from "@/lib/search";
 import { StateLabel } from "@/components/state-flag";
 
@@ -137,14 +138,10 @@ export function TeamsStateMap({
 
     mapRef.current = map;
 
-    const tileUrl =
-      resolvedTheme === "dark"
-        ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-        : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-
-    L.tileLayer(tileUrl, {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    const tiles = getMapTileConfig(resolvedTheme);
+    L.tileLayer(tiles.url, {
+      attribution: tiles.attribution,
+      ...(tiles.subdomains ? { subdomains: tiles.subdomains } : {}),
     }).addTo(map);
 
     if (!statesData) {

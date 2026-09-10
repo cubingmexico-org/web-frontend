@@ -8,6 +8,8 @@ import "leaflet-defaulticon-compatibility";
 import { useTheme } from "next-themes";
 import React from "react";
 
+import { getMapTileConfig } from "@/lib/map-tiles";
+
 interface MarkerItem {
   id: string;
   venue?: string;
@@ -60,10 +62,7 @@ export function Map({
 }: MapProps) {
   const { resolvedTheme } = useTheme();
 
-  const tileLayerUrl =
-    resolvedTheme === "dark"
-      ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-      : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+  const tiles = getMapTileConfig(resolvedTheme);
 
   return (
     <div style={{ height, width: "100%" }}>
@@ -76,8 +75,9 @@ export function Map({
         <ResetView center={center} zoom={zoom} />
         <TileLayer
           key={resolvedTheme}
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url={tileLayerUrl}
+          attribution={tiles.attribution}
+          url={tiles.url}
+          {...(tiles.subdomains ? { subdomains: tiles.subdomains } : {})}
         />
         {markers.map(({ id, venue, address, latitude, longitude }) => {
           const lat = normalizeCoord(latitude);
